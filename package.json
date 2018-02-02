@@ -1,0 +1,46 @@
+{
+  "name": "powerkpi",
+  "displayName": "PowerKPI",
+  "version": "1.3.1",
+  "scripts": {
+    "postinstall": "pbiviz update 1.10.0",
+    "pbiviz": "pbiviz",
+    "start": "pbiviz start",
+    "package": "pbiviz package --no-minify",
+    "lint": "node node_modules/tslint/bin/tslint \"+(src|test)/**/*.ts\"",
+    "pretest": "pbiviz package --resources --no-minify --no-pbiviz",
+    "test": "karma start"
+  },
+  "dependencies": {
+    "powerbi-visuals-utils-chartutils": "^1.2.0",
+    "powerbi-visuals-utils-colorutils": "^1.0.0",
+    "powerbi-visuals-utils-dataviewutils": "^1.2.0",
+    "powerbi-visuals-utils-formattingutils": "^2.1.0",
+    "powerbi-visuals-utils-interactivityutils": "^1.0.0",
+    "powerbi-visuals-utils-svgutils": "^1.1.0",
+    "powerbi-visuals-utils-tooltiputils": "^1.0.0",
+    "powerbi-visuals-utils-typeutils": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/d3": "3.5.36",
+    "@types/jquery": "2.0.45",
+    "@types/lodash": "4.14.55",
+    "@types/jasmine": "2.5.37",
+    "@types/jasmine-jquery": "1.5.28",
+    "jasmine": "2.5.2",
+    "jasmine-jquery": "2.1.1",
+    "karma": "1.3.0",
+    "karma-chrome-launcher": "2.0.0",
+    "karma-coverage": "1.1.1",
+    "karma-jasmine": "1.0.2",
+    "karma-remap-istanbul": "0.6.0",
+    "karma-sourcemap-loader": "0.3.7",
+    "karma-typescript-preprocessor": "0.3.1",
+    "d3": "3.5.5",
+    "jquery": "3.3.1",
+    "lodash": "4.16.2",
+    "powerbi-visuals-tools": "1.10.0",
+    "tslint": "3.15.1",
+    "typescript": "2.1.4"
+  }
+}
