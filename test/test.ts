@@ -31,16 +31,16 @@ namespace powerbi.extensibility.visual.test {
 
     // tests
     import PowerKPI = powerbi.extensibility.visual.powerKPI462CE5C2666F4EC8A8BDD7E5587320A3.PowerKPI;
-    import Settings = powerbi.extensibility.visual.Settings;
-    import VisualComponent = powerbi.extensibility.visual.VisualComponent;
-    import TooltipComponent = powerbi.extensibility.visual.TooltipComponent;
-    import DataRepresentation = powerbi.extensibility.visual.DataRepresentation;
-    import DataRepresentationX = powerbi.extensibility.visual.DataRepresentationX;
-    import KPIIndicatorSettings = powerbi.extensibility.visual.KPIIndicatorSettings;
-    import IKPIIndicatorSettings = powerbi.extensibility.visual.IKPIIndicatorSettings;
-    import DataRepresentationSeries = powerbi.extensibility.visual.DataRepresentationSeries;
-    import DataRepresentationTypeEnum = powerbi.extensibility.visual.DataRepresentationTypeEnum;
-    import EventPositionVisualComponentOptions = powerbi.extensibility.visual.EventPositionVisualComponentOptions;
+    import Settings = powerbi.extensibility.visual.powerKPI.Settings;
+    import VisualComponent = powerbi.extensibility.visual.powerKPI.VisualComponent;
+    import TooltipComponent = powerbi.extensibility.visual.powerKPI.TooltipComponent;
+    import DataRepresentation = powerbi.extensibility.visual.powerKPI.DataRepresentation;
+    import DataRepresentationX = powerbi.extensibility.visual.powerKPI.DataRepresentationX;
+    import KPIIndicatorSettings = powerbi.extensibility.visual.powerKPI.KPIIndicatorSettings;
+    import IKPIIndicatorSettings = powerbi.extensibility.visual.powerKPI.IKPIIndicatorSettings;
+    import DataRepresentationSeries = powerbi.extensibility.visual.powerKPI.DataRepresentationSeries;
+    import DataRepresentationTypeEnum = powerbi.extensibility.visual.powerKPI.DataRepresentationTypeEnum;
+    import EventPositionVisualComponentOptions = powerbi.extensibility.visual.powerKPI.EventPositionVisualComponentOptions;
     import VisualBuilderBase = powerbi.extensibility.utils.test.VisualBuilderBase;
     import helpers = powerbi.extensibility.utils.test.helpers;
     

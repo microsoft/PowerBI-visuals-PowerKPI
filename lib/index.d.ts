@@ -1,5 +1,5 @@
 /// <reference types="d3" />
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     function createEnumType(members: IEnumMember[]): IEnumType;
     class EnumType implements IEnumType {
         private allMembers;
@@ -7,7 +7,7 @@ declare namespace powerbi.extensibility.visual {
         members(validMembers?: EnumMemberValue[]): IEnumMember[];
     }
 }
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface IVisualStyle {
         colorPalette: IColorPalette;
         isHighContrast: boolean;
@@ -66,7 +66,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     enum LayoutEnum {
         Top = 0,
         Right = 1,
@@ -99,7 +99,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     enum HorizontalLayoutEnum {
         Left = 0,
         Right = 1,
@@ -130,7 +130,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     enum LayoutToStyleEnum {
         columnLayout = 0,
         columnReversedLayout = 1,
@@ -163,7 +163,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface ColumnDescription {
         name: string;
         displayName: string;
@@ -194,7 +194,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     const CategoryColumn: ColumnDescription;
 }
 /**
@@ -222,7 +222,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     const ValuesColumn: ColumnDescription;
 }
 /**
@@ -250,7 +250,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     const KPIColumn: ColumnDescription;
 }
 /**
@@ -278,7 +278,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     const KPIIndicatorValueColumn: ColumnDescription;
 }
 /**
@@ -306,7 +306,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     const SecondKPIIndicatorValueColumn: ColumnDescription;
 }
 /**
@@ -334,7 +334,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import IViewport = powerbi.IViewport;
     interface SettingsParserOptions {
         isAutoHideBehaviorEnabled: boolean;
@@ -367,7 +367,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface SettingsBase {
         parse?(options: SettingsParserOptions): void;
     }
@@ -397,7 +397,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class ViewportSettings implements SettingsBase {
         protected _viewport: IViewport;
         constructor(viewport?: IViewport);
@@ -429,7 +429,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class ShowSettings extends ViewportSettings {
         private _show;
         private isAbleToBeShown;
@@ -463,7 +463,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class FontSizeSettings extends ShowSettings implements SettingsBase {
         private minFontSize;
         private isMinFontSizeApplied;
@@ -499,7 +499,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import VisualObjectInstance = powerbi.VisualObjectInstance;
     import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
     abstract class SeriesBoundSettingsBase {
@@ -536,7 +536,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import IViewport = powerbi.IViewport;
     class NumberSettingsBase extends FontSizeSettings {
         protected minPrecision: number;
@@ -586,7 +586,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class AxisSettings extends NumberSettingsBase {
         private shouldDensityBeAtMax;
         private viewportToIncreaseDensity;
@@ -625,7 +625,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class YAxisSettings extends AxisSettings {
         min: number;
         max: number;
@@ -656,7 +656,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class AxisReferenceLineSettings {
         private _minThickness;
         private _maxThickness;
@@ -692,7 +692,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     enum SubtitleAlignment {
         left,
         center,
@@ -731,7 +731,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     /**
      * We use this class to move the Title option up above the Subtitle at the formatting panel
      */
@@ -764,7 +764,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class LabelsSettings extends NumberSettingsBase {
         color: string;
         fontFamily: string;
@@ -800,7 +800,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class LegendSettings extends FontSizeSettings {
         position: string;
         showTitle: boolean;
@@ -834,7 +834,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class KPIIndicatorValueSettings extends NumberSettingsBase {
         fontColor: string;
         isBold: boolean;
@@ -868,7 +868,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class KPIIndicatorLabelSettings extends KPIIndicatorValueSettings {
         constructor(viewport?: IViewport);
     }
@@ -898,7 +898,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface IKPIIndicatorSettings {
         color?: string;
         shape?: string;
@@ -944,7 +944,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class KPIIndicatorCustomizableLabelSettings extends KPIIndicatorLabelSettings {
         label: string;
         constructor(viewport?: IViewport);
@@ -976,7 +976,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class KPIIndicatorValueSignSettings extends KPIIndicatorValueSettings {
         matchKPIColor: boolean;
         constructor(viewport?: IViewport);
@@ -1009,7 +1009,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class LineStyleSettings extends SeriesBoundSettingsBase {
         static DefaultValue: string;
         private _styles;
@@ -1043,7 +1043,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class LineThicknessSettings extends SeriesBoundSettingsBase {
         private minThickness;
         private maxThickness;
@@ -1077,7 +1077,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class LayoutSettings {
         private _layout;
         private _minSupportedHeight;
@@ -1113,7 +1113,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class TooltipSettings extends NumberSettingsBase {
         show: boolean;
     }
@@ -1143,7 +1143,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class TooltipLabelSettings extends TooltipSettings {
         label: string;
     }
@@ -1173,7 +1173,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import IMargin = powerbi.extensibility.utils.svg.IMargin;
     class DotsSettings {
         radiusFactor: number;
@@ -1205,7 +1205,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import DataViewObjectsParser = powerbi.extensibility.utils.dataview.DataViewObjectsParser;
     class Settings extends DataViewObjectsParser {
         layout: LayoutSettings;
@@ -1262,7 +1262,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface DataRepresentationFormat {
         format: string;
     }
@@ -1292,7 +1292,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class DataRepresentationScale {
         private isOrdinalScale;
         private baseScale;
@@ -1331,7 +1331,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     enum DataRepresentationTypeEnum {
         None = 0,
         DateType = 1,
@@ -1364,7 +1364,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     type DataRepresentationAxisScale = d3.time.Scale<number, number> | d3.scale.Linear<number, number> | d3.scale.Ordinal<number, number>;
 }
 /**
@@ -1392,7 +1392,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     type DataRepresentationAxisValueType = Date | number | string;
 }
 /**
@@ -1420,7 +1420,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface DataRepresentationPoint {
         axisValue: DataRepresentationAxisValueType;
         value: number;
@@ -1452,7 +1452,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface DataRepresentationPointIndexed extends DataRepresentationPoint {
         index: number;
         kpiIndex: number;
@@ -1483,7 +1483,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface ISize {
         width: number;
         height: number;
@@ -1518,7 +1518,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import SelectionId = powerbi.visuals.ISelectionId;
     interface DataRepresentationSeries {
         points: DataRepresentationPoint[];
@@ -1556,7 +1556,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface DataRepresentationX extends DataRepresentationFormat {
         values: DataRepresentationAxisValueType[];
         min: DataRepresentationAxisValueType;
@@ -1592,7 +1592,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface DataRepresentationY extends DataRepresentationFormat {
         min: number;
         max: number;
@@ -1625,7 +1625,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import IViewport = powerbi.IViewport;
     import IMargin = powerbi.extensibility.utils.svg.IMargin;
     interface DataRepresentation {
@@ -1668,7 +1668,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class DataRepresentationPointFilter {
         isPointValid(point: DataRepresentationPoint): boolean;
         filter(points: DataRepresentationPoint[]): DataRepresentationPoint[];
@@ -1699,7 +1699,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface Converter {
         convert(options: ConverterOptions): DataRepresentation;
     }
@@ -1729,7 +1729,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import DataView = powerbi.DataView;
     import IViewport = powerbi.IViewport;
     interface ConverterOptions {
@@ -1763,7 +1763,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class VarianceConverter {
         getVarianceByCurrentPointsOfSeries(firstSeries: DataRepresentationSeries, secondSeries: DataRepresentationSeries): number;
         private isSeriesValid(series);
@@ -1797,7 +1797,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class DataConverter extends VarianceConverter implements Converter {
         private selectionIdBuilder;
         constructor(options: VisualConstructorOptions);
@@ -1838,7 +1838,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface VisualComponentConstructorOptions {
         element: d3.Selection<any>;
         style?: IVisualStyle;
@@ -1870,7 +1870,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface VisualComponentOptions {
         data: DataRepresentation;
     }
@@ -1900,7 +1900,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface EventPositionVisualComponentOptions extends VisualComponentOptions {
         position?: {
             x: number;
@@ -1933,7 +1933,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class ComponentContainer implements VisualComponent {
         protected baseClassName: string;
         protected element: d3.Selection<any>;
@@ -1969,7 +1969,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface VisualComponent {
         /**
          * Renders the component
@@ -2014,7 +2014,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class LineComponent extends DataRepresentationPointFilter implements VisualComponent {
         private static ElementClassName;
         private element;
@@ -2050,7 +2050,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class MultiLineComponent implements VisualComponent {
         private static ClassName;
         private static ComponentClassName;
@@ -2063,7 +2063,7 @@ declare namespace powerbi.extensibility.visual {
         destroy(): void;
     }
 }
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import LinearScale = d3.scale.Linear;
     import OrdinalScale = d3.scale.Ordinal;
     import ValueType = powerbi.extensibility.utils.type.ValueType;
@@ -2160,7 +2160,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import IValueFormatter = powerbi.extensibility.utils.formatting.IValueFormatter;
     import TextProperties = powerbi.extensibility.utils.formatting.TextProperties;
     abstract class AxisBaseComponent implements VisualComponent {
@@ -2208,7 +2208,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import IViewport = powerbi.IViewport;
     class XAxisComponent extends AxisBaseComponent implements VisualComponent {
         private labelPadding;
@@ -2251,7 +2251,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import IViewport = powerbi.IViewport;
     class YAxisComponent extends AxisBaseComponent implements VisualComponent {
         private elementClassName;
@@ -2297,7 +2297,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class AxesComponent implements VisualComponent {
         private element;
         private components;
@@ -2333,7 +2333,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface AxisReferenceLineGetPointsFunction {
         (value: DataRepresentationAxisValueType): number[][];
     }
@@ -2363,7 +2363,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     abstract class AxisReferenceLineBaseComponent implements VisualComponent {
         private className;
         private lineSelector;
@@ -2402,7 +2402,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class YAxisReferenceLineComponent extends AxisReferenceLineBaseComponent implements VisualComponent {
         protected getData(options: VisualComponentOptions): DataRepresentationAxisValueType[];
         protected getPointsFunction(options: VisualComponentOptions): AxisReferenceLineGetPointsFunction;
@@ -2434,7 +2434,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class XAxisReferenceLineComponent extends AxisReferenceLineBaseComponent implements VisualComponent {
         protected getData(options: VisualComponentOptions): DataRepresentationAxisValueType[];
         protected getPointsFunction(options: VisualComponentOptions): AxisReferenceLineGetPointsFunction;
@@ -2466,7 +2466,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class DotsComponent implements VisualComponent {
         private className;
         private dotsSelector;
@@ -2503,7 +2503,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class MultiShapeComponent implements VisualComponent {
         private className;
         private amountOfDataPointsForFallbackComponents;
@@ -2544,7 +2544,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class VerticalLineComponent implements VisualComponent {
         private className;
         private lineSelector;
@@ -2580,7 +2580,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class TooltipComponent extends VarianceConverter implements VisualComponent {
         tooltipService: ITooltipService;
         private varianceDisplayName;
@@ -2621,7 +2621,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class LabelsComponent extends DataRepresentationPointFilter implements VisualComponent {
         private className;
         private italicClassName;
@@ -2664,7 +2664,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class SvgComponent implements VisualComponent {
         private containerClassName;
         private className;
@@ -2722,7 +2722,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class PlotComponent implements VisualComponent {
         private static ClassName;
         private element;
@@ -2759,7 +2759,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class LegendComponent implements VisualComponent {
         private className;
         private element;
@@ -2798,7 +2798,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     enum AlignEnum {
         alignLeft = 0,
         alignCenter = 1,
@@ -2830,7 +2830,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface KPIVisualComponent extends VisualComponent {
         isRendered(): boolean;
     }
@@ -2860,7 +2860,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface KPIComponentConstructorOptionsWithClassName extends VisualComponentConstructorOptions {
         className: string;
     }
@@ -2890,7 +2890,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     enum ContentAlignEnum {
         contentLeft = 0,
         contentRight = 1,
@@ -2921,7 +2921,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface CaptionKPIComponentOptionsValueSettings {
         value: string;
         title?: string;
@@ -2958,7 +2958,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     interface VarianceKPIComponentOptions extends CaptionKPIComponentOptions {
         variance: number;
         varianceSettings: KPIIndicatorValueSettings;
@@ -2992,7 +2992,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import ClassAndSelector = powerbi.extensibility.utils.svg.CssConstants.ClassAndSelector;
     class CaptionKPIComponent implements KPIVisualComponent {
         private className;
@@ -3042,7 +3042,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class DateKPIComponent extends CaptionKPIComponent implements KPIVisualComponent {
         private extraClassName;
         constructor(options: KPIComponentConstructorOptionsWithClassName);
@@ -3076,7 +3076,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class ValueKPIComponent extends CaptionKPIComponent implements KPIVisualComponent {
         private extraClassName;
         private valueFormat;
@@ -3109,7 +3109,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     import IValueFormatter = powerbi.extensibility.utils.formatting.IValueFormatter;
     class VarianceBaseComponent extends CaptionKPIComponent implements VisualComponent {
         private percentageFormat;
@@ -3143,7 +3143,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class VarianceComponentWithIndicator extends VarianceBaseComponent implements KPIVisualComponent {
         private componentClassName;
         private indicatorClassName;
@@ -3180,7 +3180,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class VarianceComponentWithCustomLabel extends VarianceBaseComponent implements KPIVisualComponent {
         private componentClassName;
         constructor(options: KPIComponentConstructorOptionsWithClassName);
@@ -3212,7 +3212,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class KPIComponent implements VisualComponent {
         private className;
         private element;
@@ -3253,7 +3253,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class SubtitleComponent implements VisualComponent {
         private static ClassName;
         private static SubTitleSelector;
@@ -3290,7 +3290,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class LayoutComponent extends ComponentContainer implements VisualComponent {
         private className;
         constructor(options: VisualComponentConstructorOptions);
@@ -3323,7 +3323,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class MainComponent extends ComponentContainer implements VisualComponent {
         private className;
         constructor(options: VisualComponentConstructorOptions);
@@ -3356,7 +3356,7 @@ declare namespace powerbi.extensibility.visual {
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-declare namespace powerbi.extensibility.visual {
+declare namespace powerbi.extensibility.visual.powerKPI {
     class CommonComponent extends ComponentContainer implements VisualComponent {
         private className;
         constructor(options: VisualComponentConstructorOptions);
@@ -3393,7 +3393,7 @@ declare module powerbi.extensibility.visual {
     import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
     import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
     import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-    import DataRepresentation = extensibility.visual.DataRepresentation;
+    import DataRepresentation = extensibility.visual.powerKPI.DataRepresentation;
     class PowerKPI implements IVisual {
         private static ViewportReducer;
         private rootElement;
