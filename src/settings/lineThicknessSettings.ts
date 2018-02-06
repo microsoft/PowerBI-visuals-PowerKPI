@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     export class LineThicknessSettings extends SeriesBoundSettingsBase {
         private minThickness: number = 0.25;
         private maxThickness: number = 10;

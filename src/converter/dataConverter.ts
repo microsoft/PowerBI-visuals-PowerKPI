@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     import DataViewObjects = powerbi.DataViewObjects;
     import ValueTypeDescriptor = powerbi.ValueTypeDescriptor;
     import ColorHelper = utils.color.ColorHelper

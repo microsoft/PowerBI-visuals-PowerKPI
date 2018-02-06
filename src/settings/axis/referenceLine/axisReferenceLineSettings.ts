@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     export class AxisReferenceLineSettings {
         private _minThickness: number = 0.2;
         private _maxThickness: number = 5;

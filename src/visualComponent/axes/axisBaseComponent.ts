@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     import PixelConverter = powerbi.extensibility.utils.type.PixelConverter;
     import IValueFormatter = powerbi.extensibility.utils.formatting.IValueFormatter;
     import valueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;

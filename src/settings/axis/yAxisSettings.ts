@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     export class YAxisSettings extends AxisSettings {
         public min: number = NaN;
         public max: number = NaN;

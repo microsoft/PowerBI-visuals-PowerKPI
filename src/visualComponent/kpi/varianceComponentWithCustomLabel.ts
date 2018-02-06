@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     import IValueFormatter = powerbi.extensibility.utils.formatting.IValueFormatter;
     
     export class VarianceComponentWithCustomLabel

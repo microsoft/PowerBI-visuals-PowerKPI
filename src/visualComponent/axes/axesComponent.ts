@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     export class AxesComponent implements VisualComponent {
         private element: d3.Selection<any>;
         private components: VisualComponent[];

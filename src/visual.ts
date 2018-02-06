@@ -34,13 +34,13 @@ module powerbi.extensibility.visual {
     import ColorHelper = utils.color.ColorHelper;
     import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions
 
-    import Settings = extensibility.visual.Settings;
-    import Converter = extensibility.visual.Converter;
-    import MainComponent = extensibility.visual.MainComponent;
-    import VisualComponent = extensibility.visual.VisualComponent;
-    import DataRepresentation = extensibility.visual.DataRepresentation;
-    import SeriesBoundSettingsBase = extensibility.visual.SeriesBoundSettingsBase;
-    import DataRepresentationSeries = extensibility.visual.DataRepresentationSeries;
+    import Settings = extensibility.visual.powerKPI.Settings;
+    import Converter = extensibility.visual.powerKPI.Converter;
+    import MainComponent = extensibility.visual.powerKPI.MainComponent;
+    import VisualComponent = extensibility.visual.powerKPI.VisualComponent;
+    import DataRepresentation = extensibility.visual.powerKPI.DataRepresentation;
+    import SeriesBoundSettingsBase = extensibility.visual.powerKPI.SeriesBoundSettingsBase;
+    import DataRepresentationSeries = extensibility.visual.powerKPI.DataRepresentationSeries;
 
     export class PowerKPI implements IVisual {        
         private static ViewportReducer: number = 3;
@@ -50,11 +50,11 @@ module powerbi.extensibility.visual {
         private component: VisualComponent;
 
         private dataRepresentation: DataRepresentation;
-        private style: IVisualStyle;
+        private style: powerKPI.IVisualStyle;
 
         constructor(options: VisualConstructorOptions) {            
             this.rootElement = d3.select(options.element);
-            this.converter = visual.createConverter(options);
+            this.converter = extensibility.visual.powerKPI.createConverter(options);
 
             this.style = {
                 colorPalette: options.host.colorPalette,

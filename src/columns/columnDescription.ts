@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     export interface ColumnDescription {
         name: string; // Value of this property should never be changed in order to have back compatibility with the previous versions
         displayName: string;
