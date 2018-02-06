@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     export const KPIIndicatorValueColumn: ColumnDescription = {
         name: "KPIIndicatorValue",
         displayName: "KPI Indicator Value"

@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     export class DataRepresentationPointFilter {
         public isPointValid(point: DataRepresentationPoint): boolean {
             return point

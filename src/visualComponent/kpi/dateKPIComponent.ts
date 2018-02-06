@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     import valueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;
     import IValueFormatter = powerbi.extensibility.utils.formatting.IValueFormatter;
 

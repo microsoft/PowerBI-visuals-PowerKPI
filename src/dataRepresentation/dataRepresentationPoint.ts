@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     export interface DataRepresentationPoint {
         axisValue: DataRepresentationAxisValueType;
         value: number;

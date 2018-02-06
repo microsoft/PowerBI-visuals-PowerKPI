@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
 
     export function createEnumType(members: IEnumMember[]): IEnumType {
         return new EnumType(members);

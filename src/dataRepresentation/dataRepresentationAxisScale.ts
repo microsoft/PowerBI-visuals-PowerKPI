@@ -24,6 +24,6 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     export type DataRepresentationAxisScale = d3.time.Scale<number, number> | d3.scale.Linear<number, number> | d3.scale.Ordinal<number, number>;
 }

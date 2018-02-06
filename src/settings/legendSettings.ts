@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     export class LegendSettings extends FontSizeSettings {
         public position: string = "BottomCenter";
         public showTitle: boolean = false;

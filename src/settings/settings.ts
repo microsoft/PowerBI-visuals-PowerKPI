@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     // powerbi.extensibility.utils.dataview
     import DataViewObjectsParser = powerbi.extensibility.utils.dataview.DataViewObjectsParser;
 

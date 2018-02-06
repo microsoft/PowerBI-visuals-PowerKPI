@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     import DataView = powerbi.DataView;
     import IViewport = powerbi.IViewport;
 

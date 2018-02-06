@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     // powerbi.visuals
     import LegendPosition = powerbi.extensibility.utils.chart.legend.LegendPosition;
 

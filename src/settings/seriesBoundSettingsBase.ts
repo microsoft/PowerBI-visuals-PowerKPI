@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     // powerbi
     import VisualObjectInstance = powerbi.VisualObjectInstance;
     import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;

@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     /**
      * We use this class to move the Title option up above the Subtitle at the formatting panel
      */

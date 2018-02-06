@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     export interface DataRepresentationX extends DataRepresentationFormat {
         values: DataRepresentationAxisValueType[]; // We have to keep original value in order to be able to get index of the value by its position
         min: DataRepresentationAxisValueType;

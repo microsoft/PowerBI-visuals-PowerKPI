@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     // d3
     import SVGAxis = d3.svg.Axis;
     import LinearScale = d3.scale.Linear;

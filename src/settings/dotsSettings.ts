@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     import IMargin = powerbi.extensibility.utils.svg.IMargin;
 
     export class DotsSettings {

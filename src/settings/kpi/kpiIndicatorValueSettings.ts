@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
     export class KPIIndicatorValueSettings extends NumberSettingsBase {
         public fontColor: string = "#333333";
         public isBold: boolean = true;

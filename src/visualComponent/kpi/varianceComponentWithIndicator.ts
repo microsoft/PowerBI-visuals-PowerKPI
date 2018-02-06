@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.extensibility.visual {
+namespace powerbi.extensibility.visual.powerKPI {
 
     // powerbi.visuals
     import IValueFormatter = powerbi.extensibility.utils.formatting.IValueFormatter;
@@ -66,7 +66,7 @@ namespace powerbi.extensibility.visual {
                 },
                 variance
             } = options.data;
-
+            
             let { current } = series && series.length > 0 && series[0]
                 , kpiIndex: number = NaN;
 
