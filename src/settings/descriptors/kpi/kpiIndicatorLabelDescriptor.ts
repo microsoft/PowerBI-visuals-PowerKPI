@@ -24,14 +24,16 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class KPIIndicatorLabelDescriptor extends KPIIndicatorValueDescriptor {
-        constructor(viewport?: IViewport) {
-            super(viewport);
+import powerbi from "powerbi-visuals-api";
 
-            this.fontColor = "#acacac";
-            this.fontSize = 9;
-            this.isBold = false;
-        }
+import { KPIIndicatorValueDescriptor } from "./kpiIndicatorValueDescriptor";
+
+export class KPIIndicatorLabelDescriptor extends KPIIndicatorValueDescriptor {
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport);
+
+        this.fontColor = "#acacac";
+        this.fontSize = 9;
+        this.isBold = false;
     }
 }

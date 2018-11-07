@@ -24,215 +24,218 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export enum LineInterpolation {
-        linear = "linear",
-        stepBefore = "step-before",
-        stepAfter = "step-after",
-        basis = "basis",
-        basisOpen = "basis-open",
-        basisClosed = "basis-closed",
-        bundle = "bundle",
-        cardinal = "cardinal",
-        cardinalOpen = "cardinal-open",
-        cardinalClosed = "cardinal-closed",
-        monotone = "monotone",
+import {
+    BaseDescriptor,
+    Descriptor,
+} from "./descriptor";
+
+export enum LineInterpolation {
+    linear = "linear",
+    stepBefore = "step-before",
+    stepAfter = "step-after",
+    basis = "basis",
+    basisOpen = "basis-open",
+    basisClosed = "basis-closed",
+    bundle = "bundle",
+    cardinal = "cardinal",
+    cardinalOpen = "cardinal-open",
+    cardinalClosed = "cardinal-closed",
+    monotone = "monotone",
+}
+
+// export const lineInterpolationEnumType: IEnumType = createEnumType([
+//     {
+//         value: LineInterpolation.linear,
+//         displayName: "Linear"
+//     },
+//     {
+//         value: LineInterpolation.stepBefore,
+//         displayName: "Step-before"
+//     },
+//     {
+//         value: LineInterpolation.stepAfter,
+//         displayName: "Step-after"
+//     },
+//     {
+//         value: LineInterpolation.basis,
+//         displayName: "Basis"
+//     },
+//     {
+//         value: LineInterpolation.basisOpen,
+//         displayName: "Basis-open"
+//     },
+//     {
+//         value: LineInterpolation.basisClosed,
+//         displayName: "Basis-closed"
+//     },
+//     {
+//         value: LineInterpolation.bundle,
+//         displayName: "Bundle"
+//     },
+//     {
+//         value: LineInterpolation.cardinal,
+//         displayName: "Cardinal"
+//     },
+//     {
+//         value: LineInterpolation.cardinalOpen,
+//         displayName: "Cardinal-open"
+//     },
+//     {
+//         value: LineInterpolation.cardinalClosed,
+//         displayName: "Cardinal-closed"
+//     },
+//     {
+//         value: LineInterpolation.monotone,
+//         displayName: "Monotone"
+//     },
+// ]);
+
+// export const lineInterpolationWithColorizedLineEnumType: IEnumType = createEnumType([
+//     {
+//         value: LineInterpolation.linear,
+//         displayName: "Linear"
+//     },
+//     {
+//         value: LineInterpolation.stepBefore,
+//         displayName: "Step-before"
+//     },
+//     {
+//         value: LineInterpolation.stepAfter,
+//         displayName: "Step-after"
+//     },
+// ]);
+
+export enum LineStyle {
+    solidLine = "solidLine",
+    dottedLine = "dottedLine",
+    dashedLine = "dashedLine",
+    dotDashedLine = "dotDashedLine",
+}
+
+// export const lineStyleEnumType: IEnumType = createEnumType([
+//     {
+//         value: LineStyle.solidLine,
+//         displayName: "Solid"
+//     },
+//     {
+//         value: LineStyle.dottedLine,
+//         displayName: "Dotted"
+//     },
+//     {
+//         value: LineStyle.dashedLine,
+//         displayName: "Dashed"
+//     },
+//     {
+//         value: LineStyle.dotDashedLine,
+//         displayName: "Dot-dashed"
+//     },
+// ]);
+
+export enum LineType {
+    line = "line",
+    area = "area",
+    column = "column",
+}
+
+// export const lineTypeEnumType: IEnumType = createEnumType([
+//     {
+//         value: LineType.line,
+//         displayName: "Line",
+//     },
+//     {
+//         value: LineType.area,
+//         displayName: "Area",
+//     },
+// ]);
+
+export interface LineDescriptorBase {
+    fillColor: string;
+    shouldMatchKpiColor: boolean;
+    dataPointStartsKpiColorSegment: boolean;
+    lineStyle: LineStyle;
+    thickness: number;
+    interpolation: LineInterpolation;
+}
+
+export class LineDescriptor
+    extends BaseDescriptor
+    implements Descriptor, LineDescriptorBase {
+
+    private minThickness: number = 0.25;
+    private maxThickness: number = 10;
+
+    private minOpacity: number = 15;
+    private maxOpacity: number = 100;
+
+    public fillColor: string = undefined;
+    public shouldMatchKpiColor: boolean = false;
+    public dataPointStartsKpiColorSegment: boolean = true;
+    public lineType: LineType = LineType.line;
+    public thickness: number = 2;
+    public rawOpacity: number = 100;
+    public rawAreaOpacity: number = 50;
+    public lineStyle: LineStyle = LineStyle.solidLine;
+    public interpolation: LineInterpolation = LineInterpolation.linear;
+    public interpolationWithColorizedLine: LineInterpolation = LineInterpolation.linear;
+
+    public get opacity(): number {
+        return this.convertOpacityToCssFormat(this.rawOpacity);
     }
 
-    export const lineInterpolationEnumType: IEnumType = createEnumType([
-        {
-            value: LineInterpolation.linear,
-            displayName: "Linear"
-        },
-        {
-            value: LineInterpolation.stepBefore,
-            displayName: "Step-before"
-        },
-        {
-            value: LineInterpolation.stepAfter,
-            displayName: "Step-after"
-        },
-        {
-            value: LineInterpolation.basis,
-            displayName: "Basis"
-        },
-        {
-            value: LineInterpolation.basisOpen,
-            displayName: "Basis-open"
-        },
-        {
-            value: LineInterpolation.basisClosed,
-            displayName: "Basis-closed"
-        },
-        {
-            value: LineInterpolation.bundle,
-            displayName: "Bundle"
-        },
-        {
-            value: LineInterpolation.cardinal,
-            displayName: "Cardinal"
-        },
-        {
-            value: LineInterpolation.cardinalOpen,
-            displayName: "Cardinal-open"
-        },
-        {
-            value: LineInterpolation.cardinalClosed,
-            displayName: "Cardinal-closed"
-        },
-        {
-            value: LineInterpolation.monotone,
-            displayName: "Monotone"
-        },
-    ]);
-
-    export const lineInterpolationWithColorizedLineEnumType: IEnumType = createEnumType([
-        {
-            value: LineInterpolation.linear,
-            displayName: "Linear"
-        },
-        {
-            value: LineInterpolation.stepBefore,
-            displayName: "Step-before"
-        },
-        {
-            value: LineInterpolation.stepAfter,
-            displayName: "Step-after"
-        },
-    ]);
-
-    export enum LineStyle {
-        solidLine = "solidLine",
-        dottedLine = "dottedLine",
-        dashedLine = "dashedLine",
-        dotDashedLine = "dotDashedLine",
+    public get areaOpacity(): number {
+        return this.convertOpacityToCssFormat(this.rawAreaOpacity);
     }
 
-    export const lineStyleEnumType: IEnumType = createEnumType([
-        {
-            value: LineStyle.solidLine,
-            displayName: "Solid"
-        },
-        {
-            value: LineStyle.dottedLine,
-            displayName: "Dotted"
-        },
-        {
-            value: LineStyle.dashedLine,
-            displayName: "Dashed"
-        },
-        {
-            value: LineStyle.dotDashedLine,
-            displayName: "Dot-dashed"
-        },
-    ]);
-
-    export enum LineType {
-        line = "line",
-        area = "area",
-        column = "column",
+    public convertOpacityToCssFormat(opacity: number): number {
+        return opacity / 100;
     }
 
-    export const lineTypeEnumType: IEnumType = createEnumType([
-        {
-            value: LineType.line,
-            displayName: "Line",
-        },
-        {
-            value: LineType.area,
-            displayName: "Area",
-        },
-    ]);
-
-    export interface LineDescriptorBase {
-        fillColor: string;
-        shouldMatchKpiColor: boolean;
-        dataPointStartsKpiColorSegment: boolean;
-        lineStyle: LineStyle;
-        thickness: number;
-        interpolation: LineInterpolation;
+    public getInterpolation(): LineInterpolation {
+        return this.shouldMatchKpiColor
+            ? this.interpolationWithColorizedLine
+            : this.interpolation;
     }
 
-    export class LineDescriptor
-        extends BaseDescriptor
-        implements Descriptor, LineDescriptorBase {
+    public parse(): void {
+        this.thickness = Math.min(
+            Math.max(
+                this.minThickness,
+                this.thickness,
+            ),
+            this.maxThickness
+        );
 
-        private minThickness: number = 0.25;
-        private maxThickness: number = 10;
+        this.rawOpacity = this.getOpacity(this.rawOpacity);
+        this.rawAreaOpacity = this.getOpacity(this.rawAreaOpacity);
+    }
 
-        private minOpacity: number = 15;
-        private maxOpacity: number = 100;
+    private getOpacity(opacity: number): number {
+        return Math.min(
+            this.maxOpacity,
+            Math.max(
+                this.minOpacity,
+                opacity
+            )
+        );
+    }
 
-        public fillColor: string = undefined;
-        public shouldMatchKpiColor: boolean = false;
-        public dataPointStartsKpiColorSegment: boolean = true;
-        public lineType: LineType = LineType.line;
-        public thickness: number = 2;
-        public rawOpacity: number = 100;
-        public rawAreaOpacity: number = 50;
-        public lineStyle: LineStyle = LineStyle.solidLine;
-        public interpolation: LineInterpolation = LineInterpolation.linear;
-        public interpolationWithColorizedLine: LineInterpolation = LineInterpolation.linear;
-
-        public get opacity(): number {
-            return this.convertOpacityToCssFormat(this.rawOpacity);
+    public shouldKeyBeEnumerated?(key: string): boolean {
+        if (key === "interpolation" && this.shouldMatchKpiColor) {
+            return false;
         }
 
-        public get areaOpacity(): number {
-            return this.convertOpacityToCssFormat(this.rawAreaOpacity);
+        if (key === "interpolationWithColorizedLine" && !this.shouldMatchKpiColor) {
+            return false;
         }
 
-        public convertOpacityToCssFormat(opacity: number): number {
-            return opacity / 100;
+        if (key === "rawAreaOpacity" && this.lineType !== LineType.area) {
+            return false;
         }
 
-        public getInterpolation(): LineInterpolation {
-            return this.shouldMatchKpiColor
-                ? this.interpolationWithColorizedLine
-                : this.interpolation;
+        if (key === "dataPointStartsKpiColorSegment" && !this.shouldMatchKpiColor) {
+            return false;
         }
 
-        public parse(): void {
-            this.thickness = Math.min(
-                Math.max(
-                    this.minThickness,
-                    this.thickness,
-                ),
-                this.maxThickness
-            );
-
-            this.rawOpacity = this.getOpacity(this.rawOpacity);
-            this.rawAreaOpacity = this.getOpacity(this.rawAreaOpacity);
-        }
-
-        private getOpacity(opacity: number): number {
-            return Math.min(
-                this.maxOpacity,
-                Math.max(
-                    this.minOpacity,
-                    opacity
-                )
-            );
-        }
-
-        public shouldKeyBeEnumerated?(key: string): boolean {
-            if (key === "interpolation" && this.shouldMatchKpiColor) {
-                return false;
-            }
-
-            if (key === "interpolationWithColorizedLine" && !this.shouldMatchKpiColor) {
-                return false;
-            }
-
-            if (key === "rawAreaOpacity" && this.lineType !== LineType.area) {
-                return false;
-            }
-
-            if (key === "dataPointStartsKpiColorSegment" && !this.shouldMatchKpiColor) {
-                return false;
-            }
-
-            return this.hasOwnProperty(key);
-        }
+        return this.hasOwnProperty(key);
     }
 }

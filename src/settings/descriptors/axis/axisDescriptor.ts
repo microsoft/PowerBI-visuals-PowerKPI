@@ -24,92 +24,100 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class AxisDescriptor
-        extends NumberDescriptorBase
-        implements Descriptor {
+import powerbi from "powerbi-visuals-api";
 
-        private shouldDensityBeAtMax: boolean = false;
-        private viewportToIncreaseDensity: IViewport;
+import {
+    Descriptor,
+    DescriptorParserOptions,
+} from "../descriptor";
 
-        public maxDensity: number = 100;
+import { NumberDescriptorBase } from "../numberDescriptorBase";
 
-        public fontColor: string = "rgb(0,0,0)";
+export class AxisDescriptor
+    extends NumberDescriptorBase
+    implements Descriptor {
 
-        private _percentile: number = this.maxDensity;
+    private shouldDensityBeAtMax: boolean = false;
+    private viewportToIncreaseDensity: powerbi.IViewport;
 
-        constructor(
-            viewportToBeHidden: IViewport,
-            viewportToIncreaseDensity: IViewport,
-            shouldPropertiesBeHiddenByType: boolean = false
-        ) {
-            super(viewportToBeHidden, shouldPropertiesBeHiddenByType);
+    public maxDensity: number = 100;
 
-            this.viewportToIncreaseDensity = viewportToIncreaseDensity;
+    public fontColor: string = "rgb(0,0,0)";
 
-            Object.defineProperty(
-                this,
-                "percentile",
-                Object.getOwnPropertyDescriptor(
-                    AxisDescriptor.prototype,
-                    "percentile"
-                )
-            );
-        }
+    private _percentile: number = this.maxDensity;
 
-        // This property is an alias of density and it's defined special for Power BI. It's predefined PBI property name in order to create a percentage slider at format panel
-        public get percentile(): number {
-            if (this.shouldDensityBeAtMax) {
-                return this.maxDensity;
-            }
+    constructor(
+        viewportToBeHidden: powerbi.IViewport,
+        viewportToIncreaseDensity: powerbi.IViewport,
+        shouldPropertiesBeHiddenByType: boolean = false
+    ) {
+        super(viewportToBeHidden, shouldPropertiesBeHiddenByType);
 
-            return this._percentile;
-        }
+        this.viewportToIncreaseDensity = viewportToIncreaseDensity;
 
-        public set percentile(value: number) {
-            this._percentile = value;
-        }
-
-        public get density(): number {
-            return this.percentile;
-        }
-
-        public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
-
-        public parse(options: DescriptorParserOptions) {
-            super.parse(options);
-
-            this.shouldDensityBeAtMax = options.isAutoHideBehaviorEnabled
-                && this.viewportToIncreaseDensity
-                && options.viewport
-                && (options.viewport.width <= this.viewportToIncreaseDensity.width
-                    ||
-                    options.viewport.height <= this.viewportToIncreaseDensity.height);
-        }
+        Object.defineProperty(
+            this,
+            "percentile",
+            Object.getOwnPropertyDescriptor(
+                AxisDescriptor.prototype,
+                "percentile"
+            )
+        );
     }
 
-    export enum AxisType {
-        continuous,
-        categorical,
+    // This property is an alias of density and it's defined special for Power BI. It's predefined PBI property name in order to create a percentage slider at format panel
+    public get percentile(): number {
+        if (this.shouldDensityBeAtMax) {
+            return this.maxDensity;
+        }
+
+        return this._percentile;
     }
 
-    export const axisTypeEnumType: IEnumType = createEnumType([
-        {
-            value: AxisType.continuous,
-            displayName: "Continuous",
-        },
-        {
-            value: AxisType.categorical,
-            displayName: "Categorical",
-        },
-    ]);
-
-    export class XAxisDescriptor extends AxisDescriptor {
-        public type: AxisType = AxisType.continuous;
+    public set percentile(value: number) {
+        this._percentile = value;
     }
 
-    export class YAxisDescriptor extends AxisDescriptor {
-        public min: number = NaN;
-        public max: number = NaN;
+    public get density(): number {
+        return this.percentile;
     }
+
+    public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
+
+    public parse(options: DescriptorParserOptions) {
+        super.parse(options);
+
+        this.shouldDensityBeAtMax = options.isAutoHideBehaviorEnabled
+            && this.viewportToIncreaseDensity
+            && options.viewport
+            && (options.viewport.width <= this.viewportToIncreaseDensity.width
+                ||
+                options.viewport.height <= this.viewportToIncreaseDensity.height);
+    }
+}
+
+export enum AxisType {
+    continuous,
+    categorical,
+}
+
+// TODO
+// export const axisTypeEnumType: IEnumType = createEnumType([
+//     {
+//         value: AxisType.continuous,
+//         displayName: "Continuous",
+//     },
+//     {
+//         value: AxisType.categorical,
+//         displayName: "Categorical",
+//     },
+// ]);
+
+export class XAxisDescriptor extends AxisDescriptor {
+    public type: AxisType = AxisType.continuous;
+}
+
+export class YAxisDescriptor extends AxisDescriptor {
+    public min: number = NaN;
+    public max: number = NaN;
 }

@@ -24,11 +24,9 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export enum DataRepresentationTypeEnum {
-        None,
-        DateType,
-        NumberType,
-        StringType
-    }
+export enum DataRepresentationTypeEnum {
+    None,
+    DateType,
+    NumberType,
+    StringType
 }

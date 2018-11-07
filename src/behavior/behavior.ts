@@ -24,48 +24,52 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export interface BehaviorOptions {
-        eventDispatcher: D3.Dispatch;
-        interactivityService: IInteractivityService;
+import { Dispatch } from "d3";
+
+import {
+    interactivityService,
+} from "powerbi-visuals-utils-interactivityutils";
+
+export interface BehaviorOptions {
+    eventDispatcher: Dispatch<any>;
+    interactivityService: interactivityService.IInteractivityService;
+}
+
+export class Behavior implements interactivityService.IInteractiveBehavior {
+    private options: BehaviorOptions;
+
+    public bindEvents(
+        options: BehaviorOptions,
+        selectionHandler: interactivityService.ISelectionHandler
+    ): void {
+        this.options = options;
+
+        this.options.eventDispatcher.on(
+            EventName.onSelect,
+            (event: MouseEvent, series: DataRepresentationSeries) => {
+                if (!event || !series) {
+                    return;
+                }
+
+                selectionHandler.handleSelection(
+                    series,
+                    event.ctrlKey,
+                    // TODO { x: 100, y: 100 }, // why we need this?
+                );
+            }
+        );
+
+        this.options.eventDispatcher.on(
+            EventName.onClearSelection,
+            () => {
+                selectionHandler.handleClearSelection();
+            }
+        );
     }
 
-    export class Behavior implements IInteractiveBehavior {
-        private options: BehaviorOptions;
-
-        public bindEvents(
-            options: BehaviorOptions,
-            selectionHandler: ISelectionHandler
-        ): void {
-            this.options = options;
-
-            this.options.eventDispatcher.on(
-                EventName.onSelect,
-                (event: MouseEvent, series: DataRepresentationSeries) => {
-                    if (!event || !series) {
-                        return;
-                    }
-
-                    selectionHandler.handleSelection(
-                        series,
-                        event.ctrlKey,
-                        { x: 100, y: 100 }, // why we need this?
-                    );
-                }
-            );
-
-            this.options.eventDispatcher.on(
-                EventName.onClearSelection,
-                () => {
-                    selectionHandler.handleClearSelection();
-                }
-            );
-        }
-
-        public renderSelection(): void {
-            this.options.eventDispatcher[EventName.onHighlight](
-                this.options.interactivityService.hasSelection(),
-            );
-        }
+    public renderSelection(): void {
+        this.options.eventDispatcher[EventName.onHighlight](
+            this.options.interactivityService.hasSelection(),
+        );
     }
 }

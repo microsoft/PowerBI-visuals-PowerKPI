@@ -24,192 +24,200 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // powerbi.data
-    import DataViewObjectPropertyDescriptors = powerbi.data.DataViewObjectPropertyDescriptors;
-    import DataViewObjectPropertyTypeDescriptor = powerbi.data.DataViewObjectPropertyTypeDescriptor;
+import powerbi from "powerbi-visuals-api";
 
-    interface PropertyConfiguration {
-        name: string;
-        defaultValue: any | ((index: number) => any);
-        displayName: (text: string) => string;
-        type: DataViewObjectPropertyTypeDescriptor;
+import { FontSizeDescriptor } from "../autoHiding/fontSizeDescriptor";
+// powerbi.data
+// import DataViewObjectPropertyDescriptors = powerbi.data.DataViewObjectPropertyDescriptors;
+// import DataViewObjectPropertyTypeDescriptor = powerbi.data.DataViewObjectPropertyTypeDescriptor;
+
+interface DataViewObjectPropertyDescriptors {
+
+}
+
+interface PropertyConfiguration {
+    name: string;
+    defaultValue: any | ((index: number) => any);
+    displayName: (text: string) => string;
+    type: any; // TODO DataViewObjectPropertyTypeDescriptor;
+}
+
+interface EnumPropertyConfiguration {
+    name: string;
+    displayName: string;
+}
+
+export interface IKPIIndicatorSettings { // This should be synchronized with _properties
+    color?: string;
+    shape?: string;
+}
+
+export class KPIIndicatorDescriptor extends FontSizeDescriptor {
+    public position: string = HorizontalLayoutEnum[HorizontalLayoutEnum.Left];
+    public shouldBackgroundColorMatchKpiColor: boolean = false;
+
+    private _maxAmountOfKPIs: number = 5;
+
+    private _default: IKPIIndicatorSettings = Object.freeze({
+        color: null,
+        shape: null
+    });
+
+    private kpiIndexPropertyName: string = "kpiIndex";
+
+    private _colors: string[] = [
+        "#01b7a8",
+        "#f2c80f",
+        "#fd625e",
+        "#a66999",
+        "#374649"
+    ];
+
+    private _shapes: EnumPropertyConfiguration[] = [
+        { name: "circle-full", displayName: "Circle" },
+        { name: "triangle", displayName: "Triangle" },
+        { name: "rhombus", displayName: "Diamond" },
+        { name: "square", displayName: "Square" },
+        { name: "flag", displayName: "Flag" },
+        { name: "exclamation", displayName: "Exclamation" },
+        { name: "checkmark", displayName: "Checkmark" },
+        { name: "arrow-up", displayName: "Arrow Up" },
+        { name: "arrow-right-up", displayName: "Arrow Right Up" },
+        { name: "arrow-right-down", displayName: "Arrow Right Down" },
+        { name: "arrow-down", displayName: "Arrow Down" },
+        { name: "caret-up", displayName: "Caret Up" },
+        { name: "caret-down", displayName: "Caret Down" },
+        { name: "circle-empty", displayName: "Circle Empty" },
+        { name: "circle-x", displayName: "Circle X" },
+        { name: "circle-exclamation", displayName: "Circle Exclamation" },
+        { name: "circle-checkmark", displayName: "Circle Checkmark" },
+        { name: "x", displayName: "X" },
+        { name: "star-empty", displayName: "Star Empty" },
+        { name: "star-full", displayName: "Star Full" }
+    ];
+
+    private _properties: PropertyConfiguration[] = [
+        {
+            name: "color",
+            displayName: (text: string) => text,
+            defaultValue: (index: number) => {
+                const color: string = this.getElementByIndex<string>(this._colors, index);
+
+                return color || this._colors[0];
+            },
+            type: { fill: { solid: { color: true } } }
+        },
+        {
+            name: "shape",
+            displayName: () => "    Indicator",
+            defaultValue: (index: number) => {
+                const shape: EnumPropertyConfiguration =
+                    this.getElementByIndex<EnumPropertyConfiguration>(this._shapes, index);
+
+                return shape
+                    ? shape.name
+                    : this._shapes[0].name;
+            },
+            type: { enumeration: this.getEnumType() }
+        },
+        {
+            name: this.kpiIndexPropertyName,
+            displayName: () => "    Value",
+            defaultValue: (index: number) => index + 1,
+            type: { numeric: true },
+        },
+    ];
+
+    public getElementByIndex<Type>(setOfValues: Type[], index: number): Type {
+        const amountOfValues: number = setOfValues.length;
+
+        const currentIndex: number = index < amountOfValues
+            ? index
+            : Math.round(index / amountOfValues);
+
+        return setOfValues[currentIndex];
     }
 
-    interface EnumPropertyConfiguration {
-        name: string;
-        displayName: string;
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport);
+
+        this.applySettingToContext();
+
+        this.show = true;
+        this.fontSize = 12;
     }
 
-    export interface IKPIIndicatorSettings { // This should be synchronized with _properties
-        color?: string;
-        shape?: string;
+    private applySettingToContext(): void {
+        for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
+            this._properties.forEach((property: PropertyConfiguration) => {
+                const indexedName: string = this.getPropertyName(property.name, index);
+
+                this[indexedName] = typeof property.defaultValue === "function"
+                    ? property.defaultValue(index)
+                    : property.defaultValue;
+            });
+        }
     }
 
-    export class KPIIndicatorDescriptor extends FontSizeDescriptor {
-        public position: string = HorizontalLayoutEnum[HorizontalLayoutEnum.Left];
-        public shouldBackgroundColorMatchKpiColor: boolean = false;
+    private getEnumType() {
+        // const members: IEnumMember[] = this._shapes.map((shape: EnumPropertyConfiguration) => {
+        //     return {
+        //         value: shape.name,
+        //         displayName: shape.displayName
+        //     };
+        // });
 
-        private _maxAmountOfKPIs: number = 5;
+        // return createEnumType(members);
 
-        private _default: IKPIIndicatorSettings = Object.freeze({
-            color: null,
-            shape: null
-        });
+        return [];
+    }
 
-        private kpiIndexPropertyName: string = "kpiIndex";
+    private getPropertyName(name: string, index: number): string {
+        return `${name}_${index}`;
+    }
 
-        private _colors: string[] = [
-            "#01b7a8",
-            "#f2c80f",
-            "#fd625e",
-            "#a66999",
-            "#374649"
-        ];
+    public getObjectProperties(): DataViewObjectPropertyDescriptors {
+        const objectProperties: DataViewObjectPropertyDescriptors = {};
 
-        private _shapes: EnumPropertyConfiguration[] = [
-            { name: "circle-full", displayName: "Circle" },
-            { name: "triangle", displayName: "Triangle" },
-            { name: "rhombus", displayName: "Diamond" },
-            { name: "square", displayName: "Square" },
-            { name: "flag", displayName: "Flag" },
-            { name: "exclamation", displayName: "Exclamation" },
-            { name: "checkmark", displayName: "Checkmark" },
-            { name: "arrow-up", displayName: "Arrow Up" },
-            { name: "arrow-right-up", displayName: "Arrow Right Up" },
-            { name: "arrow-right-down", displayName: "Arrow Right Down" },
-            { name: "arrow-down", displayName: "Arrow Down" },
-            { name: "caret-up", displayName: "Caret Up" },
-            { name: "caret-down", displayName: "Caret Down" },
-            { name: "circle-empty", displayName: "Circle Empty" },
-            { name: "circle-x", displayName: "Circle X" },
-            { name: "circle-exclamation", displayName: "Circle Exclamation" },
-            { name: "circle-checkmark", displayName: "Circle Checkmark" },
-            { name: "x", displayName: "X" },
-            { name: "star-empty", displayName: "Star Empty" },
-            { name: "star-full", displayName: "Star Full" }
-        ];
+        for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
+            this._properties.forEach((property: PropertyConfiguration) => {
+                const indexedName: string = this.getPropertyName(property.name, index);
 
-        private _properties: PropertyConfiguration[] = [
-            {
-                name: "color",
-                displayName: (text: string) => text,
-                defaultValue: (index: number) => {
-                    const color: string = this.getElementByIndex<string>(this._colors, index);
-
-                    return color || this._colors[0];
-                },
-                type: { fill: { solid: { color: true } } }
-            },
-            {
-                name: "shape",
-                displayName: () => "    Indicator",
-                defaultValue: (index: number) => {
-                    const shape: EnumPropertyConfiguration =
-                        this.getElementByIndex<EnumPropertyConfiguration>(this._shapes, index);
-
-                    return shape
-                        ? shape.name
-                        : this._shapes[0].name;
-                },
-                type: { enumeration: this.getEnumType() }
-            },
-            {
-                name: this.kpiIndexPropertyName,
-                displayName: () => "    Value",
-                defaultValue: (index: number) => index + 1,
-                type: { numeric: true },
-            },
-        ];
-
-        public getElementByIndex<Type>(setOfValues: Type[], index: number): Type {
-            const amountOfValues: number = setOfValues.length;
-
-            const currentIndex: number = index < amountOfValues
-                ? index
-                : Math.round(index / amountOfValues);
-
-            return setOfValues[currentIndex];
-        }
-
-        constructor(viewport?: IViewport) {
-            super(viewport);
-
-            this.applySettingToContext();
-
-            this.show = true;
-            this.fontSize = 12;
-        }
-
-        private applySettingToContext(): void {
-            for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
-                this._properties.forEach((property: PropertyConfiguration) => {
-                    const indexedName: string = this.getPropertyName(property.name, index);
-
-                    this[indexedName] = typeof property.defaultValue === "function"
-                        ? property.defaultValue(index)
-                        : property.defaultValue;
-                });
-            }
-        }
-
-        private getEnumType(): IEnumType {
-            const members: IEnumMember[] = this._shapes.map((shape: EnumPropertyConfiguration) => {
-                return {
-                    value: shape.name,
-                    displayName: shape.displayName
+                objectProperties[indexedName] = {
+                    displayName: property.displayName(`KPI ${index + 1}`),
+                    type: property.type
                 };
             });
-
-            return createEnumType(members);
         }
 
-        private getPropertyName(name: string, index: number): string {
-            return `${name}_${index}`;
-        }
+        return objectProperties;
+    }
 
-        public getObjectProperties(): DataViewObjectPropertyDescriptors {
-            const objectProperties: DataViewObjectPropertyDescriptors = {};
-
+    public getCurrentKPI(kpiIndex: number): IKPIIndicatorSettings {
+        if (!isNaN(kpiIndex) && kpiIndex !== null) {
             for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
-                this._properties.forEach((property: PropertyConfiguration) => {
-                    const indexedName: string = this.getPropertyName(property.name, index);
+                const currentKPIIndex: number = this[this.getPropertyName(this.kpiIndexPropertyName, index)];
 
-                    objectProperties[indexedName] = {
-                        displayName: property.displayName(`KPI ${index + 1}`),
-                        type: property.type
-                    };
-                });
-            }
+                if (currentKPIIndex === kpiIndex) {
+                    return this._properties.reduce((
+                        current: IKPIIndicatorSettings,
+                        property: PropertyConfiguration
+                    ) => {
+                        const indexedName: string = this.getPropertyName(property.name, index);
 
-            return objectProperties;
-        }
+                        current[property.name] = this[indexedName];
 
-        public getCurrentKPI(kpiIndex: number): IKPIIndicatorSettings {
-            if (!isNaN(kpiIndex) && kpiIndex !== null) {
-                for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
-                    const currentKPIIndex: number = this[this.getPropertyName(this.kpiIndexPropertyName, index)];
-
-                    if (currentKPIIndex === kpiIndex) {
-                        return this._properties.reduce((
-                            current: IKPIIndicatorSettings,
-                            property: PropertyConfiguration
-                        ) => {
-                            const indexedName: string = this.getPropertyName(property.name, index);
-
-                            current[property.name] = this[indexedName];
-
-                            return current;
-                        }, {});
-                    }
+                        return current;
+                    }, {});
                 }
             }
-
-            return this._default;
         }
 
-        public static createDefault(): KPIIndicatorDescriptor {
-            return new KPIIndicatorDescriptor();
-        }
+        return this._default;
+    }
+
+    public static createDefault(): KPIIndicatorDescriptor {
+        return new KPIIndicatorDescriptor();
     }
 }
+

@@ -24,8 +24,6 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export interface DataRepresentationFormat {
-        format: string;
-    }
+export interface DataRepresentationFormat {
+    format: string;
 }

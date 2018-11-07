@@ -24,8 +24,8 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class TooltipLabelDescriptor extends TooltipDescriptor {
-        public label: string = "";
-    }
+import { TooltipDescriptor } from "./tooltipDescriptor";
+
+export class TooltipLabelDescriptor extends TooltipDescriptor {
+    public label: string = "";
 }

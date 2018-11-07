@@ -24,9 +24,7 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export enum HorizontalLayoutEnum {
-        Left,
-        Right
-    }
+export enum HorizontalLayoutEnum {
+    Left,
+    Right
 }

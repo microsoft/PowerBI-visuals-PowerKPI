@@ -24,11 +24,9 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export enum LayoutToStyleEnum {
-        columnLayout,
-        columnReversedLayout,
-        rowLayout,
-        rowReversedLayout
-    }
+export enum LayoutToStyleEnum {
+    columnLayout,
+    columnReversedLayout,
+    rowLayout,
+    rowReversedLayout
 }

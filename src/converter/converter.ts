@@ -24,8 +24,8 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export interface Converter {
-        convert(options: ConverterOptions): DataRepresentation;
-    }
+import { ConverterOptions } from "./converterOptions";
+
+export interface Converter {
+    convert(options: ConverterOptions): DataRepresentation;
 }

@@ -24,18 +24,20 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class KPIIndicatorValueDescriptor extends NumberDescriptorBase {
-        public fontColor: string = "#333333";
-        public isBold: boolean = true;
-        public isItalic: boolean = false;
-        public fontFamily: string = "'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif";
+import powerbi from "powerbi-visuals-api";
 
-        constructor(viewport?: IViewport, shouldPropertiesBeHiddenByType: boolean = false) {
-            super(viewport, shouldPropertiesBeHiddenByType);
+import { NumberDescriptorBase } from "../numberDescriptorBase";
 
-            this.fontSize = 12;
-            this.displayUnits = 1;
-        }
+export class KPIIndicatorValueDescriptor extends NumberDescriptorBase {
+    public fontColor: string = "#333333";
+    public isBold: boolean = true;
+    public isItalic: boolean = false;
+    public fontFamily: string = "'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif";
+
+    constructor(viewport?: powerbi.IViewport, shouldPropertiesBeHiddenByType: boolean = false) {
+        super(viewport, shouldPropertiesBeHiddenByType);
+
+        this.fontSize = 12;
+        this.displayUnits = 1;
     }
 }

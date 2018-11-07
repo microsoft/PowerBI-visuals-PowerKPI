@@ -24,68 +24,73 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export const horizontalPositionEnum: IEnumType = createEnumType([
-        {
-            value: "Left",
-            displayName: "Left"
-        },
-        {
-            value: "Right",
-            displayName: "Right"
-        },
-    ]);
+import {
+    BaseDescriptor,
+    Descriptor,
+    DescriptorParserOptions,
+} from "./descriptor";
 
-    export const layoutEnum: IEnumType = createEnumType([
-        { value: "Top", displayName: "Top" },
-        { value: "Left", displayName: "Left" },
-        { value: "Bottom", displayName: "Bottom" },
-        { value: "Right", displayName: "Right" }
-    ]);
+// export const horizontalPositionEnum: IEnumType = createEnumType([
+//     {
+//         value: "Left",
+//         displayName: "Left"
+//     },
+//     {
+//         value: "Right",
+//         displayName: "Right"
+//     },
+// ]);
 
-    export const positionEnum: IEnumType = createEnumType([
-        { value: "Top", displayName: "Top" },
-        { value: "Bottom", displayName: "Bottom" },
-        { value: "Left", displayName: "Left" },
-        { value: "Right", displayName: "Right" },
-        { value: "TopCenter", displayName: "Top Center" },
-        { value: "BottomCenter", displayName: "Bottom Center" },
-        { value: "LeftCenter", displayName: "Left Center" },
-        { value: "RightCenter", displayName: "Right Center" }
-    ]);
+// export const layoutEnum: IEnumType = createEnumType([
+//     { value: "Top", displayName: "Top" },
+//     { value: "Left", displayName: "Left" },
+//     { value: "Bottom", displayName: "Bottom" },
+//     { value: "Right", displayName: "Right" }
+// ]);
 
-    export class LayoutDescriptor
-        extends BaseDescriptor
-        implements Descriptor {
+// export const positionEnum: IEnumType = createEnumType([
+//     { value: "Top", displayName: "Top" },
+//     { value: "Bottom", displayName: "Bottom" },
+//     { value: "Left", displayName: "Left" },
+//     { value: "Right", displayName: "Right" },
+//     { value: "TopCenter", displayName: "Top Center" },
+//     { value: "BottomCenter", displayName: "Bottom Center" },
+//     { value: "LeftCenter", displayName: "Left Center" },
+//     { value: "RightCenter", displayName: "Right Center" }
+// ]);
 
-        private _layout: string;
+export class LayoutDescriptor
+    extends BaseDescriptor
+    implements Descriptor {
 
-        private _minSupportedHeight: number = 250;
+    private _layout: string;
 
-        public autoHideVisualComponents: boolean = true;
-        public auto: boolean = true;
-        public layout: string = LayoutEnum[LayoutEnum.Top];
+    private _minSupportedHeight: number = 250;
 
-        public parse(options: DescriptorParserOptions): void {
-            if (this.auto) {
-                Object.defineProperty(this, "layout", {
-                    enumerable: false
-                });
+    public autoHideVisualComponents: boolean = true;
+    public auto: boolean = true;
+    public layout: string = LayoutEnum[LayoutEnum.Top];
 
-                if (options.viewport.height < this._minSupportedHeight) {
-                    this._layout = LayoutEnum[LayoutEnum.Left];
-                } else {
-                    this._layout = LayoutEnum[LayoutEnum.Top];
-                }
+    public parse(options: DescriptorParserOptions): void {
+        if (this.auto) {
+            Object.defineProperty(this, "layout", {
+                enumerable: false
+            });
 
-                return;
+            if (options.viewport.height < this._minSupportedHeight) {
+                this._layout = LayoutEnum[LayoutEnum.Left];
+            } else {
+                this._layout = LayoutEnum[LayoutEnum.Top];
             }
 
-            this._layout = this.layout;
+            return;
         }
 
-        public getLayout(): string {
-            return this._layout;
-        }
+        this._layout = this.layout;
+    }
+
+    public getLayout(): string {
+        return this._layout;
     }
 }
+

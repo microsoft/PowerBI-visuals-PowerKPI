@@ -24,20 +24,25 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export interface DataRepresentationAxisBase {
-        min: DataRepresentationAxisValueType;
-        max: DataRepresentationAxisValueType;
-    }
+import powerbi from "powerbi-visuals-api";
 
-    export interface DataRepresentationAxis extends DataRepresentationAxisBase, DataRepresentationFormat {
-        scale: DataRepresentationScale;
-    }
+import { DataRepresentationAxisValueType } from "./dataRepresentationAxisValueType";
+import { DataRepresentationScale } from "./dataRepresentationScale";
+import { DataRepresentationFormat } from "./dataRepresentationFormat";
+import { DataRepresentationTypeEnum } from "./dataRepresentationType";
 
-    export interface DataRepresentationX extends DataRepresentationAxis {
-        values: DataRepresentationAxisValueType[]; // We have to keep original value in order to be able to get index of the value by its position
-        metadata: DataViewMetadataColumn;
-        name: string;
-        type: DataRepresentationTypeEnum;
-    }
+export interface DataRepresentationAxisBase {
+    min: DataRepresentationAxisValueType;
+    max: DataRepresentationAxisValueType;
+}
+
+export interface DataRepresentationAxis extends DataRepresentationAxisBase, DataRepresentationFormat {
+    scale: DataRepresentationScale;
+}
+
+export interface DataRepresentationX extends DataRepresentationAxis {
+    values: DataRepresentationAxisValueType[]; // We have to keep original value in order to be able to get index of the value by its position
+    metadata: powerbi.DataViewMetadataColumn;
+    name: string;
+    type: DataRepresentationTypeEnum;
 }

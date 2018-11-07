@@ -24,69 +24,76 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // jsCommon
-    import PixelConverter = jsCommon.PixelConverter;
+import powerbi from "powerbi-visuals-api";
 
-    export class FontSizeDescriptor
-        extends ShowDescriptor
-        implements Descriptor {
+import {
+    Descriptor,
+    DescriptorParserOptions,
+} from "../descriptor";
 
-        private minFontSize: number = 8;
-        private isMinFontSizeApplied: boolean = false;
+import { ShowDescriptor } from "./showDescriptor";
 
-        private viewportForFontSize8: IViewport = {
-            width: 210,
-            height: 210
-        };
+// jsCommon
+import PixelConverter = jsCommon.PixelConverter;
 
-        private _fontSize: number = this.minFontSize; // This value is in pt.
+export class FontSizeDescriptor
+    extends ShowDescriptor
+    implements Descriptor {
 
-        constructor(viewport?: IViewport) {
-            super(viewport);
+    private minFontSize: number = 8;
+    private isMinFontSizeApplied: boolean = false;
 
-            Object.defineProperty(
-                this,
-                "fontSize",
-                Object.getOwnPropertyDescriptor(
-                    FontSizeDescriptor.prototype,
-                    "fontSize"));
+    private viewportForFontSize8: powerbi.IViewport = {
+        width: 210,
+        height: 210
+    };
+
+    private _fontSize: number = this.minFontSize; // This value is in pt.
+
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport);
+
+        Object.defineProperty(
+            this,
+            "fontSize",
+            Object.getOwnPropertyDescriptor(
+                FontSizeDescriptor.prototype,
+                "fontSize"));
+    }
+
+    public get fontSize(): number {
+        if (this.isMinFontSizeApplied) {
+            return this.minFontSize;
         }
 
-        public get fontSize(): number {
-            if (this.isMinFontSizeApplied) {
-                return this.minFontSize;
-            }
+        return this._fontSize;
+    }
 
-            return this._fontSize;
-        }
+    public get fontSizeInPx(): number {
+        return PixelConverter.fromPointToPixel(this.fontSize);
+    }
 
-        public get fontSizeInPx(): number {
-            return PixelConverter.fromPointToPixel(this.fontSize);
-        }
+    public set fontSize(fontSize: number) {
+        // Power BI returns numbers as strings for some unknown reason. This is why we convert value to number.
+        const parsedFontSize: number = +fontSize;
 
-        public set fontSize(fontSize: number) {
-            // Power BI returns numbers as strings for some unknown reason. This is why we convert value to number.
-            const parsedFontSize: number = +fontSize;
+        this._fontSize = isNaN(parsedFontSize)
+            ? this.minFontSize
+            : parsedFontSize;
+    }
 
-            this._fontSize = isNaN(parsedFontSize)
-                ? this.minFontSize
-                : parsedFontSize;
-        }
+    public parse(options: DescriptorParserOptions): void {
+        super.parse(options);
 
-        public parse(options: DescriptorParserOptions): void {
-            super.parse(options);
-
-            this.isMinFontSizeApplied =
-                options
-                && options.isAutoHideBehaviorEnabled
-                && options.viewport
-                &&
-                (
-                    options.viewport.width <= this.viewportForFontSize8.width
-                    ||
-                    options.viewport.height <= this.viewportForFontSize8.height
-                );
-        }
+        this.isMinFontSizeApplied =
+            options
+            && options.isAutoHideBehaviorEnabled
+            && options.viewport
+            &&
+            (
+                options.viewport.width <= this.viewportForFontSize8.width
+                ||
+                options.viewport.height <= this.viewportForFontSize8.height
+            );
     }
 }

@@ -24,23 +24,25 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class LabelsDescriptor extends NumberDescriptorBase {
-        public color: string = "rgb(119, 119, 119)";
-        public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
-        public isBold: boolean = false;
-        public isItalic: boolean = false;
+import powerbi from "powerbi-visuals-api";
 
-        public percentile: number = 100; // This property is an alias of density and it's defined special for Power BI. It's predefined PBI property name in order to create a percentage slider at format panel
+import { NumberDescriptorBase } from "./numberDescriptorBase";
 
-        public get density(): number {
-            return this.percentile;
-        }
+export class LabelsDescriptor extends NumberDescriptorBase {
+    public color: string = "rgb(119, 119, 119)";
+    public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
+    public isBold: boolean = false;
+    public isItalic: boolean = false;
 
-        constructor(viewport: IViewport) {
-            super(viewport);
+    public percentile: number = 100; // This property is an alias of density and it's defined special for Power BI. It's predefined PBI property name in order to create a percentage slider at format panel
 
-            this.show = false;
-        }
+    public get density(): number {
+        return this.percentile;
+    }
+
+    constructor(viewport: powerbi.IViewport) {
+        super(viewport);
+
+        this.show = false;
     }
 }

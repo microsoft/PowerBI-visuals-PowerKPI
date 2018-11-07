@@ -26,6 +26,11 @@
   },
   "homepage": "https://github.com/Microsoft/PowerBI-visuals-PowerKPI#readme",
   "devDependencies": {
+    "@types/d3": "^5.0.1",
     "powerbi-visuals-api": "^2.2.1"
+  },
+  "dependencies": {
+    "powerbi-visuals-utils-dataviewutils": "^2.1.0",
+    "powerbi-visuals-utils-interactivityutils": "^5.1.0"
   }
 }

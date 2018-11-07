@@ -24,45 +24,48 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class DataRepresentationPointFilter {
-        public isPointValid(point: DataRepresentationPoint): boolean {
-            return point
-                && point.y !== null
-                && point.y !== undefined
-                && !isNaN(point.y);
+import {
+    DataRepresentationPoint,
+    DataRepresentationPointGradientColor,
+} from "./dataRepresentationPoint";
+
+export class DataRepresentationPointFilter {
+    public isPointValid(point: DataRepresentationPoint): boolean {
+        return point
+            && point.y !== null
+            && point.y !== undefined
+            && !isNaN(point.y);
+    }
+
+    public groupPointByColor(
+        gradientPoints: DataRepresentationPointGradientColor[],
+        point: DataRepresentationPoint,
+        dataPointEndsKpiColorSegment: boolean
+    ): void {
+        if (!this.isPointValid(point) || !gradientPoints) {
+            return;
         }
 
-        public groupPointByColor(
-            gradientPoints: DataRepresentationPointGradientColor[],
-            point: DataRepresentationPoint,
-            dataPointEndsKpiColorSegment: boolean
-        ): void {
-            if (!this.isPointValid(point) || !gradientPoints) {
-                return;
+        const currentGradient: DataRepresentationPointGradientColor = gradientPoints.slice(-1)[0];
+
+        if (!currentGradient) {
+            gradientPoints.push({
+                color: point.color,
+                points: [point],
+            });
+        } else if (currentGradient && currentGradient.color === point.color) {
+            currentGradient.points.push(point);
+        } else if (currentGradient && currentGradient.color !== point.color) {
+            currentGradient.points.push(point);
+
+            if (dataPointEndsKpiColorSegment) {
+                currentGradient.points.reverse();
             }
 
-            const currentGradient: DataRepresentationPointGradientColor = gradientPoints.slice(-1)[0];
-
-            if (!currentGradient) {
-                gradientPoints.push({
-                    color: point.color,
-                    points: [point],
-                });
-            } else if (currentGradient && currentGradient.color === point.color) {
-                currentGradient.points.push(point);
-            } else if (currentGradient && currentGradient.color !== point.color) {
-                currentGradient.points.push(point);
-
-                if (dataPointEndsKpiColorSegment) {
-                    currentGradient.points.reverse();
-                }
-
-                gradientPoints.push({
-                    color: point.color,
-                    points: [point],
-                });
-            }
+            gradientPoints.push({
+                color: point.color,
+                points: [point],
+            });
         }
     }
 }

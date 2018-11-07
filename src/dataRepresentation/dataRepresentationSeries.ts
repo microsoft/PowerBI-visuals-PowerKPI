@@ -24,25 +24,23 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // powerbi.visuals
-    import SelectionId = powerbi.visuals.SelectionId;
+import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
 
-    export interface DataRepresentationSeries extends SelectableDataPoint {
-        points: DataRepresentationPoint[];
-        gradientPoints: DataRepresentationPointGradientColor[];
-        name: string;
-        current: DataRepresentationPointIndexed; // The current value represents the latest non-null value
-        format: string;
-        settings: SeriesSettings;
-        domain: DataRepresentationAxisBase;
-        y: DataRepresentationAxis;
-        hasSelection: boolean;
-        groupName?: string;
-    }
 
-    export interface DataRepresentationSeriesGroup {
-        series: DataRepresentationSeries[];
-        y: DataRepresentationAxis;
-    }
+export interface DataRepresentationSeries extends interactivityService.SelectableDataPoint {
+    points: DataRepresentationPoint[];
+    gradientPoints: DataRepresentationPointGradientColor[];
+    name: string;
+    current: DataRepresentationPointIndexed; // The current value represents the latest non-null value
+    format: string;
+    settings: SeriesSettings;
+    domain: DataRepresentationAxisBase;
+    y: DataRepresentationAxis;
+    hasSelection: boolean;
+    groupName?: string;
+}
+
+export interface DataRepresentationSeriesGroup {
+    series: DataRepresentationSeries[];
+    y: DataRepresentationAxis;
 }

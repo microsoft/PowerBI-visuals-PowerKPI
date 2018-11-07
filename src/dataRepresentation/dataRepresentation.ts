@@ -24,23 +24,29 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // powerbi
-    import IViewport = powerbi.IViewport;
+import powerbi from "powerbi-visuals-api";
 
-    // powerbi.visuals
-    import IMargin = powerbi.visuals.IMargin;
+import {
+    DataRepresentationSeries,
+    DataRepresentationSeriesGroup,
+} from "./dataRepresentationSeries";
 
-    export interface DataRepresentation {
-        series: DataRepresentationSeries[];
-        sortedSeries: DataRepresentationSeries[];
-        groups: DataRepresentationSeriesGroup[];
-        viewport: IViewport;
-        settings: Settings;
-        variance: number[];
-        variances: number[][];
-        margin: IMargin;
-        x: DataRepresentationX;
-        isGrouped?: boolean;
-    }
+export interface IMargin {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+}
+
+export interface DataRepresentation {
+    series: DataRepresentationSeries[];
+    sortedSeries: DataRepresentationSeries[];
+    groups: DataRepresentationSeriesGroup[];
+    viewport: powerbi.IViewport;
+    settings: Settings;
+    variance: number[];
+    variances: number[][];
+    margin: IMargin;
+    x: DataRepresentationX;
+    isGrouped?: boolean;
 }

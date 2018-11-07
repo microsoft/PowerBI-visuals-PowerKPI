@@ -24,51 +24,59 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class ShowDescriptor
-        extends ViewportDescriptor
-        implements Descriptor {
+import powerbi from "powerbi-visuals-api";
 
-        private _show: boolean = true;
+import { ViewportDescriptor } from "./viewportDescriptor";
 
-        private isAbleToBeShown: boolean = true;
+import {
+    Descriptor,
+    DescriptorParserOptions,
+} from "../descriptor";
 
-        constructor(viewport: IViewport = { width: 0, height: 0 }) {
-            super(viewport);
+export class ShowDescriptor
+    extends ViewportDescriptor
+    implements Descriptor {
 
-            Object.defineProperty(
-                this,
-                "show",
-                Object.getOwnPropertyDescriptor(
-                    ShowDescriptor.prototype,
-                    "show"));
+    private _show: boolean = true;
+
+    private isAbleToBeShown: boolean = true;
+
+    constructor(viewport: powerbi.IViewport = { width: 0, height: 0 }) {
+        super(viewport);
+
+        Object.defineProperty(
+            this,
+            "show",
+            Object.getOwnPropertyDescriptor(
+                ShowDescriptor.prototype,
+                "show"));
+    }
+
+    public get show(): boolean {
+        if (!this.isAbleToBeShown) {
+            return false;
         }
 
-        public get show(): boolean {
-            if (!this.isAbleToBeShown) {
-                return false;
-            }
+        return this._show;
+    }
 
-            return this._show;
-        }
+    public set show(isShown: boolean) {
+        this._show = isShown;
+    }
 
-        public set show(isShown: boolean) {
-            this._show = isShown;
-        }
-
-        public parse(options: DescriptorParserOptions): void {
-            this.isAbleToBeShown = !(
-                options
-                && options.isAutoHideBehaviorEnabled
-                && options.viewport
-                && this._viewport
-                &&
-                (
-                    options.viewport.width <= this._viewport.width
-                    ||
-                    options.viewport.height <= this._viewport.height
-                )
-            );
-        }
+    public parse(options: DescriptorParserOptions): void {
+        this.isAbleToBeShown = !(
+            options
+            && options.isAutoHideBehaviorEnabled
+            && options.viewport
+            && this._viewport
+            &&
+            (
+                options.viewport.width <= this._viewport.width
+                ||
+                options.viewport.height <= this._viewport.height
+            )
+        );
     }
 }
+

@@ -24,34 +24,41 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class KPIIndicatorValueSignDescriptor
-        extends KPIIndicatorValueDescriptor
-        implements Descriptor {
+import powerbi from "powerbi-visuals-api";
 
-        public matchKPIColor: boolean = true;
+import {
+    Descriptor,
+    DescriptorParserOptions
+} from "./../descriptor";
 
-        constructor(viewport?: IViewport) {
-            super(viewport);
+import { KPIIndicatorValueDescriptor } from "./kpiIndicatorValueDescriptor";
 
-            /**
-             * Below is small hack to change order of properties
-             * The matchKPIColor should be before fontColor for better UX
-             */
-            delete this.fontColor;
-            this.fontColor = "#333333";
-        }
+export class KPIIndicatorValueSignDescriptor
+    extends KPIIndicatorValueDescriptor
+    implements Descriptor {
 
-        public parse(options: DescriptorParserOptions): void {
-            super.parse(options);
+    public matchKPIColor: boolean = true;
 
-            this.makePropertyFontColorPropertyEnumerable(!this.matchKPIColor);
-        }
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport);
 
-        private makePropertyFontColorPropertyEnumerable(isEnumerable: boolean): void {
-            Object.defineProperty(this, "fontColor", {
-                enumerable: isEnumerable
-            });
-        }
+        /**
+         * Below is small hack to change order of properties
+         * The matchKPIColor should be before fontColor for better UX
+         */
+        delete this.fontColor;
+        this.fontColor = "#333333";
+    }
+
+    public parse(options: DescriptorParserOptions): void {
+        super.parse(options);
+
+        this.makePropertyFontColorPropertyEnumerable(!this.matchKPIColor);
+    }
+
+    private makePropertyFontColorPropertyEnumerable(isEnumerable: boolean): void {
+        Object.defineProperty(this, "fontColor", {
+            enumerable: isEnumerable
+        });
     }
 }

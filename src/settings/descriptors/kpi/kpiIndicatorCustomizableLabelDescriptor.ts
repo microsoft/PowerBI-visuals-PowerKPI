@@ -24,18 +24,20 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class KPIIndicatorCustomizableLabelDescriptor extends KPIIndicatorLabelDescriptor {
-        public label: string = "";
+import powerbi from "powerbi-visuals-api";
 
-        constructor(viewport?: IViewport) {
-            super(viewport);
+import { KPIIndicatorLabelDescriptor } from "./kpiIndicatorLabelDescriptor";
 
-            this.show = false;
-        }
+export class KPIIndicatorCustomizableLabelDescriptor extends KPIIndicatorLabelDescriptor {
+    public label: string = "";
 
-        public isShown(): boolean {
-            return this.show && !!this.label;
-        }
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport);
+
+        this.show = false;
+    }
+
+    public isShown(): boolean {
+        return this.show && !!this.label;
     }
 }

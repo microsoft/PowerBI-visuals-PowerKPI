@@ -24,133 +24,141 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // powerbi
-    import IViewport = powerbi.IViewport;
+import powerbi from "powerbi-visuals-api";
 
-    export class NumberDescriptorBase
-        extends FontSizeDescriptor
-        implements Descriptor {
+import {
+    Descriptor,
+    DescriptorParserOptions,
+} from "./descriptor";
 
-        protected minPrecision: number = 0;
-        protected maxPrecision: number = 17;
+import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
 
-        public format: string = undefined;
-        public defaultFormat: string = undefined;
-        public columnFormat: string = undefined;
+import {
+    DataRepresentationTypeEnum,
+} from "../../dataRepresentation/dataRepresentationType";
 
-        public displayUnits: number = 0;
-        public precision: number = undefined;
+export class NumberDescriptorBase
+    extends FontSizeDescriptor
+    implements Descriptor {
 
-        private shouldNumericPropertiesBeHiddenByType: boolean;
+    protected minPrecision: number = 0;
+    protected maxPrecision: number = 17;
 
-        constructor(viewport?: IViewport, shouldPropertiesBeHiddenByType: boolean = false) {
-            super(viewport);
+    public format: string = undefined;
+    public defaultFormat: string = undefined;
+    public columnFormat: string = undefined;
 
-            this.shouldNumericPropertiesBeHiddenByType = shouldPropertiesBeHiddenByType;
+    public displayUnits: number = 0;
+    public precision: number = undefined;
+
+    private shouldNumericPropertiesBeHiddenByType: boolean;
+
+    constructor(viewport?: powerbi.IViewport, shouldPropertiesBeHiddenByType: boolean = false) {
+        super(viewport);
+
+        this.shouldNumericPropertiesBeHiddenByType = shouldPropertiesBeHiddenByType;
+    }
+
+    public parse(options: DescriptorParserOptions) {
+        super.parse(options);
+
+        this.precision = this.getValidPrecision(this.precision);
+
+        this.hidePropertiesByType(options.type);
+    }
+
+    private hidePropertiesByType(type: DataRepresentationTypeEnum = DataRepresentationTypeEnum.NumberType): void {
+        this.applyDefaultFormatByType(type);
+
+        if (this.shouldNumericPropertiesBeHiddenByType
+            && type !== DataRepresentationTypeEnum.NumberType
+        ) {
+            this.hideNumberProperties();
         }
 
-        public parse(options: DescriptorParserOptions) {
-            super.parse(options);
+        if (!(type === DataRepresentationTypeEnum.NumberType
+            || type === DataRepresentationTypeEnum.DateType)
+        ) {
+            this.hideFormatProperty();
+        }
+    }
 
-            this.precision = this.getValidPrecision(this.precision);
-
-            this.hidePropertiesByType(options.type);
+    protected getValidPrecision(precision: number): number {
+        if (isNaN(precision)) {
+            return precision;
         }
 
-        private hidePropertiesByType(type: DataRepresentationTypeEnum = DataRepresentationTypeEnum.NumberType): void {
-            this.applyDefaultFormatByType(type);
+        return Math.min(
+            Math.max(this.minPrecision, precision),
+            this.maxPrecision);
+    }
 
-            if (this.shouldNumericPropertiesBeHiddenByType
-                && type !== DataRepresentationTypeEnum.NumberType
-            ) {
-                this.hideNumberProperties();
+    /**
+     * Hides properties at the formatting panel
+     */
+    protected hideNumberProperties(): void {
+        Object.defineProperties(this, {
+            displayUnits: {
+                enumerable: false
+            },
+            precision: {
+                enumerable: false
             }
+        });
+    }
 
-            if (!(type === DataRepresentationTypeEnum.NumberType
-                || type === DataRepresentationTypeEnum.DateType)
-            ) {
-                this.hideFormatProperty();
+    protected hideFormatProperty(): void {
+        Object.defineProperty(
+            this,
+            "format", {
+                enumerable: false
             }
+        );
+    }
+
+    protected applyDefaultFormatByType(type: DataRepresentationTypeEnum): void {
+        if (this.defaultFormat) {
+            return;
         }
 
-        protected getValidPrecision(precision: number): number {
-            if (isNaN(precision)) {
-                return precision;
-            }
+        switch (type) {
+            case DataRepresentationTypeEnum.DateType: {
+                this.defaultFormat = "%M/%d/yyyy";
 
-            return Math.min(
-                Math.max(this.minPrecision, precision),
-                this.maxPrecision);
-        }
-
-        /**
-         * Hides properties at the formatting panel
-         */
-        protected hideNumberProperties(): void {
-            Object.defineProperties(this, {
-                displayUnits: {
-                    enumerable: false
-                },
-                precision: {
-                    enumerable: false
+                if (this.format === undefined) {
+                    this.format = this.defaultFormat;
                 }
-            });
-        }
 
-        protected hideFormatProperty(): void {
-            Object.defineProperty(
-                this,
-                "format", {
-                    enumerable: false
-                }
-            );
-        }
-
-        protected applyDefaultFormatByType(type: DataRepresentationTypeEnum): void {
-            if (this.defaultFormat) {
-                return;
+                break;
             }
+            case DataRepresentationTypeEnum.NumberType: {
+                this.defaultFormat = "#,0.00";
 
-            switch (type) {
-                case DataRepresentationTypeEnum.DateType: {
-                    this.defaultFormat = "%M/%d/yyyy";
-
-                    if (this.format === undefined) {
-                        this.format = this.defaultFormat;
-                    }
-
-                    break;
-                }
-                case DataRepresentationTypeEnum.NumberType: {
-                    this.defaultFormat = "#,0.00";
-
-                    break;
-                }
-                default: {
-                    this.defaultFormat = undefined;
-                }
+                break;
+            }
+            default: {
+                this.defaultFormat = undefined;
             }
         }
+    }
 
-        public getFormat(): string {
-            return this.format || this.columnFormat || this.defaultFormat;
+    public getFormat(): string {
+        return this.format || this.columnFormat || this.defaultFormat;
+    }
+
+    public setColumnFormat(format: string) {
+        if (!format) {
+            return;
         }
 
-        public setColumnFormat(format: string) {
-            if (!format) {
-                return;
-            }
+        this.columnFormat = format;
+    }
 
-            this.columnFormat = format;
+    public getValueByKey(key: string): string {
+        if (key === "format") {
+            return this.getFormat();
         }
 
-        public getValueByKey(key: string): string {
-            if (key === "format") {
-                return this.getFormat();
-            }
-
-            return this[key];
-        }
+        return this[key];
     }
 }

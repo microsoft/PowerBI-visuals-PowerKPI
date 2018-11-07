@@ -24,44 +24,52 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class SeriesSettings extends SettingsBase {
-        public line: LineDescriptor = new LineDescriptor();
+import powerbi from "powerbi-visuals-api";
 
-        public parseObjects(objects: DataViewObjects): SettingsBase {
-            if (objects) {
-                let lineObject: LineDescriptorBase = (objects.line as any || {}) as LineDescriptorBase;
+import { SettingsBase } from "./settingBase";
 
-                if (!lineObject.fillColor
-                    && objects.series
-                    && objects.series.fillColor
-                ) {
-                    lineObject.fillColor = objects.series.fillColor as string;
-                }
+import {
+    LineDescriptor,
+    LineDescriptorBase,
+    LineStyle,
+} from "./descriptors/lineDescriptor";
 
-                if (!lineObject.lineStyle
-                    && objects.lineStyle
-                    && objects.lineStyle.lineStyle !== undefined
-                    && objects.lineStyle.lineStyle !== null
-                ) {
-                    lineObject.lineStyle = objects.lineStyle.lineStyle as LineStyle;
-                }
+export class SeriesSettings extends SettingsBase {
+    public line: LineDescriptor = new LineDescriptor();
 
-                if (!lineObject.thickness
-                    && objects.lineThickness
-                    && objects.lineThickness.thickness !== undefined
-                    && objects.lineThickness.thickness !== null
-                ) {
-                    lineObject.thickness = objects.lineThickness.thickness as number;
-                }
+    public parseObjects(objects: powerbi.DataViewObjects): SettingsBase {
+        if (objects) {
+            let lineObject: LineDescriptorBase = (objects.line as any || {}) as LineDescriptorBase;
 
-                return super.parseObjects({
-                    ...objects,
-                    line: lineObject as any
-                });
+            if (!lineObject.fillColor
+                && objects.series
+                && objects.series.fillColor
+            ) {
+                lineObject.fillColor = objects.series.fillColor as string;
             }
 
-            return super.parseObjects(objects);
+            if (!lineObject.lineStyle
+                && objects.lineStyle
+                && objects.lineStyle.lineStyle !== undefined
+                && objects.lineStyle.lineStyle !== null
+            ) {
+                lineObject.lineStyle = objects.lineStyle.lineStyle as LineStyle;
+            }
+
+            if (!lineObject.thickness
+                && objects.lineThickness
+                && objects.lineThickness.thickness !== undefined
+                && objects.lineThickness.thickness !== null
+            ) {
+                lineObject.thickness = objects.lineThickness.thickness as number;
+            }
+
+            return super.parseObjects({
+                ...objects,
+                line: lineObject as any
+            });
         }
+
+        return super.parseObjects(objects);
     }
 }

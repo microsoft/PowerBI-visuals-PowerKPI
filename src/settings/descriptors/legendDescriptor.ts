@@ -24,80 +24,82 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export enum LegendStyle {
-        circle = "circle",
-        box = "box",
-        line = "line",
-        styledLine = "styledLine",
-    }
+import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
+import { LineStyle } from "./lineDescriptor";
 
-    export const legendStyleEnum: IEnumType = createEnumType([
-        { value: LegendStyle.circle, displayName: "Circle" },
-        { value: LegendStyle.box, displayName: "Box" },
-        { value: LegendStyle.line, displayName: "Line" },
-        { value: LegendStyle.styledLine, displayName: "Styled Line" },
-    ]);
+export enum LegendStyle {
+    circle = "circle",
+    box = "box",
+    line = "line",
+    styledLine = "styledLine",
+}
 
-    export enum LegendMarkerShape {
-        square = "square",
-        none = "none",
-        circle = "circle",
-    }
+// export const legendStyleEnum: IEnumType = createEnumType([
+//     { value: LegendStyle.circle, displayName: "Circle" },
+//     { value: LegendStyle.box, displayName: "Box" },
+//     { value: LegendStyle.line, displayName: "Line" },
+//     { value: LegendStyle.styledLine, displayName: "Styled Line" },
+// ]);
 
-    export enum LegendLineStyle {
-        dotted = "dotted",
-        dashed = "dashed",
-        solid = "solid",
-    }
+export enum LegendMarkerShape {
+    square = "square",
+    none = "none",
+    circle = "circle",
+}
 
-    export class LegendDescriptor extends FontSizeDescriptor {
-        public position: string = "BottomCenter";
-        public showTitle: boolean = true;
-        public titleText: string = undefined;
-        public labelColor: string = "rgb(102, 102, 102)";
-        public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
-        public style: LegendStyle = LegendStyle.circle;
+export enum LegendLineStyle {
+    dotted = "dotted",
+    dashed = "dashed",
+    solid = "solid",
+}
 
-        public getLegendMarkerShape(): LegendMarkerShape {
-            switch (this.style) {
-                case LegendStyle.box: {
-                    return LegendMarkerShape.square;
-                }
-                case LegendStyle.line:
-                case LegendStyle.styledLine: {
-                    return LegendMarkerShape.none;
-                }
-                case LegendStyle.circle:
-                default: {
-                    return LegendMarkerShape.circle;
-                }
+export class LegendDescriptor extends FontSizeDescriptor {
+    public position: string = "BottomCenter";
+    public showTitle: boolean = true;
+    public titleText: string = undefined;
+    public labelColor: string = "rgb(102, 102, 102)";
+    public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
+    public style: LegendStyle = LegendStyle.circle;
+
+    public getLegendMarkerShape(): LegendMarkerShape {
+        switch (this.style) {
+            case LegendStyle.box: {
+                return LegendMarkerShape.square;
+            }
+            case LegendStyle.line:
+            case LegendStyle.styledLine: {
+                return LegendMarkerShape.none;
+            }
+            case LegendStyle.circle:
+            default: {
+                return LegendMarkerShape.circle;
             }
         }
+    }
 
-        public getLegendLineStyle(lineStyle: LineStyle): LegendLineStyle {
-            switch (this.style) {
-                case LegendStyle.styledLine: {
-                    switch (lineStyle) {
-                        case LineStyle.dottedLine: {
-                            return LegendLineStyle.dotted;
-                        }
-                        case LineStyle.dashedLine:
-                        case LineStyle.dotDashedLine: {
-                            return LegendLineStyle.dashed;
-                        }
-                        case LineStyle.solidLine:
-                        default: {
-                            return LegendLineStyle.solid;
-                        }
+    public getLegendLineStyle(lineStyle: LineStyle): LegendLineStyle {
+        switch (this.style) {
+            case LegendStyle.styledLine: {
+                switch (lineStyle) {
+                    case LineStyle.dottedLine: {
+                        return LegendLineStyle.dotted;
+                    }
+                    case LineStyle.dashedLine:
+                    case LineStyle.dotDashedLine: {
+                        return LegendLineStyle.dashed;
+                    }
+                    case LineStyle.solidLine:
+                    default: {
+                        return LegendLineStyle.solid;
                     }
                 }
-                case LegendStyle.line: {
-                    return LegendLineStyle.solid;
-                }
             }
-
-            return undefined;
+            case LegendStyle.line: {
+                return LegendLineStyle.solid;
+            }
         }
+
+        return undefined;
     }
 }
+

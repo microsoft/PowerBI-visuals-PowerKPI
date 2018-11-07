@@ -24,8 +24,8 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class TooltipDescriptor extends NumberDescriptorBase {
-        public show: boolean = true;
-    }
+import { NumberDescriptorBase } from "../numberDescriptorBase";
+
+export class TooltipDescriptor extends NumberDescriptorBase {
+    public show: boolean = true;
 }

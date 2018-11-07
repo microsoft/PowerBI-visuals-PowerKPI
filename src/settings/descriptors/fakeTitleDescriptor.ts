@@ -24,11 +24,11 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    /**
-     * We use this class to move the Title option up above the Subtitle at the formatting panel
-     */
-    export class FakeTitleDescriptor extends BaseDescriptor {
-        public untrackedProperty: boolean = false;
-    }
+import { BaseDescriptor } from "./descriptor";
+
+/**
+ * We use this class to move the Title option up above the Subtitle at the formatting panel
+ */
+export class FakeTitleDescriptor extends BaseDescriptor {
+    public untrackedProperty: boolean = false;
 }

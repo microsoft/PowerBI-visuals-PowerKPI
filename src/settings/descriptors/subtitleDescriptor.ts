@@ -24,18 +24,18 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export enum SubtitleAlignment {
-        left = <any>"left",
-        center = <any>"center",
-        right = <any>"right"
-    }
+import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
 
-    export class SubtitleDescriptor extends FontSizeDescriptor {
-        public titleText: string = "";
-        public fontColor: string = "#A6A6A6";
-        public background: string = "";
-        public alignment: SubtitleAlignment = SubtitleAlignment.left;
-        public fontFamily: string = "'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif";
-    }
+export enum SubtitleAlignment {
+    left = "left",
+    center = "center",
+    right = "right"
+}
+
+export class SubtitleDescriptor extends FontSizeDescriptor {
+    public titleText: string = "";
+    public fontColor: string = "#A6A6A6";
+    public background: string = "";
+    public alignment: SubtitleAlignment = SubtitleAlignment.left;
+    public fontFamily: string = "'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif";
 }

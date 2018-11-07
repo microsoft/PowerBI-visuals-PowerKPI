@@ -24,16 +24,16 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export interface DataRepresentationPoint {
-        x: DataRepresentationAxisValueType;
-        y: number;
-        kpiIndex: number;
-        color: string;
-    }
+import { DataRepresentationAxisValueType } from "./dataRepresentationAxisValueType";
 
-    export interface DataRepresentationPointGradientColor {
-        color: string;
-        points: DataRepresentationPoint[];
-    }
+export interface DataRepresentationPoint {
+    x: DataRepresentationAxisValueType;
+    y: number;
+    kpiIndex: number;
+    color: string;
+}
+
+export interface DataRepresentationPointGradientColor {
+    color: string;
+    points: DataRepresentationPoint[];
 }

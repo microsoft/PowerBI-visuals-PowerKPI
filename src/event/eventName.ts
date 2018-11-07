@@ -24,11 +24,9 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export enum EventName {
-        onClick = "onClick",
-        onSelect = "onSelect",
-        onClearSelection = "onClearSelection",
-        onHighlight = "onHighlight",
-    }
+export enum EventName {
+    onClick = "onClick",
+    onSelect = "onSelect",
+    onClearSelection = "onClearSelection",
+    onHighlight = "onHighlight",
 }

@@ -24,26 +24,27 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class DotsDescriptor extends BaseDescriptor {
-        public radiusFactor: number = 1.4;
+import { IMargin } from "../../dataRepresentation/dataRepresentation";
+import { BaseDescriptor } from "../descriptors/descriptor";
 
-        public getMarginByThickness(
-            thickness: number,
-            defaultMargin: IMargin
-        ): IMargin {
-            if (isNaN(thickness)) {
-                return defaultMargin;
-            }
+export class DotsDescriptor extends BaseDescriptor {
+    public radiusFactor: number = 1.4;
 
-            const currentThickness: number = thickness * this.radiusFactor;
-
-            return {
-                top: currentThickness,
-                right: currentThickness,
-                bottom: currentThickness,
-                left: currentThickness
-            };
+    public getMarginByThickness(
+        thickness: number,
+        defaultMargin: IMargin
+    ): IMargin {
+        if (isNaN(thickness)) {
+            return defaultMargin;
         }
+
+        const currentThickness: number = thickness * this.radiusFactor;
+
+        return {
+            top: currentThickness,
+            right: currentThickness,
+            bottom: currentThickness,
+            left: currentThickness
+        };
     }
 }

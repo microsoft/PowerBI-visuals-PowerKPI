@@ -2,7 +2,7 @@
  *  Power BI Visualizations
  *
  *  Copyright (c) Microsoft Corporation
- *  All rights reserved. 
+ *  All rights reserved.
  *  MIT License
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,6 +24,14 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export type DataRepresentationAxisScale = D3.Scale.TimeScale | D3.Scale.LinearScale | D3.Scale.OrdinalScale;
-}
+import {
+    ScaleTime,
+    ScaleLinear,
+    ScaleOrdinal,
+} from "d3-scale";
+
+import { DataRepresentationAxisValueType } from "./dataRepresentationAxisValueType";
+
+export type DataRepresentationAxisScale = ScaleTime<DataRepresentationAxisValueType, number>
+    | ScaleLinear<DataRepresentationAxisValueType, number>
+    | ScaleOrdinal<DataRepresentationAxisValueType, number>;

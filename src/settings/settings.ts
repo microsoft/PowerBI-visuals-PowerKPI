@@ -24,101 +24,130 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    /* These viewports describe the minimal viewport for each visual component */
+import powerbi from "powerbi-visuals-api";
 
-    const kpiCaptionViewport: IViewport = {
-        width: 90,
-        height: 90
-    };
+import { SettingsBase } from "./settingBase";
 
-    const kpiLabelViewport: IViewport = {
-        width: 165,
-        height: 165
-    };
+import {
+    Descriptor,
+    DescriptorParserOptions
+} from "./descriptors/descriptor";
 
-    const subtitleViewport: IViewport = {
-        width: 150,
-        height: 150
-    };
+import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
 
-    const legendViewport: IViewport = {
-        width: 120,
-        height: 120
-    };
+import { LayoutDescriptor } from "./descriptors/layoutDescriptor";
+import { FakeTitleDescriptor } from "./descriptors/fakeTitleDescriptor";
+import { SubtitleDescriptor } from "./descriptors/subtitleDescriptor";
+import { KPIIndicatorDescriptor } from "./descriptors/kpi/kpiIndicatorDescriptor";
+import { KPIIndicatorValueSignDescriptor } from "./descriptors/kpi/kpiIndicatorValueSignDescriptor";
+import { KPIIndicatorCustomizableLabelDescriptor } from "./descriptors/kpi/kpiIndicatorCustomizableLabelDescriptor";
+import { KPIIndicatorValueDescriptor } from "./descriptors/kpi/kpiIndicatorValueDescriptor";
+import { KPIIndicatorLabelDescriptor } from "./descriptors/kpi/kpiIndicatorLabelDescriptor";
+import { LabelsDescriptor } from "./descriptors/labelsDescriptor";
+import { LineDescriptor } from "./descriptors/lineDescriptor";
+import { DotsDescriptor } from "./descriptors/dotsDescriptor";
+import { LegendDescriptor } from "./descriptors/legendDescriptor";
 
-    const LabelsViewport: IViewport = {
-        width: 80,
-        height: 80
-    };
+import {
+    XAxisDescriptor,
+    YAxisDescriptor
+} from "./descriptors/axis/axisDescriptor";
 
-    const axisViewportToDecreaseFontSize: IViewport = {
-        width: 70,
-        height: 70
-    };
+import { AxisReferenceLineDescriptor } from "./descriptors/axis/referenceLine/axisReferenceLineDescriptor";
+import { TooltipDescriptor } from "./descriptors/tooltip/tooltipDescriptor";
+import { TooltipLabelDescriptor } from "./descriptors/tooltip/tooltipLabelDescriptor";
 
-    const axisViewportToIncreaseDensity: IViewport = {
-        width: 250,
-        height: 250
-    };
+const kpiCaptionViewport: powerbi.IViewport = {
+    width: 90,
+    height: 90
+};
 
-    export class Settings extends SettingsBase {
-        public layout: LayoutDescriptor = new LayoutDescriptor();
-        public title: FakeTitleDescriptor = new FakeTitleDescriptor();
-        public subtitle: SubtitleDescriptor = new SubtitleDescriptor(subtitleViewport);
-        public kpiIndicator: KPIIndicatorDescriptor = new KPIIndicatorDescriptor(kpiCaptionViewport);
-        public kpiIndicatorValue: KPIIndicatorValueSignDescriptor = new KPIIndicatorValueSignDescriptor(kpiCaptionViewport);
-        public kpiIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(kpiLabelViewport);
-        public secondKPIIndicatorValue: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport);
-        public secondKPIIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(kpiLabelViewport);
-        public actualValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport);
-        public actualLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport);
-        public dateValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport, true);
-        public dateLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport);
-        public labels: LabelsDescriptor = new LabelsDescriptor(LabelsViewport);
-        public line: LineDescriptor = new LineDescriptor();
-        public dots: DotsDescriptor = new DotsDescriptor();
-        public legend: LegendDescriptor = new LegendDescriptor(legendViewport);
-        public xAxis: XAxisDescriptor = new XAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, true);
-        public yAxis: YAxisDescriptor = new YAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, false);
-        public secondaryYAxis: YAxisDescriptor = new YAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, false);
-        public referenceLineOfXAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(false);
-        public referenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor();
-        public secondaryReferenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(false);
-        public tooltipLabel: TooltipDescriptor = new TooltipDescriptor(undefined, true);
-        public tooltipVariance: TooltipLabelDescriptor = new TooltipLabelDescriptor();
-        public secondTooltipVariance: TooltipLabelDescriptor = new TooltipLabelDescriptor();
-        public tooltipValues: TooltipDescriptor = new TooltipDescriptor();
+const kpiLabelViewport: powerbi.IViewport = {
+    width: 165,
+    height: 165
+};
 
-        constructor() {
-            super();
+const subtitleViewport: powerbi.IViewport = {
+    width: 150,
+    height: 150
+};
 
-            const percentageFormat: string = "+0.00 %;-0.00 %;0.00 %";
+const legendViewport: powerbi.IViewport = {
+    width: 120,
+    height: 120
+};
 
-            this.kpiIndicatorValue.defaultFormat = percentageFormat;
-            this.secondKPIIndicatorValue.defaultFormat = percentageFormat;
+const LabelsViewport: powerbi.IViewport = {
+    width: 80,
+    height: 80
+};
 
-            this.tooltipVariance.defaultFormat = percentageFormat;
-            this.secondTooltipVariance.defaultFormat = percentageFormat;
-        }
+const axisViewportToDecreaseFontSize: powerbi.IViewport = {
+    width: 70,
+    height: 70
+};
 
-        public parseSettings(viewport: IViewport, type: DataRepresentationTypeEnum): void {
-            const options: DescriptorParserOptions = {
-                viewport,
-                type,
-                isAutoHideBehaviorEnabled: this.layout.autoHideVisualComponents
-            };
+const axisViewportToIncreaseDensity: powerbi.IViewport = {
+    width: 250,
+    height: 250
+};
 
-            Object.keys(this)
-                .forEach((settingName: string) => {
-                    const settingsObj: Descriptor = this[settingName] as Descriptor;
+export class Settings extends SettingsBase {
+    public layout: LayoutDescriptor = new LayoutDescriptor();
+    public title: FakeTitleDescriptor = new FakeTitleDescriptor();
+    public subtitle: SubtitleDescriptor = new SubtitleDescriptor(subtitleViewport);
+    public kpiIndicator: KPIIndicatorDescriptor = new KPIIndicatorDescriptor(kpiCaptionViewport);
+    public kpiIndicatorValue: KPIIndicatorValueSignDescriptor = new KPIIndicatorValueSignDescriptor(kpiCaptionViewport);
+    public kpiIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(kpiLabelViewport);
+    public secondKPIIndicatorValue: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport);
+    public secondKPIIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(kpiLabelViewport);
+    public actualValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport);
+    public actualLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport);
+    public dateValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport, true);
+    public dateLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport);
+    public labels: LabelsDescriptor = new LabelsDescriptor(LabelsViewport);
+    public line: LineDescriptor = new LineDescriptor();
+    public dots: DotsDescriptor = new DotsDescriptor();
+    public legend: LegendDescriptor = new LegendDescriptor(legendViewport);
+    public xAxis: XAxisDescriptor = new XAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, true);
+    public yAxis: YAxisDescriptor = new YAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, false);
+    public secondaryYAxis: YAxisDescriptor = new YAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, false);
+    public referenceLineOfXAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(false);
+    public referenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor();
+    public secondaryReferenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(false);
+    public tooltipLabel: TooltipDescriptor = new TooltipDescriptor(undefined, true);
+    public tooltipVariance: TooltipLabelDescriptor = new TooltipLabelDescriptor();
+    public secondTooltipVariance: TooltipLabelDescriptor = new TooltipLabelDescriptor();
+    public tooltipValues: TooltipDescriptor = new TooltipDescriptor();
 
-                    if (settingsObj.parse) {
-                        settingsObj.parse(options);
-                    }
-                });
-        }
+    constructor() {
+        super();
 
-        protected processDescriptor(descriptor: Descriptor): void { }
+        const percentageFormat: string = "+0.00 %;-0.00 %;0.00 %";
+
+        this.kpiIndicatorValue.defaultFormat = percentageFormat;
+        this.secondKPIIndicatorValue.defaultFormat = percentageFormat;
+
+        this.tooltipVariance.defaultFormat = percentageFormat;
+        this.secondTooltipVariance.defaultFormat = percentageFormat;
     }
+
+    public parseSettings(viewport: powerbi.IViewport, type: DataRepresentationTypeEnum): void {
+        const options: DescriptorParserOptions = {
+            viewport,
+            type,
+            isAutoHideBehaviorEnabled: this.layout.autoHideVisualComponents
+        };
+
+        Object.keys(this)
+            .forEach((settingName: string) => {
+                const settingsObj: Descriptor = this[settingName] as Descriptor;
+
+                if (settingsObj.parse) {
+                    settingsObj.parse(options);
+                }
+            });
+    }
+
+    protected processDescriptor(descriptor: Descriptor): void { }
 }

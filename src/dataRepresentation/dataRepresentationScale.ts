@@ -24,93 +24,101 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class DataRepresentationScale {
-        private isOrdinalScale: boolean = false;
-        private baseScale: DataRepresentationAxisScale;
+import {
+    scaleTime,
+    scaleLinear,
+    scaleOrdinal
+} from "d3-scale";
 
-        private constructor(
-            scale: DataRepresentationAxisScale = null,
-            isOrdinal: boolean = false
-        ) {
-            this.baseScale = scale;
-            this.isOrdinalScale = isOrdinal;
-        }
+import { DataRepresentationAxisScale } from "./dataRepresentationAxisScale";
+import { DataRepresentationAxisValueType, } from "./dataRepresentationAxisValueType";
+import { DataRepresentationTypeEnum } from "./dataRepresentationType";
 
-        public static create(): DataRepresentationScale {
-            return new DataRepresentationScale();
-        }
+export class DataRepresentationScale {
+    private isOrdinalScale: boolean = false;
+    private baseScale: DataRepresentationAxisScale;
 
-        public domain(
-            values: DataRepresentationAxisValueType[],
-            type: DataRepresentationTypeEnum
-        ): DataRepresentationScale {
-            let scale: DataRepresentationAxisScale;
+    private constructor(
+        scale: DataRepresentationAxisScale = null,
+        isOrdinal: boolean = false
+    ) {
+        this.baseScale = scale;
+        this.isOrdinalScale = isOrdinal;
+    }
 
-            if (values && values.length) {
-                switch (type) {
-                    case DataRepresentationTypeEnum.DateType: {
-                        scale = d3.time.scale();
-                        break;
-                    }
-                    case DataRepresentationTypeEnum.NumberType: {
-                        scale = d3.scale.linear();
-                        break;
-                    }
-                    case DataRepresentationTypeEnum.StringType: {
-                        scale = d3.scale.ordinal();
-                        this.isOrdinalScale = true;
-                        break;
-                    }
+    public static create(): DataRepresentationScale {
+        return new DataRepresentationScale();
+    }
+
+    public domain(
+        values: DataRepresentationAxisValueType[],
+        type: DataRepresentationTypeEnum
+    ): DataRepresentationScale {
+        let scale: DataRepresentationAxisScale;
+
+        if (values && values.length) {
+            switch (type) {
+                case DataRepresentationTypeEnum.DateType: {
+                    scale = scaleTime();
+                    break;
+                }
+                case DataRepresentationTypeEnum.NumberType: {
+                    scale = scaleLinear();
+                    break;
+                }
+                case DataRepresentationTypeEnum.StringType: {
+                    scale = scaleOrdinal();
+                    this.isOrdinalScale = true;
+                    break;
                 }
             }
+        }
 
-            if (scale) {
-                scale.domain(values);
+        if (scale) {
+            scale.domain(values);
+        }
+
+        this.baseScale = scale;
+
+        return this;
+    }
+
+    public getDomain(): DataRepresentationAxisValueType[] {
+        if (!this.baseScale) {
+            return [];
+        }
+
+        return this.baseScale.domain() || [];
+    }
+
+    public scale(value: DataRepresentationAxisValueType): number {
+        if (!this.baseScale) {
+            return 0;
+        }
+
+        return this.baseScale(value);
+    }
+
+    public copy(): DataRepresentationScale {
+        return new DataRepresentationScale(
+            this.baseScale && this.baseScale.copy(),
+            this.isOrdinalScale);
+    }
+
+    public range(rangeValues): DataRepresentationScale {
+        if (this.baseScale) {
+            if (this.isOrdinalScale) {
+                (this.baseScale as D3.Scale.OrdinalScale).rangePoints(rangeValues);
             }
-
-            this.baseScale = scale;
-
-            return this;
-        }
-
-        public getDomain(): DataRepresentationAxisValueType[] {
-            if (!this.baseScale) {
-                return [];
+            else {
+                this.baseScale.range(rangeValues);
             }
-
-            return this.baseScale.domain() || [];
         }
 
-        public scale(value: DataRepresentationAxisValueType): number {
-            if (!this.baseScale) {
-                return 0;
-            }
+        return this;
+    }
 
-            return this.baseScale(value);
-        }
-
-        public copy(): DataRepresentationScale {
-            return new DataRepresentationScale(
-                this.baseScale && this.baseScale.copy(),
-                this.isOrdinalScale);
-        }
-
-        public range(rangeValues): DataRepresentationScale {
-            if (this.baseScale) {
-                if (this.isOrdinalScale) {
-                    (this.baseScale as D3.Scale.OrdinalScale).rangePoints(rangeValues);
-                }
-                else {
-                    this.baseScale.range(rangeValues);
-                }
-            }
-
-            return this;
-        }
-
-        public get isOrdinal(): boolean {
-            return this.isOrdinalScale;
-        }
+    public get isOrdinal(): boolean {
+        return this.isOrdinalScale;
     }
 }

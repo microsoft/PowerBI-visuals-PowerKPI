@@ -24,28 +24,31 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class AxisReferenceLineDescriptor
-        extends BaseDescriptor
-        implements Descriptor {
+import {
+    BaseDescriptor,
+    Descriptor,
+} from "../../descriptor";
 
-        private _minThickness: number = 0.2;
-        private _maxThickness: number = 5;
+export class AxisReferenceLineDescriptor
+    extends BaseDescriptor
+    implements Descriptor {
 
-        public show: boolean;
-        public color: string = "#e9e9e9";
-        public thickness: number = 1;
+    private _minThickness: number = 0.2;
+    private _maxThickness: number = 5;
 
-        constructor(isShown: boolean = true) {
-            super();
+    public show: boolean;
+    public color: string = "#e9e9e9";
+    public thickness: number = 1;
 
-            this.show = isShown;
-        }
+    constructor(isShown: boolean = true) {
+        super();
 
-        public parse(): void {
-            this.thickness = Math.min(
-                Math.max(this._minThickness, this.thickness),
-                this._maxThickness);
-        }
+        this.show = isShown;
+    }
+
+    public parse(): void {
+        this.thickness = Math.min(
+            Math.max(this._minThickness, this.thickness),
+            this._maxThickness);
     }
 }

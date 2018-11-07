@@ -24,62 +24,66 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // powerbi.extensibility.utils.dataview
-    import DataViewObjects = powerbi.extensibility.utils.dataview.DataViewObjects;
-    import DataViewProperties = powerbi.extensibility.utils.dataview.DataViewProperties;
-    import DataViewObjectsParser = powerbi.extensibility.utils.dataview.DataViewObjectsParser;
+import powerbi from "powerbi-visuals-api";
 
-    // powerbi.extensibility.utils.dataview
-    export class SettingsBase extends DataViewObjectsParser {
-        public parse(dataView: DataView): SettingsBase {
-            return this.parseObjects(dataView
-                && dataView.metadata
-                && dataView.metadata.objects
-            );
-        }
+import {
+    dataViewObjects,
+    dataViewObjectsParser
+} from "powerbi-visuals-utils-dataviewutils";
 
-        public parseObjects(objects: DataViewObjects): SettingsBase {
-            if (objects) {
-                let properties: DataViewProperties = this.getProperties();
+import {
+    BaseDescriptor,
+    Descriptor,
+} from "./descriptors/descriptor";
 
-                for (let objectName in properties) {
-                    for (let propertyName in properties[objectName]) {
-                        const defaultValue: any = this[objectName][propertyName];
+export class SettingsBase extends dataViewObjectsParser.DataViewObjectsParser {
+    public parse(dataView: powerbi.DataView): SettingsBase {
+        return this.parseObjects(dataView
+            && dataView.metadata
+            && dataView.metadata.objects
+        );
+    }
 
-                        this[objectName][propertyName] = DataViewObjects.getCommonValue(
-                            objects,
-                            properties[objectName][propertyName],
-                            defaultValue);
-                    }
+    public parseObjects(objects: powerbi.DataViewObjects): SettingsBase {
+        if (objects) {
+            let properties: dataViewObjectsParser.DataViewProperties = this.getProperties();
 
-                    this.processDescriptor(this[objectName]);
+            for (let objectName in properties) {
+                for (let propertyName in properties[objectName]) {
+                    const defaultValue: any = this[objectName][propertyName];
+
+                    this[objectName][propertyName] = dataViewObjects.DataViewObjects.getCommonValue(
+                        objects,
+                        properties[objectName][propertyName],
+                        defaultValue);
                 }
-            }
 
-            return this as any;
+                this.processDescriptor(this[objectName]);
+            }
         }
 
-        protected processDescriptor(descriptor: Descriptor): void {
-            if (!descriptor || !descriptor.parse) {
-                return;
-            }
+        return this as any;
+    }
 
-            descriptor.parse();
+    protected processDescriptor(descriptor: Descriptor): void {
+        if (!descriptor || !descriptor.parse) {
+            return;
         }
 
-        public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstance[] {
-            const descriptor: BaseDescriptor = this[options.objectName];
+        descriptor.parse();
+    }
 
-            if (!descriptor) {
-                return [];
-            }
+    public enumerateObjectInstances(options: powerbi.EnumerateVisualObjectInstancesOptions): powerbi.VisualObjectInstance[] {
+        const descriptor: BaseDescriptor = this[options.objectName];
 
-            return [{
-                objectName: options.objectName,
-                selector: null,
-                properties: descriptor.enumerateProperties(),
-            }];
+        if (!descriptor) {
+            return [];
         }
+
+        return [{
+            objectName: options.objectName,
+            selector: null,
+            properties: descriptor.enumerateProperties(),
+        }];
     }
 }

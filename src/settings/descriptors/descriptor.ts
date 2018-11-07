@@ -24,55 +24,54 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // powerbi
-    import IViewport = powerbi.IViewport;
+import powerbi from "powerbi-visuals-api";
 
-    export interface DescriptorParserOptions {
-        isAutoHideBehaviorEnabled: boolean;
-        viewport: IViewport;
-        type: DataRepresentationTypeEnum;
-    }
+import { DataRepresentationTypeEnum } from "../../dataRepresentation/dataRepresentationType";
 
-    export interface Descriptor {
-        parse?(options?: DescriptorParserOptions): void;
-        setDefault?(): void;
-        getValueByKey?(key: string): string | number | boolean;
-        shouldKeyBeEnumerated?(key: string): boolean;
-    }
+export interface DescriptorParserOptions {
+    isAutoHideBehaviorEnabled: boolean;
+    viewport: powerbi.IViewport;
+    type: DataRepresentationTypeEnum;
+}
 
-    export abstract class BaseDescriptor {
-        public applyDefault(defaultSettings: BaseDescriptor) {
-            if (!defaultSettings) {
-                return;
-            }
+export interface Descriptor {
+    parse?(options?: DescriptorParserOptions): void;
+    setDefault?(): void;
+    getValueByKey?(key: string): string | number | boolean;
+    shouldKeyBeEnumerated?(key: string): boolean;
+}
 
-            Object
-                .keys(defaultSettings)
-                .forEach((propertyName: string) => {
-                    this[propertyName] = defaultSettings[propertyName];
-                });
+export abstract class BaseDescriptor {
+    public applyDefault(defaultSettings: BaseDescriptor) {
+        if (!defaultSettings) {
+            return;
         }
 
-        public enumerateProperties(): { [propertyName: string]: DataViewPropertyValue; } {
-            const properties: { [propertyName: string]: DataViewPropertyValue; } = {};
+        Object
+            .keys(defaultSettings)
+            .forEach((propertyName: string) => {
+                this[propertyName] = defaultSettings[propertyName];
+            });
+    }
 
-            for (let key in this) {
-                const shouldKeyBeEnumerated: boolean = (this as Descriptor).shouldKeyBeEnumerated
-                    ? (this as Descriptor).shouldKeyBeEnumerated(key)
-                    : this.hasOwnProperty(key);
+    public enumerateProperties(): { [propertyName: string]: powerbi.DataViewPropertyValue; } {
+        const properties: { [propertyName: string]: powerbi.DataViewPropertyValue; } = {};
 
-                if (shouldKeyBeEnumerated) {
-                    if ((this as Descriptor).getValueByKey) {
-                        properties[key] = (this as Descriptor).getValueByKey(key);
-                    } else {
-                        properties[key] = this[key] as any;
-                    }
+        for (let key in this) {
+            const shouldKeyBeEnumerated: boolean = (this as Descriptor).shouldKeyBeEnumerated
+                ? (this as Descriptor).shouldKeyBeEnumerated(key)
+                : this.hasOwnProperty(key);
+
+            if (shouldKeyBeEnumerated) {
+                if ((this as Descriptor).getValueByKey) {
+                    properties[key] = (this as Descriptor).getValueByKey(key);
+                } else {
+                    properties[key] = this[key] as any;
                 }
             }
-
-            return properties;
         }
-    }
 
+        return properties;
+    }
 }
+

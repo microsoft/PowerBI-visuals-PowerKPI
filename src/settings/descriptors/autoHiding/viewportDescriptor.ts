@@ -24,10 +24,12 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class ViewportDescriptor extends BaseDescriptor  {
-        constructor(protected _viewport: IViewport = { width: 0, height: 0 }) {
-            super();
-        }
+import powerbi from "powerbi-visuals-api";
+
+import { BaseDescriptor } from "../descriptor";
+
+export class ViewportDescriptor extends BaseDescriptor {
+    constructor(protected _viewport: powerbi.IViewport = { width: 0, height: 0 }) {
+        super();
     }
 }
