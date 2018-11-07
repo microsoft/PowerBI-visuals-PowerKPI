@@ -1,0 +1,462 @@
+/**
+ *  Power BI Visualizations
+ *
+ *  Copyright (c) Microsoft Corporation
+ *  All rights reserved.
+ *  MIT License
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the ""Software""), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  THE SOFTWARE.
+ */
+
+.vcBody,
+.powerKpi_powerKPI,
+.powerKpi_powerKPI * {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+@font-face {
+    font-family: 'PowerKPIGlyph';
+    src: data-uri('../../../../../../Externals/StyleLibrary/asset-powerbi-font/fonts/PowerVisuals.eot') format('embedded-opentype'),
+        data-uri('../../../../../../Externals/StyleLibrary/asset-powerbi-font/fonts/PowerVisuals.woff') format('woff'),
+        data-uri('../../../../../../Externals/StyleLibrary/asset-powerbi-font/fonts/PowerVisuals.ttf') format('truetype'),
+        data-uri('../../../../../../Externals/StyleLibrary/asset-powerbi-font/fonts/PowerVisuals.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.powerKpi_powerKPI {
+    .powerKPI_glyphIcon {
+        font-family: PowerKPIGlyph;
+        font-size: 12px;
+        font-weight: normal;
+        font-style: normal;
+        display: inline-block;
+
+        position: relative;
+
+        &.circle-full::before {
+            content: '\E735';
+        }
+
+        &.triangle::before {
+            content: '\E71B';
+        }
+
+        &.rhombus::before {
+            content: '\E719';
+        }
+
+        &.square::before {
+            content: '\E713';
+        }
+
+        &.flag::before {
+            content: '\E70D';
+        }
+
+        &.exclamation::before {
+            content: '\E715';
+        }
+
+        &.checkmark::before {
+            content: '\E718';
+        }
+
+        &.arrow-up::before {
+            content: '\E107';
+        }
+
+        &.arrow-right-up::before {
+            content: '\E108';
+        }
+
+        &.arrow-right-down::before {
+            content: '\E110';
+        }
+
+        &.arrow-down::before {
+            content: '\E111';
+        }
+
+        &.caret-up::before {
+            content: '\E115';
+        }
+
+        &.caret-down::before {
+            content: '\E116';
+        }
+
+        &.circle-empty::before {
+            content: '\E734';
+        }
+
+        &.circle-x::before {
+            content: '\E70E';
+        }
+
+        &.circle-exclamation::before {
+            content: '\E70F';
+        }
+
+        &.circle-checkmark::before {
+            content: '\E710';
+        }
+
+        &.x::before {
+            content: '\E714';
+        }
+
+        &.star-empty::before {
+            content: '\E71C';
+        }
+
+        &.star-full::before {
+            content: '\E724';
+        }
+    }
+
+    .visualYAxis,
+    .visualXAxisContainer,
+    .powerKpi_svgComponentContainer {
+        height: 0;
+    }
+
+    .italicStyle,
+    .powerKpi_italic {
+        font-style: italic;
+    }
+
+    .boldStyle,
+    .powerKpi_bold {
+        font-weight: bold;
+    }
+
+    .displayFlex {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+    }
+
+    .flexOrder(@order) {
+        -webkit-box-ordinal-group: @order + 1;
+        -ms-flex-order: @order;
+        order: @order
+    }
+
+    .columnLayout {
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+    }
+
+    .columnReversedLayout {
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: reverse;
+        -ms-flex-direction: column-reverse;
+        flex-direction: column-reverse;
+    }
+
+    .rowLayout {
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+        flex-direction: row;
+    }
+
+    .rowReversedLayout {
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: reverse;
+        -ms-flex-direction: row-reverse;
+        flex-direction: row-reverse;
+    }
+
+    .invisible {
+        display: none !important;
+    }
+
+    .hiddenElement {
+        opacity: 0 !important;
+        visibility: hidden !important;
+    }
+
+    .textOverflow {
+        overflow: hidden;
+        text-align: left;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .powerKpi_commonComponent {
+        .displayFlex();
+
+        // It's a small workaround in order to use flex-box model instead of absolute position and extra margins.
+        .legend {
+            margin: 0 !important;
+            position: static !important;
+        }
+    }
+
+    .powerKpi_layoutComponent {
+        .displayFlex();
+    }
+
+    .kpiComponentRow {
+        > * {
+            -webkit-box-flex: 1;
+            -ms-flex-positive: 1;
+            flex-grow: 1;
+        }
+
+        .alignLeft {
+            -ms-flex-item-align: start;
+            align-self: flex-start;
+        }
+
+        .alignCenter {
+            -ms-flex-item-align: center;
+            align-self: center;
+        }
+
+        .alignRight {
+            -ms-flex-item-align: end;
+            align-self: flex-end;
+        }
+
+        .contentLeft {
+            -webkit-box-pack: start;
+            -ms-flex-pack: start;
+            justify-content: flex-start
+        }
+
+        .contentRight {
+            -webkit-box-pack: end;
+            -ms-flex-pack: end;
+            justify-content: flex-end;
+        }
+    }
+
+    .kpiComponentColumn {
+        -webkit-box-align: start;
+        -ms-flex-align: start;
+        align-items: flex-start;
+
+        > * {
+            max-width: 100%;
+        }
+    }
+
+    .kpiComponent {
+        @commonPadding: 5px;
+
+        .displayFlex();
+
+        -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+
+        max-width: 33%;
+
+        padding-bottom: @commonPadding;
+        padding-top: @commonPadding;
+
+        .dateKPIComponent {
+            .flexOrder(1);
+        }
+
+        .valueKPIComponent {
+            .flexOrder(2);
+        }
+
+        .varianceComponentWithCustomLabel {
+            .flexOrder(3);
+        }
+
+        .varianceComponentWithSymbol {
+            .flexOrder(4);
+        }
+
+        .captionKPIComponent {
+            .displayFlex();
+
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+            flex-direction: column;
+
+            .captionKPIComponentInnerContainer {
+                max-width: 100%;
+
+                .displayFlex();
+
+                -webkit-box-orient: vertical;
+                -webkit-box-direction: normal;
+                -ms-flex-direction: column;
+                flex-direction: column;
+
+                .kpiCaption,
+                .kpiCaptionContainer {
+                    .textOverflow();
+                }
+
+                .kpiCaptionContainer {
+                    .displayFlex();
+
+                    -webkit-box-align: center;
+                    -ms-flex-align: center;
+                    align-items: center;
+
+                    -webkit-box-orient: horizontal;
+                    -webkit-box-direction: normal;
+                    -ms-flex-direction: row;
+                    flex-direction: row;
+                }
+            }
+        }
+
+        .varianceComponentWithSymbol {
+            .captionKPIComponentInnerContainer {
+                .kpiIndicator {
+                    padding: 2px 3px 0px 3px;
+                }
+
+                .fakedKPIIndicator {
+                    padding: 2px 0px 0px 3px !important;
+                    width: 1em !important;
+                    height: 1px !important;
+                }
+            }
+        }
+    }
+
+    .powerKpi_plot {
+        .displayFlex();
+
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -webkit-box-pack: start;
+        -ms-flex-pack: start;
+        justify-content: flex-start;
+
+        overflow: hidden;
+
+        .visualYAxis {
+            .flexOrder(1);
+        }
+
+        .powerKpi_verticalLineComponent {
+            .verticalLine {
+                stroke: #666;
+                pointer-events: none;
+                stroke-width: 1px;
+            }
+        }
+
+        .powerKpi_svgComponent {
+            overflow: visible;
+
+            .powerKpi_comboComponent {
+                .powerKpi_lineComponent {
+                    .dottedLine {
+                        stroke-dasharray: 1, 5;
+                    }
+
+                    .dashedLine {
+                        stroke-dasharray: 5, 10;
+                    }
+
+                    .dotDashedLine {
+                        stroke-dasharray: 5, 5, 1, 5;
+                    }
+
+                    .powerKpi_lineComponent_line {
+                        fill: transparent;
+                    }
+                }
+
+                .powerKpi_areaComponent {
+                    .powerKpi_areaComponent_area {
+                        stroke: transparent;
+                        stroke-width: 0;
+                    }
+                }
+            }
+
+            .powerKpi_labelsComponent {
+                .label {
+                    text-anchor: middle;
+                    pointer-events: none;
+                }
+            }
+        }
+
+        .visualXAxis {
+            overflow: visible;
+
+            width: 100%;
+            .displayFlex();
+
+            .visualXAxisContainer {
+                overflow: visible;
+            }
+        }
+
+        .visualXAxis,
+        .powerKpi_visualYAxis {
+            overflow: visible;
+
+            .tick {
+                line,
+                path {
+                    display: none !important;
+                }
+            }
+        }
+    }
+
+    .powerKpi_subtitleComponent .subtitle {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: pre;
+    }
+}
+
+.powerKPI_phantom_js {
+    .powerKpi_plot {
+        display: block !important;
+        position: relative !important;
+
+        .visualYAxis {
+            float: left !important;
+        }
+
+        .visualXAxis {
+            position: absolute;
+            bottom: 0;
+
+            .visualXAxisContainer {
+                height: 2em !important;
+            }
+        }
+    }
+}

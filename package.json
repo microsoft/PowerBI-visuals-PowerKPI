@@ -1,0 +1,28 @@
+{
+  "name": "powerbi-visuals-powerkpi",
+  "version": "2.0.0",
+  "description": "A powerful KPI Indicator with multi-line chart and labels for current date, value and variances. Rich customization options, including current status labels and symbols, trend and comparison lines, multiple variances, auto-scaling, text formatting, and density controls. Highly flexible for use in large, detailed report tiles or tiny, summary dashboard tiles.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Microsoft/PowerBI-visuals-PowerKPI.git"
+  },
+  "keywords": [
+    "powerbi-visuals",
+    "PowerKPI",
+    "Power KPI",
+    "KPI"
+  ],
+  "author": {
+    "name": "Microsoft",
+    "email": "pbicvsupport@microsoft.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Microsoft/PowerBI-visuals-PowerKPI/issues"
+  },
+  "homepage": "https://github.com/Microsoft/PowerBI-visuals-PowerKPI#readme"
+}
