@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/Microsoft/PowerBI-visuals-PowerKPI/issues"
   },
-  "homepage": "https://github.com/Microsoft/PowerBI-visuals-PowerKPI#readme"
+  "homepage": "https://github.com/Microsoft/PowerBI-visuals-PowerKPI#readme",
+  "devDependencies": {
+    "powerbi-visuals-api": "^2.2.1"
+  }
 }
