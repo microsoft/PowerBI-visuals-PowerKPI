@@ -26,6 +26,8 @@
 
 import powerbi from "powerbi-visuals-api";
 
+import { HorizontalLayoutEnum } from "../../../layout/horizontalLayoutEnum";
+
 import { FontSizeDescriptor } from "../autoHiding/fontSizeDescriptor";
 // powerbi.data
 // import DataViewObjectPropertyDescriptors = powerbi.data.DataViewObjectPropertyDescriptors;

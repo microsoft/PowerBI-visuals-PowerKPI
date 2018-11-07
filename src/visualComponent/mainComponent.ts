@@ -24,95 +24,106 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // jsCommon.CssConstants
-    import PixelConverter = jsCommon.PixelConverter;
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
-    export class MainComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions> {
+import { BaseContainerComponent } from "./base/baseContainerComponent";
 
-        private className: string = "powerKPI";
-        private classNameForPhantomJs: string = "powerKPI_phantom_js";
+import {
+    VisualComponent,
+    VisualComponentViewport
+} from "./base/visualComponent";
 
-        constructor(options: VisualComponentConstructorOptions) {
-            super();
+import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
-            this.initElement(
-                options.element,
-                this.className
-            );
+import { SubtitleComponent } from "./subtitleComponent";
+import { CommonComponent } from "./commonComponent";
 
-            this.element.classed(this.classNameForPhantomJs, this.isExecutedInPhantomJs());
+import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorDescriptor";
 
-            this.constructorOptions = {
-                ...options,
-                element: this.element,
-            };
+export class MainComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions> {
 
-            this.components = [
-                new SubtitleComponent(this.constructorOptions),
-                new CommonComponent(this.constructorOptions),
-            ];
+    private className: string = "powerKPI";
+    private classNameForPhantomJs: string = "powerKPI_phantom_js";
+
+    constructor(options: VisualComponentConstructorOptions) {
+        super();
+
+        this.initElement(
+            options.element,
+            this.className
+        );
+
+        this.element.classed(this.classNameForPhantomJs, this.isExecutedInPhantomJs());
+
+        this.constructorOptions = {
+            ...options,
+            element: this.element,
+        };
+
+        this.components = [
+            new SubtitleComponent(this.constructorOptions),
+            new CommonComponent(this.constructorOptions),
+        ];
+    }
+
+    /**
+     * We detect Phantom JS in order to detect PBI Snapshot Service
+     * This is required as phantom js does not support CSS Flex Box well
+     *
+     * This code must be removed once PBI Snapshot Service is updated to Chromium
+     */
+    private isExecutedInPhantomJs(): boolean {
+        try {
+            return /PhantomJS/.test(window.navigator.userAgent);
+        } catch (_) {
+            return false;
         }
+    }
 
-        /**
-         * We detect Phantom JS in order to detect PBI Snapshot Service
-         * This is required as phantom js does not support CSS Flex Box well
-         *
-         * This code must be removed once PBI Snapshot Service is updated to Chromium
-         */
-        private isExecutedInPhantomJs(): boolean {
-            try {
-                return /PhantomJS/.test(window.navigator.userAgent);
-            } catch (_) {
-                return false;
+    public render(options: VisualComponentRenderOptions): void {
+        const {
+            data: {
+                series,
+                viewport,
+                settings: {
+                    kpiIndicator
+                }
+            }
+        } = options;
+
+        let backgroundColor: string = null;
+
+        if (kpiIndicator.shouldBackgroundColorMatchKpiColor
+            && series
+            && series.length > 0
+            && series[0]
+            && series[0].current
+        ) {
+            const kpiIndicatorSettings: IKPIIndicatorSettings = kpiIndicator.getCurrentKPI(series[0].current.kpiIndex);
+
+            if (kpiIndicatorSettings && kpiIndicatorSettings.color) {
+                backgroundColor = kpiIndicatorSettings.color;
             }
         }
 
-        public render(options: VisualComponentRenderOptions): void {
-            const {
-                data: {
-                    series,
-                    viewport,
-                    settings: {
-                        kpiIndicator
-                    }
-                }
-            } = options;
+        this.element
+            .style("width", pixelConverter.toString(viewport.width))
+            .style("height", pixelConverter.toString(viewport.height))
+            .style("background-color", backgroundColor);
 
-            let backgroundColor: string = null;
+        this.forEach(
+            this.components,
+            (component: VisualComponent<VisualComponentRenderOptions>) => {
+                component.render(options);
 
-            if (kpiIndicator.shouldBackgroundColorMatchKpiColor
-                && series
-                && series.length > 0
-                && series[0]
-                && series[0].current
-            ) {
-                const kpiIndicatorSettings: IKPIIndicatorSettings = kpiIndicator.getCurrentKPI(series[0].current.kpiIndex);
+                if (component.getViewport) {
+                    const margins: VisualComponentViewport = component.getViewport();
 
-                if (kpiIndicatorSettings && kpiIndicatorSettings.color) {
-                    backgroundColor = kpiIndicatorSettings.color;
+                    options.data.viewport.height -= margins.height;
+                    options.data.viewport.width -= margins.width;
                 }
             }
-
-            this.element.style({
-                width: PixelConverter.toString(viewport.width),
-                height: PixelConverter.toString(viewport.height),
-                "background-color": backgroundColor,
-            });
-
-            this.forEach(
-                this.components,
-                (component: VisualComponent<VisualComponentRenderOptions>) => {
-                    component.render(options);
-
-                    if (component.getViewport) {
-                        const margins: VisualComponentViewport = component.getViewport();
-
-                        options.data.viewport.height -= margins.height;
-                        options.data.viewport.width -= margins.width;
-                    }
-                }
-            );
-        }
+        );
     }
 }

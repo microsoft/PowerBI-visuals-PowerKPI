@@ -26,6 +26,19 @@
 
 import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
 
+import {
+    DataRepresentationPoint,
+    DataRepresentationPointGradientColor,
+} from "./dataRepresentationPoint";
+
+import { DataRepresentationPointIndexed } from "./dataRepresentationPointIndexed";
+
+import {
+    DataRepresentationAxis,
+    DataRepresentationAxisBase,
+} from "./dataRepresentationAxis";
+
+import { SeriesSettings } from "../settings/seriesSettings";
 
 export interface DataRepresentationSeries extends interactivityService.SelectableDataPoint {
     points: DataRepresentationPoint[];

@@ -24,233 +24,250 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // jsCommon
-    import PixelConverter = jsCommon.PixelConverter;
-    import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
-    import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
+import {
+    Selection,
+} from "d3";
 
-    export abstract class BaseComponent<ConstructorOptionsType extends VisualComponentConstructorOptions, RenderOptionsType> implements VisualComponent<RenderOptionsType> {
-        private isComponentShown: boolean = true;
-        private classNamePrefix: string = "powerKpi_";
+import powerbi from "powerbi-visuals-api";
 
-        protected hiddenClassName: string = this.getClassNameWithPrefix("hidden");
 
-        protected boldClassName: string = this.getClassNameWithPrefix("bold");
-        protected italicClassName: string = this.getClassNameWithPrefix("italic");
-        protected underlinedClassName: string = this.getClassNameWithPrefix("underlined");
+import { EventName } from "../../event/eventName";
 
-        protected element: D3.Selection;
+import {
+    CssConstants,
+} from "powerbi-visuals-utils-svgutils";
 
-        protected constructorOptions: ConstructorOptionsType;
-        protected renderOptions: RenderOptionsType;
+import {
+    pixelConverter,
+} from "powerbi-visuals-utils-typeutils";
 
-        protected minWidth: number = 20;
-        protected width: number = 0;
+import {
+    VisualComponentConstructorOptions
+} from "./visualComponentConstructorOptions";
 
-        protected minHeight: number = 20;
-        protected height: number = 0;
+import {
+    VisualComponent,
+    VisualComponentViewport,
+} from "./visualComponent";
 
-        public abstract render(options: RenderOptionsType): void;
+export abstract class BaseComponent<ConstructorOptionsType extends VisualComponentConstructorOptions, RenderOptionsType> implements VisualComponent<RenderOptionsType> {
+    private isComponentShown: boolean = true;
+    private classNamePrefix: string = "powerKpi_";
 
-        public highlight(hasSelection: boolean): void { }
+    protected hiddenClassName: string = this.getClassNameWithPrefix("hidden");
 
-        public initElement(
-            baseElement: D3.Selection,
-            className: string,
-            tagName: string = "div"
-        ): void {
-            this.element = this.createElement(
-                baseElement,
-                className,
-                tagName
-            );
+    protected boldClassName: string = this.getClassNameWithPrefix("bold");
+    protected italicClassName: string = this.getClassNameWithPrefix("italic");
+    protected underlinedClassName: string = this.getClassNameWithPrefix("underlined");
+
+    protected element: Selection<any, RenderOptionsType, any, any>;
+
+    protected constructorOptions: ConstructorOptionsType;
+    protected renderOptions: RenderOptionsType;
+
+    protected minWidth: number = 20;
+    protected width: number = 0;
+
+    protected minHeight: number = 20;
+    protected height: number = 0;
+
+    public abstract render(options: RenderOptionsType): void;
+
+    public highlight(hasSelection: boolean): void { }
+
+    public initElement(
+        baseElement: Selection<any, RenderOptionsType, any, any>,
+        className: string,
+        tagName: string = "div"
+    ): void {
+        this.element = this.createElement(
+            baseElement,
+            className,
+            tagName
+        );
+    }
+
+    protected createElement(
+        baseElement: Selection<any, RenderOptionsType, any, any>,
+        className: string,
+        tagName: string = "div"
+    ): Selection<any, RenderOptionsType, any, any> {
+        return baseElement
+            .append(tagName)
+            .classed(this.getClassNameWithPrefix(className), true);
+    }
+
+    protected getClassNameWithPrefix(className: string): string {
+        return className
+            ? `${this.classNamePrefix}${className}`
+            : className;
+    }
+
+    protected getSelectorWithPrefix(className: string): CssConstants.ClassAndSelector {
+        return CssConstants.createClassAndSelector(this.getClassNameWithPrefix(className));
+    }
+
+    public clear(): void {
+        if (!this.element) {
+            return;
         }
 
-        protected createElement(
-            baseElement: D3.Selection,
-            className: string,
-            tagName: string = "div"
-        ): D3.Selection {
-            return baseElement
-                .append(tagName)
-                .classed(this.getClassNameWithPrefix(className), true);
+        this.clearElement(this.element);
+    }
+
+    protected clearElement(element: Selection<any, any, any, any>): void {
+        element
+            .selectAll("*")
+            .remove();
+    }
+
+    public destroy(): void {
+        if (this.element) {
+            this.element.remove();
         }
 
-        protected getClassNameWithPrefix(className: string): string {
-            return className
-                ? `${this.classNamePrefix}${className}`
-                : className;
+        this.element = null;
+        this.constructorOptions = null;
+        this.renderOptions = null;
+    }
+
+    protected updateViewport(viewport: powerbi.IViewport): void {
+        this.element
+            .style("width", pixelConverter.toString(viewport.width))
+            .style("height", pixelConverter.toString(viewport.height));
+    }
+
+    public hide(): void {
+        if (!this.element || !this.isComponentShown) {
+            return;
         }
 
-        protected getSelectorWithPrefix(className: string): ClassAndSelector {
-            return createClassAndSelector(this.getClassNameWithPrefix(className));
+        this.element.style("display", "none");
+
+        this.isComponentShown = false;
+    }
+
+    public show(): void {
+        if (!this.element || this.isComponentShown) {
+            return;
         }
 
-        public clear(): void {
-            if (!this.element) {
-                return;
-            }
+        this.element.style("display", null);
 
-            this.clearElement(this.element);
+        this.isComponentShown = true;
+    }
+
+    public toggle(): void {
+        if (this.isComponentShown) {
+            this.hide();
+        } else {
+            this.show();
+        }
+    }
+
+    public get isShown(): boolean {
+        return this.isComponentShown;
+    }
+
+    protected updateBackgroundColor(element: Selection<any, any, any, any>, color: string): void {
+        if (!element) {
+            return;
         }
 
-        protected clearElement(element: D3.Selection): void {
-            element
-                .selectAll("*")
-                .remove();
+        element.style("background-color", color || null);
+    }
+
+    public updateSize(width: number, height: number): void {
+        if (!isNaN(width) && isFinite(width)) {
+            this.width = Math.max(this.minWidth, width);
+        } else {
+            this.width = undefined;
         }
 
-        public destroy(): void {
-            if (this.element) {
-                this.element.remove();
-            }
-
-            this.element = null;
-            this.constructorOptions = null;
-            this.renderOptions = null;
+        if (!isNaN(height) && isFinite(height)) {
+            this.height = Math.max(this.minHeight, height);
+        } else {
+            this.height = undefined;
         }
 
-        protected updateViewport(viewport: IViewport): void {
-            this.element.style({
-                width: PixelConverter.toString(viewport.width),
-                height: PixelConverter.toString(viewport.height)
-            });
+        this.updateSizeOfElement(this.width, this.height);
+    }
+
+    protected updateSizeOfElement(width: number, height: number): void {
+        if (!this.element) {
+            return;
         }
 
-        public hide(): void {
-            if (!this.element || !this.isComponentShown) {
-                return;
-            }
+        const styleObject: any = {};
 
-            this.element.style("display", "none");
+        styleObject["width"]
+            = styleObject["min-width"]
+            = styleObject["max-width"]
+            = width !== undefined && width !== null
+                ? pixelConverter.toString(width)
+                : null;
 
-            this.isComponentShown = false;
+        styleObject["height"]
+            = styleObject["min-height"]
+            = styleObject["max-height"]
+            = height !== undefined && height !== null
+                ? pixelConverter.toString(height)
+                : null;
+
+        this.element.style(styleObject);
+    }
+
+    public getViewport(): VisualComponentViewport {
+        return {
+            width: this.width,
+            height: this.height,
+        };
+    }
+
+    protected updateElementOrder(element: Selection<any, any, any, any>, order: number): void {
+        if (!element) {
+            return;
         }
 
-        public show(): void {
-            if (!this.element || this.isComponentShown) {
-                return;
-            }
+        const browserSpecificOrder: number = order + 1;
 
-            this.element.style("display", null);
+        element
+            .style("-webkit-box-ordinal-group", browserSpecificOrder)
+            .style("-ms-flex-order", order)
+            .style("order", order);
+    }
 
-            this.isComponentShown = true;
+    protected updateElementOpacity(
+        element: Selection<any, any, any, any>,
+        opacity: number,
+        selected: boolean,
+        hasSelection: boolean
+    ): void {
+        if (!element) {
+            return;
         }
 
-        public toggle(): void {
-            if (this.isComponentShown) {
-                this.hide();
-            } else {
-                this.show();
-            }
+        const shouldBeSelected: boolean = hasSelection
+            ? selected
+            : true;
+
+        element.style("opacity", shouldBeSelected ? opacity : opacity / 3);
+    }
+
+    public getRenderOptions(): RenderOptionsType {
+        return this.renderOptions || null;
+    }
+
+    protected clickHandler(): void {
+        if (!this.constructorOptions
+            || !this.constructorOptions.eventDispatcher
+        ) {
+            return;
         }
 
-        public get isShown(): boolean {
-            return this.isComponentShown;
-        }
-
-        protected updateBackgroundColor(element: D3.Selection, color: string): void {
-            if (!element) {
-                return;
-            }
-
-            element.style("background-color", color || null);
-        }
-
-        public updateSize(width: number, height: number): void {
-            if (!isNaN(width) && isFinite(width)) {
-                this.width = Math.max(this.minWidth, width);
-            } else {
-                this.width = undefined;
-            }
-
-            if (!isNaN(height) && isFinite(height)) {
-                this.height = Math.max(this.minHeight, height);
-            } else {
-                this.height = undefined;
-            }
-
-            this.updateSizeOfElement(this.width, this.height);
-        }
-
-        protected updateSizeOfElement(width: number, height: number): void {
-            if (!this.element) {
-                return;
-            }
-
-            const styleObject: any = {};
-
-            styleObject["width"]
-                = styleObject["min-width"]
-                = styleObject["max-width"]
-                = width !== undefined && width !== null
-                    ? PixelConverter.toString(width)
-                    : null;
-
-            styleObject["height"]
-                = styleObject["min-height"]
-                = styleObject["max-height"]
-                = height !== undefined && height !== null
-                    ? PixelConverter.toString(height)
-                    : null;
-
-            this.element.style(styleObject);
-        }
-
-        public getViewport(): VisualComponentViewport {
-            return {
-                width: this.width,
-                height: this.height,
-            };
-        }
-
-        protected updateElementOrder(element: D3.Selection, order: number): void {
-            if (!element) {
-                return;
-            }
-
-            const browserSpecificOrder: number = order + 1;
-
-            element.style({
-                "-webkit-box-ordinal-group": browserSpecificOrder,
-                "-ms-flex-order": order,
-                order,
-            });
-        }
-
-        protected updateElementOpacity(
-            element: D3.Selection,
-            opacity: number,
-            selected: boolean,
-            hasSelection: boolean
-        ): void {
-            if (!element) {
-                return;
-            }
-
-            const shouldBeSelected: boolean = hasSelection
-                ? selected
-                : true;
-
-            element.style("opacity", shouldBeSelected ? opacity : opacity / 3);
-        }
-
-        public getRenderOptions(): RenderOptionsType {
-            return this.renderOptions || null;
-        }
-
-        protected clickHandler(): void {
-            if (!this.constructorOptions
-                || !this.constructorOptions.eventDispatcher
-            ) {
-                return;
-            }
-
-            this.constructorOptions.eventDispatcher[EventName.onClick](
-                this,
-                d3.event,
-            );
-        }
+        this.constructorOptions.eventDispatcher[EventName.onClick](
+            this,
+            require("d3-selection").event,
+        );
     }
 }

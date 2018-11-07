@@ -31,6 +31,9 @@ import {
     DataRepresentationSeriesGroup,
 } from "./dataRepresentationSeries";
 
+import { Settings } from "../settings/settings";
+import { DataRepresentationX } from "./dataRepresentationAxis";
+
 export interface IMargin {
     top: number;
     bottom: number;

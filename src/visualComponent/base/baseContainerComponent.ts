@@ -24,81 +24,82 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export abstract class BaseContainerComponent<ConstructorOptionsType, RenderOptionsType, ComponentsRenderOptions>
-        extends BaseComponent<ConstructorOptionsType, RenderOptionsType> {
+import { VisualComponent } from "./visualComponent";
+import { BaseComponent } from "./baseComponent";
 
-        protected components: VisualComponent<ComponentsRenderOptions>[] = [];
+export abstract class BaseContainerComponent<ConstructorOptionsType, RenderOptionsType, ComponentsRenderOptions>
+    extends BaseComponent<ConstructorOptionsType, RenderOptionsType> {
 
-        public clear(components: VisualComponent<ComponentsRenderOptions>[] = this.components): void {
-            this.forEach(
-                components,
-                (component: VisualComponent<ComponentsRenderOptions>) => {
-                    component.clear();
-                }
-            );
+    protected components: VisualComponent<ComponentsRenderOptions>[] = [];
 
-            super.clear();
-        }
-
-        public destroy(components: VisualComponent<any>[] = this.components): void {
-            this.destroyComponents(components);
-
-            super.destroy();
-        }
-
-        protected destroyComponents(components: VisualComponent<any>[] = this.components): void {
-            this.forEach(
-                components.splice(0, components.length),
-                (component: VisualComponent<any>) => {
-                    component.destroy();
-                }
-            );
-        }
-
-        protected forEach<ComponentsRenderOptions>(
-            components: VisualComponent<ComponentsRenderOptions>[],
-            iterator: (
-                component: VisualComponent<ComponentsRenderOptions>,
-                index: number
-            ) => void
-        ): void {
-            components.forEach((component: VisualComponent<ComponentsRenderOptions>, index: number) => {
-                if (component) {
-                    iterator(component, index);
-                }
-            });
-        }
-
-        protected initComponents<ComponentsRenderOptions>(
-            components: VisualComponent<ComponentsRenderOptions>[],
-            expectedAmountOfComponents: number,
-            initComponent: (index: number) => VisualComponent<ComponentsRenderOptions>
-        ): void {
-            if (!components) {
-                return;
+    public clear(components: VisualComponent<ComponentsRenderOptions>[] = this.components): void {
+        this.forEach(
+            components,
+            (component: VisualComponent<ComponentsRenderOptions>) => {
+                component.clear();
             }
+        );
 
-            components
-                .splice(expectedAmountOfComponents)
-                .forEach((component: VisualComponent<ComponentsRenderOptions>) => {
-                    component.clear();
-                    component.destroy();
-                });
+        super.clear();
+    }
 
-            if (components.length < expectedAmountOfComponents) {
-                for (let index: number = components.length; index < expectedAmountOfComponents; index++) {
-                    components.push(initComponent(index));
-                }
+    public destroy(components: VisualComponent<any>[] = this.components): void {
+        this.destroyComponents(components);
+
+        super.destroy();
+    }
+
+    protected destroyComponents(components: VisualComponent<any>[] = this.components): void {
+        this.forEach(
+            components.splice(0, components.length),
+            (component: VisualComponent<any>) => {
+                component.destroy();
+            }
+        );
+    }
+
+    protected forEach<ComponentsRenderOptions>(
+        components: VisualComponent<ComponentsRenderOptions>[],
+        iterator: (
+            component: VisualComponent<ComponentsRenderOptions>,
+            index: number
+        ) => void
+    ): void {
+        components.forEach((component: VisualComponent<ComponentsRenderOptions>, index: number) => {
+            if (component) {
+                iterator(component, index);
+            }
+        });
+    }
+
+    protected initComponents<ComponentsRenderOptions>(
+        components: VisualComponent<ComponentsRenderOptions>[],
+        expectedAmountOfComponents: number,
+        initComponent: (index: number) => VisualComponent<ComponentsRenderOptions>
+    ): void {
+        if (!components) {
+            return;
+        }
+
+        components
+            .splice(expectedAmountOfComponents)
+            .forEach((component: VisualComponent<ComponentsRenderOptions>) => {
+                component.clear();
+                component.destroy();
+            });
+
+        if (components.length < expectedAmountOfComponents) {
+            for (let index: number = components.length; index < expectedAmountOfComponents; index++) {
+                components.push(initComponent(index));
             }
         }
+    }
 
-        public highlight(hasSelection: boolean, components: VisualComponent<ComponentsRenderOptions>[] = this.components): void {
-            this.forEach(components, (component: VisualComponent<ComponentsRenderOptions>) => {
-                if (component.highlight) {
-                    component.highlight(hasSelection);
-                }
-            });
-        }
+    public highlight(hasSelection: boolean, components: VisualComponent<ComponentsRenderOptions>[] = this.components): void {
+        this.forEach(components, (component: VisualComponent<ComponentsRenderOptions>) => {
+            if (component.highlight) {
+                component.highlight(hasSelection);
+            }
+        });
     }
 }

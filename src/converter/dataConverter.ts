@@ -24,610 +24,608 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // powerbi
-    import ValueTypeDescriptor = powerbi.ValueTypeDescriptor;
+// powerbi
+import ValueTypeDescriptor = powerbi.ValueTypeDescriptor;
 
-    // powerbi.visuals
-    import SelectionId = powerbi.visuals.SelectionId;
-    import SelectionIdBuilder = powerbi.visuals.SelectionIdBuilder;
+// powerbi.visuals
+import SelectionId = powerbi.visuals.SelectionId;
+import SelectionIdBuilder = powerbi.visuals.SelectionIdBuilder;
 
-    export class DataConverter
-        extends VarianceConverter
-        implements Converter {
+export class DataConverter
+    extends VarianceConverter
+    implements Converter {
 
-        public convert(options: ConverterOptions): DataRepresentation {
-            const dataRepresentation: DataRepresentation = this.process(options);
+    public convert(options: ConverterOptions): DataRepresentation {
+        const dataRepresentation: DataRepresentation = this.process(options);
 
-            this.postProcess(dataRepresentation);
+        this.postProcess(dataRepresentation);
 
+        return dataRepresentation;
+    }
+
+    public process(options: ConverterOptions): DataRepresentation {
+        const {
+            dataView,
+            viewport,
+            style,
+            hasSelection,
+        } = options;
+
+        const settings: Settings = Settings.parse(dataView) as Settings;
+
+        let type: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
+
+        const dataRepresentation: DataRepresentation = {
+            viewport,
+            settings,
+            series: [],
+            groups: [],
+            sortedSeries: [],
+            x: {
+                type,
+                values: [],
+                min: undefined,
+                max: undefined,
+                metadata: undefined,
+                name: undefined,
+                format: undefined,
+                scale: DataRepresentationScale.create()
+            },
+            variance: [],
+            variances: [],
+            margin: {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0
+            },
+            isGrouped: false,
+        };
+
+        if (!dataView
+            || !dataView.categorical
+            || !dataView.categorical.categories
+            || !dataView.categorical.categories[0]
+            || !dataView.categorical.categories[0].values
+            || !dataView.categorical.values
+            || !dataView.categorical.values.grouped
+        ) {
             return dataRepresentation;
         }
 
-        public process(options: ConverterOptions): DataRepresentation {
-            const {
-                dataView,
-                viewport,
-                style,
-                hasSelection,
-            } = options;
+        const axisCategory: DataViewCategoryColumn = dataView.categorical.categories[0];
 
-            const settings: Settings = Settings.parse(dataView) as Settings;
+        dataRepresentation.x.metadata = axisCategory.source;
+        dataRepresentation.x.name = axisCategory.source.displayName;
 
-            let type: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
+        settings.parse(dataView);
 
-            const dataRepresentation: DataRepresentation = {
-                viewport,
-                settings,
-                series: [],
-                groups: [],
-                sortedSeries: [],
-                x: {
-                    type,
-                    values: [],
-                    min: undefined,
-                    max: undefined,
-                    metadata: undefined,
-                    name: undefined,
-                    format: undefined,
-                    scale: DataRepresentationScale.create()
-                },
-                variance: [],
-                variances: [],
-                margin: {
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0
-                },
-                isGrouped: false,
-            };
+        const axisCategoryType: ValueTypeDescriptor = axisCategory.source.type;
 
-            if (!dataView
-                || !dataView.categorical
-                || !dataView.categorical.categories
-                || !dataView.categorical.categories[0]
-                || !dataView.categorical.categories[0].values
-                || !dataView.categorical.values
-                || !dataView.categorical.values.grouped
-            ) {
-                return dataRepresentation;
-            }
+        if (axisCategoryType.text) {
+            settings.xAxis.type = AxisType.categorical;
+        }
 
-            const axisCategory: DataViewCategoryColumn = dataView.categorical.categories[0];
+        if (axisCategoryType.text || settings.xAxis.type === AxisType.categorical) {
+            type = DataRepresentationTypeEnum.StringType;
+        } else if (axisCategoryType.dateTime) {
+            type = DataRepresentationTypeEnum.DateType;
+        } else if (axisCategoryType.integer || axisCategoryType.numeric) {
+            type = DataRepresentationTypeEnum.NumberType;
+        }
 
-            dataRepresentation.x.metadata = axisCategory.source;
-            dataRepresentation.x.name = axisCategory.source.displayName;
+        settings.parseSettings(viewport, type);
 
-            settings.parse(dataView);
+        dataRepresentation.x.type = type;
 
-            const axisCategoryType: ValueTypeDescriptor = axisCategory.source.type;
+        let maxThickness: number = NaN;
 
-            if (axisCategoryType.text) {
-                settings.xAxis.type = AxisType.categorical;
-            }
+        let seriesColorIndex: number = 0;
 
-            if (axisCategoryType.text || settings.xAxis.type === AxisType.categorical) {
-                type = DataRepresentationTypeEnum.StringType;
-            } else if (axisCategoryType.dateTime) {
-                type = DataRepresentationTypeEnum.DateType;
-            } else if (axisCategoryType.integer || axisCategoryType.numeric) {
-                type = DataRepresentationTypeEnum.NumberType;
-            }
+        if (dataView.categorical.values
+            && dataView.categorical.values.source
+            && dataView.categorical.values.source.displayName
+            && settings.legend.titleText === undefined
+        ) {
+            settings.legend.titleText = dataView.categorical.values.source.displayName;
+        }
 
-            settings.parseSettings(viewport, type);
+        const axisCategoryFormat: string = this.getFormatStringByColumn(axisCategory && axisCategory.source);
 
-            dataRepresentation.x.type = type;
+        dataRepresentation.settings.dateValueKPI.setColumnFormat(axisCategoryFormat);
+        dataRepresentation.settings.tooltipLabel.setColumnFormat(axisCategoryFormat);
 
-            let maxThickness: number = NaN;
+        // Applies series formats
+        dataRepresentation.x.format = dataRepresentation.settings.dateValueKPI.getFormat();
 
-            let seriesColorIndex: number = 0;
+        dataView.categorical.values.grouped().forEach((group: DataViewValueColumnGroup) => {
+            const groupedValues: DataViewValueColumn[] = group.values;
 
-            if (dataView.categorical.values
-                && dataView.categorical.values.source
-                && dataView.categorical.values.source.displayName
-                && settings.legend.titleText === undefined
-            ) {
-                settings.legend.titleText = dataView.categorical.values.source.displayName;
-            }
-
-            const axisCategoryFormat: string = this.getFormatStringByColumn(axisCategory && axisCategory.source);
-
-            dataRepresentation.settings.dateValueKPI.setColumnFormat(axisCategoryFormat);
-            dataRepresentation.settings.tooltipLabel.setColumnFormat(axisCategoryFormat);
-
-            // Applies series formats
-            dataRepresentation.x.format = dataRepresentation.settings.dateValueKPI.getFormat();
-
-            dataView.categorical.values.grouped().forEach((group: DataViewValueColumnGroup) => {
-                const groupedValues: DataViewValueColumn[] = group.values;
-
-                const currentKPIColumn: DataViewValueColumn[] = groupedValues
-                    .filter((groupedValue: DataViewValueColumn) => {
-                        return groupedValue.source.roles[kpiColumn.name];
-                    });
-
-                const kpiIndexes: number[] = (currentKPIColumn
-                    && currentKPIColumn[0]
-                    && currentKPIColumn[0].values as number[]
-                ) || [];
-
-                groupedValues.forEach((groupedValue: DataViewValueColumn) => {
-                    const format: string = this.getFormatStringByColumn(groupedValue.source);
-
-                    if (groupedValue.source.roles[kpiIndicatorValueColumn.name]) {
-                        dataRepresentation.variances[0] = groupedValue.values as number[];
-
-                        settings.kpiIndicatorValue.setColumnFormat(format);
-                        settings.tooltipVariance.setColumnFormat(format);
-                    }
-
-                    if (groupedValue.source.roles[secondKPIIndicatorValueColumn.name]) {
-                        dataRepresentation.variances[1] = groupedValue.values as number[];
-
-                        settings.secondKPIIndicatorValue.setColumnFormat(format);
-                        settings.secondTooltipVariance.setColumnFormat(format);
-                    }
-
-                    let groupIndex: number = -1;
-
-                    if (groupedValue.source.roles[valuesColumn.name]) {
-                        groupIndex = 0;
-                    } else if (groupedValue.source.roles[secondaryValuesColumn.name]) {
-                        groupIndex = 1;
-                    }
-
-                    if (groupIndex !== -1) {
-
-                        if (!dataRepresentation.groups[groupIndex]) {
-                            dataRepresentation.groups[groupIndex] = {
-                                series: [],
-                                y: {
-                                    format,
-                                    min: undefined,
-                                    max: undefined,
-                                    scale: DataRepresentationScale.create(),
-                                }
-                            };
-                        }
-
-                        const seriesGroup: DataRepresentationSeriesGroup = dataRepresentation.groups[groupIndex];
-
-                        const currentPoint: DataRepresentationPointIndexed = {
-                            x: null,
-                            y: NaN,
-                            index: NaN,
-                            kpiIndex: NaN,
-                            color: undefined,
-                        };
-
-                        const seriesSettings: SeriesSettings = (SeriesSettings.getDefault() as SeriesSettings);
-
-                        for (const propertyName in seriesSettings) {
-                            const descriptor: BaseDescriptor = seriesSettings[propertyName];
-                            const defaultDescriptor: BaseDescriptor = settings[propertyName];
-
-                            if (descriptor && descriptor.applyDefault && defaultDescriptor) {
-                                descriptor.applyDefault(defaultDescriptor);
-                            }
-                        }
-
-                        seriesSettings.parseObjects(group.objects || groupedValue.source.objects);
-
-                        if (!seriesSettings.line.fillColor
-                            && style
-                            && style.colorPalette
-                            && style.colorPalette.dataColors
-                        ) {
-                            seriesSettings.line.fillColor = style.colorPalette.dataColors
-                                .getColorByIndex(seriesColorIndex)
-                                .value;
-
-                            seriesColorIndex++;
-                        }
-
-                        const seriesY: DataRepresentationAxisBase = {
-                            min: undefined,
-                            max: undefined,
-                        };
-
-                        const { points, gradientPoints } = this.getGradientPoints(
-                            axisCategory.values as DataRepresentationAxisValueType[],
-                            dataRepresentation,
-                            seriesGroup,
-                            groupedValue,
-                            seriesY,
-                            kpiIndexes,
-                            seriesSettings,
-                            settings,
-                            currentPoint,
-                        );
-
-                        const isGrouped: boolean = group && !!group.identity;
-
-                        if (isGrouped) {
-                            dataRepresentation.isGrouped = isGrouped;
-                        }
-
-                        const identity: SelectionId = SelectionIdBuilder.builder()
-                            .withSeries(
-                                dataView.categorical.values,
-                                isGrouped
-                                    ? group
-                                    : groupedValue
-                            )
-                            .withMeasure(groupedValue.source.queryName)
-                            .createSelectionId();
-
-                        if (isNaN(maxThickness) || seriesSettings.line.thickness > maxThickness) {
-                            maxThickness = seriesSettings.line.thickness;
-                        }
-
-                        const name: string = isGrouped && group.name
-                            ? `${group.name} - ${groupedValue.source.displayName}`
-                            : groupedValue.source.displayName;
-
-                        const groupName: string = isGrouped && group.name
-                            ? `${group.name}`
-                            : undefined;
-
-                        seriesGroup.series.push({
-                            name,
-                            points,
-                            format,
-                            identity,
-                            groupName,
-                            hasSelection,
-                            gradientPoints,
-                            domain: seriesY,
-                            y: seriesGroup.y,
-                            current: currentPoint,
-                            settings: seriesSettings,
-                            selected: false,
-                        });
-                    }
+            const currentKPIColumn: DataViewValueColumn[] = groupedValues
+                .filter((groupedValue: DataViewValueColumn) => {
+                    return groupedValue.source.roles[kpiColumn.name];
                 });
-            });
 
-            dataRepresentation.x.values = axisCategory.values as DataRepresentationAxisValueType[];
+            const kpiIndexes: number[] = (currentKPIColumn
+                && currentKPIColumn[0]
+                && currentKPIColumn[0].values as number[]
+            ) || [];
 
-            this.getXAxisScale(
-                dataRepresentation.x.scale,
-                dataRepresentation.x.min,
-                dataRepresentation.x.max,
-                dataRepresentation.x.type,
-                axisCategory.values
-            );
+            groupedValues.forEach((groupedValue: DataViewValueColumn) => {
+                const format: string = this.getFormatStringByColumn(groupedValue.source);
 
-            dataRepresentation.margin = settings.dots.getMarginByThickness(
-                maxThickness,
-                dataRepresentation.margin
-            );
+                if (groupedValue.source.roles[kpiIndicatorValueColumn.name]) {
+                    dataRepresentation.variances[0] = groupedValue.values as number[];
 
-            const group: DataRepresentationSeriesGroup = dataRepresentation.groups
-                && (dataRepresentation.groups[0] || dataRepresentation.groups[1]);
+                    settings.kpiIndicatorValue.setColumnFormat(format);
+                    settings.tooltipVariance.setColumnFormat(format);
+                }
 
-            if (dataRepresentation.variances[0]) {
-                dataRepresentation.variance.push(dataRepresentation.variances[0]
-                    && dataRepresentation.variances[0].length
-                    && dataRepresentation.variances[0].slice(-1)[0] || NaN);
-            } else {
-                dataRepresentation.variance.push(this.getVarianceByCurrentPointsOfSeries(
-                    group && group.series[0],
-                    group && group.series[1]
-                ));
-            }
+                if (groupedValue.source.roles[secondKPIIndicatorValueColumn.name]) {
+                    dataRepresentation.variances[1] = groupedValue.values as number[];
 
-            if (dataRepresentation.variances[1]) {
-                dataRepresentation.variance.push(dataRepresentation.variances[1]
-                    && dataRepresentation.variances[1].length
-                    && dataRepresentation.variances[1].slice(-1)[0] || NaN);
-            } else {
-                dataRepresentation.variance.push(this.getVarianceByCurrentPointsOfSeries(
-                    group && group.series[0],
-                    group && group.series[2]
-                ));
-            }
+                    settings.secondKPIIndicatorValue.setColumnFormat(format);
+                    settings.secondTooltipVariance.setColumnFormat(format);
+                }
 
-            return dataRepresentation;
-        }
+                let groupIndex: number = -1;
 
-        /**
-         *
-         * Please consider this method has side effects.
-         *
-         * This method generates dataPoints and color segments.
-         * TODO: We should rethink current code structure to use Design Patterns for better code quality.
-         *
-         * It also supports two directions for color segments.
-         *   1. A data point starts a color segment
-         *   2. A data point ends a color segment
-         *
-         * The second approach requires to handle axisValues from the end while the first approach handles values in the natural order
-         */
-        private getGradientPoints(
-            axisValues: DataRepresentationAxisValueType[],
-            dataRepresentation: DataRepresentation,
-            seriesGroup: DataRepresentationSeriesGroup,
-            groupedValue: DataViewValueColumn,
-            seriesY: DataRepresentationAxisBase,
-            kpiIndexes: number[],
-            seriesSettings: SeriesSettings,
-            settings: Settings,
-            currentPoint: DataRepresentationPointIndexed,
-        ): {
-                points: DataRepresentationPoint[],
-                gradientPoints: DataRepresentationPointGradientColor[],
-            } {
-            const gradientPoints: DataRepresentationPointGradientColor[] = [];
+                if (groupedValue.source.roles[valuesColumn.name]) {
+                    groupIndex = 0;
+                } else if (groupedValue.source.roles[secondaryValuesColumn.name]) {
+                    groupIndex = 1;
+                }
 
-            const dataPointEndsKpiColorSegment: boolean = !seriesSettings.line.dataPointStartsKpiColorSegment;
+                if (groupIndex !== -1) {
 
-            const copiedAxisValues: DataRepresentationAxisValueType[] = dataPointEndsKpiColorSegment
-                ? axisValues.slice().reverse()
-                : axisValues.slice();
-
-            const points: DataRepresentationPoint[] = copiedAxisValues
-                .map((axisValue: DataRepresentationAxisValueType, index: number) => {
-                    const categoryIndex: number = dataPointEndsKpiColorSegment
-                        ? copiedAxisValues.length - 1 - index
-                        : index;
-
-                    const value: number = groupedValue.values[categoryIndex] as number;
-
-                    this.applyXArguments(dataRepresentation, axisValue);
-                    this.applyYArguments(seriesGroup.y, value);
-
-                    this.applyYArguments(seriesY, value);
-
-                    let kpiIndex: number = this.getKPIIndex(kpiIndexes[categoryIndex]);
-
-                    let color: string = seriesSettings.line.fillColor;
-
-                    if (seriesSettings.line.shouldMatchKpiColor) {
-                        const currentKPI: IKPIIndicatorSettings = settings
-                            .kpiIndicator
-                            .getCurrentKPI(kpiIndex);
-
-                        color = currentKPI && currentKPI.color || color;
+                    if (!dataRepresentation.groups[groupIndex]) {
+                        dataRepresentation.groups[groupIndex] = {
+                            series: [],
+                            y: {
+                                format,
+                                min: undefined,
+                                max: undefined,
+                                scale: DataRepresentationScale.create(),
+                            }
+                        };
                     }
 
-                    if (isFinite(value) && (categoryIndex > currentPoint.index || !isFinite(currentPoint.index))) {
-                        currentPoint.x = axisValue;
-                        currentPoint.y = value;
-                        currentPoint.index = categoryIndex;
-                        currentPoint.kpiIndex = kpiIndex;
-                        currentPoint.color = color;
-                    }
+                    const seriesGroup: DataRepresentationSeriesGroup = dataRepresentation.groups[groupIndex];
 
-                    const point: DataRepresentationPoint = {
-                        color,
-                        kpiIndex,
-                        x: axisValue,
-                        y: value,
+                    const currentPoint: DataRepresentationPointIndexed = {
+                        x: null,
+                        y: NaN,
+                        index: NaN,
+                        kpiIndex: NaN,
+                        color: undefined,
                     };
 
-                    this.pointFilter.groupPointByColor(
-                        gradientPoints,
-                        point,
-                        dataPointEndsKpiColorSegment,
+                    const seriesSettings: SeriesSettings = (SeriesSettings.getDefault() as SeriesSettings);
+
+                    for (const propertyName in seriesSettings) {
+                        const descriptor: BaseDescriptor = seriesSettings[propertyName];
+                        const defaultDescriptor: BaseDescriptor = settings[propertyName];
+
+                        if (descriptor && descriptor.applyDefault && defaultDescriptor) {
+                            descriptor.applyDefault(defaultDescriptor);
+                        }
+                    }
+
+                    seriesSettings.parseObjects(group.objects || groupedValue.source.objects);
+
+                    if (!seriesSettings.line.fillColor
+                        && style
+                        && style.colorPalette
+                        && style.colorPalette.dataColors
+                    ) {
+                        seriesSettings.line.fillColor = style.colorPalette.dataColors
+                            .getColorByIndex(seriesColorIndex)
+                            .value;
+
+                        seriesColorIndex++;
+                    }
+
+                    const seriesY: DataRepresentationAxisBase = {
+                        min: undefined,
+                        max: undefined,
+                    };
+
+                    const { points, gradientPoints } = this.getGradientPoints(
+                        axisCategory.values as DataRepresentationAxisValueType[],
+                        dataRepresentation,
+                        seriesGroup,
+                        groupedValue,
+                        seriesY,
+                        kpiIndexes,
+                        seriesSettings,
+                        settings,
+                        currentPoint,
                     );
 
-                    return point;
-                });
+                    const isGrouped: boolean = group && !!group.identity;
 
-            if (dataPointEndsKpiColorSegment) {
-                return {
-                    gradientPoints,
-                    points: points.reverse(),
+                    if (isGrouped) {
+                        dataRepresentation.isGrouped = isGrouped;
+                    }
+
+                    const identity: SelectionId = SelectionIdBuilder.builder()
+                        .withSeries(
+                            dataView.categorical.values,
+                            isGrouped
+                                ? group
+                                : groupedValue
+                        )
+                        .withMeasure(groupedValue.source.queryName)
+                        .createSelectionId();
+
+                    if (isNaN(maxThickness) || seriesSettings.line.thickness > maxThickness) {
+                        maxThickness = seriesSettings.line.thickness;
+                    }
+
+                    const name: string = isGrouped && group.name
+                        ? `${group.name} - ${groupedValue.source.displayName}`
+                        : groupedValue.source.displayName;
+
+                    const groupName: string = isGrouped && group.name
+                        ? `${group.name}`
+                        : undefined;
+
+                    seriesGroup.series.push({
+                        name,
+                        points,
+                        format,
+                        identity,
+                        groupName,
+                        hasSelection,
+                        gradientPoints,
+                        domain: seriesY,
+                        y: seriesGroup.y,
+                        current: currentPoint,
+                        settings: seriesSettings,
+                        selected: false,
+                    });
+                }
+            });
+        });
+
+        dataRepresentation.x.values = axisCategory.values as DataRepresentationAxisValueType[];
+
+        this.getXAxisScale(
+            dataRepresentation.x.scale,
+            dataRepresentation.x.min,
+            dataRepresentation.x.max,
+            dataRepresentation.x.type,
+            axisCategory.values
+        );
+
+        dataRepresentation.margin = settings.dots.getMarginByThickness(
+            maxThickness,
+            dataRepresentation.margin
+        );
+
+        const group: DataRepresentationSeriesGroup = dataRepresentation.groups
+            && (dataRepresentation.groups[0] || dataRepresentation.groups[1]);
+
+        if (dataRepresentation.variances[0]) {
+            dataRepresentation.variance.push(dataRepresentation.variances[0]
+                && dataRepresentation.variances[0].length
+                && dataRepresentation.variances[0].slice(-1)[0] || NaN);
+        } else {
+            dataRepresentation.variance.push(this.getVarianceByCurrentPointsOfSeries(
+                group && group.series[0],
+                group && group.series[1]
+            ));
+        }
+
+        if (dataRepresentation.variances[1]) {
+            dataRepresentation.variance.push(dataRepresentation.variances[1]
+                && dataRepresentation.variances[1].length
+                && dataRepresentation.variances[1].slice(-1)[0] || NaN);
+        } else {
+            dataRepresentation.variance.push(this.getVarianceByCurrentPointsOfSeries(
+                group && group.series[0],
+                group && group.series[2]
+            ));
+        }
+
+        return dataRepresentation;
+    }
+
+    /**
+     *
+     * Please consider this method has side effects.
+     *
+     * This method generates dataPoints and color segments.
+     * TODO: We should rethink current code structure to use Design Patterns for better code quality.
+     *
+     * It also supports two directions for color segments.
+     *   1. A data point starts a color segment
+     *   2. A data point ends a color segment
+     *
+     * The second approach requires to handle axisValues from the end while the first approach handles values in the natural order
+     */
+    private getGradientPoints(
+        axisValues: DataRepresentationAxisValueType[],
+        dataRepresentation: DataRepresentation,
+        seriesGroup: DataRepresentationSeriesGroup,
+        groupedValue: DataViewValueColumn,
+        seriesY: DataRepresentationAxisBase,
+        kpiIndexes: number[],
+        seriesSettings: SeriesSettings,
+        settings: Settings,
+        currentPoint: DataRepresentationPointIndexed,
+    ): {
+            points: DataRepresentationPoint[],
+            gradientPoints: DataRepresentationPointGradientColor[],
+        } {
+        const gradientPoints: DataRepresentationPointGradientColor[] = [];
+
+        const dataPointEndsKpiColorSegment: boolean = !seriesSettings.line.dataPointStartsKpiColorSegment;
+
+        const copiedAxisValues: DataRepresentationAxisValueType[] = dataPointEndsKpiColorSegment
+            ? axisValues.slice().reverse()
+            : axisValues.slice();
+
+        const points: DataRepresentationPoint[] = copiedAxisValues
+            .map((axisValue: DataRepresentationAxisValueType, index: number) => {
+                const categoryIndex: number = dataPointEndsKpiColorSegment
+                    ? copiedAxisValues.length - 1 - index
+                    : index;
+
+                const value: number = groupedValue.values[categoryIndex] as number;
+
+                this.applyXArguments(dataRepresentation, axisValue);
+                this.applyYArguments(seriesGroup.y, value);
+
+                this.applyYArguments(seriesY, value);
+
+                let kpiIndex: number = this.getKPIIndex(kpiIndexes[categoryIndex]);
+
+                let color: string = seriesSettings.line.fillColor;
+
+                if (seriesSettings.line.shouldMatchKpiColor) {
+                    const currentKPI: IKPIIndicatorSettings = settings
+                        .kpiIndicator
+                        .getCurrentKPI(kpiIndex);
+
+                    color = currentKPI && currentKPI.color || color;
+                }
+
+                if (isFinite(value) && (categoryIndex > currentPoint.index || !isFinite(currentPoint.index))) {
+                    currentPoint.x = axisValue;
+                    currentPoint.y = value;
+                    currentPoint.index = categoryIndex;
+                    currentPoint.kpiIndex = kpiIndex;
+                    currentPoint.color = color;
+                }
+
+                const point: DataRepresentationPoint = {
+                    color,
+                    kpiIndex,
+                    x: axisValue,
+                    y: value,
                 };
-            }
 
+                this.pointFilter.groupPointByColor(
+                    gradientPoints,
+                    point,
+                    dataPointEndsKpiColorSegment,
+                );
+
+                return point;
+            });
+
+        if (dataPointEndsKpiColorSegment) {
             return {
-                points,
                 gradientPoints,
+                points: points.reverse(),
             };
         }
 
-        public postProcess(dataRepresentation: DataRepresentation): void {
-            if (!dataRepresentation || !dataRepresentation.groups) {
-                return;
+        return {
+            points,
+            gradientPoints,
+        };
+    }
+
+    public postProcess(dataRepresentation: DataRepresentation): void {
+        if (!dataRepresentation || !dataRepresentation.groups) {
+            return;
+        }
+
+        const {
+            settings,
+            viewport,
+        } = dataRepresentation;
+
+        dataRepresentation.groups.forEach((
+            seriesGroup: DataRepresentationSeriesGroup,
+            seriesGroupIndex: number
+        ) => {
+            if (seriesGroup) {
+                dataRepresentation.series = dataRepresentation.series.concat(seriesGroup.series);
+
+                const yAxisSettings: YAxisDescriptor = seriesGroupIndex === 0
+                    ? settings.yAxis
+                    : settings.secondaryYAxis;
+
+                const yMin: number = this.getNotNaNValue(
+                    yAxisSettings.min,
+                    seriesGroup.y.min as number
+                );
+
+                const yMax: number = this.getNotNaNValue(
+                    yAxisSettings.max,
+                    seriesGroup.y.max as number
+                );
+
+                seriesGroup.y.min = Math.min(yMin, yMax);
+                seriesGroup.y.max = Math.max(yMin, yMax);
+
+                seriesGroup.y.scale.domain(
+                    [seriesGroup.y.min, seriesGroup.y.max],
+                    DataRepresentationTypeEnum.NumberType
+                );
             }
+        });
 
-            const {
-                settings,
-                viewport,
-            } = dataRepresentation;
+        dataRepresentation.sortedSeries = this.sortSeries(
+            dataRepresentation.series,
+            viewport.height
+        );
+    }
 
-            dataRepresentation.groups.forEach((
-                seriesGroup: DataRepresentationSeriesGroup,
-                seriesGroupIndex: number
-            ) => {
-                if (seriesGroup) {
-                    dataRepresentation.series = dataRepresentation.series.concat(seriesGroup.series);
+    private sortSeries(
+        series: DataRepresentationSeries[],
+        height: number
+    ): DataRepresentationSeries[] {
+        return series
+            .slice()
+            .sort((a: DataRepresentationSeries, b: DataRepresentationSeries) => {
+                // To sort series we have to convert value to px as scales are not the same
+                const aYScale: DataRepresentationScale = a.y.scale
+                    .copy()
+                    .range([height, 0]);
 
-                    const yAxisSettings: YAxisDescriptor = seriesGroupIndex === 0
-                        ? settings.yAxis
-                        : settings.secondaryYAxis;
+                const bYScale: DataRepresentationScale = b.y.scale
+                    .copy()
+                    .range([height, 0]);
 
-                    const yMin: number = this.getNotNaNValue(
-                        yAxisSettings.min,
-                        seriesGroup.y.min as number
-                    );
+                const bScaledMin: number = bYScale.scale(b.domain.min);
+                const bScaledMax: number = bYScale.scale(b.domain.max);
 
-                    const yMax: number = this.getNotNaNValue(
-                        yAxisSettings.max,
-                        seriesGroup.y.max as number
-                    );
+                const aScaledMin: number = aYScale.scale(a.domain.min);
+                const aScaledMax: number = aYScale.scale(a.domain.max);
 
-                    seriesGroup.y.min = Math.min(yMin, yMax);
-                    seriesGroup.y.max = Math.max(yMin, yMax);
-
-                    seriesGroup.y.scale.domain(
-                        [seriesGroup.y.min, seriesGroup.y.max],
-                        DataRepresentationTypeEnum.NumberType
-                    );
-                }
+                return (aScaledMax - bScaledMax)
+                    || (aScaledMin - bScaledMin); // Brackets are not required but they make this condition simpler to understand
             });
+    }
 
-            dataRepresentation.sortedSeries = this.sortSeries(
-                dataRepresentation.series,
-                viewport.height
-            );
+    private applyXArguments(
+        dataRepresentation: DataRepresentation,
+        axisValue: DataRepresentationAxisValueType,
+    ): void {
+        if (dataRepresentation.x.min === undefined) {
+            dataRepresentation.x.min = axisValue;
         }
 
-        private sortSeries(
-            series: DataRepresentationSeries[],
-            height: number
-        ): DataRepresentationSeries[] {
-            return series
-                .slice()
-                .sort((a: DataRepresentationSeries, b: DataRepresentationSeries) => {
-                    // To sort series we have to convert value to px as scales are not the same
-                    const aYScale: DataRepresentationScale = a.y.scale
-                        .copy()
-                        .range([height, 0]);
-
-                    const bYScale: DataRepresentationScale = b.y.scale
-                        .copy()
-                        .range([height, 0]);
-
-                    const bScaledMin: number = bYScale.scale(b.domain.min);
-                    const bScaledMax: number = bYScale.scale(b.domain.max);
-
-                    const aScaledMin: number = aYScale.scale(a.domain.min);
-                    const aScaledMax: number = aYScale.scale(a.domain.max);
-
-                    return (aScaledMax - bScaledMax)
-                        || (aScaledMin - bScaledMin); // Brackets are not required but they make this condition simpler to understand
-                });
+        if (dataRepresentation.x.max === undefined) {
+            dataRepresentation.x.max = axisValue;
         }
 
-        private applyXArguments(
-            dataRepresentation: DataRepresentation,
-            axisValue: DataRepresentationAxisValueType,
-        ): void {
-            if (dataRepresentation.x.min === undefined) {
+        if (dataRepresentation.x.type === DataRepresentationTypeEnum.DateType
+            || dataRepresentation.x.type === DataRepresentationTypeEnum.NumberType
+        ) {
+            if (axisValue < dataRepresentation.x.min) {
                 dataRepresentation.x.min = axisValue;
             }
 
-            if (dataRepresentation.x.max === undefined) {
+            if (axisValue > dataRepresentation.x.max) {
                 dataRepresentation.x.max = axisValue;
             }
+        } else if (dataRepresentation.x.type === DataRepresentationTypeEnum.StringType) {
+            const format: string = dataRepresentation.x.format;
 
-            if (dataRepresentation.x.type === DataRepresentationTypeEnum.DateType
-                || dataRepresentation.x.type === DataRepresentationTypeEnum.NumberType
-            ) {
-                if (axisValue < dataRepresentation.x.min) {
-                    dataRepresentation.x.min = axisValue;
-                }
+            const textLength: number = this.getLength(axisValue, format);
 
-                if (axisValue > dataRepresentation.x.max) {
-                    dataRepresentation.x.max = axisValue;
-                }
-            } else if (dataRepresentation.x.type === DataRepresentationTypeEnum.StringType) {
-                const format: string = dataRepresentation.x.format;
-
-                const textLength: number = this.getLength(axisValue, format);
-
-                if (textLength < this.getLength(dataRepresentation.x.min, format)) {
-                    dataRepresentation.x.min = axisValue;
-                }
-
-                if (textLength > this.getLength(dataRepresentation.x.max, format)) {
-                    dataRepresentation.x.max = axisValue;
-                }
-            }
-        }
-
-        private getNotNaNValue(value: number, fallbackValue: number): number {
-            return isNaN(value)
-                ? fallbackValue
-                : value;
-        }
-
-        private getLength(value: DataRepresentationAxisValueType, format: string): number {
-            return this.convertToString(value, format).length;
-        }
-
-        private convertToString(value: DataRepresentationAxisValueType, format: string): string {
-            if (!value) {
-                return "";
+            if (textLength < this.getLength(dataRepresentation.x.min, format)) {
+                dataRepresentation.x.min = axisValue;
             }
 
-            if (value instanceof Date) {
-                return valueFormatter.format(value, format || "dddd, MMMM dd, yyyy");
+            if (textLength > this.getLength(dataRepresentation.x.max, format)) {
+                dataRepresentation.x.max = axisValue;
             }
-
-            return `${value}`;
-        }
-
-        private applyYArguments(
-            axis: DataRepresentationAxisBase,
-            value: number
-        ): void {
-            if (axis.min === undefined) {
-                axis.min = value;
-            }
-
-            if (axis.max === undefined) {
-                axis.max = value;
-            }
-
-            if (value !== null && value < axis.min) {
-                axis.min = value;
-            }
-
-            if (value !== null && value > axis.max) {
-                axis.max = value;
-            }
-        }
-
-        private getKPIIndex(kpiIndex: number): number {
-            return kpiIndex === undefined
-                || kpiIndex === null
-                || isNaN(kpiIndex)
-                || kpiIndex as any instanceof Date
-                ? NaN
-                : kpiIndex;
-        }
-
-        private getXAxisScale(
-            scale: DataRepresentationScale,
-            min: DataRepresentationAxisValueType,
-            max: DataRepresentationAxisValueType,
-            type: DataRepresentationTypeEnum,
-            categoryValues: any[]): DataRepresentationScale {
-
-            let values: any[];
-
-            switch (type) {
-                case DataRepresentationTypeEnum.DateType:
-                case DataRepresentationTypeEnum.NumberType: {
-                    values = [min, max];
-
-                    break;
-                }
-                case DataRepresentationTypeEnum.StringType: {
-                    values = categoryValues;
-
-                    break;
-                }
-            }
-
-            return scale.domain(values, type);
-        }
-
-        private getFormatStringByColumn(column: DataViewMetadataColumn): string {
-            if (!column || !column.format) {
-                return undefined;
-            }
-
-            return column.format;
         }
     }
 
-    export function createConverter(): Converter {
-        return new DataConverter();
+    private getNotNaNValue(value: number, fallbackValue: number): number {
+        return isNaN(value)
+            ? fallbackValue
+            : value;
     }
+
+    private getLength(value: DataRepresentationAxisValueType, format: string): number {
+        return this.convertToString(value, format).length;
+    }
+
+    private convertToString(value: DataRepresentationAxisValueType, format: string): string {
+        if (!value) {
+            return "";
+        }
+
+        if (value instanceof Date) {
+            return valueFormatter.format(value, format || "dddd, MMMM dd, yyyy");
+        }
+
+        return `${value}`;
+    }
+
+    private applyYArguments(
+        axis: DataRepresentationAxisBase,
+        value: number
+    ): void {
+        if (axis.min === undefined) {
+            axis.min = value;
+        }
+
+        if (axis.max === undefined) {
+            axis.max = value;
+        }
+
+        if (value !== null && value < axis.min) {
+            axis.min = value;
+        }
+
+        if (value !== null && value > axis.max) {
+            axis.max = value;
+        }
+    }
+
+    private getKPIIndex(kpiIndex: number): number {
+        return kpiIndex === undefined
+            || kpiIndex === null
+            || isNaN(kpiIndex)
+            || kpiIndex as any instanceof Date
+            ? NaN
+            : kpiIndex;
+    }
+
+    private getXAxisScale(
+        scale: DataRepresentationScale,
+        min: DataRepresentationAxisValueType,
+        max: DataRepresentationAxisValueType,
+        type: DataRepresentationTypeEnum,
+        categoryValues: any[]): DataRepresentationScale {
+
+        let values: any[];
+
+        switch (type) {
+            case DataRepresentationTypeEnum.DateType:
+            case DataRepresentationTypeEnum.NumberType: {
+                values = [min, max];
+
+                break;
+            }
+            case DataRepresentationTypeEnum.StringType: {
+                values = categoryValues;
+
+                break;
+            }
+        }
+
+        return scale.domain(values, type);
+    }
+
+    private getFormatStringByColumn(column: DataViewMetadataColumn): string {
+        if (!column || !column.format) {
+            return undefined;
+        }
+
+        return column.format;
+    }
+}
+
+export function createConverter(): Converter {
+    return new DataConverter();
 }

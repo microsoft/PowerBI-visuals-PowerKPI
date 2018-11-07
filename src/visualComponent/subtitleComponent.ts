@@ -24,71 +24,69 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // jsCommon.CssConstants
-    import PixelConverter = jsCommon.PixelConverter;
-    import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
-    import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
+// jsCommon.CssConstants
+import PixelConverter = jsCommon.PixelConverter;
+import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
+import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
 
-    export class SubtitleComponent extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
-        private className: string = "subtitleComponent";
-        private subTitleSelector: ClassAndSelector = createClassAndSelector("subtitle");
+export class SubtitleComponent extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
+    private className: string = "subtitleComponent";
+    private subTitleSelector: ClassAndSelector = createClassAndSelector("subtitle");
 
-        constructor(options: VisualComponentConstructorOptions) {
-            super();
+    constructor(options: VisualComponentConstructorOptions) {
+        super();
 
-            this.initElement(
-                options.element,
-                this.className,
-            );
+        this.initElement(
+            options.element,
+            this.className,
+        );
+    }
+
+    public render(options: VisualComponentRenderOptions): void {
+        const { subtitle } = options.data.settings;
+
+        const data: SubtitleDescriptor[] = subtitle.show
+            ? [subtitle]
+            : [];
+
+        const subtitleSelection: D3.UpdateSelection = this.element
+            .selectAll(this.subTitleSelector.selector)
+            .data(data);
+
+        subtitleSelection
+            .enter()
+            .append("div")
+            .classed(this.subTitleSelector.class, true);
+
+        subtitleSelection
+            .text((settings: SubtitleDescriptor) => settings.titleText)
+            .style({
+                color: (settings: SubtitleDescriptor) => settings.fontColor,
+                "text-align": (settings: SubtitleDescriptor) => settings.alignment,
+                "font-size": (settings: SubtitleDescriptor) => {
+                    const fontSizeInPx: number = PixelConverter.fromPointToPixel(settings.fontSize);
+
+                    return PixelConverter.toString(fontSizeInPx);
+                },
+                "background-color": (settings: SubtitleDescriptor) => settings.background,
+                "font-family": (settings: SubtitleDescriptor) => settings.fontFamily,
+            });
+
+        subtitleSelection
+            .exit()
+            .remove();
+    }
+
+    public getViewport(): VisualComponentViewport {
+        const viewport: VisualComponentViewport = {
+            height: 0,
+            width: 0
+        };
+
+        if (this.element) {
+            viewport.height = $(this.element.node()).height();
         }
 
-        public render(options: VisualComponentRenderOptions): void {
-            const { subtitle } = options.data.settings;
-
-            const data: SubtitleDescriptor[] = subtitle.show
-                ? [subtitle]
-                : [];
-
-            const subtitleSelection: D3.UpdateSelection = this.element
-                .selectAll(this.subTitleSelector.selector)
-                .data(data);
-
-            subtitleSelection
-                .enter()
-                .append("div")
-                .classed(this.subTitleSelector.class, true);
-
-            subtitleSelection
-                .text((settings: SubtitleDescriptor) => settings.titleText)
-                .style({
-                    color: (settings: SubtitleDescriptor) => settings.fontColor,
-                    "text-align": (settings: SubtitleDescriptor) => settings.alignment,
-                    "font-size": (settings: SubtitleDescriptor) => {
-                        const fontSizeInPx: number = PixelConverter.fromPointToPixel(settings.fontSize);
-
-                        return PixelConverter.toString(fontSizeInPx);
-                    },
-                    "background-color": (settings: SubtitleDescriptor) => settings.background,
-                    "font-family": (settings: SubtitleDescriptor) => settings.fontFamily,
-                });
-
-            subtitleSelection
-                .exit()
-                .remove();
-        }
-
-        public getViewport(): VisualComponentViewport {
-            const viewport: VisualComponentViewport = {
-                height: 0,
-                width: 0
-            };
-
-            if (this.element) {
-                viewport.height = $(this.element.node()).height();
-            }
-
-            return viewport;
-        }
+        return viewport;
     }
 }

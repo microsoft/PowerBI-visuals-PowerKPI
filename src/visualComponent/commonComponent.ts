@@ -24,79 +24,77 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // powerbi.visuals
-    import LegendPosition = powerbi.visuals.LegendPosition;
+// powerbi.visuals
+import LegendPosition = powerbi.visuals.LegendPosition;
 
-    export class CommonComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions> {
-        private className: string = "commonComponent";
+export class CommonComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions> {
+    private className: string = "commonComponent";
 
-        constructor(options: VisualComponentConstructorOptions) {
-            super();
+    constructor(options: VisualComponentConstructorOptions) {
+        super();
 
-            this.initElement(
-                options.element,
-                this.className,
-                "div"
-            );
+        this.initElement(
+            options.element,
+            this.className,
+            "div"
+        );
 
-            this.element.classed(this.className, true);
+        this.element.classed(this.className, true);
 
-            this.constructorOptions = {
-                ...options,
-                element: this.element,
-            };
+        this.constructorOptions = {
+            ...options,
+            element: this.element,
+        };
 
-            this.components = [
-                new LegendComponent(this.constructorOptions),
-                new LayoutComponent(this.constructorOptions),
-            ];
-        }
+        this.components = [
+            new LegendComponent(this.constructorOptions),
+            new LayoutComponent(this.constructorOptions),
+        ];
+    }
 
-        public render(options: VisualComponentRenderOptions): void {
-            const viewport: IViewport = { ...options.data.viewport };
+    public render(options: VisualComponentRenderOptions): void {
+        const viewport: IViewport = { ...options.data.viewport };
 
-            this.forEach(
-                this.components,
-                (component: VisualComponent<VisualComponentRenderOptions>) => {
-                    component.render(options);
+        this.forEach(
+            this.components,
+            (component: VisualComponent<VisualComponentRenderOptions>) => {
+                component.render(options);
 
-                    if (component.getViewport) {
-                        const viewport: VisualComponentViewport = component.getViewport();
+                if (component.getViewport) {
+                    const viewport: VisualComponentViewport = component.getViewport();
 
-                        options.data.viewport.height -= viewport.height;
-                        options.data.viewport.width -= viewport.width;
-                    }
+                    options.data.viewport.height -= viewport.height;
+                    options.data.viewport.width -= viewport.width;
                 }
-            );
+            }
+        );
 
-            const { data: { settings: { legend } } } = options;
-            const layout: LayoutToStyleEnum = this.getLayout(legend.position);
+        const { data: { settings: { legend } } } = options;
+        const layout: LayoutToStyleEnum = this.getLayout(legend.position);
 
-            this.element.attr({
-                "class": `${this.getClassNameWithPrefix(this.className)} ${LayoutToStyleEnum[layout]}`
-            });
-        }
+        this.element.attr({
+            "class": `${this.getClassNameWithPrefix(this.className)} ${LayoutToStyleEnum[layout]}`
+        });
+    }
 
-        private getLayout(position: string): LayoutToStyleEnum {
-            switch (LegendPosition[position]) {
-                case LegendPosition.Left:
-                case LegendPosition.LeftCenter: {
-                    return LayoutToStyleEnum.rowLayout;
-                }
-                case LegendPosition.Right:
-                case LegendPosition.RightCenter: {
-                    return LayoutToStyleEnum.rowReversedLayout;
-                }
-                case LegendPosition.Top:
-                case LegendPosition.TopCenter: {
-                    return LayoutToStyleEnum.columnLayout;
-                }
-                case LegendPosition.Bottom:
-                case LegendPosition.BottomCenter:
-                default: {
-                    return LayoutToStyleEnum.columnReversedLayout;
-                }
+    private getLayout(position: string): LayoutToStyleEnum {
+        switch (LegendPosition[position]) {
+            case LegendPosition.Left:
+            case LegendPosition.LeftCenter: {
+                return LayoutToStyleEnum.rowLayout;
+            }
+            case LegendPosition.Right:
+            case LegendPosition.RightCenter: {
+                return LayoutToStyleEnum.rowReversedLayout;
+            }
+            case LegendPosition.Top:
+            case LegendPosition.TopCenter: {
+                return LayoutToStyleEnum.columnLayout;
+            }
+            case LegendPosition.Bottom:
+            case LegendPosition.BottomCenter:
+            default: {
+                return LayoutToStyleEnum.columnReversedLayout;
             }
         }
     }

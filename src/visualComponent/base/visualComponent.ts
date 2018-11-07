@@ -24,22 +24,22 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export interface VisualComponentViewport extends IViewport {
-        height2?: number;
-        width2?: number;
-    }
+import powerbi from "powerbi-visuals-api";
 
-    export interface VisualComponent<RenderOptionsType> {
-        render(options: RenderOptionsType): void;
-        clear(): void;
-        destroy(): void;
-        hide?(): void;
-        show?(): void;
-        toggle?(): void;
-        isShown?: boolean;
-        getViewport?(): VisualComponentViewport;
-        getRenderOptions?(): RenderOptionsType;
-        highlight?(hasSelection: boolean): void;
-    }
+export interface VisualComponentViewport extends powerbi.IViewport {
+    height2?: number;
+    width2?: number;
+}
+
+export interface VisualComponent<RenderOptionsType> {
+    render(options: RenderOptionsType): void;
+    clear(): void;
+    destroy(): void;
+    hide?(): void;
+    show?(): void;
+    toggle?(): void;
+    isShown?: boolean;
+    getViewport?(): VisualComponentViewport;
+    getRenderOptions?(): RenderOptionsType;
+    highlight?(hasSelection: boolean): void;
 }

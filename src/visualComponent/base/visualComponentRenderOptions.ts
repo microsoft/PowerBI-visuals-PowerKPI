@@ -24,12 +24,13 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export interface VisualComponentRenderOptionsBase {
-        series?: DataRepresentationSeries;
-    }
+import { DataRepresentation } from "../../dataRepresentation/dataRepresentation";
+import { DataRepresentationSeries } from "../../dataRepresentation/dataRepresentationSeries";
 
-    export interface VisualComponentRenderOptions extends VisualComponentRenderOptionsBase {
-        data: DataRepresentation;
-    }
+export interface VisualComponentRenderOptionsBase {
+    series?: DataRepresentationSeries;
+}
+
+export interface VisualComponentRenderOptions extends VisualComponentRenderOptionsBase {
+    data: DataRepresentation;
 }

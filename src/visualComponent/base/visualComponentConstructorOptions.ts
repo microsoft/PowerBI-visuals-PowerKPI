@@ -24,14 +24,21 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export interface VisualComponentBaseConstructorOptions {
-        element?: D3.Selection;
-    }
+import {
+    Dispatch,
+    Selection,
+} from "d3";
 
-    export interface VisualComponentConstructorOptions extends VisualComponentBaseConstructorOptions {
-        style?: IVisualStyle;
-        eventDispatcher?: D3.Dispatch;
-        interactivityService?: IInteractivityService;
-    }
+import powerbi from "powerbi-visuals-api";
+
+import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
+
+export interface VisualComponentBaseConstructorOptions {
+    element?: Selection<any, any, any, any>;
+}
+
+export interface VisualComponentConstructorOptions extends VisualComponentBaseConstructorOptions {
+    style?: powerbi.extensibility.IColorPalette; // TODO
+    eventDispatcher?: Dispatch<any>; // TODO
+    interactivityService?: interactivityService.IInteractivityService;
 }

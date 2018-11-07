@@ -30,6 +30,9 @@ import {
     interactivityService,
 } from "powerbi-visuals-utils-interactivityutils";
 
+import { EventName } from "../event/eventName";
+import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
+
 export interface BehaviorOptions {
     eventDispatcher: Dispatch<any>;
     interactivityService: interactivityService.IInteractivityService;

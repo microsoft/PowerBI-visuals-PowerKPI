@@ -26,15 +26,14 @@
 
 import powerbi from "powerbi-visuals-api";
 
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
+
 import {
     Descriptor,
     DescriptorParserOptions,
 } from "../descriptor";
 
 import { ShowDescriptor } from "./showDescriptor";
-
-// jsCommon
-import PixelConverter = jsCommon.PixelConverter;
 
 export class FontSizeDescriptor
     extends ShowDescriptor
@@ -70,7 +69,7 @@ export class FontSizeDescriptor
     }
 
     public get fontSizeInPx(): number {
-        return PixelConverter.fromPointToPixel(this.fontSize);
+        return pixelConverter.fromPointToPixel(this.fontSize);
     }
 
     public set fontSize(fontSize: number) {

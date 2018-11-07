@@ -30,6 +30,8 @@ import {
     DescriptorParserOptions,
 } from "./descriptor";
 
+import { LayoutEnum } from "../../layout/layoutEnum";
+
 // export const horizontalPositionEnum: IEnumType = createEnumType([
 //     {
 //         value: "Left",
