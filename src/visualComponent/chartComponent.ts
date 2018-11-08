@@ -24,101 +24,118 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class ChartComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, DotComponentRenderOptions | ComboComponentRenderOptions> {
-        private className: string = "multiShapeComponent";
+import { BaseContainerComponent } from "./base/baseContainerComponent";
+import { VisualComponent } from "./base/visualComponent";
+import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
-        private amountOfDataPointsForFallbackComponents: number = 1;
-        private shouldRenderFallbackComponents: boolean = false;
+import {
+    DotComponent,
+    DotComponentRenderOptions
+} from "./dotComponent";
 
-        constructor(options: VisualComponentConstructorOptions) {
-            super();
+import {
+    ComboComponent,
+    ComboComponentRenderOptions
+} from "./combo/comboComponent";
 
-            this.initElement(
-                options.element,
-                this.className,
-                "g"
+import { EventName } from "../event/eventName";
+import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
+import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
+
+export class ChartComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, DotComponentRenderOptions | ComboComponentRenderOptions> {
+    private className: string = "multiShapeComponent";
+
+    private amountOfDataPointsForFallbackComponents: number = 1;
+    private shouldRenderFallbackComponents: boolean = false;
+
+    constructor(options: VisualComponentConstructorOptions) {
+        super();
+
+        this.initElement(
+            options.element,
+            this.className,
+            "g"
+        );
+
+        this.constructorOptions = {
+            ...options,
+            element: this.element,
+        };
+
+        if (this.constructorOptions.eventDispatcher) {
+            this.constructorOptions.eventDispatcher.on(
+                EventName.onHighlight,
+                this.highlight.bind(this)
             );
-
-            this.constructorOptions = {
-                ...options,
-                element: this.element,
-            };
-
-            if (this.constructorOptions.eventDispatcher) {
-                this.constructorOptions.eventDispatcher.on(
-                    EventName.onHighlight,
-                    this.highlight.bind(this)
-                );
-            }
         }
+    }
 
-        public render(options: VisualComponentRenderOptions): void {
-            const { data: { sortedSeries, viewport, x, settings } } = options;
+    public render(options: VisualComponentRenderOptions): void {
+        const { data: { sortedSeries, viewport, x, settings } } = options;
 
-            const shouldRenderFallbackComponents: boolean = sortedSeries
-                && sortedSeries[0]
-                && sortedSeries[0].points
-                && sortedSeries[0].points.length === this.amountOfDataPointsForFallbackComponents;
+        const shouldRenderFallbackComponents: boolean = sortedSeries
+            && sortedSeries[0]
+            && sortedSeries[0].points
+            && sortedSeries[0].points.length === this.amountOfDataPointsForFallbackComponents;
 
-            if (this.shouldRenderFallbackComponents !== shouldRenderFallbackComponents) {
-                this.forEach(
-                    this.components,
-                    (component: VisualComponent<any>) => {
-                        component.destroy();
-                    }
-                );
-
-                this.components = [];
-
-                this.shouldRenderFallbackComponents = shouldRenderFallbackComponents;
-            }
-
-            this.initComponents(
-                this.components,
-                sortedSeries.length,
-                () => {
-                    return this.shouldRenderFallbackComponents
-                        ? new DotComponent(this.constructorOptions)
-                        : new ComboComponent(this.constructorOptions);
-                }
-            );
-
+        if (this.shouldRenderFallbackComponents !== shouldRenderFallbackComponents) {
             this.forEach(
                 this.components,
-                (component: VisualComponent<DotComponentRenderOptions | ComboComponentRenderOptions>, componentIndex: number) => {
-                    const currentSeries: DataRepresentationSeries = sortedSeries[componentIndex];
-
-                    if (this.shouldRenderFallbackComponents) {
-                        const point: DataRepresentationPoint = currentSeries.points[0];
-
-                        component.render({
-                            point,
-                            viewport,
-                            thickness: currentSeries.settings.line.thickness,
-                            x: x.scale,
-                            y: currentSeries.y.scale,
-                            radiusFactor: settings.dots.radiusFactor,
-                            opacity: currentSeries.settings.line.opacity,
-                            series: currentSeries,
-                        });
-                    } else {
-                        component.render({
-                            viewport,
-                            thickness: currentSeries.settings.line.thickness,
-                            x: x.scale,
-                            y: currentSeries.y.scale,
-                            interpolation: currentSeries.settings.line.getInterpolation(),
-                            lineStyle: currentSeries.settings.line.lineStyle,
-                            gradientPoints: currentSeries.gradientPoints,
-                            lineType: currentSeries.settings.line.lineType,
-                            opacity: currentSeries.settings.line.opacity,
-                            areaOpacity: currentSeries.settings.line.areaOpacity,
-                            series: currentSeries,
-                        });
-                    }
+                (component: VisualComponent<any>) => {
+                    component.destroy();
                 }
             );
+
+            this.components = [];
+
+            this.shouldRenderFallbackComponents = shouldRenderFallbackComponents;
         }
+
+        this.initComponents(
+            this.components,
+            sortedSeries.length,
+            () => {
+                return this.shouldRenderFallbackComponents
+                    ? new DotComponent(this.constructorOptions)
+                    : new ComboComponent(this.constructorOptions);
+            }
+        );
+
+        this.forEach(
+            this.components,
+            (component: VisualComponent<DotComponentRenderOptions | ComboComponentRenderOptions>, componentIndex: number) => {
+                const currentSeries: DataRepresentationSeries = sortedSeries[componentIndex];
+
+                if (this.shouldRenderFallbackComponents) {
+                    const point: DataRepresentationPoint = currentSeries.points[0];
+
+                    component.render({
+                        point,
+                        viewport,
+                        thickness: currentSeries.settings.line.thickness,
+                        x: x.scale,
+                        y: currentSeries.y.scale,
+                        radiusFactor: settings.dots.radiusFactor,
+                        opacity: currentSeries.settings.line.opacity,
+                        series: currentSeries,
+                    });
+                } else {
+                    component.render({
+                        viewport,
+                        thickness: currentSeries.settings.line.thickness,
+                        x: x.scale,
+                        y: currentSeries.y.scale,
+                        interpolation: currentSeries.settings.line.getInterpolation(),
+                        lineStyle: currentSeries.settings.line.lineStyle,
+                        gradientPoints: currentSeries.gradientPoints,
+                        lineType: currentSeries.settings.line.lineType,
+                        opacity: currentSeries.settings.line.opacity,
+                        areaOpacity: currentSeries.settings.line.areaOpacity,
+                        series: currentSeries,
+                    });
+                }
+            }
+        );
     }
 }

@@ -25,6 +25,7 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import { IMargin } from "powerbi-visuals-utils-svgutils";
 
 import {
     DataRepresentationSeries,
@@ -33,13 +34,6 @@ import {
 
 import { Settings } from "../settings/settings";
 import { DataRepresentationX } from "./dataRepresentationAxis";
-
-export interface IMargin {
-    top: number;
-    bottom: number;
-    left: number;
-    right: number;
-}
 
 export interface DataRepresentation {
     series: DataRepresentationSeries[];

@@ -24,121 +24,140 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // jsCommon.CssConstants
-    import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
+import powerbi from "powerbi-visuals-api";
 
-    export interface AreaComponentRenderOptions extends LineComponentRenderOptions {
-        areaOpacity: number;
+import {
+    area,
+    Area,
+    Selection
+} from "d3";
+
+import { CssConstants } from "powerbi-visuals-utils-svgutils";
+
+import { VisualComponent } from "../base/visualComponent";
+import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
+import { DataRepresentationScale } from "../../dataRepresentation/dataRepresentationScale";
+
+import {
+    DataRepresentationPoint,
+    DataRepresentationPointGradientColor,
+} from "../../dataRepresentation/dataRepresentationPoint";
+
+import { LineInterpolation } from "../../settings/descriptors/lineDescriptor";
+
+import {
+    LineComponent,
+    LineComponentRenderOptions
+} from "./lineComponent";
+
+export interface AreaComponentRenderOptions extends LineComponentRenderOptions {
+    areaOpacity: number;
+}
+
+export class AreaComponent
+    extends LineComponent
+    implements VisualComponent<LineComponentRenderOptions> {
+
+    private additionalClassName: string = "areaComponent";
+    private areaSelector: CssConstants.ClassAndSelector = this.getSelectorWithPrefix(`${this.additionalClassName}_area`);
+
+    private areaSelection: Selection<any, DataRepresentationPointGradientColor, any, any>;
+
+    constructor(options: VisualComponentConstructorOptions) {
+        super(options);
+
+        this.element.classed(this.additionalClassName, true);
+
+        this.constructorOptions = {
+            ...options,
+            element: this.element,
+        };
     }
 
-    export class AreaComponent
-        extends LineComponent
-        implements VisualComponent<LineComponentRenderOptions> {
+    public render(options: AreaComponentRenderOptions): void {
+        this.renderArea(options);
+        super.render(options);
+    }
 
-        private additionalClassName: string = "areaComponent";
-        private areaSelector: ClassAndSelector = this.getSelectorWithPrefix(`${this.additionalClassName}_area`);
+    public renderArea(options: AreaComponentRenderOptions): void {
+        const {
+            x,
+            y,
+            viewport,
+            interpolation,
+            gradientPoints,
+            areaOpacity,
+            series,
+        } = options;
 
-        private areaSelection: D3.UpdateSelection;
+        this.renderOptions = options;
 
-        constructor(options: VisualComponentConstructorOptions) {
-            super(options);
+        const xScale: DataRepresentationScale = x
+            .copy()
+            .range([0, viewport.width]);
 
-            this.element.classed(this.additionalClassName, true);
+        const yScale: DataRepresentationScale = y
+            .copy()
+            .range([viewport.height, 0]);
 
-            this.constructorOptions = {
-                ...options,
-                element: this.element,
-            };
-        }
+        this.areaSelection = this.element
+            .selectAll(this.areaSelector.selectorName)
+            .data(gradientPoints);
 
-        public render(options: AreaComponentRenderOptions): void {
-            this.renderArea(options);
-            super.render(options);
-        }
+        this.areaSelection.enter()
+            .append("svg:path")
+            .classed(this.areaSelector.className, true)
+            .on("click", this.clickHandler.bind(this));
 
-        public renderArea(options: AreaComponentRenderOptions): void {
-            const {
-                x,
-                y,
-                viewport,
-                interpolation,
-                gradientPoints,
-                areaOpacity,
-                series,
-            } = options;
+        this.areaSelection
+            .attr("d", (gradientGroup: DataRepresentationPointGradientColor) => {
+                return this.getArea(
+                    xScale,
+                    yScale,
+                    viewport,
+                    interpolation
+                )(gradientGroup.points);
+            })
+            .style("fill", (gradientGroup: DataRepresentationPointGradientColor) => gradientGroup.color);
 
-            this.renderOptions = options;
+        this.highlight(series && series.hasSelection);
 
-            const xScale: DataRepresentationScale = x
-                .copy()
-                .range([0, viewport.width]);
+        this.areaSelection
+            .exit()
+            .remove();
+    }
 
-            const yScale: DataRepresentationScale = y
-                .copy()
-                .range([viewport.height, 0]);
+    private getArea(
+        xScale: DataRepresentationScale,
+        yScale: DataRepresentationScale,
+        viewport: powerbi.IViewport,
+        interpolation: LineInterpolation,
+    ): Area<DataRepresentationPoint> {
+        return area<DataRepresentationPoint>()
+            .x((dataPoint: DataRepresentationPoint) => {
+                return xScale.scale(dataPoint.x);
+            })
+            .y0(viewport.height)
+            .y1((dataPoint: DataRepresentationPoint) => {
+                return yScale.scale(dataPoint.y);
+            });
+        // .interpolate(interpolation); // TODO: fix interpolation https://github.com/d3/d3-shape/blob/master/README.md#curves
+    }
 
-            this.areaSelection = this.element
-                .selectAll(this.areaSelector.selector)
-                .data(gradientPoints);
+    public destroy(): void {
+        this.areaSelection = null;
 
-            this.areaSelection.enter()
-                .append("svg:path")
-                .classed(this.areaSelector.class, true)
-                .on("click", this.clickHandler.bind(this));
+        super.destroy();
+    }
 
-            this.areaSelection
-                .attr({
-                    d: (gradientGroup: DataRepresentationPointGradientColor) => {
-                        return this.getArea(
-                            xScale,
-                            yScale,
-                            viewport,
-                            interpolation
-                        )(gradientGroup.points);
-                    },
-                })
-                .style("fill", (gradientGroup: DataRepresentationPointGradientColor) => gradientGroup.color);
+    public highlight(hasSelection: boolean): void {
+        this.updateElementOpacity(
+            this.areaSelection,
+            this.renderOptions && (this.renderOptions as AreaComponentRenderOptions).areaOpacity,
+            this.renderOptions && this.renderOptions.series && this.renderOptions.series.selected,
+            hasSelection,
+        );
 
-            this.highlight(series && series.hasSelection);
-
-            this.areaSelection
-                .exit()
-                .remove();
-        }
-
-        private getArea(
-            xScale: DataRepresentationScale,
-            yScale: DataRepresentationScale,
-            viewport: IViewport,
-            interpolation: LineInterpolation,
-        ): D3.Svg.Area {
-            return d3.svg.area()
-                .x((dataPoint: DataRepresentationPoint) => {
-                    return xScale.scale(dataPoint.x);
-                })
-                .y0(viewport.height)
-                .y1((dataPoint: DataRepresentationPoint) => {
-                    return yScale.scale(dataPoint.y);
-                })
-                .interpolate(interpolation);
-        }
-
-        public destroy(): void {
-            this.areaSelection = null;
-
-            super.destroy();
-        }
-
-        public highlight(hasSelection: boolean): void {
-            this.updateElementOpacity(
-                this.areaSelection,
-                this.renderOptions && (this.renderOptions as AreaComponentRenderOptions).areaOpacity,
-                this.renderOptions && this.renderOptions.series && this.renderOptions.series.selected,
-                hasSelection,
-            );
-
-            super.highlight(hasSelection);
-        }
+        super.highlight(hasSelection);
     }
 }

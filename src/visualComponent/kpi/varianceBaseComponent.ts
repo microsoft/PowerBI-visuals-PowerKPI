@@ -24,30 +24,35 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class VarianceBaseComponent extends CaptionKPIComponent {
+import {
+    displayUnitSystemType,
+    valueFormatter
+} from "powerbi-visuals-utils-formattingutils";
 
-        protected getValueFormatter(
-            displayUnits: number,
-            precision: number,
-            format: string
-        ): IValueFormatter {
-            return valueFormatter.create({
-                format,
-                precision,
-                value: displayUnits,
-                displayUnitSystemType: DisplayUnitSystemType.WholeUnits,
-            });
-        }
+import { CaptionKPIComponent } from "./captionKPIComponent";
 
-        public clear(): void {
-            this.element
-                .selectAll("*")
-                .remove();
-        }
+export class VarianceBaseComponent extends CaptionKPIComponent {
 
-        public destroy(): void {
-            this.element = null;
-        }
+    protected getValueFormatter(
+        displayUnits: number,
+        precision: number,
+        format: string
+    ): valueFormatter.IValueFormatter {
+        return valueFormatter.valueFormatter.create({
+            format,
+            precision,
+            value: displayUnits,
+            displayUnitSystemType: displayUnitSystemType.DisplayUnitSystemType.WholeUnits,
+        });
+    }
+
+    public clear(): void {
+        this.element
+            .selectAll("*")
+            .remove();
+    }
+
+    public destroy(): void {
+        this.element = null;
     }
 }

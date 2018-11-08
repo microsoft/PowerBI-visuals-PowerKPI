@@ -24,94 +24,102 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class VarianceComponentWithCustomLabel
-        extends VarianceBaseComponent
-        implements KPIVisualComponent<VisualComponentRenderOptions> {
+import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
-        private componentClassName: string = "varianceComponentWithCustomLabel";
+import { VisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
+import { VarianceBaseComponent } from "./varianceBaseComponent";
+import { AlignEnum } from "./alignEnum";
+import { CaptionKPIComponentOptionsValueSettings } from "./captionKPIComponentOptions";
+import { KPIVisualComponent } from "./kpiVisualComponent";
+import { KPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
+import { KPIIndicatorValueDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorValueDescriptor";
 
-        constructor(options: KPIComponentConstructorOptionsWithClassName) {
-            super({
-                element: options.element,
-                className: options.className
-            });
+export class VarianceComponentWithCustomLabel
+    extends VarianceBaseComponent
+    implements KPIVisualComponent<VisualComponentRenderOptions> {
 
-            this.element.classed(this.componentClassName, true);
+    private componentClassName: string = "varianceComponentWithCustomLabel";
+
+    constructor(options: KPIComponentConstructorOptionsWithClassName) {
+        super({
+            element: options.element,
+            className: options.className
+        });
+
+        this.element.classed(this.componentClassName, true);
+    }
+
+    public render(options: VisualComponentRenderOptions): void {
+        const {
+            series,
+            variance,
+            settings: {
+                dateLabelKPI,
+                dateValueKPI,
+                actualValueKPI,
+                actualLabelKPI,
+                kpiIndicatorValue,
+                kpiIndicatorLabel,
+                secondKPIIndicatorValue,
+                secondKPIIndicatorLabel,
+                kpiIndicator
+            }
+        } = options.data;
+
+        const varianceSettings: KPIIndicatorValueDescriptor = { ...secondKPIIndicatorValue } as KPIIndicatorValueDescriptor; // TODO: potential issue
+        const labelSettings: KPIIndicatorValueDescriptor = { ...secondKPIIndicatorLabel } as unknown as KPIIndicatorValueDescriptor; // TODO: potential issue
+
+        labelSettings.show = secondKPIIndicatorLabel.isShown();
+
+        if (isNaN(variance[1])) {
+            varianceSettings.show = false;
+            labelSettings.show = false;
         }
 
-        public render(options: VisualComponentRenderOptions): void {
-            const {
-                series,
-                variance,
-                settings: {
-                    dateLabelKPI,
-                    dateValueKPI,
-                    actualValueKPI,
-                    actualLabelKPI,
-                    kpiIndicatorValue,
-                    kpiIndicatorLabel,
-                    secondKPIIndicatorValue,
-                    secondKPIIndicatorLabel,
-                    kpiIndicator
-                }
-            } = options.data;
+        const isVarianceKPIAvailable: boolean = series
+            && series.length > 0
+            && series[0]
+            && series[0].current
+            && !isNaN(series[0].current.kpiIndex);
 
-            const varianceSettings: KPIIndicatorValueDescriptor = _.clone(secondKPIIndicatorValue);
-            const labelSettings: KPIIndicatorValueDescriptor = _.clone(secondKPIIndicatorLabel);
+        let currentAlign: AlignEnum = AlignEnum.alignCenter;
 
-            labelSettings.show = secondKPIIndicatorLabel.isShown();
-
-            if (isNaN(variance[1])) {
-                varianceSettings.show = false;
-                labelSettings.show = false;
-            }
-
-            const isVarianceKPIAvailable: boolean = series
-                && series.length > 0
-                && series[0]
-                && series[0].current
-                && !isNaN(series[0].current.kpiIndex);
-
-            let currentAlign: AlignEnum = AlignEnum.alignCenter;
-
-            if (!dateLabelKPI.show
-                && !dateValueKPI.show
-                && (!actualValueKPI.show || series[0] && series[0].current && isNaN(series[0] && series[0].current.y))
-                && !actualLabelKPI.show
-            ) {
-                currentAlign = AlignEnum.alignLeft;
-            } else if ((!kpiIndicatorValue.show || isNaN(variance[0]))
-                && (!kpiIndicatorLabel.isShown() || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex)))
-                && (!isVarianceKPIAvailable || !kpiIndicator.show)) {
-                currentAlign = AlignEnum.alignRight;
-            }
-
-            const formatter: IValueFormatter = this.getValueFormatter(
-                varianceSettings.displayUnits,
-                varianceSettings.precision,
-                secondKPIIndicatorValue.getFormat(),
-            );
-
-            const valueCaption: CaptionKPIComponentOptionsValueSettings = {
-                value: formatter.format(variance[1]),
-                title: secondKPIIndicatorLabel.label || `${variance[1]}`,
-                settings: varianceSettings
-            };
-
-            const labelCaption: CaptionKPIComponentOptionsValueSettings = {
-                value: secondKPIIndicatorLabel.label,
-                settings: labelSettings
-            };
-
-            super.render({
-                captions: [
-                    [valueCaption],
-                    [labelCaption]
-                ],
-                data: options.data,
-                align: currentAlign
-            });
+        if (!dateLabelKPI.show
+            && !dateValueKPI.show
+            && (!actualValueKPI.show || series[0] && series[0].current && isNaN(series[0] && series[0].current.y))
+            && !actualLabelKPI.show
+        ) {
+            currentAlign = AlignEnum.alignLeft;
+        } else if ((!kpiIndicatorValue.show || isNaN(variance[0]))
+            && (!kpiIndicatorLabel.isShown() || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex)))
+            && (!isVarianceKPIAvailable || !kpiIndicator.show)) {
+            currentAlign = AlignEnum.alignRight;
         }
+
+        const formatter: valueFormatter.IValueFormatter = this.getValueFormatter(
+            varianceSettings.displayUnits,
+            varianceSettings.precision,
+            secondKPIIndicatorValue.getFormat(),
+        );
+
+        const valueCaption: CaptionKPIComponentOptionsValueSettings = {
+            value: formatter.format(variance[1]),
+            title: secondKPIIndicatorLabel.label || `${variance[1]}`,
+            settings: varianceSettings
+        };
+
+        const labelCaption: CaptionKPIComponentOptionsValueSettings = {
+            value: secondKPIIndicatorLabel.label,
+            settings: labelSettings
+        };
+
+        super.render({
+            captions: [
+                [valueCaption],
+                [labelCaption]
+            ],
+            data: options.data,
+            align: currentAlign
+        });
     }
 }

@@ -24,13 +24,27 @@
  *  THE SOFTWARE.
  */
 
-// jsCommon
-import PixelConverter = jsCommon.PixelConverter;
-import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
-import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
+import powerbi from "powerbi-visuals-api";
+import { CssConstants } from "powerbi-visuals-utils-svgutils";
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
-// powerbi.visuals
-import LegendPosition = powerbi.visuals.LegendPosition;
+import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
+import LegendPosition = legendInterfaces.LegendPosition;
+
+import { VisualComponentViewport } from "../base/visualComponent";
+import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
+import { BaseContainerComponent } from "../base/baseContainerComponent";
+import { VisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
+import { LayoutEnum } from "../../layout/layoutEnum";
+import { LayoutToStyleEnum } from "../../layout/layoutToStyleEnum";
+import { KPIVisualComponent } from "./kpiVisualComponent";
+import { KPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
+import { VarianceComponentWithIndicator } from "./varianceComponentWithIndicator";
+import { DateKPIComponent } from "./dateKPIComponent";
+import { ValueKPIComponent } from "./valueKPIComponent";
+import { VarianceComponentWithCustomLabel } from "./varianceComponentWithCustomLabel";
+import { LayoutDescriptor } from "../../settings/descriptors/layoutDescriptor";
+import { LegendDescriptor } from "../../settings/descriptors/legendDescriptor";
 
 enum KPIComponentLayoutEnum {
     kpiComponentRow,
@@ -42,7 +56,7 @@ export class KPIComponent extends BaseContainerComponent<VisualComponentConstruc
 
     private layout: LayoutEnum = LayoutEnum.Top;
 
-    private childSelector: ClassAndSelector = createClassAndSelector("kpiComponentChild");
+    private childSelector: CssConstants.ClassAndSelector = CssConstants.createClassAndSelector("kpiComponentChild");
 
     constructor(options: VisualComponentConstructorOptions) {
         super();
@@ -52,7 +66,7 @@ export class KPIComponent extends BaseContainerComponent<VisualComponentConstruc
             this.className
         );
 
-        const className: string = this.childSelector.class;
+        const className: string = this.childSelector.className;
 
         const constructorOptions: KPIComponentConstructorOptionsWithClassName = {
             ...options,
@@ -71,7 +85,7 @@ export class KPIComponent extends BaseContainerComponent<VisualComponentConstruc
     public render(options: VisualComponentRenderOptions): void {
         const { viewport: { width, height }, settings: { layout, legend } } = options.data;
 
-        const viewport: IViewport = { width, height };
+        const viewport: powerbi.IViewport = { width, height };
 
         this.layout = LayoutEnum[layout.getLayout()];
 
@@ -113,7 +127,7 @@ export class KPIComponent extends BaseContainerComponent<VisualComponentConstruc
     private applyStyleBasedOnLayout(
         layoutSettings: LayoutDescriptor,
         legend: LegendDescriptor,
-        viewport: IViewport
+        viewport: powerbi.IViewport
     ): void {
         let currentLayout: LayoutToStyleEnum
             , kpiLayout: KPIComponentLayoutEnum
@@ -142,19 +156,15 @@ export class KPIComponent extends BaseContainerComponent<VisualComponentConstruc
             default: {
                 currentLayout = LayoutToStyleEnum.rowLayout;
                 kpiLayout = KPIComponentLayoutEnum.kpiComponentRow;
-                maxWidth = PixelConverter.toString(Math.floor(viewport.width));
+                maxWidth = pixelConverter.toString(Math.floor(viewport.width));
 
                 break;
             }
         }
 
         this.element
-            .style({
-                "max-width": maxWidth
-            })
-            .attr({
-                "class": `${this.className} ${LayoutToStyleEnum[currentLayout]} ${KPIComponentLayoutEnum[kpiLayout]}`
-            });
+            .style("max-width", maxWidth)
+            .attr("class", `${this.className} ${LayoutToStyleEnum[currentLayout]} ${KPIComponentLayoutEnum[kpiLayout]}`);
     }
 
     private applyWidthToChildren(howManyComponentsWasRendered: number): void {
@@ -167,11 +177,9 @@ export class KPIComponent extends BaseContainerComponent<VisualComponentConstruc
         const widthInPercentage: string = `${width}%`;
 
         this.element
-            .selectAll(this.childSelector.selector)
-            .style({
-                width: widthInPercentage,
-                "max-width": widthInPercentage
-            });
+            .selectAll(this.childSelector.selectorName)
+            .style("width", widthInPercentage)
+            .style("max-width", widthInPercentage);
     }
 
     /**
@@ -187,7 +195,7 @@ export class KPIComponent extends BaseContainerComponent<VisualComponentConstruc
         };
 
         if (this.element) {
-            const element: HTMLDivElement = this.element.node<HTMLDivElement>();
+            const element: HTMLDivElement = this.element.node();
 
             switch (this.layout) {
                 case LayoutEnum.Left:

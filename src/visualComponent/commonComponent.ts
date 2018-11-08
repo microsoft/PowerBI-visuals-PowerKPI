@@ -26,7 +26,9 @@
 
 import powerbi from "powerbi-visuals-api";
 
-import {} from "powerbi-visuals-utils-chartutils";
+import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
+
+import LegendPosition = legendInterfaces.LegendPosition;
 
 import { BaseContainerComponent } from "./base/baseContainerComponent";
 import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";

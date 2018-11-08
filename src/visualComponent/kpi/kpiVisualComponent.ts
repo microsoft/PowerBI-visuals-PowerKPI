@@ -24,8 +24,8 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export interface KPIVisualComponent<RenderOptions> extends VisualComponent<RenderOptions> {
-        isRendered(): boolean;
-    }
+import { VisualComponent } from "../base/visualComponent";
+
+export interface KPIVisualComponent<RenderOptions> extends VisualComponent<RenderOptions> {
+    isRendered(): boolean;
 }

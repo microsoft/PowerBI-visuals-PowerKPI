@@ -26,7 +26,8 @@
 
 import powerbi from "powerbi-visuals-api";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
-import { CssConstants } from "powerbi-visuals-utils-svgutils";
+
+import { IMargin } from "powerbi-visuals-utils-svgutils";
 
 import { VisualComponent } from "./base/visualComponent";
 import { BaseContainerComponent } from "./base/baseContainerComponent";
@@ -41,15 +42,14 @@ import { DataRepresentationAxisValueType } from "../dataRepresentation/dataRepre
 import { DataRepresentationScale } from "../dataRepresentation/dataRepresentationScale";
 import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
-import { IMargin } from "../dataRepresentation/dataRepresentation";
-import { AxisReferenceLineBaseComponentRenderOptions } from "./combo/lineComponent";
+import { AxisReferenceLineBaseComponentRenderOptions } from "./axes/referenceLine/axisReferenceLineBaseComponent";
 import { EventPositionVisualComponentOptions } from "./eventPositionVisualComponentOptions";
 import { XAxisReferenceLineComponent } from "./axes/xAxisComponent";
 import { YAxisReferenceLineComponent } from "./axes/yAxisComponent";
 import { ChartComponent } from "./chartComponent";
 import { LabelsComponent } from "./labelsComponent";
 import { TooltipComponent } from "./tooltipComponent";
-import { DotsComponent } from "./do";
+import { DotsComponent } from "./dotsComponent";
 import { VerticalLineComponent } from "./verticalLineComponent";
 import { EventName } from "../event/eventName";
 

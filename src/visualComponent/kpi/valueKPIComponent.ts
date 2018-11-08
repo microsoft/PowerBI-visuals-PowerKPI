@@ -24,95 +24,101 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // powerbi.visuals
-    import valueFormatter = powerbi.visuals.valueFormatter;
-    import IValueFormatter = powerbi.visuals.IValueFormatter;
+import {
+    displayUnitSystemType,
+    valueFormatter
+} from "powerbi-visuals-utils-formattingutils";
 
-    export class ValueKPIComponent
-        extends CaptionKPIComponent
-        implements KPIVisualComponent<VisualComponentRenderOptions> {
+import { VisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
+import { AlignEnum } from "./alignEnum";
+import { CaptionKPIComponent } from "./captionKPIComponent";
+import { KPIVisualComponent } from "./kpiVisualComponent";
+import { KPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
+import { CaptionKPIComponentOptions, CaptionKPIComponentOptionsValueSettings} from "./captionKPIComponentOptions";
 
-        private extraClassName: string = "valueKPIComponent";
+export class ValueKPIComponent
+    extends CaptionKPIComponent
+    implements KPIVisualComponent<VisualComponentRenderOptions> {
 
-        private valueFormat: string;
+    private extraClassName: string = "valueKPIComponent";
 
-        constructor(options: KPIComponentConstructorOptionsWithClassName) {
-            super({
-                element: options.element,
-                className: options.className
+    private valueFormat: string;
+
+    constructor(options: KPIComponentConstructorOptionsWithClassName) {
+        super({
+            element: options.element,
+            className: options.className
+        });
+
+        this.element.classed(this.extraClassName, true);
+
+        this.valueFormat = valueFormatter.valueFormatter.DefaultNumericFormat;
+    }
+
+    public render(options: VisualComponentRenderOptions): void {
+        const { series, settings, variance } = options.data;
+        const captionDetailsKPIComponentOptions: CaptionKPIComponentOptions = { ...options } as CaptionKPIComponentOptions;
+
+        let caption: string = ""
+            , details: string = ""
+            , title: string = "";
+
+        if (options.data.series
+            && options.data.series[0]
+            && options.data.series[0].current
+            && !isNaN(options.data.series[0].current.y)
+        ) {
+            const formatter: valueFormatter.IValueFormatter = valueFormatter.valueFormatter.create({
+                format: options.data.series[0].format || this.valueFormat,
+                precision: settings.actualValueKPI.precision,
+                value: settings.actualValueKPI.displayUnits || series[0].domain.max,
+                displayUnitSystemType: displayUnitSystemType.DisplayUnitSystemType.WholeUnits,
             });
 
-            this.element.classed(this.extraClassName, true);
+            const value: number = options.data.series[0].current.y;
 
-            this.valueFormat = valueFormatter.DefaultNumericFormat;
+            title = `${value}`;
+            caption = formatter.format(value);
+            details = options.data.series[0].name;
         }
 
-        public render(options: VisualComponentRenderOptions): void {
-            const { series, settings, variance } = options.data
-                , captionDetailsKPIComponentOptions: CaptionKPIComponentOptions = _.clone(options as CaptionKPIComponentOptions);
+        const valueCaption: CaptionKPIComponentOptionsValueSettings = {
+            title: details || title,
+            value: caption,
+            settings: settings.actualValueKPI
+        };
 
-            let caption: string = ""
-                , details: string = ""
-                , title: string = "";
+        const labelCaption: CaptionKPIComponentOptionsValueSettings = {
+            value: details,
+            settings: settings.actualLabelKPI
+        };
 
-            if (options.data.series
-                && options.data.series[0]
-                && options.data.series[0].current
-                && !isNaN(options.data.series[0].current.y)
-            ) {
-                const formatter: IValueFormatter = valueFormatter.create({
-                    format: options.data.series[0].format || this.valueFormat,
-                    precision: settings.actualValueKPI.precision,
-                    value: settings.actualValueKPI.displayUnits || series[0].domain.max,
-                    displayUnitSystemType: DisplayUnitSystemType.WholeUnits,
-                });
+        captionDetailsKPIComponentOptions.captions = [
+            [valueCaption],
+            [labelCaption]
+        ];
 
-                const value: number = options.data.series[0].current.y;
+        const isVarianceKPIAvailable: boolean = series
+            && series.length > 0
+            && series[0]
+            && series[0].current
+            && !isNaN(series[0].current.kpiIndex);
 
-                title = `${value}`;
-                caption = formatter.format(value);
-                details = options.data.series[0].name;
-            }
+        let currentAlign: AlignEnum = AlignEnum.alignCenter;
 
-            const valueCaption: CaptionKPIComponentOptionsValueSettings = {
-                title: details || title,
-                value: caption,
-                settings: settings.actualValueKPI
-            };
-
-            const labelCaption: CaptionKPIComponentOptionsValueSettings = {
-                value: details,
-                settings: settings.actualLabelKPI
-            };
-
-            captionDetailsKPIComponentOptions.captions = [
-                [valueCaption],
-                [labelCaption]
-            ];
-
-            const isVarianceKPIAvailable: boolean = series
-                && series.length > 0
-                && series[0]
-                && series[0].current
-                && !isNaN(series[0].current.kpiIndex);
-
-            let currentAlign: AlignEnum = AlignEnum.alignCenter;
-
-            if (!settings.dateLabelKPI.show && !settings.dateValueKPI.show) {
-                currentAlign = AlignEnum.alignLeft;
-            } else if (((!settings.kpiIndicatorValue.show || isNaN(variance[0]))
-                && (!settings.kpiIndicatorLabel.isShown() || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex)))
-                && (!isVarianceKPIAvailable || !settings.kpiIndicator.show))
-                && (!settings.secondKPIIndicatorValue.show && !settings.secondKPIIndicatorLabel.isShown()
-                    || isNaN(variance[1]))
-            ) {
-                currentAlign = AlignEnum.alignRight;
-            }
-
-            captionDetailsKPIComponentOptions.align = currentAlign;
-
-            super.render(captionDetailsKPIComponentOptions);
+        if (!settings.dateLabelKPI.show && !settings.dateValueKPI.show) {
+            currentAlign = AlignEnum.alignLeft;
+        } else if (((!settings.kpiIndicatorValue.show || isNaN(variance[0]))
+            && (!settings.kpiIndicatorLabel.isShown() || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex)))
+            && (!isVarianceKPIAvailable || !settings.kpiIndicator.show))
+            && (!settings.secondKPIIndicatorValue.show && !settings.secondKPIIndicatorLabel.isShown()
+                || isNaN(variance[1]))
+        ) {
+            currentAlign = AlignEnum.alignRight;
         }
+
+        captionDetailsKPIComponentOptions.align = currentAlign;
+
+        super.render(captionDetailsKPIComponentOptions);
     }
 }

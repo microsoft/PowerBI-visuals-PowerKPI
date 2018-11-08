@@ -24,24 +24,22 @@
  *  THE SOFTWARE.
  */
 
-// jsCommon
-import PixelConverter = jsCommon.PixelConverter;
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
+import { textMeasurementService } from "powerbi-visuals-utils-formattingutils";
+import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
 
-// powerbi
-import TextProperties = powerbi.TextProperties;
-
-// powerbi.visuals
-import ILegend = powerbi.visuals.ILegend;
-import LegendData = powerbi.visuals.LegendData;
-import LegendIcon = powerbi.visuals.LegendIcon;
-import createLegend = powerbi.visuals.createLegend;
-import LegendPosition = powerbi.visuals.LegendPosition;
-import LegendDataPoint = powerbi.visuals.LegendDataPoint;
+import { VisualComponentViewport } from "./base/visualComponent";
+import { BaseComponent } from "./base/baseComponent";
+import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+import { DataRepresentation } from "../dataRepresentation/dataRepresentation";
+import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
+import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
 
 export class LegendComponent extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
     private className: string = "legendComponent";
 
-    private legend: ILegend;
+    private legend: legendInterfaces.ILegend;
 
     constructor(options: VisualComponentConstructorOptions) {
         super();
@@ -59,34 +57,35 @@ export class LegendComponent extends BaseComponent<VisualComponentConstructorOpt
         this.legend = this.createLegend(this.constructorOptions);
     }
 
-    private createLegend(options: VisualComponentConstructorOptions): ILegend {
+    private createLegend(options: VisualComponentConstructorOptions): legendInterfaces.ILegend {
         // Try-catch protects Power KPI from being completely broken due to createLegend incompatibility in different PBI Desktop versions
         try {
             const pbiDesktopFeb2018RegExp: RegExp = /legendParentElement, interactive, interactivityService, isScrollable, legendPosition, legendSmallViewPortProperties, style/;
 
-            if (pbiDesktopFeb2018RegExp.test(createLegend.toString())) {
-                const createLegendAny: any = createLegend;
+            // TODO: fix legend component
+            // if (pbiDesktopFeb2018RegExp.test(createLegend.toString())) {
+            //     const createLegendAny: any = createLegend;
 
-                return createLegendAny(
-                    $(options.element.node()),
-                    false,
-                    options.interactivityService || undefined,
-                    true,
-                    undefined,
-                    undefined,
-                    options.style || undefined,
-                );
-            } else {
-                return createLegend(
-                    $(options.element.node()),
-                    false,
-                    options.interactivityService || undefined,
-                    true,
-                    undefined,
-                    options.style || undefined,
-                    false,
-                );
-            }
+            //     return createLegendAny(
+            //         $(options.element.node()),
+            //         false,
+            //         options.interactivityService || undefined,
+            //         true,
+            //         undefined,
+            //         undefined,
+            //         options.style || undefined,
+            //     );
+            // } else {
+            //     return createLegend(
+            //         $(options.element.node()),
+            //         false,
+            //         options.interactivityService || undefined,
+            //         true,
+            //         undefined,
+            //         options.style || undefined,
+            //         false,
+            //     );
+            // }
         }
         catch (err) {
             return null;
@@ -100,7 +99,7 @@ export class LegendComponent extends BaseComponent<VisualComponentConstructorOpt
 
         const { data: { settings: { legend } } } = options;
 
-        const legendData: LegendData = this.createLegendData(options.data, legend);
+        const legendData: legendInterfaces.LegendData = this.createLegendData(options.data, legend);
 
         // Try-catch protects Power KPI from being completely broken due to createLegend incompatibility in different PBI Desktop versions
         try {
@@ -110,22 +109,22 @@ export class LegendComponent extends BaseComponent<VisualComponentConstructorOpt
         } catch (_) { }
     }
 
-    private createLegendData(data: DataRepresentation, settings: LegendDescriptor): LegendData {
-        const legendDataPoints: LegendDataPoint[] = data.series
+    private createLegendData(data: DataRepresentation, settings: LegendDescriptor) {
+        const legendDataPoints: legendInterfaces.LegendDataPoint[] = data.series
             .map((series: DataRepresentationSeries) => {
                 return {
                     color: series.settings.line.fillColor,
-                    icon: LegendIcon.Circle,
+                    icon: legendInterfaces.LegendIcon.Circle,
                     label: series.name,
                     identity: series.identity,
                     selected: series.selected,
                     lineStyle: settings.getLegendLineStyle(series.settings.line.lineStyle),
                     markerShape: settings.getLegendMarkerShape(),
                     lineColor: series.settings.line.fillColor,
-                } as LegendDataPoint;
+                } as legendInterfaces.LegendDataPoint;
             });
 
-        const fontSizeInPx: number = PixelConverter.fromPointToPixel(settings.fontSize);
+        const fontSizeInPx: number = pixelConverter.fromPointToPixel(settings.fontSize);
 
         return {
             show: settings.show,
@@ -139,20 +138,20 @@ export class LegendComponent extends BaseComponent<VisualComponentConstructorOpt
                 family: settings.fontFamily,
                 size: {
                     pt: settings.fontSize,
-                    px: PixelConverter.fromPointToPixel(settings.fontSize)
+                    px: pixelConverter.fromPointToPixel(settings.fontSize)
                 },
                 sizePx: fontSizeInPx,
                 toTextProperties: (text?: string) => { // TODO: It's a PBI Desktop May 2017 specific. Please get rid of this function once PBID is updated.
                     return {
                         text,
                         fontFamily: settings.fontFamily,
-                        fontSize: PixelConverter.toString(fontSizeInPx),
+                        fontSize: pixelConverter.toString(fontSizeInPx),
                         sizePx: fontSizeInPx,
-                    } as TextProperties;
+                    } as textMeasurementService.TextProperties;
                 },
                 toSVGStyle: () => { // TODO: It's a PBI Desktop May 2017 specific. Please get rid of this function once PBID is updated.
                     return {
-                        "font-size": PixelConverter.toString(fontSizeInPx),
+                        "font-size": pixelConverter.toString(fontSizeInPx),
                         "font-family": settings.fontFamily,
                         fill: settings.labelColor,
                     };
@@ -162,10 +161,10 @@ export class LegendComponent extends BaseComponent<VisualComponentConstructorOpt
     }
 
     private getLegendPosition(position: string): number {
-        const positionIndex: number = LegendPosition[position];
+        const positionIndex: number = legendInterfaces.LegendPosition[position];
 
         return positionIndex === undefined
-            ? LegendPosition.BottomCenter
+            ? legendInterfaces.LegendPosition.BottomCenter
             : positionIndex;
     }
 

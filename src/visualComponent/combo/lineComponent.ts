@@ -24,125 +24,139 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // jsCommon.CssConstants
-    import PixelConverter = jsCommon.PixelConverter;
-    import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
+import {
+    Selection,
+    line,
+    Line
+} from "d3";
 
-    export interface LineComponentRenderOptions extends VisualComponentRenderOptionsBase {
-        thickness: number;
-        viewport: IViewport;
-        x: DataRepresentationScale;
-        y: DataRepresentationScale;
-        interpolation: LineInterpolation;
-        lineStyle: LineStyle;
-        gradientPoints: DataRepresentationPointGradientColor[];
-        opacity: number;
+import powerbi from "powerbi-visuals-api";
+import { CssConstants } from "powerbi-visuals-utils-svgutils";
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
+
+import { BaseComponent } from "../base/baseComponent";
+import { VisualComponentRenderOptionsBase } from "../base/visualComponentRenderOptions";
+import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
+import { DataRepresentationScale } from "../../dataRepresentation/dataRepresentationScale";
+
+import {
+    DataRepresentationPoint,
+    DataRepresentationPointGradientColor
+} from "../../dataRepresentation/dataRepresentationPoint";
+
+import {
+    LineInterpolation,
+    LineStyle
+} from "../../settings/descriptors/lineDescriptor";
+
+export interface LineComponentRenderOptions extends VisualComponentRenderOptionsBase {
+    thickness: number;
+    viewport: powerbi.IViewport;
+    x: DataRepresentationScale;
+    y: DataRepresentationScale;
+    interpolation: LineInterpolation;
+    lineStyle: LineStyle;
+    gradientPoints: DataRepresentationPointGradientColor[];
+    opacity: number;
+}
+
+export class LineComponent extends BaseComponent<VisualComponentConstructorOptions, LineComponentRenderOptions> {
+    private className: string = "lineComponent";
+    private lineSelector: CssConstants.ClassAndSelector = this.getSelectorWithPrefix(`${this.className}_line`);
+
+    private lineSelection: Selection<any, DataRepresentationPointGradientColor, any, any>;
+
+    constructor(options: VisualComponentConstructorOptions) {
+        super();
+
+        this.initElement(
+            options.element,
+            this.className,
+            "g"
+        );
+
+        this.constructorOptions = {
+            ...options,
+            element: this.element,
+        };
     }
 
-    export class LineComponent extends BaseComponent<VisualComponentConstructorOptions, LineComponentRenderOptions> {
-        private className: string = "lineComponent";
-        private lineSelector: ClassAndSelector = this.getSelectorWithPrefix(`${this.className}_line`);
+    public render(options: LineComponentRenderOptions): void {
+        const {
+            x,
+            y,
+            viewport,
+            thickness,
+            interpolation,
+            gradientPoints,
+            lineStyle,
+            series,
+        } = options;
 
-        private lineSelection: D3.UpdateSelection;
+        this.renderOptions = options;
 
-        constructor(options: VisualComponentConstructorOptions) {
-            super();
+        const xScale: DataRepresentationScale = x
+            .copy()
+            .range([0, viewport.width]);
 
-            this.initElement(
-                options.element,
-                this.className,
-                "g"
-            );
+        const yScale: DataRepresentationScale = y
+            .copy()
+            .range([viewport.height, 0]);
 
-            this.constructorOptions = {
-                ...options,
-                element: this.element,
-            };
-        }
+        this.lineSelection = this.element
+            .selectAll(this.lineSelector.selectorName)
+            .data(gradientPoints);
 
-        public render(options: LineComponentRenderOptions): void {
-            const {
-                x,
-                y,
-                viewport,
-                thickness,
-                interpolation,
-                gradientPoints,
-                lineStyle,
-                series,
-            } = options;
+        this.lineSelection.enter()
+            .append("svg:path")
+            .classed(this.lineSelector.className, true)
+            .on("click", this.clickHandler.bind(this))
+            .merge(this.lineSelection)
+            .attr("d", (gradientGroup: DataRepresentationPointGradientColor) => {
+                return this.getLine(
+                    xScale,
+                    yScale,
+                    interpolation
+                )(gradientGroup.points);
+            })
+            .attr("class", `${this.lineSelector.selectorName} ${lineStyle}`)
+            .style("stroke", (gradientGroup: DataRepresentationPointGradientColor) => gradientGroup.color)
+            .style("stroke-width", () => pixelConverter.toString(thickness));
 
-            this.renderOptions = options;
+        this.highlight(series && series.hasSelection);
 
-            const xScale: DataRepresentationScale = x
-                .copy()
-                .range([0, viewport.width]);
+        this.lineSelection
+            .exit()
+            .remove();
+    }
 
-            const yScale: DataRepresentationScale = y
-                .copy()
-                .range([viewport.height, 0]);
+    private getLine(
+        xScale: DataRepresentationScale,
+        yScale: DataRepresentationScale,
+        interpolation: LineInterpolation,
+    ): Line<DataRepresentationPoint> {
+        return line<DataRepresentationPoint>()
+            .x((data: DataRepresentationPoint) => {
+                return xScale.scale(data.x);
+            })
+            .y((data: DataRepresentationPoint) => {
+                return yScale.scale(data.y);
+            });
+            // .interpolate(interpolation); // TODO: fix interpolation https://github.com/d3/d3-shape/blob/master/README.md#curves
+    }
 
-            this.lineSelection = this.element
-                .selectAll(this.lineSelector.selector)
-                .data(gradientPoints);
+    public destroy(): void {
+        this.lineSelection = null;
 
-            this.lineSelection.enter()
-                .append("svg:path")
-                .classed(this.lineSelector.class, true)
-                .on("click", this.clickHandler.bind(this));
+        super.destroy();
+    }
 
-            this.lineSelection
-                .attr({
-                    d: (gradientGroup: DataRepresentationPointGradientColor) => {
-                        return this.getLine(
-                            xScale,
-                            yScale,
-                            interpolation
-                        )(gradientGroup.points);
-                    },
-                    "class": `${this.lineSelector.class} ${lineStyle}`,
-                })
-                .style({
-                    "stroke": (gradientGroup: DataRepresentationPointGradientColor) => gradientGroup.color,
-                    "stroke-width": () => PixelConverter.toString(thickness),
-                });
-
-            this.highlight(series && series.hasSelection);
-
-            this.lineSelection
-                .exit()
-                .remove();
-        }
-
-        private getLine(
-            xScale: DataRepresentationScale,
-            yScale: DataRepresentationScale,
-            interpolation: LineInterpolation,
-        ): D3.Svg.Line {
-            return d3.svg.line()
-                .x((data: DataRepresentationPoint) => {
-                    return xScale.scale(data.x);
-                })
-                .y((data: DataRepresentationPoint) => {
-                    return yScale.scale(data.y);
-                })
-                .interpolate(interpolation);
-        }
-
-        public destroy(): void {
-            this.lineSelection = null;
-
-            super.destroy();
-        }
-
-        public highlight(hasSelection: boolean): void {
-            this.updateElementOpacity(
-                this.lineSelection,
-                this.renderOptions && this.renderOptions.opacity,
-                this.renderOptions && this.renderOptions.series && this.renderOptions.series.selected,
-                hasSelection,
-            );
-        }
+    public highlight(hasSelection: boolean): void {
+        this.updateElementOpacity(
+            this.lineSelection,
+            this.renderOptions && this.renderOptions.opacity,
+            this.renderOptions && this.renderOptions.series && this.renderOptions.series.selected,
+            hasSelection,
+        );
     }
 }

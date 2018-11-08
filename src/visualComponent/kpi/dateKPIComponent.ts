@@ -24,98 +24,110 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // powerbi.visuals
-    import valueFormatter = powerbi.visuals.valueFormatter;
-    import IValueFormatter = powerbi.visuals.IValueFormatter;
+import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
-    export class DateKPIComponent
-        extends CaptionKPIComponent
-        implements KPIVisualComponent<VisualComponentRenderOptions> {
+import { DataRepresentationAxisValueType } from "../../dataRepresentation/dataRepresentationAxisValueType";
+import { DataRepresentationTypeEnum } from "../../dataRepresentation/dataRepresentationType";
+import { VisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
+import { CaptionKPIComponent } from "./captionKPIComponent";
+import { KPIVisualComponent } from "./kpiVisualComponent";
+import { AlignEnum } from "./alignEnum";
+import { KPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
 
-        private extraClassName: string = "dateKPIComponent";
+import {
+    CaptionKPIComponentOptions,
+    CaptionKPIComponentOptionsValueSettings,
+} from "./captionKPIComponentOptions";
 
-        constructor(options: KPIComponentConstructorOptionsWithClassName) {
-            super({
-                element: options.element,
-                className: options.className
-            });
+export class DateKPIComponent
+    extends CaptionKPIComponent
+    implements KPIVisualComponent<VisualComponentRenderOptions> {
 
-            this.element.classed(this.extraClassName, true);
-        }
+    private extraClassName: string = "dateKPIComponent";
 
-        public render(options: VisualComponentRenderOptions): void {
-            const { settings, x } = options.data
-                , captionDetailsKPIComponentOptions: CaptionKPIComponentOptions = _.clone(options as CaptionKPIComponentOptions);
+    constructor(options: KPIComponentConstructorOptionsWithClassName) {
+        super({
+            element: options.element,
+            className: options.className
+        });
 
-            const axisValue: DataRepresentationAxisValueType = options.data.series
-                && options.data.series[0]
-                && options.data.series[0].current.x;
+        this.element.classed(this.extraClassName, true);
+    }
 
-            let formattedValue: string = "";
+    public render(options: VisualComponentRenderOptions): void {
+        const { settings, x } = options.data;
 
-            if (axisValue) {
-                const formatter: IValueFormatter = this.getValueFormatter(
-                    x.type,
-                    settings.dateValueKPI.getFormat(),
-                    settings.dateValueKPI.displayUnits || x.max,
-                    settings.dateValueKPI.precision);
+        const captionDetailsKPIComponentOptions: CaptionKPIComponentOptions = {
+            ...options,
+        } as CaptionKPIComponentOptions;
 
-                if (formatter) {
-                    formattedValue = formatter.format(axisValue);
-                } else {
-                    formattedValue = `${axisValue}`;
-                }
+        const axisValue: DataRepresentationAxisValueType = options.data.series
+            && options.data.series[0]
+            && options.data.series[0].current.x;
+
+        let formattedValue: string = "";
+
+        if (axisValue) {
+            const formatter: valueFormatter.IValueFormatter = this.getValueFormatter(
+                x.type,
+                settings.dateValueKPI.getFormat(),
+                settings.dateValueKPI.displayUnits || x.max,
+                settings.dateValueKPI.precision);
+
+            if (formatter) {
+                formattedValue = formatter.format(axisValue);
+            } else {
+                formattedValue = `${axisValue}`;
             }
-
-            const valueCaption: CaptionKPIComponentOptionsValueSettings = {
-                value: formattedValue,
-                settings: settings.dateValueKPI,
-                title: options.data.x.name || formattedValue
-            };
-
-            const labelCaption: CaptionKPIComponentOptionsValueSettings = {
-                value: options.data.x.name,
-                settings: settings.dateLabelKPI
-            };
-
-            captionDetailsKPIComponentOptions.captions = [
-                [valueCaption],
-                [labelCaption]
-            ];
-
-            captionDetailsKPIComponentOptions.align = AlignEnum.alignLeft;
-
-            super.render(captionDetailsKPIComponentOptions);
         }
 
-        private getValueFormatter(
-            type: DataRepresentationTypeEnum,
-            format: string,
-            value: DataRepresentationAxisValueType,
-            precision: number,
-        ): IValueFormatter {
-            let currentValue: DataRepresentationAxisValueType
-                , currentPrecision: number;
+        const valueCaption: CaptionKPIComponentOptionsValueSettings = {
+            value: formattedValue,
+            settings: settings.dateValueKPI,
+            title: options.data.x.name || formattedValue
+        };
 
-            if (type === DataRepresentationTypeEnum.NumberType) {
-                currentValue = value;
-                currentPrecision = precision;
-            }
+        const labelCaption: CaptionKPIComponentOptionsValueSettings = {
+            value: options.data.x.name,
+            settings: settings.dateLabelKPI
+        };
 
-            return this.getValueFormatterByFormat(format, currentValue, currentPrecision);
+        captionDetailsKPIComponentOptions.captions = [
+            [valueCaption],
+            [labelCaption]
+        ];
+
+        captionDetailsKPIComponentOptions.align = AlignEnum.alignLeft;
+
+        super.render(captionDetailsKPIComponentOptions);
+    }
+
+    private getValueFormatter(
+        type: DataRepresentationTypeEnum,
+        format: string,
+        value: DataRepresentationAxisValueType,
+        precision: number,
+    ): valueFormatter.IValueFormatter {
+        let currentValue: DataRepresentationAxisValueType
+            , currentPrecision: number;
+
+        if (type === DataRepresentationTypeEnum.NumberType) {
+            currentValue = value;
+            currentPrecision = precision;
         }
 
-        private getValueFormatterByFormat(
-            format: string,
-            value: DataRepresentationAxisValueType,
-            precision: number
-        ): IValueFormatter {
-            return valueFormatter.create({
-                format,
-                value,
-                precision
-            });
-        }
+        return this.getValueFormatterByFormat(format, currentValue, currentPrecision);
+    }
+
+    private getValueFormatterByFormat(
+        format: string,
+        value: DataRepresentationAxisValueType,
+        precision: number
+    ): valueFormatter.IValueFormatter {
+        return valueFormatter.valueFormatter.create({
+            format,
+            value,
+            precision
+        });
     }
 }

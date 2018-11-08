@@ -24,64 +24,78 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export interface ComboComponentRenderOptions extends AreaComponentRenderOptions {
-        lineType: LineType;
+import { VisualComponent } from "../base/visualComponent";
+import { BaseContainerComponent } from "../base/baseContainerComponent";
+import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
+import { LineType } from "../../settings/descriptors/lineDescriptor";
+
+import {
+    AreaComponent,
+    AreaComponentRenderOptions
+} from "./areaComponent";
+
+import {
+    LineComponent,
+    LineComponentRenderOptions
+} from "./lineComponent";
+
+export interface ComboComponentRenderOptions extends AreaComponentRenderOptions {
+    lineType: LineType;
+}
+
+export class ComboComponent extends BaseContainerComponent<VisualComponentConstructorOptions, ComboComponentRenderOptions, LineComponentRenderOptions> {
+    private className: string = "comboComponent";
+
+    private currentLineType: LineType;
+
+    constructor(options: VisualComponentConstructorOptions) {
+        super();
+
+        this.initElement(
+            options.element,
+            this.className,
+            "g"
+        );
+
+        this.constructorOptions = {
+            ...options,
+            element: this.element,
+        };
     }
 
-    export class ComboComponent extends BaseContainerComponent<VisualComponentConstructorOptions, ComboComponentRenderOptions, LineComponentRenderOptions> {
-        private className: string = "comboComponent";
+    public render(options: ComboComponentRenderOptions): void {
+        const { lineType } = options;
 
-        private currentLineType: LineType;
+        this.renderOptions = options;
 
-        constructor(options: VisualComponentConstructorOptions) {
-            super();
+        if (lineType !== this.currentLineType) {
+            this.destroyComponents();
 
-            this.initElement(
-                options.element,
-                this.className,
-                "g"
-            );
-
-            this.constructorOptions = {
-                ...options,
-                element: this.element,
-            };
+            this.currentLineType = lineType;
         }
 
-        public render(options: ComboComponentRenderOptions): void {
-            const { lineType } = options;
-
-            this.renderOptions = options;
-
-            if (lineType !== this.currentLineType) {
-                this.destroyComponents();
-
-                this.currentLineType = lineType;
-            }
-
-            this.initComponents(
-                this.components,
-                1,
-                () => {
-                    switch (this.currentLineType) {
-                        case LineType.area: {
-                            return new AreaComponent(this.constructorOptions);
-                        }
-                        case LineType.column:
-                        default: {
-                            return new LineComponent(this.constructorOptions);
-                        }
+        this.initComponents(
+            this.components,
+            1,
+            () => {
+                switch (this.currentLineType) {
+                    case LineType.area: {
+                        return new AreaComponent(this.constructorOptions);
+                    }
+                    case LineType.column:
+                    default: {
+                        return new LineComponent(this.constructorOptions);
                     }
                 }
-            );
+            }
+        );
 
-            this.forEach(
-                this.components,
-                (component: VisualComponent<LineComponentRenderOptions>) => {
-                    component.render(options);
-                }
-            );
-        }
+        this.forEach(
+            this.components,
+            (component: VisualComponent<LineComponentRenderOptions>) => {
+                component.render(options);
+            }
+        );
     }
 }
+
