@@ -24,6 +24,24 @@
  *  THE SOFTWARE.
  */
 
+import { Selection } from "d3";
+
+import powerbi from "powerbi-visuals-api";
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
+
+import {
+    valueFormatter,
+    textMeasurementService,
+} from "powerbi-visuals-utils-formattingutils";
+
+import {
+    axisInterfaces,
+} from "powerbi-visuals-utils-chartutils";
+
+import { VisualComponent } from "../base/visualComponent";
+import { BaseComponent } from "../base/baseComponent";
+import { DataRepresentationAxisValueType } from "../../dataRepresentation/dataRepresentationAxisValueType";
+
 
 export interface AxisComponent<RenderOptions> extends VisualComponent<RenderOptions> {
     getTicks(): DataRepresentationAxisValueType[];
@@ -31,10 +49,10 @@ export interface AxisComponent<RenderOptions> extends VisualComponent<RenderOpti
 }
 
 export abstract class AxisBaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
-    protected gElement: D3.Selection;
+    protected gElement: Selection<any, any, any, any>;
 
-    protected formatter: IValueFormatter;
-    protected axisProperties: IAxisProperties;
+    protected formatter: valueFormatter.IValueFormatter;
+    protected axisProperties: axisInterfaces.IAxisProperties;
 
     public abstract render(options: VisualComponentRenderOptions): void;
 
@@ -54,14 +72,14 @@ export abstract class AxisBaseComponent<VisualComponentConstructorOptions, Visua
 
     protected getLabelHeight(
         value: DataRepresentationAxisValueType,
-        formatter: IValueFormatter,
+        formatter: valueFormatter.IValueFormatter,
         fontSize: number,
         fontFamily: string
     ): number {
         const text: string = formatter.format(value);
-        const textProperties: TextProperties = this.getTextProperties(text, fontSize, fontFamily);
+        const textProperties: textMeasurementService.TextProperties = this.getTextProperties(text, fontSize, fontFamily);
 
-        return TextMeasurementService.measureSvgTextHeight(textProperties, text);
+        return textMeasurementService.textMeasurementService.measureSvgTextHeight(textProperties, text);
     }
 
     protected getTextWidth(
@@ -69,14 +87,14 @@ export abstract class AxisBaseComponent<VisualComponentConstructorOptions, Visua
         fontSize: number,
         fontFamily: string
     ): number {
-        const textProperties: TextProperties = this.getTextProperties(text, fontSize, fontFamily);
+        const textProperties: textMeasurementService.TextProperties = this.getTextProperties(text, fontSize, fontFamily);
 
-        return TextMeasurementService.measureSvgTextWidth(textProperties, text);
+        return textMeasurementService.textMeasurementService.measureSvgTextWidth(textProperties, text);
     }
 
     protected getLabelWidth(
         values: DataRepresentationAxisValueType[],
-        formatter: IValueFormatter,
+        formatter: valueFormatter.IValueFormatter,
         fontSize: number,
         fontFamily: string
     ): number {
@@ -95,23 +113,23 @@ export abstract class AxisBaseComponent<VisualComponentConstructorOptions, Visua
         text: string,
         fontSize: number,
         fontFamily: string
-    ): TextProperties {
+    ): textMeasurementService.TextProperties {
         return {
             text,
             fontFamily,
-            fontSize: PixelConverter.toString(fontSize),
+            fontSize: pixelConverter.toString(fontSize),
         };
     }
 
     protected getValueFormatter(
         min: DataRepresentationAxisValueType,
         max: DataRepresentationAxisValueType,
-        metadata?: DataViewMetadataColumn,
+        metadata?: powerbi.DataViewMetadataColumn,
         tickCount?: number,
         precision?: number,
         valueFormat?: string
-    ): IValueFormatter {
-        return valueFormatter.create({
+    ): valueFormatter.IValueFormatter {
+        return valueFormatter.valueFormatter.create({
             tickCount,
             precision,
             format: valueFormat,

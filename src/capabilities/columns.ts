@@ -23,50 +23,51 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-namespace powerbi.visuals.samples.powerKpi {
-    // powerbi
-    import VisualDataRole = powerbi.VisualDataRole;
-    import VisualDataRoleKind = powerbi.VisualDataRoleKind;
 
-    export const categoryColumn: VisualDataRole = {
-        name: "Axis",
-        displayName: "Axis",
-        kind: VisualDataRoleKind.Grouping
-    };
-
-    export const kpiColumn: VisualDataRole = {
-        name: "KPI",
-        displayName: "KPI Indicator Index",
-        kind: VisualDataRoleKind.Measure,
-    };
-
-    export const kpiIndicatorValueColumn: VisualDataRole = {
-        name: "KPIIndicatorValue",
-        displayName: "KPI Indicator Value",
-        kind: VisualDataRoleKind.Measure,
-    };
-
-    export const secondKPIIndicatorValueColumn: VisualDataRole = {
-        name: "SecondKPIIndicatorValue",
-        displayName: "Second KPI Indicator Value",
-        kind: VisualDataRoleKind.Measure,
-    };
-
-    export const valuesColumn: VisualDataRole = {
-        name: "Values",
-        displayName: "Values",
-        kind: VisualDataRoleKind.Measure,
-    };
-
-    export const seriesColumn: VisualDataRole = {
-        name: "SeriesColumn",
-        displayName: "Series",
-        kind: VisualDataRoleKind.Grouping,
-    };
-
-    export const secondaryValuesColumn: VisualDataRole = {
-        name: "SecondaryValues",
-        displayName: "Secondary Values",
-        kind: VisualDataRoleKind.Measure,
-    };
+export interface VisualDataRole {
+    name: string;
+    displayName: string;
 }
+
+export const categoryColumn: VisualDataRole = {
+    name: "Axis",
+    displayName: "Axis",
+    // kind: VisualDataRoleKind.Grouping
+};
+
+export const kpiColumn: VisualDataRole = {
+    name: "KPI",
+    displayName: "KPI Indicator Index",
+    // kind: VisualDataRoleKind.Measure,
+};
+
+export const kpiIndicatorValueColumn: VisualDataRole = {
+    name: "KPIIndicatorValue",
+    displayName: "KPI Indicator Value",
+    // kind: VisualDataRoleKind.Measure,
+};
+
+export const secondKPIIndicatorValueColumn: VisualDataRole = {
+    name: "SecondKPIIndicatorValue",
+    displayName: "Second KPI Indicator Value",
+    // kind: VisualDataRoleKind.Measure,
+};
+
+export const valuesColumn: VisualDataRole = {
+    name: "Values",
+    displayName: "Values",
+    // kind: VisualDataRoleKind.Measure,
+};
+
+export const seriesColumn: VisualDataRole = {
+    name: "SeriesColumn",
+    displayName: "Series",
+    // kind: VisualDataRoleKind.Grouping,
+};
+
+export const secondaryValuesColumn: VisualDataRole = {
+    name: "SecondaryValues",
+    displayName: "Secondary Values",
+    // kind: VisualDataRoleKind.Measure,
+};
+

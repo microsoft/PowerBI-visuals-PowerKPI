@@ -4,7 +4,11 @@
   "description": "A powerful KPI Indicator with multi-line chart and labels for current date, value and variances. Rich customization options, including current status labels and symbols, trend and comparison lines, multiple variances, auto-scaling, text formatting, and density controls. Highly flexible for use in large, detailed report tiles or tiny, summary dashboard tiles.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "pbiviz": "pbiviz",
+    "start": "pbiviz start",
+    "package": "pbiviz package",
+    "test": "karma start",
+    "cert": "pbiviz --install-cert"
   },
   "repository": {
     "type": "git",
@@ -29,10 +33,14 @@
     "@types/d3": "^5.0.1",
     "@types/jquery": "^3.3.22",
     "@types/node": "^10.12.2",
-    "powerbi-visuals-api": "^2.2.2"
+    "powerbi-visuals-api": "^2.2.2",
+    "powerbi-visuals-tools": "^3.0.5"
   },
   "dependencies": {
+    "d3": "^5.7.0",
+    "jquery": "^3.3.1",
     "powerbi-visuals-utils-chartutils": "^2.1.0",
+    "powerbi-visuals-utils-colorutils": "^2.1.0",
     "powerbi-visuals-utils-dataviewutils": "^2.1.0",
     "powerbi-visuals-utils-formattingutils": "^4.1.0",
     "powerbi-visuals-utils-interactivityutils": "^5.1.0",

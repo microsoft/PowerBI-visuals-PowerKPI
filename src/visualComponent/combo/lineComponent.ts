@@ -119,7 +119,7 @@ export class LineComponent extends BaseComponent<VisualComponentConstructorOptio
                     interpolation
                 )(gradientGroup.points);
             })
-            .attr("class", `${this.lineSelector.selectorName} ${lineStyle}`)
+            .attr("class", `${this.lineSelector.className} ${lineStyle}`)
             .style("stroke", (gradientGroup: DataRepresentationPointGradientColor) => gradientGroup.color)
             .style("stroke-width", () => pixelConverter.toString(thickness));
 

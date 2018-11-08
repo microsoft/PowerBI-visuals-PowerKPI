@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-import $ from "jquery";
+import * as $ from "jquery";
 
 import { Selection } from "d3";
 
@@ -89,7 +89,7 @@ export class SubtitleComponent extends BaseComponent<VisualComponentConstructorO
         };
 
         if (this.element) {
-            viewport.height = $(this.element.node()).height();
+            viewport.height = $(this.element.node()).height(); // TODO: check if we are able to remove jQuery.
         }
 
         return viewport;

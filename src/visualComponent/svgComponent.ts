@@ -44,8 +44,8 @@ import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentati
 import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 import { AxisReferenceLineBaseComponentRenderOptions } from "./axes/referenceLine/axisReferenceLineBaseComponent";
 import { EventPositionVisualComponentOptions } from "./eventPositionVisualComponentOptions";
-import { XAxisReferenceLineComponent } from "./axes/xAxisComponent";
-import { YAxisReferenceLineComponent } from "./axes/yAxisComponent";
+import { XAxisReferenceLineComponent } from "./axes/referenceLine/xAxisReferenceLineComponent";
+import { YAxisReferenceLineComponent } from "./axes/referenceLine/yAxisReferenceLineComponent";
 import { ChartComponent } from "./chartComponent";
 import { LabelsComponent } from "./labelsComponent";
 import { TooltipComponent } from "./tooltipComponent";

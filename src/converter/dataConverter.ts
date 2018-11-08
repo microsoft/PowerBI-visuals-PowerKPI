@@ -24,12 +24,45 @@
  *  THE SOFTWARE.
  */
 
-// powerbi
-import ValueTypeDescriptor = powerbi.ValueTypeDescriptor;
+import powerbi from "powerbi-visuals-api";
 
-// powerbi.visuals
-import SelectionId = powerbi.visuals.SelectionId;
-import SelectionIdBuilder = powerbi.visuals.SelectionIdBuilder;
+import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
+
+import {
+    kpiColumn,
+    kpiIndicatorValueColumn,
+    secondKPIIndicatorValueColumn,
+    valuesColumn,
+    secondaryValuesColumn,
+
+} from "../capabilities/columns";
+
+import { Converter } from "./converter";
+import { ConverterOptions } from "./converterOptions";
+import { VarianceConverter } from "./varianceConverter";
+import { DataRepresentation } from "../dataRepresentation/dataRepresentation";
+import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
+import { DataRepresentationScale } from "../dataRepresentation/dataRepresentationScale";
+import { Settings } from "../settings/settings";
+import { SeriesSettings } from "../settings/seriesSettings";
+import { BaseDescriptor } from "../settings/descriptors/descriptor";
+import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorDescriptor";
+import { YAxisDescriptor } from "../settings/descriptors/axis/axisDescriptor";
+import { AxisType } from "../settings/descriptors/axis/axisDescriptor";
+import { DataRepresentationPointIndexed } from "../dataRepresentation/dataRepresentationPointIndexed";
+
+import {
+    DataRepresentationSeries,
+    DataRepresentationSeriesGroup
+} from "../dataRepresentation/dataRepresentationSeries";
+
+import {
+    DataRepresentationPoint,
+    DataRepresentationPointGradientColor
+} from "../dataRepresentation/dataRepresentationPoint";
+
+import { DataRepresentationAxisBase } from "../dataRepresentation/dataRepresentationAxis";
+import { DataRepresentationAxisValueType } from "../dataRepresentation/dataRepresentationAxisValueType";
 
 export class DataConverter
     extends VarianceConverter
@@ -93,14 +126,14 @@ export class DataConverter
             return dataRepresentation;
         }
 
-        const axisCategory: DataViewCategoryColumn = dataView.categorical.categories[0];
+        const axisCategory: powerbi.DataViewCategoryColumn = dataView.categorical.categories[0];
 
         dataRepresentation.x.metadata = axisCategory.source;
         dataRepresentation.x.name = axisCategory.source.displayName;
 
         settings.parse(dataView);
 
-        const axisCategoryType: ValueTypeDescriptor = axisCategory.source.type;
+        const axisCategoryType: powerbi.ValueTypeDescriptor = axisCategory.source.type;
 
         if (axisCategoryType.text) {
             settings.xAxis.type = AxisType.categorical;
@@ -138,11 +171,11 @@ export class DataConverter
         // Applies series formats
         dataRepresentation.x.format = dataRepresentation.settings.dateValueKPI.getFormat();
 
-        dataView.categorical.values.grouped().forEach((group: DataViewValueColumnGroup) => {
-            const groupedValues: DataViewValueColumn[] = group.values;
+        dataView.categorical.values.grouped().forEach((group: powerbi.DataViewValueColumnGroup) => {
+            const groupedValues: powerbi.DataViewValueColumn[] = group.values;
 
-            const currentKPIColumn: DataViewValueColumn[] = groupedValues
-                .filter((groupedValue: DataViewValueColumn) => {
+            const currentKPIColumn: powerbi.DataViewValueColumn[] = groupedValues
+                .filter((groupedValue: powerbi.DataViewValueColumn) => {
                     return groupedValue.source.roles[kpiColumn.name];
                 });
 
@@ -151,7 +184,7 @@ export class DataConverter
                 && currentKPIColumn[0].values as number[]
             ) || [];
 
-            groupedValues.forEach((groupedValue: DataViewValueColumn) => {
+            groupedValues.forEach((groupedValue: powerbi.DataViewValueColumn) => {
                 const format: string = this.getFormatStringByColumn(groupedValue.source);
 
                 if (groupedValue.source.roles[kpiIndicatorValueColumn.name]) {
@@ -215,12 +248,9 @@ export class DataConverter
 
                     if (!seriesSettings.line.fillColor
                         && style
-                        && style.colorPalette
-                        && style.colorPalette.dataColors
+                        && style.getColor
                     ) {
-                        seriesSettings.line.fillColor = style.colorPalette.dataColors
-                            .getColorByIndex(seriesColorIndex)
-                            .value;
+                        seriesSettings.line.fillColor = style.getColor(`${seriesColorIndex}`).value;
 
                         seriesColorIndex++;
                     }
@@ -248,7 +278,8 @@ export class DataConverter
                         dataRepresentation.isGrouped = isGrouped;
                     }
 
-                    const identity: SelectionId = SelectionIdBuilder.builder()
+                    // TODO: fix selection id
+                    const identity: powerbi.extensibility.ISelectionId = null; /*SelectionIdBuilder.builder()
                         .withSeries(
                             dataView.categorical.values,
                             isGrouped
@@ -256,7 +287,7 @@ export class DataConverter
                                 : groupedValue
                         )
                         .withMeasure(groupedValue.source.queryName)
-                        .createSelectionId();
+                        .createSelectionId();*/
 
                     if (isNaN(maxThickness) || seriesSettings.line.thickness > maxThickness) {
                         maxThickness = seriesSettings.line.thickness;
@@ -348,7 +379,7 @@ export class DataConverter
         axisValues: DataRepresentationAxisValueType[],
         dataRepresentation: DataRepresentation,
         seriesGroup: DataRepresentationSeriesGroup,
-        groupedValue: DataViewValueColumn,
+        groupedValue: powerbi.DataViewValueColumn,
         seriesY: DataRepresentationAxisBase,
         kpiIndexes: number[],
         seriesSettings: SeriesSettings,
@@ -555,7 +586,7 @@ export class DataConverter
         }
 
         if (value instanceof Date) {
-            return valueFormatter.format(value, format || "dddd, MMMM dd, yyyy");
+            return valueFormatter.valueFormatter.format(value, format || "dddd, MMMM dd, yyyy");
         }
 
         return `${value}`;
@@ -617,7 +648,7 @@ export class DataConverter
         return scale.domain(values, type);
     }
 
-    private getFormatStringByColumn(column: DataViewMetadataColumn): string {
+    private getFormatStringByColumn(column: powerbi.DataViewMetadataColumn): string {
         if (!column || !column.format) {
             return undefined;
         }

@@ -24,24 +24,35 @@
  *  THE SOFTWARE.
  */
 
-// jsCommon
-import PixelConverter = jsCommon.PixelConverter;
+import powerbi from "powerbi-visuals-api";
 
-// powerbi
-import IViewport = powerbi.IViewport;
-import TextMeasurementService = powerbi.TextMeasurementService;
+import {
+    IMargin,
+    manipulation as svgManipulation
+} from "powerbi-visuals-utils-svgutils";
 
-// powerbi.visuals
-import IMargin = powerbi.visuals.IMargin;
-import SVGUtil = powerbi.visuals.SVGUtil;
-import valueFormatter = powerbi.visuals.valueFormatter;
-import IValueFormatter = powerbi.visuals.IValueFormatter;
-import IAxisProperties = powerbi.visuals.IAxisProperties;
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
+import {
+    textMeasurementService,
+    valueFormatter,
+} from "powerbi-visuals-utils-formattingutils";
+
+import { DataRepresentationAxis } from "../../dataRepresentation/dataRepresentationAxis";
+import { YAxisDescriptor } from "../../settings/descriptors/axis/axisDescriptor";
+import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
+import { VisualComponentViewport } from "../base/visualComponent";
+
+import { PowerKPIAxisHelper } from "./helpers/axisHelper";
+
+import {
+    AxisComponent,
+    AxisBaseComponent
+} from "./axisBaseComponent";
 
 export interface YAxisComponentRenderOptions {
     settings: YAxisDescriptor;
     axis: DataRepresentationAxis;
-    viewport: IViewport;
+    viewport: powerbi.IViewport;
     margin: IMargin;
 }
 
@@ -60,7 +71,7 @@ export class YAxisComponent
 
     private maxXAxisLabelWidth: number = 100;
 
-    private valueFormat: string = valueFormatter.DefaultNumericFormat;
+    private valueFormat: string = valueFormatter.valueFormatter.DefaultNumericFormat;
 
     constructor(options: VisualComponentConstructorOptions) {
         super();
@@ -159,30 +170,27 @@ export class YAxisComponent
             shouldLabelsBeTruncated = true;
         }
 
-        this.element.style({
-            "font-family": settings.fontFamily,
-            "font-size": PixelConverter.toString(fontSize),
-            fill: settings.fontColor,
-            "padding": `${PixelConverter.toString(margin.top)} 0 ${PixelConverter.toString(this.maxLabelHeight / 2)} 0`,
-        });
+        this.element
+            .style("font-family", settings.fontFamily)
+            .style("font-size", pixelConverter.toString(fontSize))
+            .style("fill", settings.fontColor)
+            .style("padding", `${pixelConverter.toString(margin.top)} 0 ${pixelConverter.toString(this.maxLabelHeight / 2)} 0`);
 
         this.updateViewport({
             height,
             width: this.getTickWidth(),
         });
 
-        this.gElement.attr({
-            transform: SVGUtil.translate(
-                this.maxLabelWidth + this.labelOffset,
-                this.maxLabelHeight / 2
-            )
-        });
+        this.gElement.attr("transform", svgManipulation.translate(
+            this.maxLabelWidth + this.labelOffset,
+            this.maxLabelHeight / 2
+        ));
 
         this.axisProperties.axis.tickFormat((item: number) => {
             const formattedLabel: string = this.formatter.format(item);
 
             if (shouldLabelsBeTruncated) {
-                return TextMeasurementService.getTailoredTextOrDefault(
+                return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
                     this.getTextProperties(formattedLabel, fontSize, settings.fontFamily),
                     availableWidth
                 );
@@ -199,7 +207,7 @@ export class YAxisComponent
         dataDomain: any[],
         density: number,
         isDensityAtMax: boolean
-    ): IAxisProperties {
+    ) {
         return PowerKPIAxisHelper.createAxis({
             pixelSpan,
             dataDomain,
@@ -212,7 +220,7 @@ export class YAxisComponent
             outerPadding: this.maxLabelHeight / 2,
             useTickIntervalForDisplayUnits: true,
             shouldClamp: false,
-            outerPaddingRatio: 0,
+            // outerPaddingRatio: 0, // TODO:
             is100Pct: true,
             innerPaddingRatio: 1,
             tickLabelPadding: undefined,

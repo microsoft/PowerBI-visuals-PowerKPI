@@ -24,7 +24,8 @@
  *  THE SOFTWARE.
  */
 
-import { IMargin } from "../../dataRepresentation/dataRepresentation";
+import { IMargin } from "powerbi-visuals-utils-svgutils";
+
 import { BaseDescriptor } from "../descriptors/descriptor";
 
 export class DotsDescriptor extends BaseDescriptor {

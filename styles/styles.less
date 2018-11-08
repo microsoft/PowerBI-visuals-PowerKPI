@@ -34,15 +34,16 @@
     user-select: none;
 }
 
-@font-face {
-    font-family: 'PowerKPIGlyph';
-    src: data-uri('../../../../../../Externals/StyleLibrary/asset-powerbi-font/fonts/PowerVisuals.eot') format('embedded-opentype'),
-        data-uri('../../../../../../Externals/StyleLibrary/asset-powerbi-font/fonts/PowerVisuals.woff') format('woff'),
-        data-uri('../../../../../../Externals/StyleLibrary/asset-powerbi-font/fonts/PowerVisuals.ttf') format('truetype'),
-        data-uri('../../../../../../Externals/StyleLibrary/asset-powerbi-font/fonts/PowerVisuals.svg') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
+// TODO: no fonts
+// @font-face {
+//     font-family: 'PowerKPIGlyph';
+//     src: data-uri('../../../../../../Externals/StyleLibrary/asset-powerbi-font/fonts/PowerVisuals.eot') format('embedded-opentype'),
+//         data-uri('../../../../../../Externals/StyleLibrary/asset-powerbi-font/fonts/PowerVisuals.woff') format('woff'),
+//         data-uri('../../../../../../Externals/StyleLibrary/asset-powerbi-font/fonts/PowerVisuals.ttf') format('truetype'),
+//         data-uri('../../../../../../Externals/StyleLibrary/asset-powerbi-font/fonts/PowerVisuals.svg') format('svg');
+//     font-weight: normal;
+//     font-style: normal;
+// }
 
 .powerKpi_powerKPI {
     .powerKPI_glyphIcon {
@@ -375,6 +376,11 @@
         .powerKpi_svgComponent {
             overflow: visible;
 
+            .domain {
+                stroke: transparent;
+                fill: transparent;
+            }
+
             .powerKpi_comboComponent {
                 .powerKpi_lineComponent {
                     .dottedLine {
@@ -425,11 +431,9 @@
         .powerKpi_visualYAxis {
             overflow: visible;
 
-            .tick {
-                line,
-                path {
-                    display: none !important;
-                }
+            line,
+            path {
+                display: none !important;
             }
         }
     }

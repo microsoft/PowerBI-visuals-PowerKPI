@@ -17,6 +17,5 @@
         "icon": "assets/icon.png"
     },
     "externalJS": [],
-    "style": "style/visual.less",
     "capabilities": "capabilities.json"
 }

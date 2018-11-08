@@ -24,29 +24,44 @@
  *  THE SOFTWARE.
  */
 
-// jsCommon
-import PixelConverter = jsCommon.PixelConverter;
+import powerbi from "powerbi-visuals-api";
 
-// powerbi
-import IViewport = powerbi.IViewport;
-import TextMeasurementService = powerbi.TextMeasurementService;
-import DataViewMetadataColumn = powerbi.DataViewMetadataColumn;
+import {
+    IMargin,
+    manipulation as svgManipulation
+} from "powerbi-visuals-utils-svgutils";
 
-// powerbi.visuals
-import SVGUtil = powerbi.visuals.SVGUtil;
-import IAxisProperties = powerbi.visuals.IAxisProperties;
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
+import {
+    textMeasurementService,
+    valueFormatter,
+} from "powerbi-visuals-utils-formattingutils";
+
+import { DataRepresentationX } from "../../dataRepresentation/dataRepresentationAxis";
+import { DataRepresentationTypeEnum } from "../../dataRepresentation/dataRepresentationType";
+import { DataRepresentationAxisValueType } from "../../dataRepresentation/dataRepresentationAxisValueType";
+import { AxisDescriptor } from "../../settings/descriptors/axis/axisDescriptor";
+import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
+import { VisualComponentViewport } from "../base/visualComponent";
+
+import { PowerKPIAxisHelper } from "./helpers/axisHelper";
+
+import {
+    AxisComponent,
+    AxisBaseComponent
+} from "./axisBaseComponent";
 
 export interface XAxisComponentRenderOptions {
     axis: DataRepresentationX;
     settings: AxisDescriptor;
-    viewport: IViewport;
+    viewport: powerbi.IViewport;
     margin: IMargin;
     additionalMargin: IMargin;
 }
 
 export class XAxisComponent
     extends AxisBaseComponent<VisualComponentConstructorOptions, XAxisComponentRenderOptions>
-    implements AxisComponent<XAxisComponentRenderOptions>{
+    implements AxisComponent<XAxisComponentRenderOptions> {
 
     private labelPadding: number = 8;
 
@@ -77,9 +92,7 @@ export class XAxisComponent
 
         this.gElement = this.element
             .append("g")
-            .attr({
-                transform: SVGUtil.translate(0, this.mainElementYOffset)
-            });
+            .attr("transform", svgManipulation.translate(0, this.mainElementYOffset));
     }
 
     public preRender(options: XAxisComponentRenderOptions): void {
@@ -166,11 +179,10 @@ export class XAxisComponent
             return;
         }
 
-        this.element.style({
-            "font-family": settings.fontFamily,
-            "font-size": PixelConverter.toString(fontSize),
-            fill: settings.fontColor
-        });
+        this.element
+            .style("font-family", settings.fontFamily)
+            .style("font-size", pixelConverter.toString(fontSize))
+            .style("fill", settings.fontColor);
 
         this.updateViewport({
             width,
@@ -179,12 +191,13 @@ export class XAxisComponent
 
         this.element.style(
             "margin-left",
-            PixelConverter.toString(margin.left + additionalMargin.left));
+            pixelConverter.toString(margin.left + additionalMargin.left)
+        );
 
-        this.gElement.attr("transform", SVGUtil.translate(0, 0));
+        this.gElement.attr("transform", svgManipulation.translate(0, 0));
 
         this.axisProperties.axis
-            .orient("bottom")
+            // .orient("bottom") // TODO: check it
             .tickFormat((item: number, index: number) => {
                 const currentValue: any = axis.type === DataRepresentationTypeEnum.DateType
                     ? new Date(item)
@@ -201,7 +214,7 @@ export class XAxisComponent
                 }
 
                 if (!isNaN(availableWidth)) {
-                    return TextMeasurementService.getTailoredTextOrDefault(
+                    return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
                         this.getTextProperties(formattedLabel, fontSize, settings.fontFamily),
                         availableWidth
                     );
@@ -216,10 +229,10 @@ export class XAxisComponent
     private getAxisProperties(
         pixelSpan: number,
         dataDomain: any[],
-        metaDataColumn: DataViewMetadataColumn,
+        metaDataColumn: powerbi.DataViewMetadataColumn,
         isScalar: boolean,
         density: number,
-    ): IAxisProperties {
+    ) {
         return PowerKPIAxisHelper.createAxis({
             pixelSpan,
             dataDomain,
@@ -232,7 +245,7 @@ export class XAxisComponent
             outerPadding: 0,
             useTickIntervalForDisplayUnits: true,
             shouldClamp: false,
-            outerPaddingRatio: 0,
+            // outerPaddingRatio: 0, // TODO:
             innerPaddingRatio: 1,
             tickLabelPadding: undefined,
             minOrdinalRectThickness: this.maxElementWidth + this.labelPadding
@@ -263,7 +276,7 @@ export class XAxisComponent
         return !!(options && options.axis && options.settings);
     }
 
-    private getValueFormatterOfXAxis(x: DataRepresentationX, xAxis: AxisDescriptor): IValueFormatter {
+    private getValueFormatterOfXAxis(x: DataRepresentationX, xAxis: AxisDescriptor): valueFormatter.IValueFormatter {
         let minValue: DataRepresentationAxisValueType;
         let maxValue: DataRepresentationAxisValueType;
         let precision: number;
@@ -292,7 +305,7 @@ export class XAxisComponent
 
     protected getLabelWidthWithAdditionalOffset(
         values: DataRepresentationAxisValueType[],
-        formatter: IValueFormatter,
+        formatter: valueFormatter.IValueFormatter,
         fontSize: number,
         fontFamily: string
     ): number {

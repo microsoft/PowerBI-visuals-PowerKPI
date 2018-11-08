@@ -27,7 +27,9 @@
 import {
     scaleTime,
     scaleLinear,
-    scaleOrdinal
+    scaleOrdinal,
+    ScaleLinear,
+    ScaleOrdinal
 } from "d3-scale";
 
 import { DataRepresentationAxisScale } from "./dataRepresentationAxisScale";
@@ -75,7 +77,7 @@ export class DataRepresentationScale {
         }
 
         if (scale) {
-            scale.domain(values);
+            (scale as ScaleOrdinal<DataRepresentationAxisValueType, DataRepresentationAxisValueType>).domain(values);
         }
 
         this.baseScale = scale;
@@ -96,7 +98,7 @@ export class DataRepresentationScale {
             return 0;
         }
 
-        return this.baseScale(value);
+        return (this.baseScale as any)(value);
     }
 
     public copy(): DataRepresentationScale {
@@ -107,12 +109,7 @@ export class DataRepresentationScale {
 
     public range(rangeValues): DataRepresentationScale {
         if (this.baseScale) {
-            if (this.isOrdinalScale) {
-                (this.baseScale as D3.Scale.OrdinalScale).rangePoints(rangeValues);
-            }
-            else {
-                this.baseScale.range(rangeValues);
-            }
+            (this.baseScale as ScaleOrdinal<any, any>).range(rangeValues);
         }
 
         return this;
