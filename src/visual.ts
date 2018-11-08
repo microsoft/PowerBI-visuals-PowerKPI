@@ -88,6 +88,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
             style: this.colorPalette,
             eventDispatcher: this.eventDispatcher,
             interactivityService: this.interactivityService,
+            tooltipService: options.host.tooltipService,
         });
     }
 

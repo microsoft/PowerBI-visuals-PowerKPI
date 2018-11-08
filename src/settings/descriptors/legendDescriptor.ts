@@ -34,13 +34,6 @@ export enum LegendStyle {
     styledLine = "styledLine",
 }
 
-// export const legendStyleEnum: IEnumType = createEnumType([
-//     { value: LegendStyle.circle, displayName: "Circle" },
-//     { value: LegendStyle.box, displayName: "Box" },
-//     { value: LegendStyle.line, displayName: "Line" },
-//     { value: LegendStyle.styledLine, displayName: "Styled Line" },
-// ]);
-
 export enum LegendMarkerShape {
     square = "square",
     none = "none",

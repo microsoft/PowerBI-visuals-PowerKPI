@@ -47,9 +47,14 @@ export class ShowDescriptor
         Object.defineProperty(
             this,
             "show",
-            Object.getOwnPropertyDescriptor(
-                ShowDescriptor.prototype,
-                "show"));
+            {
+                ...Object.getOwnPropertyDescriptor(
+                    ShowDescriptor.prototype,
+                    "show"
+                ),
+                enumerable: true
+            }
+        );
     }
 
     public get show(): boolean {

@@ -38,6 +38,10 @@ import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorD
 import { SeriesSettings } from "../settings/seriesSettings";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
 
+export interface TooltipComponentConstructorOptions {
+    tooltipService: powerbi.extensibility.ITooltipService;
+}
+
 enum TooltipMarkerShapeEnum {
     circle,
     none
@@ -53,7 +57,7 @@ export class TooltipComponent
     extends VarianceConverter
     implements VisualComponent<EventPositionVisualComponentOptions> {
 
-    public tooltipComponent: any;
+    private tooltipService: powerbi.extensibility.ITooltipService;
 
     private varianceDisplayName: string = "Variance";
     private secondVarianceDisplayName: string = `${this.varianceDisplayName} 2`;
@@ -62,23 +66,14 @@ export class TooltipComponent
 
     private transparentColor: string = "rgba(0,0,0,0)";
 
-    constructor() {
+    constructor(options: TooltipComponentConstructorOptions) {
         super();
 
-        /**
-         * TODO:
-         * We use ToolTipComponent instead of Tooltip API due to inability to use it on dashboard page.
-         * Let's revisit it once the issue is fixed
-         */
-        // try {
-        //     this.tooltipComponent = new ToolTipComponent();
-        // } catch (err) {
-        //     this.tooltipComponent = null;
-        // }
+        this.tooltipService = options.tooltipService;
     }
 
     public render(options: EventPositionVisualComponentOptions): void {
-        if (!options.position || !this.tooltipComponent) {
+        if (!options.position || !this.tooltipService) {
             return;
         }
 
@@ -216,19 +211,16 @@ export class TooltipComponent
             ];
         }
 
-        // TODO: fix tooltip
-        // const rect: Rectangle = new Rectangle(
-        //     position.x,
-        //     position.y,
-        //     0,
-        //     0
-        // );
-
-        // if (dataItems.length) {
-        //     this.tooltipComponent.show(dataItems, rect);
-        // } else {
-        //     this.clear();
-        // }
+        if (dataItems.length) {
+            this.tooltipService.show({
+                dataItems,
+                coordinates: [position.x, position.y],
+                identities: [],
+                isTouchEvent: false,
+            });
+        } else {
+            this.clear();
+        }
     }
 
     private getTooltipSeparator(): VisualTooltipDataItem {
@@ -309,16 +301,19 @@ export class TooltipComponent
     }
 
     public clear(): void {
-        if (!this.tooltipComponent || !this.tooltipComponent.isTooltipComponentVisible) {
+        if (!this.tooltipService) {
             return;
         }
 
-        this.tooltipComponent.hide();
+        this.tooltipService.hide({
+            isTouchEvent: false,
+            immediately: true,
+        });
     }
 
     public destroy(): void {
         this.clear();
-        this.tooltipComponent = null;
+        this.tooltipService = null;
     }
 
     public hide(): void {

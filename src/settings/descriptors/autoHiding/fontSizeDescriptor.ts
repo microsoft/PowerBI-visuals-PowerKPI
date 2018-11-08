@@ -55,9 +55,14 @@ export class FontSizeDescriptor
         Object.defineProperty(
             this,
             "fontSize",
-            Object.getOwnPropertyDescriptor(
-                FontSizeDescriptor.prototype,
-                "fontSize"));
+            {
+                ...Object.getOwnPropertyDescriptor(
+                    FontSizeDescriptor.prototype,
+                    "fontSize"
+                ),
+                enumerable: true
+            }
+        );
     }
 
     public get fontSize(): number {

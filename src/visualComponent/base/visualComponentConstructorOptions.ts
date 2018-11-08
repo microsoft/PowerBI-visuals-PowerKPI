@@ -41,4 +41,5 @@ export interface VisualComponentConstructorOptions extends VisualComponentBaseCo
     style?: powerbi.extensibility.IColorPalette; // TODO
     eventDispatcher?: Dispatch<any>; // TODO
     interactivityService?: interactivityService.IInteractivityService;
+    tooltipService?: powerbi.extensibility.ITooltipService;
 }

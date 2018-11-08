@@ -53,7 +53,6 @@ import { DotsComponent } from "./dotsComponent";
 import { VerticalLineComponent } from "./verticalLineComponent";
 import { EventName } from "../event/eventName";
 
-
 export interface SvgComponentRenderOptions extends VisualComponentRenderOptions {
     xTicks: DataRepresentationAxisValueType[];
     yTicks: DataRepresentationAxisValueType[];
@@ -107,7 +106,7 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
         this.dynamicComponents = [
             new VerticalLineComponent(this.constructorOptions),
             new DotsComponent(this.constructorOptions),
-            new TooltipComponent(),
+            new TooltipComponent({ tooltipService: this.constructorOptions.tooltipService }),
         ];
 
         this.bindEvents();

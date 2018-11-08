@@ -58,10 +58,13 @@ export class AxisDescriptor
         Object.defineProperty(
             this,
             "percentile",
-            Object.getOwnPropertyDescriptor(
-                AxisDescriptor.prototype,
-                "percentile"
-            )
+            {
+                ...Object.getOwnPropertyDescriptor(
+                    AxisDescriptor.prototype,
+                    "percentile"
+                ),
+                enumerable: true
+            }
         );
     }
 
