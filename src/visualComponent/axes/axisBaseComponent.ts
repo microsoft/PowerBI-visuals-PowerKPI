@@ -24,8 +24,6 @@
  *  THE SOFTWARE.
  */
 
-// jsCommon
-import PixelConverter = jsCommon.PixelConverter;
 
 export interface AxisComponent<RenderOptions> extends VisualComponent<RenderOptions> {
     getTicks(): DataRepresentationAxisValueType[];

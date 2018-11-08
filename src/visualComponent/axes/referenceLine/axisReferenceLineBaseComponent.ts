@@ -24,83 +24,88 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // jsCommon
-    import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
-    import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
+import {
+    line as d3Line,
+    Line as D3Line,
+    Selection,
+} from "d3";
 
-    export interface AxisReferenceLineBaseComponentRenderOptions {
-        settings: AxisReferenceLineDescriptor;
-        ticks: DataRepresentationAxisValueType[];
-        scale: DataRepresentationScale;
-        viewport: IViewport;
+import powerbi from "powerbi-visuals-api";
+import { CssConstants } from "powerbi-visuals-utils-svgutils";
+
+import { BaseComponent } from "../../base/baseComponent";
+import { VisualComponentConstructorOptions } from "../../base/visualComponentConstructorOptions";
+import { DataRepresentationAxisValueType } from "../../../dataRepresentation/dataRepresentationAxisValueType";
+import { DataRepresentationScale } from "../../../dataRepresentation/dataRepresentationScale";
+import { AxisReferenceLineDescriptor } from "../../../settings/descriptors/axis/referenceLine/axisReferenceLineDescriptor";
+import { AxisReferenceLineGetPointsFunction } from "./axisReferenceLineGetPointsFunction";
+
+export interface AxisReferenceLineBaseComponentRenderOptions {
+    settings: AxisReferenceLineDescriptor;
+    ticks: DataRepresentationAxisValueType[];
+    scale: DataRepresentationScale;
+    viewport: powerbi.IViewport;
+}
+
+export abstract class AxisReferenceLineBaseComponent extends BaseComponent<VisualComponentConstructorOptions, AxisReferenceLineBaseComponentRenderOptions> {
+    private className: string = "axisReferenceLineComponent";
+
+    private lineSelector: CssConstants.ClassAndSelector = CssConstants.createClassAndSelector("axisReferenceLine");
+
+    constructor(options: VisualComponentConstructorOptions) {
+        super();
+
+        this.initElement(
+            options.element,
+            this.className,
+            "g"
+        );
     }
 
-    export abstract class AxisReferenceLineBaseComponent extends BaseComponent<VisualComponentConstructorOptions, AxisReferenceLineBaseComponentRenderOptions> {
-        private className: string = "axisReferenceLineComponent";
+    public render(options: AxisReferenceLineBaseComponentRenderOptions): void {
+        const {
+            ticks,
+            scale,
+            settings,
+        } = options;
 
-        private lineSelector: ClassAndSelector = createClassAndSelector("axisReferenceLine");
+        if (!ticks || !scale || !settings || !ticks.length) {
+            this.hide();
 
-        constructor(options: VisualComponentConstructorOptions) {
-            super();
-
-            this.initElement(
-                options.element,
-                this.className,
-                "g"
-            );
+            return;
         }
 
-        public render(options: AxisReferenceLineBaseComponentRenderOptions): void {
-            const {
-                ticks,
-                scale,
-                settings,
-            } = options;
+        this.show();
 
-            if (!ticks || !scale || !settings || !ticks.length) {
-                this.hide();
+        const lineSelection: Selection<any, DataRepresentationAxisValueType, any, any> = this.element
+            .selectAll(this.lineSelector.selectorName)
+            .data(settings.show ? ticks : []);
 
-                return;
-            }
+        const line: D3Line<[number, number]> = d3Line()
+            .x((positions: number[]) => {
+                return positions[0] || 0;
+            })
+            .y((positions: number[]) => {
+                return positions[1] || 0;
+            });
 
-            this.show();
+        const getPoints: AxisReferenceLineGetPointsFunction = this.getPoints(options);
 
-            const lineSelection: D3.UpdateSelection = this.element
-                .selectAll(this.lineSelector.selector)
-                .data(settings.show ? ticks : []);
+        lineSelection
+            .enter()
+            .append("svg:path")
+            .classed(this.lineSelector.className, true)
+            .merge(lineSelection)
+            .attr("d", (value: DataRepresentationAxisValueType) => {
+                return line(getPoints(value));
+            })
+            .style("stroke", settings.color)
+            .style("stroke-width", settings.thickness);
 
-            const line: D3.Svg.Line = d3.svg.line()
-                .x((positions: number[]) => {
-                    return positions[0] || 0;
-                })
-                .y((positions: number[]) => {
-                    return positions[1] || 0;
-                });
-
-            const getPoints: AxisReferenceLineGetPointsFunction = this.getPoints(options);
-
-            lineSelection
-                .enter()
-                .append("svg:path")
-                .classed(this.lineSelector.class, true);
-
-            lineSelection
-                .attr({
-                    d: (value: DataRepresentationAxisValueType) => {
-                        return line(getPoints(value));
-                    }
-                })
-                .style({
-                    "stroke": settings.color,
-                    "stroke-width": settings.thickness
-                });
-
-            lineSelection
-                .exit()
-                .remove();
-        }
-
-        protected abstract getPoints(options: AxisReferenceLineBaseComponentRenderOptions): AxisReferenceLineGetPointsFunction;
+        lineSelection
+            .exit()
+            .remove();
     }
+
+    protected abstract getPoints(options: AxisReferenceLineBaseComponentRenderOptions): AxisReferenceLineGetPointsFunction;
 }

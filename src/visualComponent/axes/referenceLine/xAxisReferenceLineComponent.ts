@@ -24,24 +24,31 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class XAxisReferenceLineComponent extends AxisReferenceLineBaseComponent {
+import {
+    AxisReferenceLineBaseComponent,
+    AxisReferenceLineBaseComponentRenderOptions,
+} from "./axisReferenceLineBaseComponent";
 
-        protected getPoints(options: AxisReferenceLineBaseComponentRenderOptions): AxisReferenceLineGetPointsFunction {
-            const { scale, viewport, } = options;
+import { AxisReferenceLineGetPointsFunction } from "./axisReferenceLineGetPointsFunction";
+import { DataRepresentationScale } from "../../../dataRepresentation/dataRepresentationScale";
+import { DataRepresentationAxisValueType } from "../../../dataRepresentation/dataRepresentationAxisValueType";
 
-            const xScale: DataRepresentationScale = scale
-                .copy()
-                .range([0, viewport.width]);
+export class XAxisReferenceLineComponent extends AxisReferenceLineBaseComponent {
 
-            return (value: DataRepresentationAxisValueType) => {
-                const x: number = xScale.scale(value);
+    protected getPoints(options: AxisReferenceLineBaseComponentRenderOptions): AxisReferenceLineGetPointsFunction {
+        const { scale, viewport, } = options;
 
-                return [
-                    [x, 0],
-                    [x, viewport.height]
-                ];
-            };
-        }
+        const xScale: DataRepresentationScale = scale
+            .copy()
+            .range([0, viewport.width]);
+
+        return (value: DataRepresentationAxisValueType) => {
+            const x: number = xScale.scale(value);
+
+            return [
+                [x, 0],
+                [x, viewport.height]
+            ];
+        };
     }
 }
