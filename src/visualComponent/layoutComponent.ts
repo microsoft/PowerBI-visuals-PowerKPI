@@ -24,84 +24,90 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // jsCommon
-    import PixelConverter = jsCommon.PixelConverter;
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
-    export class LayoutComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions> {
+import { BaseContainerComponent } from "./base/baseContainerComponent";
+import {
+    VisualComponent,
+    VisualComponentViewport
+} from "./base/visualComponent";
 
-        private className: string = "layoutComponent";
+import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+import { KPIComponent } from "./kpi/kpiComponent";
+import { PlotComponent } from "./plotComponent";
+import { LayoutToStyleEnum } from "../layout/layoutToStyleEnum";
+import { LayoutEnum } from "../layout/layoutEnum";
 
-        constructor(options: VisualComponentConstructorOptions) {
-            super();
+export class LayoutComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions> {
 
-            this.initElement(
-                options.element,
-                this.className,
-            );
+    private className: string = "layoutComponent";
 
-            this.constructorOptions = {
-                ...options,
-                element: this.element,
-            };
+    constructor(options: VisualComponentConstructorOptions) {
+        super();
 
-            this.components = [
-                new KPIComponent(this.constructorOptions),
-                new PlotComponent(this.constructorOptions),
-            ];
-        }
+        this.initElement(
+            options.element,
+            this.className,
+        );
 
-        public render(options: VisualComponentRenderOptions): void {
-            const { data: { viewport, settings: { layout } } } = options;
+        this.constructorOptions = {
+            ...options,
+            element: this.element,
+        };
 
-            const selectedLayout: LayoutToStyleEnum = this.getLayout(layout.getLayout());
+        this.components = [
+            new KPIComponent(this.constructorOptions),
+            new PlotComponent(this.constructorOptions),
+        ];
+    }
 
-            const widthInPx: string = PixelConverter.toString(viewport.width);
-            const heightInPx: string = PixelConverter.toString(viewport.height);
+    public render(options: VisualComponentRenderOptions): void {
+        const { data: { viewport, settings: { layout } } } = options;
 
-            this.element
-                .attr({
-                    "class": `${this.getClassNameWithPrefix(this.className)} ${LayoutToStyleEnum[selectedLayout]}`
-                })
-                .style({
-                    "min-width": widthInPx,
-                    "max-width": widthInPx,
-                    "width": widthInPx,
-                    "min-height": heightInPx,
-                    "max-height": heightInPx,
-                    "height": heightInPx,
-                });
+        const selectedLayout: LayoutToStyleEnum = this.getLayout(layout.getLayout());
 
-            this.forEach(
-                this.components,
-                (component: VisualComponent<VisualComponentRenderOptions>) => {
-                    component.render(options);
+        const widthInPx: string = pixelConverter.toString(viewport.width);
+        const heightInPx: string = pixelConverter.toString(viewport.height);
 
-                    if (component.getViewport) {
-                        const margins: VisualComponentViewport = component.getViewport();
+        this.element
+            .attr("class", `${this.getClassNameWithPrefix(this.className)} ${LayoutToStyleEnum[selectedLayout]}`)
+            .style("min-width", widthInPx)
+            .style("max-width", widthInPx)
+            .style("width", widthInPx)
+            .style("min-height", heightInPx)
+            .style("max-height", heightInPx)
+            .style("height", heightInPx);
 
-                        options.data.viewport.height -= margins.height;
-                        options.data.viewport.width -= margins.width;
-                    }
+        this.forEach(
+            this.components,
+            (component: VisualComponent<VisualComponentRenderOptions>) => {
+                component.render(options);
+
+                if (component.getViewport) {
+                    const margins: VisualComponentViewport = component.getViewport();
+
+                    options.data.viewport.height -= margins.height;
+                    options.data.viewport.width -= margins.width;
                 }
-            );
-        }
+            }
+        );
+    }
 
-        private getLayout(layout: string): LayoutToStyleEnum {
-            switch (LayoutEnum[layout]) {
-                case LayoutEnum.Left: {
-                    return LayoutToStyleEnum.rowLayout;
-                }
-                case LayoutEnum.Right: {
-                    return LayoutToStyleEnum.rowReversedLayout;
-                }
-                case LayoutEnum.Bottom: {
-                    return LayoutToStyleEnum.columnReversedLayout;
-                }
-                case LayoutEnum.Top:
-                default: {
-                    return LayoutToStyleEnum.columnLayout;
-                }
+    private getLayout(layout: string): LayoutToStyleEnum {
+        switch (LayoutEnum[layout]) {
+            case LayoutEnum.Left: {
+                return LayoutToStyleEnum.rowLayout;
+            }
+            case LayoutEnum.Right: {
+                return LayoutToStyleEnum.rowReversedLayout;
+            }
+            case LayoutEnum.Bottom: {
+                return LayoutToStyleEnum.columnReversedLayout;
+            }
+            case LayoutEnum.Top:
+            default: {
+                return LayoutToStyleEnum.columnLayout;
             }
         }
     }

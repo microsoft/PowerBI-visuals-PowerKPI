@@ -24,68 +24,78 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class DotsComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, DotComponentRenderOptions> {
-        private className: string = "dotsComponent";
+import { VisualComponent } from "./base/visualComponent";
+import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+import { BaseContainerComponent } from "./base/baseContainerComponent";
+import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
+import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 
-        constructor(options: VisualComponentConstructorOptions) {
-            super();
+import {
+    DotComponent,
+    DotComponentRenderOptions,
+} from "./dotComponent";
 
-            this.initElement(
-                options.element,
-                this.className,
-                "g"
-            );
+export class DotsComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, DotComponentRenderOptions> {
+    private className: string = "dotsComponent";
 
-            this.constructorOptions = {
-                ...options,
-                element: this.element,
-            };
-        }
+    constructor(options: VisualComponentConstructorOptions) {
+        super();
 
-        public render(options: VisualComponentRenderOptions): void {
-            const {
-                x,
-                series,
-                viewport,
-                settings: { dots }
-            } = options.data;
+        this.initElement(
+            options.element,
+            this.className,
+            "g"
+        );
 
-            this.initComponents(
-                this.components,
-                series.length,
-                () => {
-                    return new DotComponent(this.constructorOptions);
+        this.constructorOptions = {
+            ...options,
+            element: this.element,
+        };
+    }
+
+    public render(options: VisualComponentRenderOptions): void {
+        const {
+            x,
+            series,
+            viewport,
+            settings: { dots }
+        } = options.data;
+
+        this.initComponents(
+            this.components,
+            series.length,
+            () => {
+                return new DotComponent(this.constructorOptions);
+            }
+        );
+
+        this.forEach(
+            this.components,
+            (component: VisualComponent<DotComponentRenderOptions>, componentIndex: number) => {
+                const currentSeries: DataRepresentationSeries = series[componentIndex];
+
+                const point: DataRepresentationPoint = currentSeries.points
+                    .filter((point: DataRepresentationPoint) => {
+                        return point.y !== null && !isNaN(point.y);
+                    })[0];
+
+                if (point) {
+                    component.show();
+
+                    component.render({
+                        x: x.scale,
+                        point,
+                        viewport,
+                        y: currentSeries.y.scale,
+                        thickness: currentSeries.settings.line.thickness,
+                        radiusFactor: dots.radiusFactor,
+                        series: currentSeries,
+                    });
+                } else {
+                    component.hide();
                 }
-            );
-
-            this.forEach(
-                this.components,
-                (component: VisualComponent<DotComponentRenderOptions>, componentIndex: number) => {
-                    const currentSeries: DataRepresentationSeries = series[componentIndex];
-
-                    const point: DataRepresentationPoint = currentSeries.points
-                        .filter((point: DataRepresentationPoint) => {
-                            return point.y !== null && !isNaN(point.y);
-                        })[0];
-
-                    if (point) {
-                        component.show();
-
-                        component.render({
-                            x: x.scale,
-                            point,
-                            viewport,
-                            y: currentSeries.y.scale,
-                            thickness: currentSeries.settings.line.thickness,
-                            radiusFactor: dots.radiusFactor,
-                            series: currentSeries,
-                        });
-                    } else {
-                        component.hide();
-                    }
-                }
-            );
-        }
+            }
+        );
     }
 }

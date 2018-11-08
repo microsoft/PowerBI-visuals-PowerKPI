@@ -24,8 +24,22 @@
  *  THE SOFTWARE.
  */
 
-// powerbi.visuals
-import LegendPosition = powerbi.visuals.LegendPosition;
+import powerbi from "powerbi-visuals-api";
+
+import {} from "powerbi-visuals-utils-chartutils";
+
+import { BaseContainerComponent } from "./base/baseContainerComponent";
+import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+
+import {
+    VisualComponent,
+    VisualComponentViewport
+} from "./base/visualComponent";
+
+import { LegendComponent } from "./legendComponent";
+import { LayoutComponent } from "./layoutComponent";
+import { LayoutToStyleEnum } from "../layout/layoutToStyleEnum";
 
 export class CommonComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions> {
     private className: string = "commonComponent";
@@ -53,7 +67,7 @@ export class CommonComponent extends BaseContainerComponent<VisualComponentConst
     }
 
     public render(options: VisualComponentRenderOptions): void {
-        const viewport: IViewport = { ...options.data.viewport };
+        const viewport: powerbi.IViewport = { ...options.data.viewport };
 
         this.forEach(
             this.components,
@@ -72,9 +86,10 @@ export class CommonComponent extends BaseContainerComponent<VisualComponentConst
         const { data: { settings: { legend } } } = options;
         const layout: LayoutToStyleEnum = this.getLayout(legend.position);
 
-        this.element.attr({
-            "class": `${this.getClassNameWithPrefix(this.className)} ${LayoutToStyleEnum[layout]}`
-        });
+        this.element.attr(
+            "class",
+            `${this.getClassNameWithPrefix(this.className)} ${LayoutToStyleEnum[layout]}`
+        );
     }
 
     private getLayout(position: string): LayoutToStyleEnum {

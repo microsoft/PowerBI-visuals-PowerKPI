@@ -24,67 +24,68 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // jsCommon.CssConstants
-    import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
-    import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
+import { Selection } from "d3";
 
-    export class VerticalLineComponent extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
-        private className: string = "verticalLineComponent";
-        private lineSelector: ClassAndSelector = createClassAndSelector("verticalLine");
+import { CssConstants } from "powerbi-visuals-utils-svgutils";
 
-        constructor(options: VisualComponentConstructorOptions) {
-            super();
+import { BaseComponent } from "./base/baseComponent";
+import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+import { DataRepresentationScale } from "../dataRepresentation/dataRepresentationScale";
+import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 
-            this.initElement(
-                options.element,
-                this.className,
-                "g"
-            );
-        }
+export class VerticalLineComponent extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
+    private className: string = "verticalLineComponent";
+    private lineSelector: CssConstants.ClassAndSelector = CssConstants.createClassAndSelector("verticalLine");
 
-        public render(options: VisualComponentRenderOptions): void {
-            const { series, viewport, x } = options.data;
+    constructor(options: VisualComponentConstructorOptions) {
+        super();
 
-            const xScale: DataRepresentationScale = x.scale
-                .copy()
-                .range([0, viewport.width]);
+        this.initElement(
+            options.element,
+            this.className,
+            "g"
+        );
+    }
 
-            const points: DataRepresentationPoint[] = series
-                && series[0]
-                && series[0].points
-                || [];
+    public render(options: VisualComponentRenderOptions): void {
+        const { series, viewport, x } = options.data;
 
-            const lineSelection: D3.UpdateSelection = this.element
-                .selectAll(this.lineSelector.selector)
-                .data(points);
+        const xScale: DataRepresentationScale = x.scale
+            .copy()
+            .range([0, viewport.width]);
 
-            lineSelection
-                .enter()
-                .append("line")
-                .classed(this.lineSelector.class, true);
+        const points: DataRepresentationPoint[] = series
+            && series[0]
+            && series[0].points
+            || [];
 
-            lineSelection
-                .attr({
-                    x1: (point: DataRepresentationPoint) => xScale.scale(point.x),
-                    y1: 0,
-                    x2: (point: DataRepresentationPoint) => xScale.scale(point.x),
-                    y2: viewport.height
-                });
+        const lineSelection: Selection<any, DataRepresentationPoint, any, any> = this.element
+            .selectAll(this.lineSelector.selectorName)
+            .data(points);
 
-            lineSelection
-                .exit()
-                .remove();
-        }
+        lineSelection
+            .enter()
+            .append("line")
+            .classed(this.lineSelector.className, true)
+            .merge(lineSelection)
+            .attr("x1", (point: DataRepresentationPoint) => xScale.scale(point.x))
+            .attr("y1", 0)
+            .attr("x2", (point: DataRepresentationPoint) => xScale.scale(point.x))
+            .attr("y2", viewport.height);
 
-        public clear(): void {
-            this.element
-                .selectAll("*")
-                .remove();
-        }
+        lineSelection
+            .exit()
+            .remove();
+    }
 
-        public destroy(): void {
-            this.element = null;
-        }
+    public clear(): void {
+        this.element
+            .selectAll("*")
+            .remove();
+    }
+
+    public destroy(): void {
+        this.element = null;
     }
 }

@@ -24,11 +24,11 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export interface EventPositionVisualComponentOptions extends VisualComponentRenderOptions {
-        position?: {
-            x: number;
-            y: number;
-        };
-    }
+import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+
+export interface EventPositionVisualComponentOptions extends VisualComponentRenderOptions {
+    position?: {
+        x: number;
+        y: number;
+    };
 }

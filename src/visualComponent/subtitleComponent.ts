@@ -24,14 +24,22 @@
  *  THE SOFTWARE.
  */
 
-// jsCommon.CssConstants
-import PixelConverter = jsCommon.PixelConverter;
-import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
-import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
+import $ from "jquery";
+
+import { Selection } from "d3";
+
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
+import { CssConstants } from "powerbi-visuals-utils-svgutils";
+
+import { VisualComponentViewport } from "./base/visualComponent";
+import { BaseComponent } from "./base/baseComponent";
+import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+import { SubtitleDescriptor } from "../settings/descriptors/subtitleDescriptor";
 
 export class SubtitleComponent extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
     private className: string = "subtitleComponent";
-    private subTitleSelector: ClassAndSelector = createClassAndSelector("subtitle");
+    private subTitleSelector: CssConstants.ClassAndSelector = CssConstants.createClassAndSelector("subtitle");
 
     constructor(options: VisualComponentConstructorOptions) {
         super();
@@ -49,28 +57,25 @@ export class SubtitleComponent extends BaseComponent<VisualComponentConstructorO
             ? [subtitle]
             : [];
 
-        const subtitleSelection: D3.UpdateSelection = this.element
-            .selectAll(this.subTitleSelector.selector)
+        const subtitleSelection: Selection<any, SubtitleDescriptor, any, any> = this.element
+            .selectAll(this.subTitleSelector.selectorName)
             .data(data);
 
         subtitleSelection
             .enter()
             .append("div")
-            .classed(this.subTitleSelector.class, true);
-
-        subtitleSelection
+            .classed(this.subTitleSelector.className, true)
+            .merge(subtitleSelection)
             .text((settings: SubtitleDescriptor) => settings.titleText)
-            .style({
-                color: (settings: SubtitleDescriptor) => settings.fontColor,
-                "text-align": (settings: SubtitleDescriptor) => settings.alignment,
-                "font-size": (settings: SubtitleDescriptor) => {
-                    const fontSizeInPx: number = PixelConverter.fromPointToPixel(settings.fontSize);
+            .style("color", (settings: SubtitleDescriptor) => settings.fontColor)
+            .style("text-align", (settings: SubtitleDescriptor) => settings.alignment)
+            .style("font-size", (settings: SubtitleDescriptor) => {
+                const fontSizeInPx: number = pixelConverter.fromPointToPixel(settings.fontSize);
 
-                    return PixelConverter.toString(fontSizeInPx);
-                },
-                "background-color": (settings: SubtitleDescriptor) => settings.background,
-                "font-family": (settings: SubtitleDescriptor) => settings.fontFamily,
-            });
+                return pixelConverter.toString(fontSizeInPx);
+            })
+            .style("background-color", (settings: SubtitleDescriptor) => settings.background)
+            .style("font-family", (settings: SubtitleDescriptor) => settings.fontFamily);
 
         subtitleSelection
             .exit()

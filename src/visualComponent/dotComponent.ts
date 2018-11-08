@@ -24,63 +24,65 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export interface DotComponentRenderOptions extends VisualComponentRenderOptionsBase {
-        thickness: number;
-        viewport: IViewport;
-        x: DataRepresentationScale;
-        y: DataRepresentationScale;
-        point: DataRepresentationPoint;
-        radiusFactor: number;
+import powerbi from "powerbi-visuals-api";
+
+import { VisualComponentRenderOptionsBase } from "./base/visualComponentRenderOptions";
+import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { BaseComponent } from "./base/baseComponent";
+import { DataRepresentationScale } from "../dataRepresentation/dataRepresentationScale";
+import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
+
+export interface DotComponentRenderOptions extends VisualComponentRenderOptionsBase {
+    thickness: number;
+    viewport: powerbi.IViewport;
+    x: DataRepresentationScale;
+    y: DataRepresentationScale;
+    point: DataRepresentationPoint;
+    radiusFactor: number;
+}
+
+export class DotComponent extends BaseComponent<VisualComponentConstructorOptions, DotComponentRenderOptions> {
+    constructor(options: VisualComponentConstructorOptions) {
+        super();
+
+        this.initElement(
+            options.element,
+            "dotComponent",
+            "circle"
+        );
+
+        this.element.on("click", this.clickHandler.bind(this));
+
+        this.constructorOptions = {
+            ...options,
+            element: this.element,
+        };
     }
 
-    export class DotComponent extends BaseComponent<VisualComponentConstructorOptions, DotComponentRenderOptions> {
-        constructor(options: VisualComponentConstructorOptions) {
-            super();
+    public render(options: DotComponentRenderOptions): void {
+        const {
+            x,
+            y,
+            point,
+            viewport,
+            thickness,
+            radiusFactor,
+        } = options;
 
-            this.initElement(
-                options.element,
-                "dotComponent",
-                "circle"
-            );
+        this.renderOptions = options;
 
-            this.element.on("click", this.clickHandler.bind(this));
+        const xScale: DataRepresentationScale = x
+            .copy()
+            .range([0, viewport.width]);
 
-            this.constructorOptions = {
-                ...options,
-                element: this.element,
-            };
-        }
+        const yScale: DataRepresentationScale = y
+            .copy()
+            .range([viewport.height, 0]);
 
-        public render(options: DotComponentRenderOptions): void {
-            const {
-                x,
-                y,
-                point,
-                viewport,
-                thickness,
-                radiusFactor,
-            } = options;
-
-            this.renderOptions = options;
-
-            const xScale: DataRepresentationScale = x
-                .copy()
-                .range([0, viewport.width]);
-
-            const yScale: DataRepresentationScale = y
-                .copy()
-                .range([viewport.height, 0]);
-
-            this.element
-                .attr({
-                    cx: xScale.scale(point.x),
-                    cy: yScale.scale(point.y),
-                    r: thickness * radiusFactor
-                })
-                .style({
-                    fill: point.color
-                });
-        }
+        this.element
+            .attr("cx", xScale.scale(point.x))
+            .attr("cy", yScale.scale(point.y))
+            .attr("r", thickness * radiusFactor)
+            .style("fill", point.color);
     }
 }

@@ -24,39 +24,42 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    export class VarianceConverter {
-        protected pointFilter: DataRepresentationPointFilter = new DataRepresentationPointFilter();
+import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
+import { DataRepresentationPointFilter } from "../dataRepresentation/dataRepresentationPointFilter";
+import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
+import { DataRepresentationPointIndexed } from "../dataRepresentation/dataRepresentationPointIndexed";
 
-        public getVarianceByCurrentPointsOfSeries(
-            firstSeries: DataRepresentationSeries,
-            secondSeries: DataRepresentationSeries
-        ): number {
-            if (!this.isSeriesValid(firstSeries) || !this.isSeriesValid(secondSeries)) {
-                return NaN;
-            }
+export class VarianceConverter {
+    protected pointFilter: DataRepresentationPointFilter = new DataRepresentationPointFilter();
 
-            const firstPoint: DataRepresentationPointIndexed = firstSeries.current
-                , index: number = firstPoint.index
-                , secondPoint: DataRepresentationPoint = !isNaN(index) && secondSeries.points[index];
-
-            return this.getVarianceByPoints(firstPoint, secondPoint);
+    public getVarianceByCurrentPointsOfSeries(
+        firstSeries: DataRepresentationSeries,
+        secondSeries: DataRepresentationSeries
+    ): number {
+        if (!this.isSeriesValid(firstSeries) || !this.isSeriesValid(secondSeries)) {
+            return NaN;
         }
 
-        private isSeriesValid(series: DataRepresentationSeries): boolean {
-            return series && series.current && series.current.y !== null;
+        const firstPoint: DataRepresentationPointIndexed = firstSeries.current
+            , index: number = firstPoint.index
+            , secondPoint: DataRepresentationPoint = !isNaN(index) && secondSeries.points[index];
+
+        return this.getVarianceByPoints(firstPoint, secondPoint);
+    }
+
+    private isSeriesValid(series: DataRepresentationSeries): boolean {
+        return series && series.current && series.current.y !== null;
+    }
+
+    public getVarianceByPoints(firstPoint: DataRepresentationPoint, secondePoint: DataRepresentationPoint): number {
+        if (!this.pointFilter.isPointValid(firstPoint) || !this.pointFilter.isPointValid(secondePoint)) {
+            return NaN;
         }
 
-        public getVarianceByPoints(firstPoint: DataRepresentationPoint, secondePoint: DataRepresentationPoint): number {
-            if (!this.pointFilter.isPointValid(firstPoint) || !this.pointFilter.isPointValid(secondePoint)) {
-                return NaN;
-            }
+        return this.getVariance(firstPoint.y, secondePoint.y);
+    }
 
-            return this.getVariance(firstPoint.y, secondePoint.y);
-        }
-
-        public getVariance(firstValue: number, secondValue: number): number {
-            return firstValue / secondValue - 1;
-        }
+    public getVariance(firstValue: number, secondValue: number): number {
+        return firstValue / secondValue - 1;
     }
 }

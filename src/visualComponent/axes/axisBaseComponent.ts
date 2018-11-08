@@ -24,104 +24,102 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // jsCommon
-    import PixelConverter = jsCommon.PixelConverter;
+// jsCommon
+import PixelConverter = jsCommon.PixelConverter;
 
-    export interface AxisComponent<RenderOptions> extends VisualComponent<RenderOptions> {
-        getTicks(): DataRepresentationAxisValueType[];
-        preRender(options: RenderOptions); // Preestimates size of a component as X Axis depends on Y Axis and vice versa
+export interface AxisComponent<RenderOptions> extends VisualComponent<RenderOptions> {
+    getTicks(): DataRepresentationAxisValueType[];
+    preRender(options: RenderOptions); // Preestimates size of a component as X Axis depends on Y Axis and vice versa
+}
+
+export abstract class AxisBaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
+    protected gElement: D3.Selection;
+
+    protected formatter: IValueFormatter;
+    protected axisProperties: IAxisProperties;
+
+    public abstract render(options: VisualComponentRenderOptions): void;
+
+    public getTicks(): DataRepresentationAxisValueType[] {
+        return this.axisProperties
+            && this.axisProperties.axis
+            && this.axisProperties.axis.tickValues
+            && this.axisProperties.axis.tickValues() || [];
     }
 
-    export abstract class AxisBaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
-        protected gElement: D3.Selection;
+    public destroy(): void {
+        super.destroy();
 
-        protected formatter: IValueFormatter;
-        protected axisProperties: IAxisProperties;
+        this.element = null;
+        this.gElement = null;
+    }
 
-        public abstract render(options: VisualComponentRenderOptions): void;
+    protected getLabelHeight(
+        value: DataRepresentationAxisValueType,
+        formatter: IValueFormatter,
+        fontSize: number,
+        fontFamily: string
+    ): number {
+        const text: string = formatter.format(value);
+        const textProperties: TextProperties = this.getTextProperties(text, fontSize, fontFamily);
 
-        public getTicks(): DataRepresentationAxisValueType[] {
-            return this.axisProperties
-                && this.axisProperties.axis
-                && this.axisProperties.axis.tickValues
-                && this.axisProperties.axis.tickValues() || [];
-        }
+        return TextMeasurementService.measureSvgTextHeight(textProperties, text);
+    }
 
-        public destroy(): void {
-            super.destroy();
+    protected getTextWidth(
+        text: string,
+        fontSize: number,
+        fontFamily: string
+    ): number {
+        const textProperties: TextProperties = this.getTextProperties(text, fontSize, fontFamily);
 
-            this.element = null;
-            this.gElement = null;
-        }
+        return TextMeasurementService.measureSvgTextWidth(textProperties, text);
+    }
 
-        protected getLabelHeight(
-            value: DataRepresentationAxisValueType,
-            formatter: IValueFormatter,
-            fontSize: number,
-            fontFamily: string
-        ): number {
+    protected getLabelWidth(
+        values: DataRepresentationAxisValueType[],
+        formatter: IValueFormatter,
+        fontSize: number,
+        fontFamily: string
+    ): number {
+        const width: number = Math.max(...values.map((value: number) => {
             const text: string = formatter.format(value);
-            const textProperties: TextProperties = this.getTextProperties(text, fontSize, fontFamily);
 
-            return TextMeasurementService.measureSvgTextHeight(textProperties, text);
-        }
+            return this.getTextWidth(text, fontSize, fontFamily);
+        }));
 
-        protected getTextWidth(
-            text: string,
-            fontSize: number,
-            fontFamily: string
-        ): number {
-            const textProperties: TextProperties = this.getTextProperties(text, fontSize, fontFamily);
+        return isFinite(width)
+            ? width
+            : 0;
+    }
 
-            return TextMeasurementService.measureSvgTextWidth(textProperties, text);
-        }
+    protected getTextProperties(
+        text: string,
+        fontSize: number,
+        fontFamily: string
+    ): TextProperties {
+        return {
+            text,
+            fontFamily,
+            fontSize: PixelConverter.toString(fontSize),
+        };
+    }
 
-        protected getLabelWidth(
-            values: DataRepresentationAxisValueType[],
-            formatter: IValueFormatter,
-            fontSize: number,
-            fontFamily: string
-        ): number {
-            const width: number = Math.max(...values.map((value: number) => {
-                const text: string = formatter.format(value);
-
-                return this.getTextWidth(text, fontSize, fontFamily);
-            }));
-
-            return isFinite(width)
-                ? width
-                : 0;
-        }
-
-        protected getTextProperties(
-            text: string,
-            fontSize: number,
-            fontFamily: string
-        ): TextProperties {
-            return {
-                text,
-                fontFamily,
-                fontSize: PixelConverter.toString(fontSize),
-            };
-        }
-
-        protected getValueFormatter(
-            min: DataRepresentationAxisValueType,
-            max: DataRepresentationAxisValueType,
-            metadata?: DataViewMetadataColumn,
-            tickCount?: number,
-            precision?: number,
-            valueFormat?: string
-        ): IValueFormatter {
-            return valueFormatter.create({
-                tickCount,
-                precision,
-                format: valueFormat,
-                value: min,
-                value2: max,
-                columnType: metadata && metadata.type,
-            });
-        }
+    protected getValueFormatter(
+        min: DataRepresentationAxisValueType,
+        max: DataRepresentationAxisValueType,
+        metadata?: DataViewMetadataColumn,
+        tickCount?: number,
+        precision?: number,
+        valueFormat?: string
+    ): IValueFormatter {
+        return valueFormatter.create({
+            tickCount,
+            precision,
+            format: valueFormat,
+            value: min,
+            value2: max,
+            columnType: metadata && metadata.type,
+        });
     }
 }

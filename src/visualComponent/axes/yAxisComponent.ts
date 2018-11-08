@@ -24,224 +24,222 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // jsCommon
-    import PixelConverter = jsCommon.PixelConverter;
+// jsCommon
+import PixelConverter = jsCommon.PixelConverter;
 
-    // powerbi
-    import IViewport = powerbi.IViewport;
-    import TextMeasurementService = powerbi.TextMeasurementService;
+// powerbi
+import IViewport = powerbi.IViewport;
+import TextMeasurementService = powerbi.TextMeasurementService;
 
-    // powerbi.visuals
-    import IMargin = powerbi.visuals.IMargin;
-    import SVGUtil = powerbi.visuals.SVGUtil;
-    import valueFormatter = powerbi.visuals.valueFormatter;
-    import IValueFormatter = powerbi.visuals.IValueFormatter;
-    import IAxisProperties = powerbi.visuals.IAxisProperties;
+// powerbi.visuals
+import IMargin = powerbi.visuals.IMargin;
+import SVGUtil = powerbi.visuals.SVGUtil;
+import valueFormatter = powerbi.visuals.valueFormatter;
+import IValueFormatter = powerbi.visuals.IValueFormatter;
+import IAxisProperties = powerbi.visuals.IAxisProperties;
 
-    export interface YAxisComponentRenderOptions {
-        settings: YAxisDescriptor;
-        axis: DataRepresentationAxis;
-        viewport: IViewport;
-        margin: IMargin;
+export interface YAxisComponentRenderOptions {
+    settings: YAxisDescriptor;
+    axis: DataRepresentationAxis;
+    viewport: IViewport;
+    margin: IMargin;
+}
+
+export class YAxisComponent
+    extends AxisBaseComponent<VisualComponentConstructorOptions, YAxisComponentRenderOptions>
+    implements AxisComponent<YAxisComponentRenderOptions> {
+
+    private className: string = "visualYAxis";
+
+    private additionalOffset: number = 10;
+
+    private labelOffset: number = 12;
+
+    private maxLabelWidth: number = 0;
+    private maxLabelHeight: number = 0;
+
+    private maxXAxisLabelWidth: number = 100;
+
+    private valueFormat: string = valueFormatter.DefaultNumericFormat;
+
+    constructor(options: VisualComponentConstructorOptions) {
+        super();
+
+        this.initElement(
+            options.element,
+            this.className,
+            "svg"
+        );
+
+        this.gElement = this.element.append("g");
     }
 
-    export class YAxisComponent
-        extends AxisBaseComponent<VisualComponentConstructorOptions, YAxisComponentRenderOptions>
-        implements AxisComponent<YAxisComponentRenderOptions> {
-
-        private className: string = "visualYAxis";
-
-        private additionalOffset: number = 10;
-
-        private labelOffset: number = 12;
-
-        private maxLabelWidth: number = 0;
-        private maxLabelHeight: number = 0;
-
-        private maxXAxisLabelWidth: number = 100;
-
-        private valueFormat: string = valueFormatter.DefaultNumericFormat;
-
-        constructor(options: VisualComponentConstructorOptions) {
-            super();
-
-            this.initElement(
-                options.element,
-                this.className,
-                "svg"
-            );
-
-            this.gElement = this.element.append("g");
+    public preRender(options: YAxisComponentRenderOptions): void {
+        if (!this.areRenderOptionsValid(options)) {
+            return;
         }
 
-        public preRender(options: YAxisComponentRenderOptions): void {
-            if (!this.areRenderOptionsValid(options)) {
-                return;
-            }
+        const {
+            axis,
+            settings,
+        } = options;
 
-            const {
-                axis,
-                settings,
-            } = options;
+        if (settings.show) {
+            this.show();
+        } else {
+            this.hide();
+        }
 
-            if (settings.show) {
-                this.show();
-            } else {
-                this.hide();
-            }
+        const fontSize: number = settings.fontSizeInPx;
 
-            const fontSize: number = settings.fontSizeInPx;
+        this.formatter = this.getValueFormatter(
+            settings.displayUnits || axis.max,
+            undefined,
+            undefined,
+            undefined,
+            settings.precision,
+            axis.format || this.valueFormat
+        );
 
-            this.formatter = this.getValueFormatter(
-                settings.displayUnits || axis.max,
-                undefined,
-                undefined,
-                undefined,
-                settings.precision,
-                axis.format || this.valueFormat
-            );
+        this.maxLabelHeight = this.getLabelHeight(
+            axis.max,
+            this.formatter,
+            fontSize,
+            settings.fontFamily
+        );
+    }
 
-            this.maxLabelHeight = this.getLabelHeight(
-                axis.max,
+    public render(options: YAxisComponentRenderOptions): void {
+        if (!this.areRenderOptionsValid(options)) {
+            this.hide();
+
+            this.axisProperties = null;
+
+            return;
+        }
+
+        const {
+            axis,
+            margin,
+            settings,
+            viewport,
+        } = options;
+
+        const fontSize: number = settings.fontSizeInPx;
+
+        const height: number = Math.max(0, viewport.height - margin.top - margin.bottom);
+
+        this.axisProperties = this.getAxisProperties(
+            height,
+            [axis.min, axis.max],
+            settings.density,
+            settings.density === settings.maxDensity
+        );
+
+        if (!this.isShown) {
+            return;
+        }
+
+        this.maxLabelWidth = settings.show
+            ? this.getLabelWidth(
+                this.getTicks(),
                 this.formatter,
                 fontSize,
                 settings.fontFamily
-            );
+            )
+            : 0;
+
+        const availableWidth: number = viewport.width / 2;
+
+        let shouldLabelsBeTruncated: boolean = false;
+
+        if (this.maxLabelWidth > availableWidth) {
+            this.maxLabelWidth = availableWidth;
+
+            shouldLabelsBeTruncated = true;
         }
 
-        public render(options: YAxisComponentRenderOptions): void {
-            if (!this.areRenderOptionsValid(options)) {
-                this.hide();
+        this.element.style({
+            "font-family": settings.fontFamily,
+            "font-size": PixelConverter.toString(fontSize),
+            fill: settings.fontColor,
+            "padding": `${PixelConverter.toString(margin.top)} 0 ${PixelConverter.toString(this.maxLabelHeight / 2)} 0`,
+        });
 
-                this.axisProperties = null;
+        this.updateViewport({
+            height,
+            width: this.getTickWidth(),
+        });
 
-                return;
+        this.gElement.attr({
+            transform: SVGUtil.translate(
+                this.maxLabelWidth + this.labelOffset,
+                this.maxLabelHeight / 2
+            )
+        });
+
+        this.axisProperties.axis.tickFormat((item: number) => {
+            const formattedLabel: string = this.formatter.format(item);
+
+            if (shouldLabelsBeTruncated) {
+                return TextMeasurementService.getTailoredTextOrDefault(
+                    this.getTextProperties(formattedLabel, fontSize, settings.fontFamily),
+                    availableWidth
+                );
             }
 
-            const {
-                axis,
-                margin,
-                settings,
-                viewport,
-            } = options;
+            return formattedLabel;
+        });
 
-            const fontSize: number = settings.fontSizeInPx;
+        this.gElement.call(this.axisProperties.axis);
+    }
 
-            const height: number = Math.max(0, viewport.height - margin.top - margin.bottom);
+    private getAxisProperties(
+        pixelSpan: number,
+        dataDomain: any[],
+        density: number,
+        isDensityAtMax: boolean
+    ): IAxisProperties {
+        return PowerKPIAxisHelper.createAxis({
+            pixelSpan,
+            dataDomain,
+            density,
+            isVertical: true,
+            isScalar: true,
+            isCategoryAxis: false,
+            metaDataColumn: null,
+            formatString: undefined,
+            outerPadding: this.maxLabelHeight / 2,
+            useTickIntervalForDisplayUnits: true,
+            shouldClamp: false,
+            outerPaddingRatio: 0,
+            is100Pct: true,
+            innerPaddingRatio: 1,
+            tickLabelPadding: undefined,
+            minOrdinalRectThickness: this.maxLabelHeight,
+            shouldTheMinValueBeIncluded: isDensityAtMax
+        });
+    }
 
-            this.axisProperties = this.getAxisProperties(
-                height,
-                [axis.min, axis.max],
-                settings.density,
-                settings.density === settings.maxDensity
-            );
-
-            if (!this.isShown) {
-                return;
-            }
-
-            this.maxLabelWidth = settings.show
-                ? this.getLabelWidth(
-                    this.getTicks(),
-                    this.formatter,
-                    fontSize,
-                    settings.fontFamily
-                )
-                : 0;
-
-            const availableWidth: number = viewport.width / 2;
-
-            let shouldLabelsBeTruncated: boolean = false;
-
-            if (this.maxLabelWidth > availableWidth) {
-                this.maxLabelWidth = availableWidth;
-
-                shouldLabelsBeTruncated = true;
-            }
-
-            this.element.style({
-                "font-family": settings.fontFamily,
-                "font-size": PixelConverter.toString(fontSize),
-                fill: settings.fontColor,
-                "padding": `${PixelConverter.toString(margin.top)} 0 ${PixelConverter.toString(this.maxLabelHeight / 2)} 0`,
-            });
-
-            this.updateViewport({
-                height,
-                width: this.getTickWidth(),
-            });
-
-            this.gElement.attr({
-                transform: SVGUtil.translate(
-                    this.maxLabelWidth + this.labelOffset,
-                    this.maxLabelHeight / 2
-                )
-            });
-
-            this.axisProperties.axis.tickFormat((item: number) => {
-                const formattedLabel: string = this.formatter.format(item);
-
-                if (shouldLabelsBeTruncated) {
-                    return TextMeasurementService.getTailoredTextOrDefault(
-                        this.getTextProperties(formattedLabel, fontSize, settings.fontFamily),
-                        availableWidth
-                    );
-                }
-
-                return formattedLabel;
-            });
-
-            this.gElement.call(this.axisProperties.axis);
-        }
-
-        private getAxisProperties(
-            pixelSpan: number,
-            dataDomain: any[],
-            density: number,
-            isDensityAtMax: boolean
-        ): IAxisProperties {
-            return PowerKPIAxisHelper.createAxis({
-                pixelSpan,
-                dataDomain,
-                density,
-                isVertical: true,
-                isScalar: true,
-                isCategoryAxis: false,
-                metaDataColumn: null,
-                formatString: undefined,
-                outerPadding: this.maxLabelHeight / 2,
-                useTickIntervalForDisplayUnits: true,
-                shouldClamp: false,
-                outerPaddingRatio: 0,
-                is100Pct: true,
-                innerPaddingRatio: 1,
-                tickLabelPadding: undefined,
-                minOrdinalRectThickness: this.maxLabelHeight,
-                shouldTheMinValueBeIncluded: isDensityAtMax
-            });
-        }
-
-        public getViewport(): VisualComponentViewport {
-            if (!this.isShown) {
-                return {
-                    width: 0,
-                    height: 0
-                };
-            }
-
+    public getViewport(): VisualComponentViewport {
+        if (!this.isShown) {
             return {
-                width: this.getTickWidth(),
-                height: this.maxLabelHeight / 2,
+                width: 0,
+                height: 0
             };
         }
 
-        private getTickWidth(): number {
-            return this.maxLabelWidth + this.additionalOffset;
-        }
+        return {
+            width: this.getTickWidth(),
+            height: this.maxLabelHeight / 2,
+        };
+    }
 
-        private areRenderOptionsValid(options: YAxisComponentRenderOptions): boolean {
-            return !!(options && options.axis && options.settings);
-        }
+    private getTickWidth(): number {
+        return this.maxLabelWidth + this.additionalOffset;
+    }
+
+    private areRenderOptionsValid(options: YAxisComponentRenderOptions): boolean {
+        return !!(options && options.axis && options.settings);
     }
 }

@@ -24,188 +24,186 @@
  *  THE SOFTWARE.
  */
 
-namespace powerbi.visuals.samples.powerKpi {
-    // jsCommon
-    import PixelConverter = jsCommon.PixelConverter;
-    import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
-    import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
+// jsCommon
+import PixelConverter = jsCommon.PixelConverter;
+import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
+import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
 
-    // powerbi.visuals
-    import LegendPosition = powerbi.visuals.LegendPosition;
+// powerbi.visuals
+import LegendPosition = powerbi.visuals.LegendPosition;
 
-    enum KPIComponentLayoutEnum {
-        kpiComponentRow,
-        kpiComponentColumn
+enum KPIComponentLayoutEnum {
+    kpiComponentRow,
+    kpiComponentColumn
+}
+
+export class KPIComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions> {
+    private className: string = "kpiComponent";
+
+    private layout: LayoutEnum = LayoutEnum.Top;
+
+    private childSelector: ClassAndSelector = createClassAndSelector("kpiComponentChild");
+
+    constructor(options: VisualComponentConstructorOptions) {
+        super();
+
+        this.initElement(
+            options.element,
+            this.className
+        );
+
+        const className: string = this.childSelector.class;
+
+        const constructorOptions: KPIComponentConstructorOptionsWithClassName = {
+            ...options,
+            className,
+            element: this.element,
+        };
+
+        this.components = [
+            new VarianceComponentWithIndicator(constructorOptions),
+            new DateKPIComponent(constructorOptions),
+            new ValueKPIComponent(constructorOptions),
+            new VarianceComponentWithCustomLabel(constructorOptions),
+        ];
     }
 
-    export class KPIComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions> {
-        private className: string = "kpiComponent";
+    public render(options: VisualComponentRenderOptions): void {
+        const { viewport: { width, height }, settings: { layout, legend } } = options.data;
 
-        private layout: LayoutEnum = LayoutEnum.Top;
+        const viewport: IViewport = { width, height };
 
-        private childSelector: ClassAndSelector = createClassAndSelector("kpiComponentChild");
+        this.layout = LayoutEnum[layout.getLayout()];
 
-        constructor(options: VisualComponentConstructorOptions) {
-            super();
+        this.applyStyleBasedOnLayout(layout, legend, viewport);
 
-            this.initElement(
-                options.element,
-                this.className
-            );
+        let howManyComponentsWasRendered: number = 0;
+        this.components.forEach((component: KPIVisualComponent<VisualComponentRenderOptions>) => {
 
-            const className: string = this.childSelector.class;
+            component.render(options);
 
-            const constructorOptions: KPIComponentConstructorOptionsWithClassName = {
-                ...options,
-                className,
-                element: this.element,
-            };
-
-            this.components = [
-                new VarianceComponentWithIndicator(constructorOptions),
-                new DateKPIComponent(constructorOptions),
-                new ValueKPIComponent(constructorOptions),
-                new VarianceComponentWithCustomLabel(constructorOptions),
-            ];
-        }
-
-        public render(options: VisualComponentRenderOptions): void {
-            const { viewport: { width, height }, settings: { layout, legend } } = options.data;
-
-            const viewport: IViewport = { width, height };
-
-            this.layout = LayoutEnum[layout.getLayout()];
-
-            this.applyStyleBasedOnLayout(layout, legend, viewport);
-
-            let howManyComponentsWasRendered: number = 0;
-            this.components.forEach((component: KPIVisualComponent<VisualComponentRenderOptions>) => {
-
-                component.render(options);
-
-                if (component.isRendered()) {
-                    howManyComponentsWasRendered++;
-                }
-
-                if (component.getViewport) {
-                    const margins: VisualComponentViewport = component.getViewport();
-
-                    switch (this.layout) {
-                        case LayoutEnum.Left:
-                        case LayoutEnum.Right: {
-                            options.data.viewport.height -= margins.height;
-                            break;
-                        }
-                        case LayoutEnum.Bottom:
-                        case LayoutEnum.Top:
-                        default: {
-                            options.data.viewport.width -= margins.width;
-                            break;
-                        }
-                    }
-                }
-            });
-
-            options.data.viewport = viewport;
-
-            this.applyWidthToChildren(howManyComponentsWasRendered);
-        }
-
-        private applyStyleBasedOnLayout(
-            layoutSettings: LayoutDescriptor,
-            legend: LegendDescriptor,
-            viewport: IViewport
-        ): void {
-            let currentLayout: LayoutToStyleEnum
-                , kpiLayout: KPIComponentLayoutEnum
-                , maxWidth: string;
-
-            switch (LayoutEnum[layoutSettings.getLayout()]) {
-                case LayoutEnum.Left:
-                case LayoutEnum.Right: {
-                    kpiLayout = KPIComponentLayoutEnum.kpiComponentColumn;
-                    maxWidth = null;
-
-                    if (!legend.show
-                        || (LegendPosition[legend.position]
-                            && (LegendPosition[legend.position] === LegendPosition.Bottom
-                                || LegendPosition[legend.position] === LegendPosition.BottomCenter))
-                    ) {
-                        currentLayout = LayoutToStyleEnum.columnReversedLayout;
-                    } else {
-                        currentLayout = LayoutToStyleEnum.columnLayout;
-                    }
-
-                    break;
-                }
-                case LayoutEnum.Bottom:
-                case LayoutEnum.Top:
-                default: {
-                    currentLayout = LayoutToStyleEnum.rowLayout;
-                    kpiLayout = KPIComponentLayoutEnum.kpiComponentRow;
-                    maxWidth = PixelConverter.toString(Math.floor(viewport.width));
-
-                    break;
-                }
+            if (component.isRendered()) {
+                howManyComponentsWasRendered++;
             }
 
-            this.element
-                .style({
-                    "max-width": maxWidth
-                })
-                .attr({
-                    "class": `${this.className} ${LayoutToStyleEnum[currentLayout]} ${KPIComponentLayoutEnum[kpiLayout]}`
-                });
-        }
-
-        private applyWidthToChildren(howManyComponentsWasRendered: number): void {
-            let width: number = 100;
-
-            if (this.layout === LayoutEnum.Top || this.layout === LayoutEnum.Bottom) {
-                width = width / howManyComponentsWasRendered;
-            }
-
-            const widthInPercentage: string = `${width}%`;
-
-            this.element
-                .selectAll(this.childSelector.selector)
-                .style({
-                    width: widthInPercentage,
-                    "max-width": widthInPercentage
-                });
-        }
-
-        /**
-         * The clientHeight and clientWidth might return invalid values if some DOM elements force this element to squash.
-         * Such issue often occurs if flex layout is used
-         *
-         * To fix this issue plotComponent is hidden by default.
-         */
-        public getViewport(): VisualComponentViewport {
-            const viewport: VisualComponentViewport = {
-                height: 0,
-                width: 0
-            };
-
-            if (this.element) {
-                const element: HTMLDivElement = this.element.node<HTMLDivElement>();
+            if (component.getViewport) {
+                const margins: VisualComponentViewport = component.getViewport();
 
                 switch (this.layout) {
                     case LayoutEnum.Left:
                     case LayoutEnum.Right: {
-                        viewport.width = element.clientWidth;
+                        options.data.viewport.height -= margins.height;
                         break;
                     }
-                    case LayoutEnum.Top:
                     case LayoutEnum.Bottom:
+                    case LayoutEnum.Top:
                     default: {
-                        viewport.height = element.clientHeight;
+                        options.data.viewport.width -= margins.width;
                         break;
                     }
                 }
             }
+        });
 
-            return viewport;
+        options.data.viewport = viewport;
+
+        this.applyWidthToChildren(howManyComponentsWasRendered);
+    }
+
+    private applyStyleBasedOnLayout(
+        layoutSettings: LayoutDescriptor,
+        legend: LegendDescriptor,
+        viewport: IViewport
+    ): void {
+        let currentLayout: LayoutToStyleEnum
+            , kpiLayout: KPIComponentLayoutEnum
+            , maxWidth: string;
+
+        switch (LayoutEnum[layoutSettings.getLayout()]) {
+            case LayoutEnum.Left:
+            case LayoutEnum.Right: {
+                kpiLayout = KPIComponentLayoutEnum.kpiComponentColumn;
+                maxWidth = null;
+
+                if (!legend.show
+                    || (LegendPosition[legend.position]
+                        && (LegendPosition[legend.position] === LegendPosition.Bottom
+                            || LegendPosition[legend.position] === LegendPosition.BottomCenter))
+                ) {
+                    currentLayout = LayoutToStyleEnum.columnReversedLayout;
+                } else {
+                    currentLayout = LayoutToStyleEnum.columnLayout;
+                }
+
+                break;
+            }
+            case LayoutEnum.Bottom:
+            case LayoutEnum.Top:
+            default: {
+                currentLayout = LayoutToStyleEnum.rowLayout;
+                kpiLayout = KPIComponentLayoutEnum.kpiComponentRow;
+                maxWidth = PixelConverter.toString(Math.floor(viewport.width));
+
+                break;
+            }
         }
+
+        this.element
+            .style({
+                "max-width": maxWidth
+            })
+            .attr({
+                "class": `${this.className} ${LayoutToStyleEnum[currentLayout]} ${KPIComponentLayoutEnum[kpiLayout]}`
+            });
+    }
+
+    private applyWidthToChildren(howManyComponentsWasRendered: number): void {
+        let width: number = 100;
+
+        if (this.layout === LayoutEnum.Top || this.layout === LayoutEnum.Bottom) {
+            width = width / howManyComponentsWasRendered;
+        }
+
+        const widthInPercentage: string = `${width}%`;
+
+        this.element
+            .selectAll(this.childSelector.selector)
+            .style({
+                width: widthInPercentage,
+                "max-width": widthInPercentage
+            });
+    }
+
+    /**
+     * The clientHeight and clientWidth might return invalid values if some DOM elements force this element to squash.
+     * Such issue often occurs if flex layout is used
+     *
+     * To fix this issue plotComponent is hidden by default.
+     */
+    public getViewport(): VisualComponentViewport {
+        const viewport: VisualComponentViewport = {
+            height: 0,
+            width: 0
+        };
+
+        if (this.element) {
+            const element: HTMLDivElement = this.element.node<HTMLDivElement>();
+
+            switch (this.layout) {
+                case LayoutEnum.Left:
+                case LayoutEnum.Right: {
+                    viewport.width = element.clientWidth;
+                    break;
+                }
+                case LayoutEnum.Top:
+                case LayoutEnum.Bottom:
+                default: {
+                    viewport.height = element.clientHeight;
+                    break;
+                }
+            }
+        }
+
+        return viewport;
     }
 }
