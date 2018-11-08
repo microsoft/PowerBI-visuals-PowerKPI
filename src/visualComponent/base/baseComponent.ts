@@ -265,7 +265,9 @@ export abstract class BaseComponent<ConstructorOptionsType extends VisualCompone
             return;
         }
 
-        this.constructorOptions.eventDispatcher[EventName.onClick](
+        this.constructorOptions.eventDispatcher.call(
+            EventName.onClick,
+            undefined,
             this,
             require("d3-selection").event,
         );

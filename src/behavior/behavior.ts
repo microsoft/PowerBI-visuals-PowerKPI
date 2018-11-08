@@ -71,7 +71,9 @@ export class Behavior implements interactivityService.IInteractiveBehavior {
     }
 
     public renderSelection(): void {
-        this.options.eventDispatcher[EventName.onHighlight](
+        this.options.eventDispatcher.call(
+            EventName.onHighlight,
+            undefined,
             this.options.interactivityService.hasSelection(),
         );
     }

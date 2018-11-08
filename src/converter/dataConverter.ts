@@ -68,6 +68,10 @@ export class DataConverter
     extends VarianceConverter
     implements Converter {
 
+    constructor(private createSelectionIdBuilder: () => powerbi.visuals.ISelectionIdBuilder) {
+        super();
+    }
+
     public convert(options: ConverterOptions): DataRepresentation {
         const dataRepresentation: DataRepresentation = this.process(options);
 
@@ -278,8 +282,7 @@ export class DataConverter
                         dataRepresentation.isGrouped = isGrouped;
                     }
 
-                    // TODO: fix selection id
-                    const identity: powerbi.extensibility.ISelectionId = null; /*SelectionIdBuilder.builder()
+                    const identity: powerbi.extensibility.ISelectionId = this.createSelectionIdBuilder()
                         .withSeries(
                             dataView.categorical.values,
                             isGrouped
@@ -287,7 +290,7 @@ export class DataConverter
                                 : groupedValue
                         )
                         .withMeasure(groupedValue.source.queryName)
-                        .createSelectionId();*/
+                        .createSelectionId();
 
                     if (isNaN(maxThickness) || seriesSettings.line.thickness > maxThickness) {
                         maxThickness = seriesSettings.line.thickness;
@@ -657,6 +660,6 @@ export class DataConverter
     }
 }
 
-export function createConverter(): Converter {
-    return new DataConverter();
+export function createConverter(createSelectionIdBuilder: () => powerbi.visuals.ISelectionIdBuilder): Converter {
+    return new DataConverter(createSelectionIdBuilder);
 }

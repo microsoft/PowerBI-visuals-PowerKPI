@@ -180,17 +180,15 @@ export class CaptionKPIComponent implements KPIVisualComponent<CaptionKPICompone
             .data(shouldElementBeRendered ? [shouldElementBeRendered] : []);
 
         selection
+            .exit()
+            .remove();
+
+        return selection
             .enter()
             .append("div")
             .classed(selector.className, true)
             .merge(selection)
             .attr("class", `${selector.className} ${AlignEnum[align]}`);
-
-        selection
-            .exit()
-            .remove();
-
-        return selection;
     }
 
     protected renderElement(

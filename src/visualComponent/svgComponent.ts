@@ -428,7 +428,7 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
         event.stopImmediatePropagation();
 
         if (this === component) {
-            this.constructorOptions.eventDispatcher[EventName.onClearSelection]();
+            this.constructorOptions.eventDispatcher.call(EventName.onClearSelection);
 
             return;
         }
@@ -443,6 +443,11 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
             return;
         }
 
-        this.constructorOptions.eventDispatcher[EventName.onSelect](event, series);
+        this.constructorOptions.eventDispatcher.call(
+            EventName.onSelect,
+            undefined,
+            event,
+            series
+        );
     }
 }

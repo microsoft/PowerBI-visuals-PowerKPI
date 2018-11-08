@@ -76,7 +76,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
         this.rootElement = d3Select(options.element);
 
-        this.converter = createConverter();
+        this.converter = createConverter(options.host.createSelectionIdBuilder.bind(options.host));
 
         this.behavior = new Behavior();
         this.interactivityService = interactivityService.createInteractivityService(options.host);
