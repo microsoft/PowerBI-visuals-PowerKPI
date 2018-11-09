@@ -57,9 +57,6 @@ export module PowerKPIAxisHelper {
     const DefaultInnerTickSize: number = 6;
     const DefaultOuterTickSize: number = 0;
 
-    const OrientationLeft: string = "left";
-    const OrientationBottom: string = "bottom";
-
     const DefaultXLabelMaxWidth: number = 1;
     const DefaultXLabelFactor: number = 2;
 

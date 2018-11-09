@@ -36,7 +36,6 @@ export enum LineInterpolation {
     basis = "basis",
     basisOpen = "basis-open",
     basisClosed = "basis-closed",
-    bundle = "bundle",
     cardinal = "cardinal",
     cardinalOpen = "cardinal-open",
     cardinalClosed = "cardinal-closed",

@@ -29,7 +29,7 @@ import powerbi from "powerbi-visuals-api";
 import {
     area,
     Area,
-    Selection
+    Selection,
 } from "d3";
 
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
@@ -86,7 +86,6 @@ export class AreaComponent
             viewport,
             interpolation,
             gradientPoints,
-            areaOpacity,
             series,
         } = options;
 
@@ -140,8 +139,8 @@ export class AreaComponent
             .y0(viewport.height)
             .y1((dataPoint: DataRepresentationPoint) => {
                 return yScale.scale(dataPoint.y);
-            });
-        // .interpolate(interpolation); // TODO: fix interpolation https://github.com/d3/d3-shape/blob/master/README.md#curves
+            })
+            .curve(this.getInterpolator(interpolation));
     }
 
     public destroy(): void {

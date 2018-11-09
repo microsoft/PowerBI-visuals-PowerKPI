@@ -27,7 +27,18 @@
 import {
     Selection,
     line,
-    Line
+    Line,
+    CurveFactory,
+    curveBasis,
+    curveBasisClosed,
+    curveBasisOpen,
+    curveCardinal,
+    curveCardinalClosed,
+    curveCardinalOpen,
+    curveMonotoneX,
+    curveLinear,
+    curveStepAfter,
+    curveStepBefore,
 } from "d3";
 
 import powerbi from "powerbi-visuals-api";
@@ -141,8 +152,44 @@ export class LineComponent extends BaseComponent<VisualComponentConstructorOptio
             })
             .y((data: DataRepresentationPoint) => {
                 return yScale.scale(data.y);
-            });
-            // .interpolate(interpolation); // TODO: fix interpolation https://github.com/d3/d3-shape/blob/master/README.md#curves
+            })
+            .curve(this.getInterpolator(interpolation));
+    }
+
+    protected getInterpolator(interpolation: LineInterpolation): CurveFactory {
+        switch (interpolation) {
+            case LineInterpolation.basis: {
+                return curveBasis;
+            }
+            case LineInterpolation.basisClosed: {
+                return curveBasisClosed;
+            }
+            case LineInterpolation.basisOpen: {
+                return curveBasisOpen;
+            }
+            case LineInterpolation.cardinal: {
+                return curveCardinal;
+            }
+            case LineInterpolation.cardinalClosed: {
+                return curveCardinalClosed;
+            }
+            case LineInterpolation.cardinalOpen: {
+                return curveCardinalOpen;
+            }
+            case LineInterpolation.monotone: {
+                return curveMonotoneX;
+            }
+            case LineInterpolation.stepAfter: {
+                return curveStepAfter;
+            }
+            case LineInterpolation.stepBefore: {
+                return curveStepBefore;
+            }
+            case LineInterpolation.linear:
+            default: {
+                return curveLinear;
+            }
+        }
     }
 
     public destroy(): void {
