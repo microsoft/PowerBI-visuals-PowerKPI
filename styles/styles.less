@@ -24,6 +24,9 @@
  *  THE SOFTWARE.
  */
 
+ @import (less) "../node_modules/powerbi-visuals-utils-interactivityutils/lib/index.css";
+ @import (less) "../node_modules/powerbi-visuals-utils-chartutils/lib/index.css";
+
 .vcBody,
 .powerKpi_powerKPI,
 .powerKpi_powerKPI * {
@@ -215,6 +218,10 @@
         .legend {
             margin: 0 !important;
             position: static !important;
+
+            .navArrow {
+                display: none !important;
+            }
         }
     }
 

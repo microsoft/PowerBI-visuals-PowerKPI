@@ -49,7 +49,7 @@ export enum LegendLineStyle {
 export class LegendDescriptor extends FontSizeDescriptor {
     public position: string = "BottomCenter";
     public showTitle: boolean = true;
-    public titleText: string = undefined;
+    public titleText: string = "";
     public labelColor: string = "rgb(102, 102, 102)";
     public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
     public style: LegendStyle = LegendStyle.circle;

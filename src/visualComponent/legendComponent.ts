@@ -26,7 +26,11 @@
 
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 import { textMeasurementService } from "powerbi-visuals-utils-formattingutils";
-import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
+
+import {
+    legendInterfaces,
+    legend as legendModule,
+} from "powerbi-visuals-utils-chartutils";
 
 import { VisualComponentViewport } from "./base/visualComponent";
 import { BaseComponent } from "./base/baseComponent";
@@ -58,105 +62,69 @@ export class LegendComponent extends BaseComponent<VisualComponentConstructorOpt
     }
 
     private createLegend(options: VisualComponentConstructorOptions): legendInterfaces.ILegend {
-        // Try-catch protects Power KPI from being completely broken due to createLegend incompatibility in different PBI Desktop versions
         try {
-            const pbiDesktopFeb2018RegExp: RegExp = /legendParentElement, interactive, interactivityService, isScrollable, legendPosition, legendSmallViewPortProperties, style/;
-
-            // TODO: fix legend component
-            // if (pbiDesktopFeb2018RegExp.test(createLegend.toString())) {
-            //     const createLegendAny: any = createLegend;
-
-            //     return createLegendAny(
-            //         $(options.element.node()),
-            //         false,
-            //         options.interactivityService || undefined,
-            //         true,
-            //         undefined,
-            //         undefined,
-            //         options.style || undefined,
-            //     );
-            // } else {
-            //     return createLegend(
-            //         $(options.element.node()),
-            //         false,
-            //         options.interactivityService || undefined,
-            //         true,
-            //         undefined,
-            //         options.style || undefined,
-            //         false,
-            //     );
-            // }
-        }
-        catch (err) {
+            return legendModule.createLegend(
+                options.element.node(),
+                false,
+                options.interactivityService || undefined,
+                true,
+            );
+        } catch (_) {
             return null;
         }
     }
 
     public render(options: VisualComponentRenderOptions): void {
-        if (!this.legend) {
+        const { data: { settings: { legend } } } = options;
+
+        if (!this.legend || !legend.show) {
+            this.hide();
+
             return;
         }
 
-        const { data: { settings: { legend } } } = options;
+        this.element.style("font-family", legend.fontFamily);
 
-        const legendData: legendInterfaces.LegendData = this.createLegendData(options.data, legend);
-
-        // Try-catch protects Power KPI from being completely broken due to createLegend incompatibility in different PBI Desktop versions
         try {
+            const legendData: legendInterfaces.LegendData = this.createLegendData(options.data, legend);
+
             this.legend.changeOrientation(this.getLegendPosition(legend.position));
 
             this.legend.drawLegend(legendData, options.data.viewport);
-        } catch (_) { }
+
+            this.show();
+        } catch (_) {
+            this.hide();
+        }
     }
 
-    private createLegendData(data: DataRepresentation, settings: LegendDescriptor) {
-        const legendDataPoints: legendInterfaces.LegendDataPoint[] = data.series
+    private createLegendData(data: DataRepresentation, settings: LegendDescriptor): legendInterfaces.LegendData {
+        const dataPoints: legendInterfaces.LegendDataPoint[] = data.series
             .map((series: DataRepresentationSeries) => {
-                return {
+                const dataPoint: legendInterfaces.LegendDataPoint = {
                     color: series.settings.line.fillColor,
                     icon: legendInterfaces.LegendIcon.Circle,
                     label: series.name,
                     identity: series.identity,
                     selected: series.selected,
-                    lineStyle: settings.getLegendLineStyle(series.settings.line.lineStyle),
-                    markerShape: settings.getLegendMarkerShape(),
-                    lineColor: series.settings.line.fillColor,
-                } as legendInterfaces.LegendDataPoint;
+                    // lineStyle: settings.getLegendLineStyle(series.settings.line.lineStyle), // TODO:
+                    // markerShape: settings.getLegendMarkerShape(), // TODO:
+                    // lineColor: series.settings.line.fillColor, // TODO:
+                };
+
+                return dataPoint;
             });
 
-        const fontSizeInPx: number = pixelConverter.fromPointToPixel(settings.fontSize);
+        const title: string = !!(settings.titleText && settings.showTitle)
+            ? settings.titleText
+            : undefined;
 
         return {
-            show: settings.show,
-            position: this.getLegendPosition(settings.position),
-            title: settings.titleText,
-            showTitle: settings.showTitle,
-            dataPoints: legendDataPoints,
+            dataPoints,
+            title,
+            fontSize: settings.fontSize,
             grouped: false,
-            fontProperties: {
-                color: settings.labelColor,
-                family: settings.fontFamily,
-                size: {
-                    pt: settings.fontSize,
-                    px: pixelConverter.fromPointToPixel(settings.fontSize)
-                },
-                sizePx: fontSizeInPx,
-                toTextProperties: (text?: string) => { // TODO: It's a PBI Desktop May 2017 specific. Please get rid of this function once PBID is updated.
-                    return {
-                        text,
-                        fontFamily: settings.fontFamily,
-                        fontSize: pixelConverter.toString(fontSizeInPx),
-                        sizePx: fontSizeInPx,
-                    } as textMeasurementService.TextProperties;
-                },
-                toSVGStyle: () => { // TODO: It's a PBI Desktop May 2017 specific. Please get rid of this function once PBID is updated.
-                    return {
-                        "font-size": pixelConverter.toString(fontSizeInPx),
-                        "font-family": settings.fontFamily,
-                        fill: settings.labelColor,
-                    };
-                }
-            } as any
+            labelColor: settings.labelColor,
         };
     }
 
@@ -175,7 +143,7 @@ export class LegendComponent extends BaseComponent<VisualComponentConstructorOpt
     }
 
     public getViewport(): VisualComponentViewport {
-        if (!this.legend) {
+        if (!this.legend || !this.isShown) {
             return {
                 width: 0,
                 height: 0
