@@ -43,68 +43,6 @@ export enum LineInterpolation {
     monotone = "monotone",
 }
 
-// export const lineInterpolationEnumType: IEnumType = createEnumType([
-//     {
-//         value: LineInterpolation.linear,
-//         displayName: "Linear"
-//     },
-//     {
-//         value: LineInterpolation.stepBefore,
-//         displayName: "Step-before"
-//     },
-//     {
-//         value: LineInterpolation.stepAfter,
-//         displayName: "Step-after"
-//     },
-//     {
-//         value: LineInterpolation.basis,
-//         displayName: "Basis"
-//     },
-//     {
-//         value: LineInterpolation.basisOpen,
-//         displayName: "Basis-open"
-//     },
-//     {
-//         value: LineInterpolation.basisClosed,
-//         displayName: "Basis-closed"
-//     },
-//     {
-//         value: LineInterpolation.bundle,
-//         displayName: "Bundle"
-//     },
-//     {
-//         value: LineInterpolation.cardinal,
-//         displayName: "Cardinal"
-//     },
-//     {
-//         value: LineInterpolation.cardinalOpen,
-//         displayName: "Cardinal-open"
-//     },
-//     {
-//         value: LineInterpolation.cardinalClosed,
-//         displayName: "Cardinal-closed"
-//     },
-//     {
-//         value: LineInterpolation.monotone,
-//         displayName: "Monotone"
-//     },
-// ]);
-
-// export const lineInterpolationWithColorizedLineEnumType: IEnumType = createEnumType([
-//     {
-//         value: LineInterpolation.linear,
-//         displayName: "Linear"
-//     },
-//     {
-//         value: LineInterpolation.stepBefore,
-//         displayName: "Step-before"
-//     },
-//     {
-//         value: LineInterpolation.stepAfter,
-//         displayName: "Step-after"
-//     },
-// ]);
-
 export enum LineStyle {
     solidLine = "solidLine",
     dottedLine = "dottedLine",
@@ -112,41 +50,11 @@ export enum LineStyle {
     dotDashedLine = "dotDashedLine",
 }
 
-// export const lineStyleEnumType: IEnumType = createEnumType([
-//     {
-//         value: LineStyle.solidLine,
-//         displayName: "Solid"
-//     },
-//     {
-//         value: LineStyle.dottedLine,
-//         displayName: "Dotted"
-//     },
-//     {
-//         value: LineStyle.dashedLine,
-//         displayName: "Dashed"
-//     },
-//     {
-//         value: LineStyle.dotDashedLine,
-//         displayName: "Dot-dashed"
-//     },
-// ]);
-
 export enum LineType {
     line = "line",
     area = "area",
     column = "column",
 }
-
-// export const lineTypeEnumType: IEnumType = createEnumType([
-//     {
-//         value: LineType.line,
-//         displayName: "Line",
-//     },
-//     {
-//         value: LineType.area,
-//         displayName: "Area",
-//     },
-// ]);
 
 export interface LineDescriptorBase {
     fillColor: string;

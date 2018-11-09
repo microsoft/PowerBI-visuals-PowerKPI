@@ -197,8 +197,7 @@ export class XAxisComponent
         this.gElement.attr("transform", svgManipulation.translate(0, 0));
 
         this.axisProperties.axis
-            // .orient("bottom") // TODO: check it
-            .tickFormat((item: number, index: number) => {
+            .tickFormat((item: number) => {
                 const currentValue: any = axis.type === DataRepresentationTypeEnum.DateType
                     ? new Date(item)
                     : item;

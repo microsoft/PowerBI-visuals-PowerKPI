@@ -32,35 +32,6 @@ import {
 
 import { LayoutEnum } from "../../layout/layoutEnum";
 
-// export const horizontalPositionEnum: IEnumType = createEnumType([
-//     {
-//         value: "Left",
-//         displayName: "Left"
-//     },
-//     {
-//         value: "Right",
-//         displayName: "Right"
-//     },
-// ]);
-
-// export const layoutEnum: IEnumType = createEnumType([
-//     { value: "Top", displayName: "Top" },
-//     { value: "Left", displayName: "Left" },
-//     { value: "Bottom", displayName: "Bottom" },
-//     { value: "Right", displayName: "Right" }
-// ]);
-
-// export const positionEnum: IEnumType = createEnumType([
-//     { value: "Top", displayName: "Top" },
-//     { value: "Bottom", displayName: "Bottom" },
-//     { value: "Left", displayName: "Left" },
-//     { value: "Right", displayName: "Right" },
-//     { value: "TopCenter", displayName: "Top Center" },
-//     { value: "BottomCenter", displayName: "Bottom Center" },
-//     { value: "LeftCenter", displayName: "Left Center" },
-//     { value: "RightCenter", displayName: "Right Center" }
-// ]);
-
 export class LayoutDescriptor
     extends BaseDescriptor
     implements Descriptor {

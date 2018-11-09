@@ -183,12 +183,11 @@ export module PowerKPIAxisHelper {
             axisDisplayUnits,
             axisPrecision);
 
-        // sets default orientation only, cartesianChart will fix y2 for comboChart
-        // tickSize(pixelSpan) is used to create gridLines
-
-        let axis = (isVertical
+        const axisInstance = isVertical
             ? axisLeft(scale)
-            : axisBottom(scale))
+            : axisBottom(scale);
+
+        const axis = axisInstance
             .tickSizeInner(DefaultInnerTickSize)
             .tickSizeOuter(DefaultOuterTickSize)
             .ticks(bestTickCount)
@@ -765,19 +764,23 @@ export module PowerKPIAxisHelper {
     // NOTE: export only for testing, do not access directly
     export function createLinearScale(
         pixelSpan: number,
-        dataDomain: any[],
+        dataDomain: (number | Date)[],
         outerPadding: number = 0,
         niceCount?: number,
-        shouldClamp?: boolean): ScaleLinear<any, number> {
-
-        let originalScale: ScaleLinear<number, number> = scaleLinear()
-            .range([dataDomain[0], dataDomain[1]])
+        shouldClamp?: boolean
+    ): ScaleLinear<any, number> {
+        const originalScale: ScaleLinear<number, number> = scaleLinear()
+            .range([
+                convertToNumber(dataDomain[0]),
+                convertToNumber(dataDomain[1])
+            ]
+            )
             .domain([0, pixelSpan])
             .clamp(false);
 
         const end: number = pixelSpan - outerPadding;
 
-        let scale: ScaleLinear<number, number> = scaleLinear()
+        const scale: ScaleLinear<number, number> = scaleLinear()
             .range([0, end])
             .domain([originalScale(0), originalScale(end)])
             .clamp(shouldClamp);
@@ -788,6 +791,10 @@ export module PowerKPIAxisHelper {
         }
 
         return scale;
+    }
+
+    export function convertToNumber(value: Date | number): number {
+        return Number(value);
     }
 
     export function getRecommendedNumberOfTicksForXAxis(availableWidth: number, minOrdinalRectThickness: number): number {
