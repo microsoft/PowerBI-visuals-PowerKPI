@@ -29,19 +29,11 @@ import powerbi from "powerbi-visuals-api";
 import { HorizontalLayoutEnum } from "../../../layout/horizontalLayoutEnum";
 
 import { FontSizeDescriptor } from "../autoHiding/fontSizeDescriptor";
-// powerbi.data
-// import DataViewObjectPropertyDescriptors = powerbi.data.DataViewObjectPropertyDescriptors;
-// import DataViewObjectPropertyTypeDescriptor = powerbi.data.DataViewObjectPropertyTypeDescriptor;
-
-interface DataViewObjectPropertyDescriptors {
-
-}
 
 interface PropertyConfiguration {
     name: string;
     defaultValue: any | ((index: number) => any);
     displayName: (text: string) => string;
-    type: any; // TODO DataViewObjectPropertyTypeDescriptor;
 }
 
 interface EnumPropertyConfiguration {
@@ -107,7 +99,6 @@ export class KPIIndicatorDescriptor extends FontSizeDescriptor {
 
                 return color || this._colors[0];
             },
-            type: { fill: { solid: { color: true } } }
         },
         {
             name: "shape",
@@ -120,13 +111,11 @@ export class KPIIndicatorDescriptor extends FontSizeDescriptor {
                     ? shape.name
                     : this._shapes[0].name;
             },
-            type: { enumeration: this.getEnumType() }
         },
         {
             name: this.kpiIndexPropertyName,
             displayName: () => "    Value",
             defaultValue: (index: number) => index + 1,
-            type: { numeric: true },
         },
     ];
 
@@ -161,38 +150,9 @@ export class KPIIndicatorDescriptor extends FontSizeDescriptor {
         }
     }
 
-    private getEnumType() {
-        // const members: IEnumMember[] = this._shapes.map((shape: EnumPropertyConfiguration) => {
-        //     return {
-        //         value: shape.name,
-        //         displayName: shape.displayName
-        //     };
-        // });
-
-        // return createEnumType(members);
-
-        return [];
-    }
 
     private getPropertyName(name: string, index: number): string {
         return `${name}_${index}`;
-    }
-
-    public getObjectProperties(): DataViewObjectPropertyDescriptors {
-        const objectProperties: DataViewObjectPropertyDescriptors = {};
-
-        for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
-            this._properties.forEach((property: PropertyConfiguration) => {
-                const indexedName: string = this.getPropertyName(property.name, index);
-
-                objectProperties[indexedName] = {
-                    displayName: property.displayName(`KPI ${index + 1}`),
-                    type: property.type
-                };
-            });
-        }
-
-        return objectProperties;
     }
 
     public getCurrentKPI(kpiIndex: number): IKPIIndicatorSettings {

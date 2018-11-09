@@ -28,7 +28,6 @@ import {
     scaleTime,
     scaleLinear,
     scaleOrdinal,
-    ScaleLinear,
     ScaleOrdinal
 } from "d3-scale";
 

@@ -42,7 +42,7 @@ import { YAxisDescriptor } from "../../settings/descriptors/axis/axisDescriptor"
 import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 import { VisualComponentViewport } from "../base/visualComponent";
 
-import { PowerKPIAxisHelper } from "./helpers/axisHelper";
+import { AxisHelper } from "./helpers/axisHelper";
 
 import {
     AxisComponent,
@@ -208,7 +208,7 @@ export class YAxisComponent
         density: number,
         isDensityAtMax: boolean
     ) {
-        return PowerKPIAxisHelper.createAxis({
+        return AxisHelper.createAxis({
             pixelSpan,
             dataDomain,
             density,
@@ -220,7 +220,6 @@ export class YAxisComponent
             outerPadding: this.maxLabelHeight / 2,
             useTickIntervalForDisplayUnits: true,
             shouldClamp: false,
-            // outerPaddingRatio: 0, // TODO:
             is100Pct: true,
             innerPaddingRatio: 1,
             tickLabelPadding: undefined,

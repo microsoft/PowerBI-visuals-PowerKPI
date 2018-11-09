@@ -42,7 +42,7 @@ import { EventName } from "./event/eventName";
 import { Converter } from "./converter/converter";
 import { VisualComponent } from "./visualComponent/base/visualComponent";
 import { VisualComponentRenderOptions } from "./visualComponent/base/visualComponentRenderOptions";
-import { createConverter } from "./converter/dataConverter";
+import { DataConverter } from "./converter/dataConverter";
 import { MainComponent } from "./visualComponent/mainComponent";
 import { SeriesSettings } from "./settings/seriesSettings";
 import { BaseDescriptor } from "./settings/descriptors/descriptor";
@@ -68,7 +68,6 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     private component: VisualComponent<VisualComponentRenderOptions>;
 
     private dataRepresentation: DataRepresentation;
-    private colorPalette: powerbi.extensibility.IColorPalette;
 
     private behavior: Behavior;
     private interactivityService: interactivityService.IInteractivityService;
@@ -76,16 +75,16 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
         this.rootElement = d3Select(options.element);
 
-        this.converter = createConverter(options.host.createSelectionIdBuilder.bind(options.host));
+        this.converter = new DataConverter({
+            colorPalette: options.host.colorPalette,
+            createSelectionIdBuilder: options.host.createSelectionIdBuilder.bind(options.host),
+        });
 
         this.behavior = new Behavior();
         this.interactivityService = interactivityService.createInteractivityService(options.host);
 
-        this.colorPalette = options.host.colorPalette;
-
         this.component = new MainComponent({
             element: this.rootElement,
-            style: this.colorPalette,
             eventDispatcher: this.eventDispatcher,
             interactivityService: this.interactivityService,
             tooltipService: options.host.tooltipService,
@@ -106,7 +105,6 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
         const dataRepresentation: DataRepresentation = this.converter.convert({
             dataView,
             viewport,
-            style: this.colorPalette,
             hasSelection: this.interactivityService && this.interactivityService.hasSelection(),
         });
 

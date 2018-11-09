@@ -69,8 +69,6 @@ export class CommonComponent extends BaseContainerComponent<VisualComponentConst
     }
 
     public render(options: VisualComponentRenderOptions): void {
-        const viewport: powerbi.IViewport = { ...options.data.viewport };
-
         this.forEach(
             this.components,
             (component: VisualComponent<VisualComponentRenderOptions>) => {

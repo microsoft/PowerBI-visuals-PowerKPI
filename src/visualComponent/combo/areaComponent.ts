@@ -99,16 +99,19 @@ export class AreaComponent
             .copy()
             .range([viewport.height, 0]);
 
-        this.areaSelection = this.element
+        const areaSelection: Selection<any, DataRepresentationPointGradientColor, any, any> = this.element
             .selectAll(this.areaSelector.selectorName)
             .data(gradientPoints);
 
-        this.areaSelection.enter()
+        areaSelection
+            .exit()
+            .remove();
+
+        this.areaSelection = areaSelection.enter()
             .append("svg:path")
             .classed(this.areaSelector.className, true)
-            .on("click", this.clickHandler.bind(this));
-
-        this.areaSelection
+            .on("click", this.clickHandler.bind(this))
+            .merge(areaSelection)
             .attr("d", (gradientGroup: DataRepresentationPointGradientColor) => {
                 return this.getArea(
                     xScale,
@@ -120,10 +123,6 @@ export class AreaComponent
             .style("fill", (gradientGroup: DataRepresentationPointGradientColor) => gradientGroup.color);
 
         this.highlight(series && series.hasSelection);
-
-        this.areaSelection
-            .exit()
-            .remove();
     }
 
     private getArea(

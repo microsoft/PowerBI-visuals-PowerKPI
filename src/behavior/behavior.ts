@@ -54,11 +54,7 @@ export class Behavior implements interactivityService.IInteractiveBehavior {
                     return;
                 }
 
-                selectionHandler.handleSelection(
-                    series,
-                    event.ctrlKey,
-                    // TODO { x: 100, y: 100 }, // why we need this?
-                );
+                selectionHandler.handleSelection(series, event.ctrlKey);
             }
         );
 

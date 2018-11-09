@@ -44,7 +44,7 @@ import { AxisDescriptor } from "../../settings/descriptors/axis/axisDescriptor";
 import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 import { VisualComponentViewport } from "../base/visualComponent";
 
-import { PowerKPIAxisHelper } from "./helpers/axisHelper";
+import { AxisHelper } from "./helpers/axisHelper";
 
 import {
     AxisComponent,
@@ -232,7 +232,7 @@ export class XAxisComponent
         isScalar: boolean,
         density: number,
     ) {
-        return PowerKPIAxisHelper.createAxis({
+        return AxisHelper.createAxis({
             pixelSpan,
             dataDomain,
             isScalar,
@@ -244,7 +244,6 @@ export class XAxisComponent
             outerPadding: 0,
             useTickIntervalForDisplayUnits: true,
             shouldClamp: false,
-            // outerPaddingRatio: 0, // TODO:
             innerPaddingRatio: 1,
             tickLabelPadding: undefined,
             minOrdinalRectThickness: this.maxElementWidth + this.labelPadding

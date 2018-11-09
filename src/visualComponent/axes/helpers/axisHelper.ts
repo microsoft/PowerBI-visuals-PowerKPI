@@ -51,7 +51,7 @@ import {
     axisInterfaces,
 } from "powerbi-visuals-utils-chartutils";
 
-export module PowerKPIAxisHelper {
+export module AxisHelper {
     const DefaultOuterPadding: number = 0;
 
     const DefaultInnerTickSize: number = 6;
@@ -602,12 +602,11 @@ export module PowerKPIAxisHelper {
             }
             else {
                 scale = createNumericalScale(
-                    options.scaleType,
                     pixelSpan,
                     dataDomain,
-                    dataType,
                     outerPadding,
-                    bestTickCount);
+                    bestTickCount
+                );
             }
         }
         else {
@@ -635,13 +634,12 @@ export module PowerKPIAxisHelper {
             if (isScalar && dataType.numeric && !dataType.dateTime) {
                 // Note: Don't pass bestTickCount to createNumericalScale, because it overrides boundaries of the domain.
                 scale = createNumericalScale(
-                    options.scaleType,
                     pixelSpan,
                     scalarDomain,
-                    dataType,
                     outerPadding,
                     null,
-                    shouldClamp);
+                    shouldClamp
+                );
 
                 bestTickCount = maxTicks === 0
                     ? 0
@@ -716,7 +714,6 @@ export module PowerKPIAxisHelper {
 
         return scaleOrdinal()
             .range([0, pixelSpan])
-            // .rangePoints() // TODO: potential issue
             .domain(dataDomain);
     }
 
@@ -747,13 +744,12 @@ export module PowerKPIAxisHelper {
     // this function can return different scales e.g. log, linear
     // NOTE: export only for testing, do not access directly
     export function createNumericalScale(
-        axisScaleType: string,
         pixelSpan: number,
         dataDomain: any[],
-        dataType: powerbi.ValueTypeDescriptor,
         outerPadding: number = 0,
         niceCount?: number,
-        shouldClamp?: boolean): ScaleLinear<number, number> {
+        shouldClamp?: boolean
+    ): ScaleLinear<number, number> {
 
         return createLinearScale(pixelSpan, dataDomain, outerPadding, niceCount, shouldClamp);
     }

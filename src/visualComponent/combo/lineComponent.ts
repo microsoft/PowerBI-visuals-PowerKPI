@@ -114,15 +114,19 @@ export class LineComponent extends BaseComponent<VisualComponentConstructorOptio
             .copy()
             .range([viewport.height, 0]);
 
-        this.lineSelection = this.element
+        const lineSelection: Selection<any, DataRepresentationPointGradientColor, any, any> = this.element
             .selectAll(this.lineSelector.selectorName)
             .data(gradientPoints);
 
-        this.lineSelection.enter()
+        lineSelection
+            .exit()
+            .remove();
+
+        this.lineSelection = lineSelection.enter()
             .append("svg:path")
             .classed(this.lineSelector.className, true)
             .on("click", this.clickHandler.bind(this))
-            .merge(this.lineSelection)
+            .merge(lineSelection)
             .attr("d", (gradientGroup: DataRepresentationPointGradientColor) => {
                 return this.getLine(
                     xScale,
@@ -135,10 +139,6 @@ export class LineComponent extends BaseComponent<VisualComponentConstructorOptio
             .style("stroke-width", () => pixelConverter.toString(thickness));
 
         this.highlight(series && series.hasSelection);
-
-        this.lineSelection
-            .exit()
-            .remove();
     }
 
     private getLine(

@@ -104,18 +104,6 @@ export enum AxisType {
     categorical,
 }
 
-// TODO
-// export const axisTypeEnumType: IEnumType = createEnumType([
-//     {
-//         value: AxisType.continuous,
-//         displayName: "Continuous",
-//     },
-//     {
-//         value: AxisType.categorical,
-//         displayName: "Categorical",
-//     },
-// ]);
-
 export class XAxisDescriptor extends AxisDescriptor {
     public type: AxisType = AxisType.continuous;
 }

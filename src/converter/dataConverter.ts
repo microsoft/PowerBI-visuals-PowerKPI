@@ -64,11 +64,16 @@ import {
 import { DataRepresentationAxisBase } from "../dataRepresentation/dataRepresentationAxis";
 import { DataRepresentationAxisValueType } from "../dataRepresentation/dataRepresentationAxisValueType";
 
+export interface DataConverterConstructorOptions {
+    colorPalette: powerbi.extensibility.IColorPalette;
+    createSelectionIdBuilder: () => powerbi.visuals.ISelectionIdBuilder;
+}
+
 export class DataConverter
     extends VarianceConverter
     implements Converter {
 
-    constructor(private createSelectionIdBuilder: () => powerbi.visuals.ISelectionIdBuilder) {
+    constructor(private constructorOptions: DataConverterConstructorOptions) {
         super();
     }
 
@@ -84,9 +89,13 @@ export class DataConverter
         const {
             dataView,
             viewport,
-            style,
             hasSelection,
         } = options;
+
+        const {
+            colorPalette,
+            createSelectionIdBuilder,
+        } = this.constructorOptions;
 
         const settings: Settings = Settings.parse(dataView) as Settings;
 
@@ -251,10 +260,10 @@ export class DataConverter
                     seriesSettings.parseObjects(group.objects || groupedValue.source.objects);
 
                     if (!seriesSettings.line.fillColor
-                        && style
-                        && style.getColor
+                        && colorPalette
+                        && colorPalette.getColor
                     ) {
-                        seriesSettings.line.fillColor = style.getColor(`${seriesColorIndex}`).value;
+                        seriesSettings.line.fillColor = colorPalette.getColor(`${seriesColorIndex}`).value;
 
                         seriesColorIndex++;
                     }
@@ -282,7 +291,7 @@ export class DataConverter
                         dataRepresentation.isGrouped = isGrouped;
                     }
 
-                    const identity: powerbi.extensibility.ISelectionId = this.createSelectionIdBuilder()
+                    const identity: powerbi.extensibility.ISelectionId = createSelectionIdBuilder()
                         .withSeries(
                             dataView.categorical.values,
                             isGrouped
@@ -658,8 +667,4 @@ export class DataConverter
 
         return column.format;
     }
-}
-
-export function createConverter(createSelectionIdBuilder: () => powerbi.visuals.ISelectionIdBuilder): Converter {
-    return new DataConverter(createSelectionIdBuilder);
 }

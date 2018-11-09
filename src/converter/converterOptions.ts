@@ -26,13 +26,8 @@
 
 import powerbi from "powerbi-visuals-api";
 
-import DataView = powerbi.DataView;
-import IViewport = powerbi.IViewport;
-import IColorPalette = powerbi.extensibility.IColorPalette;
-
 export interface ConverterOptions {
-    dataView: DataView;
-    viewport: IViewport;
-    style: IColorPalette; // TODO: rename it?
+    dataView: powerbi.DataView;
+    viewport: powerbi.IViewport;
     hasSelection: boolean;
 }

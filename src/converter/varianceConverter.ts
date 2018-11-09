@@ -40,9 +40,9 @@ export class VarianceConverter {
             return NaN;
         }
 
-        const firstPoint: DataRepresentationPointIndexed = firstSeries.current
-            , index: number = firstPoint.index
-            , secondPoint: DataRepresentationPoint = !isNaN(index) && secondSeries.points[index];
+        const firstPoint: DataRepresentationPointIndexed = firstSeries.current;
+        const index: number = firstPoint.index;
+        const secondPoint: DataRepresentationPoint = !isNaN(index) && secondSeries.points[index];
 
         return this.getVarianceByPoints(firstPoint, secondPoint);
     }
