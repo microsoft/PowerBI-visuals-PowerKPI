@@ -24,6 +24,8 @@
  *  THE SOFTWARE.
  */
 
+import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
+
 import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
 import { LineStyle } from "./lineDescriptor";
 
@@ -34,18 +36,6 @@ export enum LegendStyle {
     styledLine = "styledLine",
 }
 
-export enum LegendMarkerShape {
-    square = "square",
-    none = "none",
-    circle = "circle",
-}
-
-export enum LegendLineStyle {
-    dotted = "dotted",
-    dashed = "dashed",
-    solid = "solid",
-}
-
 export class LegendDescriptor extends FontSizeDescriptor {
     public position: string = "BottomCenter";
     public showTitle: boolean = true;
@@ -54,41 +44,41 @@ export class LegendDescriptor extends FontSizeDescriptor {
     public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
     public style: LegendStyle = LegendStyle.circle;
 
-    public getLegendMarkerShape(): LegendMarkerShape {
+    public getLegendMarkerShape(): legendInterfaces.MarkerShape {
         switch (this.style) {
             case LegendStyle.box: {
-                return LegendMarkerShape.square;
+                return legendInterfaces.MarkerShape.square;
             }
             case LegendStyle.line:
             case LegendStyle.styledLine: {
-                return LegendMarkerShape.none;
+                return legendInterfaces.MarkerShape.longDash;
             }
             case LegendStyle.circle:
             default: {
-                return LegendMarkerShape.circle;
+                return legendInterfaces.MarkerShape.circle;
             }
         }
     }
 
-    public getLegendLineStyle(lineStyle: LineStyle): LegendLineStyle {
+    public getLegendLineStyle(lineStyle: LineStyle): legendInterfaces.LineStyle {
         switch (this.style) {
             case LegendStyle.styledLine: {
                 switch (lineStyle) {
                     case LineStyle.dottedLine: {
-                        return LegendLineStyle.dotted;
+                        return legendInterfaces.LineStyle.dotted;
                     }
                     case LineStyle.dashedLine:
                     case LineStyle.dotDashedLine: {
-                        return LegendLineStyle.dashed;
+                        return legendInterfaces.LineStyle.dashed;
                     }
                     case LineStyle.solidLine:
                     default: {
-                        return LegendLineStyle.solid;
+                        return legendInterfaces.LineStyle.solid;
                     }
                 }
             }
             case LegendStyle.line: {
-                return LegendLineStyle.solid;
+                return legendInterfaces.LineStyle.solid;
             }
         }
 

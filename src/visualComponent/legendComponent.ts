@@ -24,9 +24,6 @@
  *  THE SOFTWARE.
  */
 
-import { pixelConverter } from "powerbi-visuals-utils-typeutils";
-import { textMeasurementService } from "powerbi-visuals-utils-formattingutils";
-
 import {
     legendInterfaces,
     legend as legendModule,
@@ -103,13 +100,11 @@ export class LegendComponent extends BaseComponent<VisualComponentConstructorOpt
             .map((series: DataRepresentationSeries) => {
                 const dataPoint: legendInterfaces.LegendDataPoint = {
                     color: series.settings.line.fillColor,
-                    icon: legendInterfaces.LegendIcon.Circle,
                     label: series.name,
                     identity: series.identity,
                     selected: series.selected,
-                    // lineStyle: settings.getLegendLineStyle(series.settings.line.lineStyle), // TODO:
-                    // markerShape: settings.getLegendMarkerShape(), // TODO:
-                    // lineColor: series.settings.line.fillColor, // TODO:
+                    lineStyle: settings.getLegendLineStyle(series.settings.line.lineStyle),
+                    markerShape: settings.getLegendMarkerShape(),
                 };
 
                 return dataPoint;
