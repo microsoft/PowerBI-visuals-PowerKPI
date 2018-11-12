@@ -24,13 +24,27 @@
  *  THE SOFTWARE.
  */
 
+import {
+    ScaleQuantize,
+    scaleQuantize,
+    range as d3Range
+} from "d3";
+
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
+import { label as NewLabelUtils } from "powerbi-visuals-utils-chartutils";
+
+import {
+    valueFormatter,
+    textMeasurementService,
+} from "powerbi-visuals-utils-formattingutils";
 
 import { BaseComponent } from "./base/baseComponent";
 import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
 import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 import { DataRepresentationPointFilter } from "../dataRepresentation/dataRepresentationPointFilter";
-import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
+import { DataRepresentationScale } from "../dataRepresentation/dataRepresentationScale";
+import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
+import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 
 export class LabelsComponent extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions>   {
     private className: string = "labelsComponent";
@@ -72,18 +86,22 @@ export class LabelsComponent extends BaseComponent<VisualComponentConstructorOpt
             .classed(this.boldClassName, labels.isBold);
 
         // TODO: Fix label component
-        // const labelLayoutOptions: DataLabelLayoutOptions = LabelUtils.getDataLabelLayoutOptions(null);
+        const labelLayoutOptions: NewLabelUtils.labelLayout.DataLabelLayoutOptions = NewLabelUtils.labelUtils.LabelUtils.getDataLabelLayoutOptions(null);
 
-        // const labelLayout: LabelLayout = new LabelLayout(labelLayoutOptions);
+        const labelLayout: NewLabelUtils.labelLayout.LabelLayout = new NewLabelUtils.labelLayout.LabelLayout(labelLayoutOptions);
 
-        // const labelGroups: LabelDataPointGroup<LabelDataPoint[]>[] = this.getLabelGroups(options);
+        const labelGroups: NewLabelUtils.labelLayout.LabelDataPointGroup<NewLabelUtils.labelLayout.LabelDataPoint[]>[] = this.getLabelGroups(options);
 
-        // const dataLabels: Label[] = labelLayout.layout(labelGroups, viewport);
+        const dataLabels: NewLabelUtils.labelLayout.Label[] = labelLayout.layout(labelGroups, viewport);
 
-        // LabelUtils.drawDefaultLabels(this.element, dataLabels, true);
+        NewLabelUtils.labelUtils.LabelUtils.drawDefaultLabels(this.element, dataLabels, true);
     }
 
-    private getTextProperties(text: string, fontSize: number, fontFamily: string) {
+    private getTextProperties(
+        text: string,
+        fontSize: number,
+        fontFamily: string
+    ): textMeasurementService.TextProperties {
         return {
             text,
             fontFamily,
@@ -91,119 +109,118 @@ export class LabelsComponent extends BaseComponent<VisualComponentConstructorOpt
         };
     }
 
-    // private getLabelGroups(options: VisualComponentRenderOptions): LabelDataPointGroup<LabelDataPoint[]>[] {
-    //     const {
-    //         x,
-    //         series,
-    //         viewport,
-    //         settings: { labels },
+    private getLabelGroups(options: VisualComponentRenderOptions): NewLabelUtils.labelLayout.LabelDataPointGroup<NewLabelUtils.labelLayout.LabelDataPoint[]>[] {
+        const {
+            x,
+            series,
+            viewport,
+            settings: { labels },
 
-    //     } = options.data;
+        } = options.data;
 
-    //     const xScale: DataRepresentationScale = x.scale
-    //         .copy()
-    //         .range([0, viewport.width]);
+        const xScale: DataRepresentationScale = x.scale
+            .copy()
+            .range([0, viewport.width]);
 
-    //     const fontSizeInPx: number = PixelConverter.fromPointToPixel(labels.fontSize);
+        const fontSizeInPx: number = pixelConverter.fromPointToPixel(labels.fontSize);
 
-    //     const pointsLength: number = series
-    //         && series[0]
-    //         && series[0].points
-    //         && series[0].points.length
-    //         || 0;
+        const pointsLength: number = series
+            && series[0]
+            && series[0].points
+            && series[0].points.length
+            || 0;
 
-    //     const lastPointIndex: number = pointsLength - 1;
+        const lastPointIndex: number = pointsLength - 1;
 
-    //     let availableAmountOfLabels: number = LabelUtils.getNumberOfLabelsToRender(
-    //         viewport.width,
-    //         labels.density,
-    //         this.minimumLabelsToRender,
-    //         this.estimatedLabelWidth);
+        let availableAmountOfLabels: number = NewLabelUtils.labelUtils.LabelUtils.getNumberOfLabelsToRender(
+            viewport.width,
+            labels.density,
+            this.minimumLabelsToRender,
+            this.estimatedLabelWidth);
 
-    //     const maxNumberOfLabels: number = Math.round(availableAmountOfLabels * labels.density / 100);
+        const maxNumberOfLabels: number = Math.round(availableAmountOfLabels * labels.density / 100);
 
-    //     const indexScale: D3.Scale.QuantizeScale = d3.scale
-    //         .quantize()
-    //         .domain([0, maxNumberOfLabels])
-    //         .range(d3.range(0, pointsLength, 1));
+        const indexScale: ScaleQuantize<number> = scaleQuantize()
+            .domain([0, maxNumberOfLabels])
+            .range(d3Range(0, pointsLength, 1));
 
-    //     return series.map((currentSeries: DataRepresentationSeries, seriesIndex: number) => {
-    //         const labelDataPoints: LabelDataPoint[] = [];
+        return series.map((currentSeries: DataRepresentationSeries, seriesIndex: number) => {
+            const labelDataPoints: NewLabelUtils.labelLayout.LabelDataPoint[] = [];
 
-    //         const labelDisplayUnits: number = labels.displayUnits || (currentSeries.domain.max as number);
+            const labelDisplayUnits: number = labels.displayUnits || (currentSeries.domain.max as number);
 
-    //         const valueFormatters: IValueFormatter[] = series.map((seriesGroup: DataRepresentationSeries) => {
-    //             return this.getValueFormatter(
-    //                 labelDisplayUnits,
-    //                 labels.precision,
-    //                 seriesGroup.format);
-    //         });
+            const valueFormatters: valueFormatter.IValueFormatter[] = series.map((seriesGroup: DataRepresentationSeries) => {
+                return this.getValueFormatter(
+                    labelDisplayUnits,
+                    labels.precision,
+                    seriesGroup.format);
+            });
 
-    //         const yScale: DataRepresentationScale = currentSeries.y.scale
-    //             .copy()
-    //             .range([viewport.height, 0]);
+            const yScale: DataRepresentationScale = currentSeries.y.scale
+                .copy()
+                .range([viewport.height, 0]);
 
-    //         for (let index: number = 0, previousPointIndex: number = -1; index <= maxNumberOfLabels; index++) {
-    //             const pointIndex: number = indexScale(index);
+            for (let index: number = 0, previousPointIndex: number = -1; index <= maxNumberOfLabels; index++) {
+                const pointIndex: number = indexScale(index);
 
-    //             const point: DataRepresentationPoint = currentSeries.points[pointIndex];
+                const point: DataRepresentationPoint = currentSeries.points[pointIndex];
 
-    //             if (previousPointIndex !== pointIndex && this.pointFilter.isPointValid(point)) {
-    //                 previousPointIndex = pointIndex;
+                if (previousPointIndex !== pointIndex && this.pointFilter.isPointValid(point)) {
+                    previousPointIndex = pointIndex;
 
-    //                 const formattedValue: string = valueFormatters[seriesIndex].format(point.y);
+                    const formattedValue: string = valueFormatters[seriesIndex].format(point.y);
 
-    //                 const textProperties: TextProperties = this.getTextProperties(
-    //                     formattedValue,
-    //                     fontSizeInPx,
-    //                     labels.fontFamily);
+                    const textProperties: textMeasurementService.TextProperties = this.getTextProperties(
+                        formattedValue,
+                        fontSizeInPx,
+                        labels.fontFamily);
 
-    //                 const textWidth: number = TextMeasurementService.measureSvgTextWidth(textProperties);
-    //                 const textHeight: number = TextMeasurementService.estimateSvgTextHeight(textProperties);
+                    const textWidth: number = textMeasurementService.textMeasurementService.measureSvgTextWidth(textProperties);
+                    const textHeight: number = textMeasurementService.textMeasurementService.estimateSvgTextHeight(textProperties);
 
-    //                 let parentShape: LabelParentPoint = {
-    //                     point: {
-    //                         x: xScale.scale(point.x),
-    //                         y: yScale.scale(point.y),
-    //                     },
-    //                     radius: 0,
-    //                     validPositions: [
-    //                         NewPointLabelPosition.Above,
-    //                         NewPointLabelPosition.Below,
-    //                         NewPointLabelPosition.Left,
-    //                         NewPointLabelPosition.Right
-    //                     ]
-    //                 };
+                    let parentShape: NewLabelUtils.labelLayout.LabelParentPoint = {
+                        point: {
+                            x: xScale.scale(point.x),
+                            y: yScale.scale(point.y),
+                        },
+                        radius: 0,
+                        validPositions: [
+                            NewLabelUtils.labelLayout.NewPointLabelPosition.Above,
+                            NewLabelUtils.labelLayout.NewPointLabelPosition.Below,
+                            NewLabelUtils.labelLayout.NewPointLabelPosition.Left,
+                            NewLabelUtils.labelLayout.NewPointLabelPosition.Right
+                        ]
+                    };
 
-    //                 let labelDataPoint: LabelDataPoint = {
-    //                     isPreferred: pointIndex === 0 || pointIndex === lastPointIndex,
-    //                     text: formattedValue,
-    //                     textSize: {
-    //                         width: textWidth,
-    //                         height: textHeight
-    //                     },
-    //                     outsideFill: labels.color,
-    //                     insideFill: labels.color,
-    //                     parentType: LabelDataPointParentType.Point,
-    //                     parentShape: parentShape,
-    //                     fontProperties: {
-    //                         family: labels.fontFamily,
-    //                         color: labels.color,
-    //                         size: FontSize.createFromPt(labels.fontSize)
-    //                     },
-    //                     identity: null
-    //                 };
+                    let labelDataPoint: NewLabelUtils.labelLayout.LabelDataPoint = {
+                        isPreferred: pointIndex === 0 || pointIndex === lastPointIndex,
+                        text: formattedValue,
+                        textSize: {
+                            width: textWidth,
+                            height: textHeight
+                        },
+                        outsideFill: labels.color,
+                        insideFill: labels.color,
+                        parentType: NewLabelUtils.labelLayout.LabelDataPointParentType.Point,
+                        parentShape: parentShape,
+                        fontProperties: {
+                            family: labels.fontFamily,
+                            color: labels.color,
+                            size: NewLabelUtils.units.Units.FontSize.createFromPt(labels.fontSize)
+                        },
+                        identity: null
+                    };
 
-    //                 labelDataPoints.push(labelDataPoint);
-    //             }
-    //         }
+                    labelDataPoints.push(labelDataPoint);
+                }
+            }
 
-    //         return {
-    //             labelDataPoints,
-    //             maxNumberOfLabels: labelDataPoints.length
-    //         };
-    //     });
-    // }
+            return {
+                labelDataPoints,
+                maxNumberOfLabels: labelDataPoints.length
+            };
+        });
+    }
 
     private getValueFormatter(
         displayUnits: number,
