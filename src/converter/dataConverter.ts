@@ -434,7 +434,7 @@ export class DataConverter
                     color = currentKPI && currentKPI.color || color;
                 }
 
-                if (isFinite(value) && (categoryIndex > currentPoint.index || !isFinite(currentPoint.index))) {
+                if (this.isValueFinite(value) && (categoryIndex > currentPoint.index || !isFinite(currentPoint.index))) {
                     currentPoint.x = axisValue;
                     currentPoint.y = value;
                     currentPoint.index = categoryIndex;
@@ -469,6 +469,10 @@ export class DataConverter
             points,
             gradientPoints,
         };
+    }
+
+    public isValueFinite(value: number): boolean {
+        return value != null && isFinite(value);
     }
 
     public postProcess(dataRepresentation: DataRepresentation): void {
