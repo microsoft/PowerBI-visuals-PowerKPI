@@ -85,6 +85,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
 
         this.component = new MainComponent({
             element: this.rootElement,
+            rootElement: this.rootElement,
             eventDispatcher: this.eventDispatcher,
             interactivityService: this.interactivityService,
             tooltipService: options.host.tooltipService,

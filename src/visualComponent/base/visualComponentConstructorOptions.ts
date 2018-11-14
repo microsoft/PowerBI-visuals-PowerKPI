@@ -35,6 +35,7 @@ import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
 
 export interface VisualComponentBaseConstructorOptions {
     element?: Selection<any, any, any, any>;
+    rootElement?: Selection<any, any, any, any>;
 }
 
 export interface VisualComponentConstructorOptions extends VisualComponentBaseConstructorOptions {

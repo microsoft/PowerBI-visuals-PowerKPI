@@ -106,7 +106,10 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
         this.dynamicComponents = [
             new VerticalLineComponent(this.constructorOptions),
             new DotsComponent(this.constructorOptions),
-            new TooltipComponent({ tooltipService: this.constructorOptions.tooltipService }),
+            new TooltipComponent({
+                ...this.constructorOptions,
+                tooltipService: this.constructorOptions.tooltipService
+            }),
         ];
 
         this.bindEvents();

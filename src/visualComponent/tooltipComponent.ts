@@ -29,6 +29,7 @@ import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
 import { VarianceConverter } from "../converter/varianceConverter";
 import { VisualComponent } from "./base/visualComponent";
+import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
 import { EventPositionVisualComponentOptions } from "./eventPositionVisualComponentOptions";
 import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
@@ -38,7 +39,7 @@ import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorD
 import { SeriesSettings } from "../settings/seriesSettings";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
 
-export interface TooltipComponentConstructorOptions {
+export interface TooltipComponentConstructorOptions extends VisualComponentConstructorOptions {
     tooltipService: powerbi.extensibility.ITooltipService;
 }
 
@@ -48,16 +49,14 @@ enum TooltipMarkerShapeEnum {
 }
 
 interface VisualTooltipDataItem extends powerbi.extensibility.VisualTooltipDataItem {
-    lineStyle?: string; // TODO: check if it's supported by PBI API
-    markerShape?: string; // TODO: check if it's supported by PBI API
-    lineColor?: string; // TODO: check if it's supported by PBI API
+    lineStyle?: string; // TODO: Extend PBI API
+    markerShape?: string; // TODO: Extend PBI API
+    lineColor?: string; // TODO: Extend PBI API
 }
 
 export class TooltipComponent
     extends VarianceConverter
     implements VisualComponent<EventPositionVisualComponentOptions> {
-
-    private tooltipService: powerbi.extensibility.ITooltipService;
 
     private varianceDisplayName: string = "Variance";
     private secondVarianceDisplayName: string = `${this.varianceDisplayName} 2`;
@@ -66,14 +65,12 @@ export class TooltipComponent
 
     private transparentColor: string = "rgba(0,0,0,0)";
 
-    constructor(options: TooltipComponentConstructorOptions) {
+    constructor(private constructorOptions: TooltipComponentConstructorOptions) {
         super();
-
-        this.tooltipService = options.tooltipService;
     }
 
     public render(options: EventPositionVisualComponentOptions): void {
-        if (!options.position || !this.tooltipService) {
+        if (!options.position || !this.constructorOptions.tooltipService) {
             return;
         }
 
@@ -212,15 +209,30 @@ export class TooltipComponent
         }
 
         if (dataItems.length) {
-            this.tooltipService.show({
+            this.constructorOptions.tooltipService.show({
                 dataItems,
-                coordinates: [position.x, position.y],
+                coordinates: this.getCoordinates(position.x, position.y),
                 identities: [],
                 isTouchEvent: false,
             });
         } else {
             this.clear();
         }
+    }
+
+    private getCoordinates(x: number, y: number): [number, number] {
+        if (!this.constructorOptions || !this.constructorOptions.rootElement) {
+            return [x, y];
+        }
+
+        const rootNode: HTMLElement = this.constructorOptions.rootElement.node();
+
+        let rect: ClientRect = rootNode.getBoundingClientRect();
+
+        return [
+            x - rect.left - rootNode.clientLeft,
+            y - rect.top - rootNode.clientTop,
+        ];
     }
 
     private getTooltipSeparator(): VisualTooltipDataItem {
@@ -301,11 +313,11 @@ export class TooltipComponent
     }
 
     public clear(): void {
-        if (!this.tooltipService) {
+        if (!this.constructorOptions.tooltipService) {
             return;
         }
 
-        this.tooltipService.hide({
+        this.constructorOptions.tooltipService.hide({
             isTouchEvent: false,
             immediately: true,
         });
@@ -313,7 +325,7 @@ export class TooltipComponent
 
     public destroy(): void {
         this.clear();
-        this.tooltipService = null;
+        this.constructorOptions = null;
     }
 
     public hide(): void {
