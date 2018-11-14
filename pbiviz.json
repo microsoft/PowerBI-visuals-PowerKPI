@@ -14,8 +14,8 @@
     "email": "pbicvsupport@microsoft.com"
   },
   "assets": {
-    "icon": "assets/icon.png"
+    "icon": "./assets/icon.png"
   },
-  "externalJS": [],
-  "capabilities": "capabilities.json"
+  "capabilities": "./capabilities.json",
+  "style": "./styles/styles.less"
 }
