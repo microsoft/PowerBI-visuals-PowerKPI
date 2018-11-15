@@ -30,7 +30,7 @@ import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 import { IMargin } from "powerbi-visuals-utils-svgutils";
 
 import { BaseContainerComponent } from "./base/baseContainerComponent";
-import { VisualComponent } from "./base/visualComponent";
+import { IVisualComponent } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
 
 import {
@@ -67,14 +67,14 @@ export class SvgComponent extends BaseContainerComponent<
     > {
     private className: string = "svgComponent";
 
-    private xAxisReferenceLineComponent: VisualComponent<IAxisReferenceLineBaseComponentRenderOptions>;
-    private yAxisReferenceLineComponent: VisualComponent<IAxisReferenceLineBaseComponentRenderOptions>;
-    private secondaryYAxisReferenceLineComponent: VisualComponent<IAxisReferenceLineBaseComponentRenderOptions>;
+    private xAxisReferenceLineComponent: IVisualComponent<IAxisReferenceLineBaseComponentRenderOptions>;
+    private yAxisReferenceLineComponent: IVisualComponent<IAxisReferenceLineBaseComponentRenderOptions>;
+    private secondaryYAxisReferenceLineComponent: IVisualComponent<IAxisReferenceLineBaseComponentRenderOptions>;
 
-    private chartComponent: VisualComponent<IVisualComponentRenderOptions>;
-    private labelsComponent: VisualComponent<IVisualComponentRenderOptions>;
+    private chartComponent: IVisualComponent<IVisualComponentRenderOptions>;
+    private labelsComponent: IVisualComponent<IVisualComponentRenderOptions>;
 
-    private dynamicComponents: Array<VisualComponent<IVisualComponentRenderOptions | IEventPositionVisualComponentOptions>> = [];
+    private dynamicComponents: Array<IVisualComponent<IVisualComponentRenderOptions | IEventPositionVisualComponentOptions>> = [];
 
     private positions: number[];
 
@@ -355,7 +355,7 @@ export class SvgComponent extends BaseContainerComponent<
 
         this.forEach(
             this.dynamicComponents,
-            (component: VisualComponent<IVisualComponentRenderOptions>) => {
+            (component: IVisualComponent<IVisualComponentRenderOptions>) => {
                 component.render(options);
 
                 if (component.show) {
@@ -415,14 +415,14 @@ export class SvgComponent extends BaseContainerComponent<
     private pointerLeaveHandler(): void {
         this.forEach(
             this.dynamicComponents,
-            (component: VisualComponent<any>) => {
+            (component: IVisualComponent<any>) => {
                 component.hide();
             },
         );
     }
 
     private clickComponentHandler(
-        component: VisualComponent<IVisualComponentRenderOptionsBase>,
+        component: IVisualComponent<IVisualComponentRenderOptionsBase>,
         event: Event,
     ): void {
         if (!this.constructorOptions || !this.constructorOptions.eventDispatcher) {

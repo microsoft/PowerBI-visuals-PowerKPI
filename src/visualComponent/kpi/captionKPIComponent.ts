@@ -31,7 +31,7 @@ import { textMeasurementService } from "powerbi-visuals-utils-formattingutils";
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
-import { VisualComponentViewport } from "../base/visualComponent";
+import { IVisualComponentViewport } from "../base/visualComponent";
 import {
     ICaptionKPIComponentOptions,
     ICaptionKPIComponentOptionsValueSettings,
@@ -126,7 +126,7 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
         this.element = null;
     }
 
-    public getViewport(): VisualComponentViewport {
+    public getViewport(): IVisualComponentViewport {
         if (!this.size) {
             return {
                 height: 0,

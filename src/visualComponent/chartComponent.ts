@@ -25,7 +25,7 @@
  */
 
 import { BaseContainerComponent } from "./base/baseContainerComponent";
-import { VisualComponent } from "./base/visualComponent";
+import { IVisualComponent } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
 import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
@@ -86,7 +86,7 @@ export class ChartComponent extends BaseContainerComponent<
         if (this.shouldRenderFallbackComponents !== shouldRenderFallbackComponents) {
             this.forEach(
                 this.components,
-                (component: VisualComponent<any>) => {
+                (component: IVisualComponent<any>) => {
                     component.destroy();
                 },
             );
@@ -108,7 +108,7 @@ export class ChartComponent extends BaseContainerComponent<
 
         this.forEach(
             this.components,
-            (component: VisualComponent<IDotComponentRenderOptions | IComboComponentRenderOptions>, componentIndex: number) => {
+            (component: IVisualComponent<IDotComponentRenderOptions | IComboComponentRenderOptions>, componentIndex: number) => {
                 const currentSeries: IDataRepresentationSeries = sortedSeries[componentIndex];
 
                 if (this.shouldRenderFallbackComponents) {

@@ -63,20 +63,20 @@ export class DataBuilder extends testDataViewBuilder.TestDataViewBuilder {
             source: {
                 displayName: DataBuilder.CategoryColumnName,
                 format: "%M/%d/yyyy",
-                type: valueType.ValueType.fromDescriptor({ dateTime: true }),
                 roles: { Axis: true },
+                type: valueType.ValueType.fromDescriptor({ dateTime: true }),
             },
             values: this.dates,
         };
 
         const valuesCategory = this.seriesValues.map((values: number[]) => {
             return {
-                values,
                 source: {
                     displayName: DataBuilder.ValuesColumnName,
-                    type: valueType.ValueType.fromDescriptor({ integer: true }),
                     roles: { Values: true },
+                    type: valueType.ValueType.fromDescriptor({ integer: true }),
                 },
+                values,
             };
         });
 

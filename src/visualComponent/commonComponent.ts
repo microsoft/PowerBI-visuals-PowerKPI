@@ -33,8 +33,8 @@ import { IVisualComponentConstructorOptions } from "./base/visualComponentConstr
 import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
 import {
-    VisualComponent,
-    VisualComponentViewport,
+    IVisualComponent,
+    IVisualComponentViewport,
 } from "./base/visualComponent";
 
 import { LayoutToStyleEnum } from "../layout/layoutToStyleEnum";
@@ -73,11 +73,11 @@ export class CommonComponent extends BaseContainerComponent<
     public render(options: IVisualComponentRenderOptions): void {
         this.forEach(
             this.components,
-            (component: VisualComponent<IVisualComponentRenderOptions>) => {
+            (component: IVisualComponent<IVisualComponentRenderOptions>) => {
                 component.render(options);
 
                 if (component.getViewport) {
-                    const viewport: VisualComponentViewport = component.getViewport();
+                    const viewport: IVisualComponentViewport = component.getViewport();
 
                     options.data.viewport.height -= viewport.height;
                     options.data.viewport.width -= viewport.width;

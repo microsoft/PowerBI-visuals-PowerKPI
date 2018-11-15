@@ -26,6 +26,8 @@
 
 import "jasmine-jquery";
 
+import * as $ from "jquery";
+
 import {
     select as d3Select,
 } from "d3-selection";
@@ -42,12 +44,10 @@ import {
     createTooltipService,
     renderTimeout,
     testDom,
-    VisualBuilderBase,
 } from "powerbi-visuals-utils-testutils";
 
-import { PowerKPI } from "../src/visual";
-import { VisualComponent } from "../src/visualComponent/base/visualComponent";
-import { VisualComponentConstructorOptions } from "../src/visualComponent/base/visualComponentConstructorOptions";
+import { IVisualComponent } from "../src/visualComponent/base/visualComponent";
+import { IVisualComponentConstructorOptions } from "../src/visualComponent/base/visualComponentConstructorOptions";
 
 import {
     IDataRepresentationPoint,
@@ -61,12 +61,12 @@ import { IDataRepresentationSeries } from "../src/dataRepresentation/dataReprese
 import { DataRepresentationTypeEnum } from "../src/dataRepresentation/dataRepresentationType";
 import { SeriesSettings } from "../src/settings/seriesSettings";
 import { Settings } from "../src/settings/settings";
-import { EventPositionVisualComponentOptions } from "../src/visualComponent/eventPositionVisualComponentOptions";
+import { IEventPositionVisualComponentOptions } from "../src/visualComponent/eventPositionVisualComponentOptions";
 import { TooltipComponent } from "../src/visualComponent/tooltipComponent";
 
 import {
+    ILineComponentRenderOptions,
     LineComponent,
-    LineComponentRenderOptions,
 } from "../src/visualComponent/combo/lineComponent";
 
 import {
@@ -90,7 +90,7 @@ import { AxisType } from "../src/settings/descriptors/axis/axisDescriptor";
 
 import {
     DotComponent,
-    DotComponentRenderOptions,
+    IDotComponentRenderOptions,
 } from "../src/visualComponent/dotComponent";
 
 import {
@@ -98,15 +98,10 @@ import {
     KPIIndicatorDescriptor,
 } from "../src/settings/descriptors/kpi/kpiIndicatorDescriptor";
 
-import { DataBuilder } from "./dataBuilder";
+import { ComboComponentAreaComponentTest } from "./comboComponentAreaComponentTest";
+import { TestWrapper } from "./testWrapper";
 
 describe("Power KPI", () => {
-    // describe("capabilities", () => {
-    //     it("the capabilities object should be defined", () => {
-    //         expect(require("../capabilities.json")).toBeDefined();
-    //     });
-    // });
-
     describe("DOM", () => {
         it("Root element should be defined in DOM", (done) => {
             const testWrapper: TestWrapper = TestWrapper.create();
@@ -144,74 +139,74 @@ describe("Power KPI", () => {
             const seriesSettings: SeriesSettings = SeriesSettings.getDefault() as SeriesSettings;
 
             const firstPoints: IDataRepresentationPoint[] = [{
+                color: "red",
+                kpiIndex: 0,
                 x: currentDate,
                 y: 100,
-                kpiIndex: 0,
-                color: "red",
             }];
 
             const secondPoints: IDataRepresentationPoint[] = [{
+                color: "green",
+                kpiIndex: 0,
                 x: currentDate,
                 y: 200,
-                kpiIndex: 0,
-                color: "green",
             }];
 
             const thirdPoints: IDataRepresentationPoint[] = [{
+                color: "blue",
+                kpiIndex: 0,
                 x: currentDate,
                 y: 300,
-                kpiIndex: 0,
-                color: "blue",
             }];
 
             const series: IDataRepresentationSeries[] = [
                 {
-                    format: null,
                     current: null,
-                    name: "Series1",
-                    identity: null,
-                    settings: seriesSettings,
-                    points: firstPoints,
+                    domain: null,
+                    format: null,
                     gradientPoints: [{
-                        points: firstPoints,
                         color: firstPoints[0].color,
+                        points: firstPoints,
                     }],
-                    domain: null,
-                    y: null,
                     hasSelection: false,
+                    identity: null,
+                    name: "Series1",
+                    points: firstPoints,
                     selected: false,
+                    settings: seriesSettings,
+                    y: null,
                 },
                 {
-                    format: null,
                     current: null,
-                    name: "Series2",
-                    identity: null,
-                    settings: seriesSettings,
-                    points: secondPoints,
+                    domain: null,
+                    format: null,
                     gradientPoints: [{
-                        points: secondPoints,
                         color: secondPoints[0].color,
+                        points: secondPoints,
                     }],
-                    domain: null,
-                    y: null,
                     hasSelection: false,
+                    identity: null,
+                    name: "Series2",
+                    points: secondPoints,
                     selected: false,
+                    settings: seriesSettings,
+                    y: null,
                 },
                 {
-                    format: null,
                     current: null,
-                    name: "Series3",
-                    identity: null,
-                    settings: seriesSettings,
-                    points: thirdPoints,
-                    gradientPoints: [{
-                        points: thirdPoints,
-                        color: thirdPoints[0].color,
-                    }],
                     domain: null,
-                    y: null,
+                    format: null,
+                    gradientPoints: [{
+                        color: thirdPoints[0].color,
+                        points: thirdPoints,
+                    }],
                     hasSelection: false,
+                    identity: null,
+                    name: "Series3",
+                    points: thirdPoints,
                     selected: false,
+                    settings: seriesSettings,
+                    y: null,
                 },
             ];
 
@@ -222,16 +217,14 @@ describe("Power KPI", () => {
 
             const settings: Settings = Settings.getDefault() as Settings;
 
-            const options: EventPositionVisualComponentOptions = {
-                position,
+            const options: IEventPositionVisualComponentOptions = {
                 data: {
                     series,
-                    variances,
                     settings,
-                    x: {
-                        axisType: DataRepresentationTypeEnum.DateType,
-                    } as IDataRepresentationX,
+                    variances,
+                    x: { axisType: DataRepresentationTypeEnum.DateType } as IDataRepresentationX,
                 } as IDataRepresentation,
+                position,
             };
 
             tooltipComponent.render(options);
@@ -296,28 +289,28 @@ describe("Power KPI", () => {
         it("a single line should be rendered if all of points have the same color", () => {
             const points: IDataRepresentationPoint[] = [
                 {
+                    color: "green",
+                    kpiIndex: undefined,
                     x: new Date(2000, 1, 1),
                     y: 0,
-                    kpiIndex: undefined,
-                    color: "green",
                 },
                 {
+                    color: "green",
+                    kpiIndex: undefined,
                     x: new Date(2001, 1, 1),
                     y: 100,
-                    kpiIndex: undefined,
-                    color: "green",
                 },
                 {
+                    color: "green",
+                    kpiIndex: undefined,
                     x: new Date(2002, 1, 1),
                     y: 1000,
-                    kpiIndex: undefined,
-                    color: "green",
                 },
                 {
+                    color: "green",
+                    kpiIndex: undefined,
                     x: new Date(2003, 1, 1),
                     y: 10000,
-                    kpiIndex: undefined,
-                    color: "green",
                 },
             ];
 
@@ -329,28 +322,28 @@ describe("Power KPI", () => {
         it("two lines should be rendered if points have two different colors", () => {
             const points: IDataRepresentationPoint[] = [
                 {
+                    color: "green",
+                    kpiIndex: undefined,
                     x: new Date(2000, 1, 1),
                     y: 0,
-                    kpiIndex: undefined,
-                    color: "green",
                 },
                 {
+                    color: "green",
+                    kpiIndex: undefined,
                     x: new Date(2001, 1, 1),
                     y: 100,
-                    kpiIndex: undefined,
-                    color: "green",
                 },
                 {
+                    color: "blue",
+                    kpiIndex: undefined,
                     x: new Date(2002, 1, 1),
                     y: 1000,
-                    kpiIndex: undefined,
-                    color: "blue",
                 },
                 {
+                    color: "blue",
+                    kpiIndex: undefined,
                     x: new Date(2003, 1, 1),
                     y: 10000,
-                    kpiIndex: undefined,
-                    color: "blue",
                 },
             ];
 
@@ -359,7 +352,7 @@ describe("Power KPI", () => {
             expect(element.selectAll(".powerKpi_lineComponent_line").nodes().length).toBe(2);
         });
 
-        function createLineComponent(options: VisualComponentConstructorOptions): LineComponent {
+        function createLineComponent(options: IVisualComponentConstructorOptions): LineComponent {
             return new LineComponent(options);
         }
     });
@@ -368,28 +361,28 @@ describe("Power KPI", () => {
         it("a single area should be rendered if all of points have the same color", () => {
             const points: IDataRepresentationPoint[] = [
                 {
+                    color: "green",
+                    kpiIndex: undefined,
                     x: new Date(2000, 1, 1),
                     y: 0,
-                    kpiIndex: undefined,
-                    color: "green",
                 },
                 {
+                    color: "green",
+                    kpiIndex: undefined,
                     x: new Date(2001, 1, 1),
                     y: 100,
-                    kpiIndex: undefined,
-                    color: "green",
                 },
                 {
+                    color: "green",
+                    kpiIndex: undefined,
                     x: new Date(2002, 1, 1),
                     y: 1000,
-                    kpiIndex: undefined,
-                    color: "green",
                 },
                 {
+                    color: "green",
+                    kpiIndex: undefined,
                     x: new Date(2003, 1, 1),
                     y: 10000,
-                    kpiIndex: undefined,
-                    color: "green",
                 },
             ];
 
@@ -401,28 +394,28 @@ describe("Power KPI", () => {
         it("two areas should be rendered if points have two different colors", () => {
             const points: IDataRepresentationPoint[] = [
                 {
+                    color: "green",
+                    kpiIndex: undefined,
                     x: new Date(2000, 1, 1),
                     y: 0,
-                    kpiIndex: undefined,
-                    color: "green",
                 },
                 {
+                    color: "green",
+                    kpiIndex: undefined,
                     x: new Date(2001, 1, 1),
                     y: 100,
-                    kpiIndex: undefined,
-                    color: "green",
                 },
                 {
+                    color: "blue",
+                    kpiIndex: undefined,
                     x: new Date(2002, 1, 1),
                     y: 1000,
-                    kpiIndex: undefined,
-                    color: "blue",
                 },
                 {
+                    color: "blue",
+                    kpiIndex: undefined,
                     x: new Date(2003, 1, 1),
                     y: 10000,
-                    kpiIndex: undefined,
-                    color: "blue",
                 },
             ];
 
@@ -431,7 +424,7 @@ describe("Power KPI", () => {
             expect(element.selectAll(".powerKpi_areaComponent_area").nodes().length).toBe(2);
         });
 
-        function createAreaComponent(options: VisualComponentConstructorOptions): AreaComponent {
+        function createAreaComponent(options: IVisualComponentConstructorOptions): AreaComponent {
             return new AreaComponent(options);
         }
     });
@@ -439,24 +432,24 @@ describe("Power KPI", () => {
     describe("DotComponent", () => {
         it("should render a single dot", () => {
             const viewport: powerbi.IViewport = {
-                width: 500,
                 height: 500,
+                width: 500,
             };
 
             const element = createElement(viewport);
 
             const point: IDataRepresentationPoint = {
+                color: "green",
+                kpiIndex: 0,
                 x: new Date(2015, 5, 5),
                 y: 100,
-                kpiIndex: 0,
-                color: "green",
             };
 
-            const dotComponentRenderOptions: DotComponentRenderOptions = {
+            const dotComponentRenderOptions: IDotComponentRenderOptions = {
                 point,
-                viewport,
-                thickness: 1,
                 radiusFactor: 1,
+                thickness: 1,
+                viewport,
                 x: DataRepresentationScale
                     .create()
                     .domain(
@@ -485,8 +478,8 @@ describe("Power KPI", () => {
 
         beforeEach(() => {
             viewport = {
-                width: 500,
                 height: 500,
+                width: 500,
             };
 
             element = createElement(viewport);
@@ -496,14 +489,14 @@ describe("Power KPI", () => {
             const comboComponent: ComboComponent = new ComboComponentLineComponentTest({ element });
 
             comboComponent.render({
-                viewport,
-                lineType: LineType.line,
                 areaOpacity: 1,
                 gradientPoints: [],
                 interpolation: LineInterpolation.linear,
                 lineStyle: LineStyle.solidLine,
+                lineType: LineType.line,
                 opacity: 1,
                 thickness: 1,
+                viewport,
                 x: DataRepresentationScale.create(),
                 y: DataRepresentationScale.create(),
             });
@@ -511,15 +504,15 @@ describe("Power KPI", () => {
 
         class ComboComponentLineComponentTest extends ComboComponent {
             protected forEach<ComponentsRenderOptions>(
-                components: Array<VisualComponent<ComponentsRenderOptions>>,
+                components: Array<IVisualComponent<ComponentsRenderOptions>>,
                 iterator: (
-                    component: VisualComponent<ComponentsRenderOptions>,
+                    component: IVisualComponent<ComponentsRenderOptions>,
                     index: number,
                 ) => void,
             ): void {
                 super.forEach(
                     components,
-                    (component: VisualComponent<ComponentsRenderOptions>, componentIndex: number) => {
+                    (component: IVisualComponent<ComponentsRenderOptions>, componentIndex: number) => {
                         expect(component instanceof LineComponent).toBeTruthy();
 
                         iterator(component, componentIndex);
@@ -531,36 +524,18 @@ describe("Power KPI", () => {
             const comboComponent: ComboComponent = new ComboComponentAreaComponentTest({ element });
 
             comboComponent.render({
-                viewport,
-                lineType: LineType.area,
                 areaOpacity: 1,
                 gradientPoints: [],
                 interpolation: LineInterpolation.linear,
                 lineStyle: LineStyle.solidLine,
+                lineType: LineType.area,
                 opacity: 1,
                 thickness: 1,
+                viewport,
                 x: DataRepresentationScale.create(),
                 y: DataRepresentationScale.create(),
             });
         });
-
-        class ComboComponentAreaComponentTest extends ComboComponent {
-            protected forEach<ComponentsRenderOptions>(
-                components: Array<VisualComponent<ComponentsRenderOptions>>,
-                iterator: (
-                    component: VisualComponent<ComponentsRenderOptions>,
-                    index: number,
-                ) => void,
-            ): void {
-                super.forEach(
-                    components,
-                    (component: VisualComponent<ComponentsRenderOptions>, componentIndex: number) => {
-                        expect(component instanceof AreaComponent).toBeTruthy();
-
-                        iterator(component, componentIndex);
-                    });
-            }
-        }
     });
 
     function createElement(viewport: powerbi.IViewport) {
@@ -572,16 +547,16 @@ describe("Power KPI", () => {
 
     function renderLineBasedComponent(
         points: IDataRepresentationPoint[],
-        createComponent: (options: VisualComponentConstructorOptions) => VisualComponent<LineComponentRenderOptions>,
+        createComponent: (options: IVisualComponentConstructorOptions) => IVisualComponent<ILineComponentRenderOptions>,
     ) {
         const viewport: powerbi.IViewport = {
-            width: 500,
             height: 500,
+            width: 500,
         };
 
         const element = createElement(viewport);
 
-        const lineComponent: VisualComponent<LineComponentRenderOptions> = createComponent({ element });
+        const lineComponent: IVisualComponent<ILineComponentRenderOptions> = createComponent({ element });
 
         const dates: Date[] = [];
         const values: number[] = [];
@@ -598,12 +573,12 @@ describe("Power KPI", () => {
         });
 
         lineComponent.render({
-            viewport,
-            opacity: 1,
-            thickness: 1,
-            lineStyle: LineStyle.solidLine,
             gradientPoints,
             interpolation: LineInterpolation.linear,
+            lineStyle: LineStyle.solidLine,
+            opacity: 1,
+            thickness: 1,
+            viewport,
             x: DataRepresentationScale
                 .create()
                 .domain([dates[0], dates[dates.length - 1]], DataRepresentationTypeEnum.DateType),
@@ -633,37 +608,37 @@ describe("Power KPI", () => {
 
             it("should return false if point.y is undefined", () => {
                 expect(dataRepresentationPointFilter.isPointValid({
+                    color: undefined,
+                    kpiIndex: undefined,
                     x: undefined,
                     y: undefined,
-                    color: undefined,
-                    kpiIndex: undefined,
                 })).toBeFalsy();
             });
 
             it("should return false if point.y is null", () => {
                 expect(dataRepresentationPointFilter.isPointValid({
+                    color: undefined,
+                    kpiIndex: undefined,
                     x: undefined,
                     y: null,
-                    color: undefined,
-                    kpiIndex: undefined,
                 })).toBeFalsy();
             });
 
             it("should return false if point.y is null", () => {
                 expect(dataRepresentationPointFilter.isPointValid({
-                    x: undefined,
-                    y: NaN,
                     color: undefined,
                     kpiIndex: undefined,
+                    x: undefined,
+                    y: NaN,
                 })).toBeFalsy();
             });
 
             it("should return true if point.y is a valid number", () => {
                 expect(dataRepresentationPointFilter.isPointValid({
-                    x: undefined,
-                    y: 123,
                     color: undefined,
                     kpiIndex: undefined,
+                    x: undefined,
+                    y: 123,
                 })).toBeTruthy();
             });
         });
@@ -680,10 +655,10 @@ describe("Power KPI", () => {
                     dataRepresentationPointFilter.groupPointByColor(
                         undefined,
                         {
+                            color: undefined,
+                            kpiIndex: undefined,
                             x: undefined,
                             y: 123,
-                            kpiIndex: undefined,
-                            color: undefined,
                         },
                         false,
                     );
@@ -693,16 +668,16 @@ describe("Power KPI", () => {
             it("should return an array with an element if there're two points with the same color", () => {
                 const points: IDataRepresentationPoint[] = [
                     {
+                        color: "green",
+                        kpiIndex: 0,
                         x: new Date(),
                         y: 123,
-                        kpiIndex: 0,
-                        color: "green",
                     },
                     {
+                        color: "green",
+                        kpiIndex: 1,
                         x: new Date(),
                         y: 125,
-                        kpiIndex: 1,
-                        color: "green",
                     },
                 ];
 
@@ -712,16 +687,16 @@ describe("Power KPI", () => {
             it("should return an array with two elements if there're two points with the different colors", () => {
                 const points: IDataRepresentationPoint[] = [
                     {
+                        color: "green",
+                        kpiIndex: 0,
                         x: new Date(),
                         y: 123,
-                        kpiIndex: 0,
-                        color: "green",
                     },
                     {
+                        color: "blue",
+                        kpiIndex: 1,
                         x: new Date(),
                         y: 125,
-                        kpiIndex: 1,
-                        color: "blue",
                     },
                 ];
 
@@ -734,15 +709,15 @@ describe("Power KPI", () => {
                 const points: IDataRepresentationPoint[] = [
                     {
                         color,
+                        kpiIndex: 0,
                         x: new Date(),
                         y: 123,
-                        kpiIndex: 0,
                     },
                     {
                         color,
+                        kpiIndex: 1,
                         x: new Date(),
                         y: 125,
-                        kpiIndex: 1,
                     },
                 ];
 
@@ -756,15 +731,15 @@ describe("Power KPI", () => {
                 const points: IDataRepresentationPoint[] = [
                     {
                         color: firstColor,
+                        kpiIndex: 0,
                         x: new Date(),
                         y: 123,
-                        kpiIndex: 0,
                     },
                     {
                         color: secondColor,
+                        kpiIndex: 1,
                         x: new Date(),
                         y: 125,
-                        kpiIndex: 1,
                     },
                 ];
 
@@ -778,15 +753,15 @@ describe("Power KPI", () => {
                 const points: IDataRepresentationPoint[] = [
                     {
                         color: firstColor,
+                        kpiIndex: 0,
                         x: new Date(),
                         y: 123,
-                        kpiIndex: 0,
                     },
                     {
                         color: secondColor,
+                        kpiIndex: 1,
                         x: new Date(),
                         y: 125,
-                        kpiIndex: 1,
                     },
                 ];
 
@@ -872,36 +847,38 @@ describe("Power KPI", () => {
     });
 
     describe("DataConverter", () => {
-        it("dataRepresentation.x.type must be changed to DataRepresentationTypeEnum.StringType if XAxis.type is AxisType.categorical", () => {
-            const testWrapper: TestWrapper = TestWrapper.create();
+        it(
+            "dataRepresentation.x.type must be changed to DataRepresentationTypeEnum.StringType if XAxis.type is AxisType.categorical",
+            () => {
+                const testWrapper: TestWrapper = TestWrapper.create();
 
-            const dataView: powerbi.DataView = testWrapper.dataView;
+                const dataView: powerbi.DataView = testWrapper.dataView;
 
-            dataView.metadata.objects = {
-                xAxis: {
-                    type: AxisType.categorical,
-                },
-            };
+                dataView.metadata.objects = {
+                    xAxis: {
+                        type: AxisType.categorical,
+                    },
+                };
 
-            const dataConverter: DataConverter = new DataConverter({
-                createSelectionIdBuilder,
-                colorPalette: createColorPalette(),
+                const dataConverter: DataConverter = new DataConverter({
+                    colorPalette: createColorPalette(),
+                    createSelectionIdBuilder,
+                });
+
+                const dataRepresentation: IDataRepresentation = dataConverter.convert({
+                    dataView,
+                    hasSelection: false,
+                    viewport: { width: 100, height: 100 },
+                });
+
+                expect(dataRepresentation.x.axisType).toBe(DataRepresentationTypeEnum.StringType);
             });
-
-            const dataRepresentation: IDataRepresentation = dataConverter.convert({
-                dataView,
-                viewport: { width: 100, height: 100 },
-                hasSelection: false,
-            });
-
-            expect(dataRepresentation.x.axisType).toBe(DataRepresentationTypeEnum.StringType);
-        });
 
         describe("isValueFinite", () => {
             it("should return false if value is null", () => {
                 const dataConverter: DataConverter = new DataConverter({
-                    createSelectionIdBuilder,
                     colorPalette: createColorPalette(),
+                    createSelectionIdBuilder,
                 });
 
                 expect(dataConverter.isValueFinite(null)).toBeFalsy();
@@ -909,8 +886,8 @@ describe("Power KPI", () => {
 
             it("should return true if value is a valid number", () => {
                 const dataConverter: DataConverter = new DataConverter({
-                    createSelectionIdBuilder,
                     colorPalette: createColorPalette(),
+                    createSelectionIdBuilder,
                 });
 
                 expect(dataConverter.isValueFinite(5)).toBeTruthy();
@@ -918,41 +895,3 @@ describe("Power KPI", () => {
         });
     });
 });
-
-class TestWrapper {
-
-    public static create(): TestWrapper {
-        return new TestWrapper();
-    }
-    public dataView: powerbi.DataView;
-    public dataViewBuilder: DataBuilder;
-    public visualBuilder: PowerKPIBuilder;
-
-    constructor(width: number = 1024, height: number = 768) {
-        this.visualBuilder = new PowerKPIBuilder(width, height);
-        this.dataViewBuilder = new DataBuilder();
-
-        this.dataView = this.dataViewBuilder.getDataView();
-    }
-}
-
-class PowerKPIBuilder extends VisualBuilderBase<PowerKPI> {
-    constructor(width: number, height: number) {
-        super(width, height);
-    }
-
-    protected build(): PowerKPI {
-        return new PowerKPI({
-            element: this.element.get(0),
-            host: this.visualHost,
-        });
-    }
-
-    public get instance(): PowerKPI {
-        return this.visual;
-    }
-
-    public get $root(): JQuery {
-        return this.element.children(".powerKpi_powerKPI");
-    }
-}

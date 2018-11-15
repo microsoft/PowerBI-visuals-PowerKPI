@@ -33,7 +33,7 @@ import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 import { SubtitleDescriptor } from "../settings/descriptors/subtitleDescriptor";
 import { BaseComponent } from "./base/baseComponent";
-import { VisualComponentViewport } from "./base/visualComponent";
+import { IVisualComponentViewport } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
 import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
@@ -82,8 +82,8 @@ export class SubtitleComponent extends BaseComponent<IVisualComponentConstructor
             .remove();
     }
 
-    public getViewport(): VisualComponentViewport {
-        const viewport: VisualComponentViewport = {
+    public getViewport(): IVisualComponentViewport {
+        const viewport: IVisualComponentViewport = {
             height: 0,
             width: 0,
         };

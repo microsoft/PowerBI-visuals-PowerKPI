@@ -33,7 +33,7 @@ import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
 import { BaseComponent } from "./base/baseComponent";
-import { VisualComponentViewport } from "./base/visualComponent";
+import { IVisualComponentViewport } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
 import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
@@ -88,7 +88,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
         super.destroy();
     }
 
-    public getViewport(): VisualComponentViewport {
+    public getViewport(): IVisualComponentViewport {
         if (!this.legend || !this.isShown) {
             return {
                 height: 0,

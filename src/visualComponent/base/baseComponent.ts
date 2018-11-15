@@ -45,13 +45,13 @@ import {
 } from "./visualComponentConstructorOptions";
 
 import {
-    VisualComponent,
-    VisualComponentViewport,
+    IVisualComponent,
+    IVisualComponentViewport,
 } from "./visualComponent";
 
 export abstract class BaseComponent<ConstructorOptionsType
     extends IVisualComponentConstructorOptions, RenderOptionsType>
-    implements VisualComponent<RenderOptionsType> {
+    implements IVisualComponent<RenderOptionsType> {
 
     public get isShown(): boolean {
         return this.isComponentShown;
@@ -156,7 +156,7 @@ export abstract class BaseComponent<ConstructorOptionsType
         this.updateSizeOfElement(this.width, this.height);
     }
 
-    public getViewport(): VisualComponentViewport {
+    public getViewport(): IVisualComponentViewport {
         return {
             height: this.height,
             width: this.width,

@@ -1,4 +1,4 @@
-/**
+/*
  *  Power BI Visualizations
  *
  *  Copyright (c) Microsoft Corporation
@@ -24,8 +24,27 @@
  *  THE SOFTWARE.
  */
 
-import { IVisualComponent } from "../base/visualComponent";
+import { VisualBuilderBase } from "powerbi-visuals-utils-testutils";
 
-export interface IKPIVisualComponent<RenderOptions> extends IVisualComponent<RenderOptions> {
-    isRendered(): boolean;
+import { PowerKPI } from "../src/visual";
+
+export class VisualBuilder extends VisualBuilderBase<PowerKPI> {
+    constructor(width: number, height: number) {
+        super(width, height);
+    }
+
+    protected build(): PowerKPI {
+        return new PowerKPI({
+            element: this.element.get(0),
+            host: this.visualHost,
+        });
+    }
+
+    public get instance(): PowerKPI {
+        return this.visual;
+    }
+
+    public get $root(): JQuery {
+        return this.element.children(".powerKpi_powerKPI");
+    }
 }

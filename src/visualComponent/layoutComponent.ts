@@ -28,8 +28,8 @@ import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 import { BaseContainerComponent } from "./base/baseContainerComponent";
 import {
-    VisualComponent,
-    VisualComponentViewport,
+    IVisualComponent,
+    IVisualComponentViewport,
 } from "./base/visualComponent";
 
 import { LayoutEnum } from "../layout/layoutEnum";
@@ -85,11 +85,11 @@ export class LayoutComponent extends BaseContainerComponent<
 
         this.forEach(
             this.components,
-            (component: VisualComponent<IVisualComponentRenderOptions>) => {
+            (component: IVisualComponent<IVisualComponentRenderOptions>) => {
                 component.render(options);
 
                 if (component.getViewport) {
-                    const margins: VisualComponentViewport = component.getViewport();
+                    const margins: IVisualComponentViewport = component.getViewport();
 
                     options.data.viewport.height -= margins.height;
                     options.data.viewport.width -= margins.width;

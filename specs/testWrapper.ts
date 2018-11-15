@@ -1,4 +1,4 @@
-/**
+/*
  *  Power BI Visualizations
  *
  *  Copyright (c) Microsoft Corporation
@@ -24,8 +24,24 @@
  *  THE SOFTWARE.
  */
 
-import { IVisualComponent } from "../base/visualComponent";
+import powerbi from "powerbi-visuals-api";
 
-export interface IKPIVisualComponent<RenderOptions> extends IVisualComponent<RenderOptions> {
-    isRendered(): boolean;
+import { DataBuilder } from "./dataBuilder";
+import { VisualBuilder } from "./visualBuilder";
+
+export class TestWrapper {
+    public static create(): TestWrapper {
+        return new TestWrapper();
+    }
+
+    public dataView: powerbi.DataView;
+    public dataViewBuilder: DataBuilder;
+    public visualBuilder: VisualBuilder;
+
+    constructor(width: number = 1024, height: number = 768) {
+        this.visualBuilder = new VisualBuilder(width, height);
+        this.dataViewBuilder = new DataBuilder();
+
+        this.dataView = this.dataViewBuilder.getDataView();
+    }
 }

@@ -35,7 +35,7 @@ import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorD
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
 import { TooltipLabelDescriptor } from "../settings/descriptors/tooltip/tooltipLabelDescriptor";
 import { SeriesSettings } from "../settings/seriesSettings";
-import { VisualComponent } from "./base/visualComponent";
+import { IVisualComponent } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
 import { IEventPositionVisualComponentOptions } from "./eventPositionVisualComponentOptions";
 
@@ -56,7 +56,7 @@ interface IVisualTooltipDataItem extends powerbi.extensibility.VisualTooltipData
 
 export class TooltipComponent
     extends VarianceConverter
-    implements VisualComponent<IEventPositionVisualComponentOptions> {
+    implements IVisualComponent<IEventPositionVisualComponentOptions> {
 
     private varianceDisplayName: string = "Variance";
     private secondVarianceDisplayName: string = `${this.varianceDisplayName} 2`;

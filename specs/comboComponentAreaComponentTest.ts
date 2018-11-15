@@ -1,4 +1,4 @@
-/**
+/*
  *  Power BI Visualizations
  *
  *  Copyright (c) Microsoft Corporation
@@ -24,8 +24,25 @@
  *  THE SOFTWARE.
  */
 
-import { IVisualComponent } from "../base/visualComponent";
+import { AreaComponent } from "../src/visualComponent/combo/areaComponent";
+import { ComboComponent } from "../src/visualComponent/combo/comboComponent";
 
-export interface IKPIVisualComponent<RenderOptions> extends IVisualComponent<RenderOptions> {
-    isRendered(): boolean;
+import { IVisualComponent } from "../src/visualComponent/base/visualComponent";
+
+export class ComboComponentAreaComponentTest extends ComboComponent {
+    protected forEach<ComponentsRenderOptions>(
+        components: Array<IVisualComponent<ComponentsRenderOptions>>,
+        iterator: (
+            component: IVisualComponent<ComponentsRenderOptions>,
+            index: number,
+        ) => void,
+    ): void {
+        super.forEach(
+            components,
+            (component: IVisualComponent<ComponentsRenderOptions>, componentIndex: number) => {
+                expect(component instanceof AreaComponent).toBeTruthy();
+
+                iterator(component, componentIndex);
+            });
+    }
 }

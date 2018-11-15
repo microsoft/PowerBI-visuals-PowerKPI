@@ -35,7 +35,7 @@ import {
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
 
 import { DataRepresentationScale } from "../../dataRepresentation/dataRepresentationScale";
-import { VisualComponent } from "../base/visualComponent";
+import { IVisualComponent } from "../base/visualComponent";
 import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 
 import {
@@ -46,8 +46,8 @@ import {
 import { LineInterpolation } from "../../settings/descriptors/lineDescriptor";
 
 import {
-    LineComponent,
     ILineComponentRenderOptions,
+    LineComponent,
 } from "./lineComponent";
 
 export interface IAreaComponentRenderOptions extends ILineComponentRenderOptions {
@@ -56,7 +56,7 @@ export interface IAreaComponentRenderOptions extends ILineComponentRenderOptions
 
 export class AreaComponent
     extends LineComponent
-    implements VisualComponent<ILineComponentRenderOptions> {
+    implements IVisualComponent<ILineComponentRenderOptions> {
 
     private additionalClassName: string = "areaComponent";
     private areaSelector: CssConstants.ClassAndSelector = this.getSelectorWithPrefix(`${this.additionalClassName}_area`);

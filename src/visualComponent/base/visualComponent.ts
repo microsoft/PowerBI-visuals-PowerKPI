@@ -26,20 +26,20 @@
 
 import powerbi from "powerbi-visuals-api";
 
-export interface VisualComponentViewport extends powerbi.IViewport {
+export interface IVisualComponentViewport extends powerbi.IViewport {
     height2?: number;
     width2?: number;
 }
 
-export interface VisualComponent<RenderOptionsType> {
-    render(options: RenderOptionsType): void;
+export interface IVisualComponent<RenderOptionsType> {
+    isShown?: boolean;
     clear(): void;
     destroy(): void;
+    getRenderOptions?(): RenderOptionsType;
+    getViewport?(): IVisualComponentViewport;
     hide?(): void;
+    highlight?(hasSelection: boolean): void;
+    render(options: RenderOptionsType): void;
     show?(): void;
     toggle?(): void;
-    isShown?: boolean;
-    getViewport?(): VisualComponentViewport;
-    getRenderOptions?(): RenderOptionsType;
-    highlight?(hasSelection: boolean): void;
 }

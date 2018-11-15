@@ -41,7 +41,7 @@ import { IDataRepresentationX } from "../../dataRepresentation/dataRepresentatio
 import { DataRepresentationAxisValueType } from "../../dataRepresentation/dataRepresentationAxisValueType";
 import { DataRepresentationTypeEnum } from "../../dataRepresentation/dataRepresentationType";
 import { AxisDescriptor } from "../../settings/descriptors/axis/axisDescriptor";
-import { VisualComponentViewport } from "../base/visualComponent";
+import { IVisualComponentViewport } from "../base/visualComponent";
 import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 
 import { createAxis } from "./helpers/axisHelper";
@@ -225,7 +225,7 @@ export class XAxisComponent
         this.gElement.call(this.axisProperties.axis);
     }
 
-    public getViewport(): VisualComponentViewport {
+    public getViewport(): IVisualComponentViewport {
         if (!this.isShown) {
             return {
                 height: 0,

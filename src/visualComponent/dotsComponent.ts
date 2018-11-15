@@ -27,7 +27,7 @@
 import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { BaseContainerComponent } from "./base/baseContainerComponent";
-import { VisualComponent } from "./base/visualComponent";
+import { IVisualComponent } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
 import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
@@ -76,7 +76,7 @@ export class DotsComponent extends BaseContainerComponent<
 
         this.forEach(
             this.components,
-            (component: VisualComponent<IDotComponentRenderOptions>, componentIndex: number) => {
+            (component: IVisualComponent<IDotComponentRenderOptions>, componentIndex: number) => {
                 const currentSeries: IDataRepresentationSeries = series[componentIndex];
 
                 const point: IDataRepresentationPoint = currentSeries.points

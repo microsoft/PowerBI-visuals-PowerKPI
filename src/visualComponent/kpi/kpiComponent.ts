@@ -36,7 +36,7 @@ import { LayoutToStyleEnum } from "../../layout/layoutToStyleEnum";
 import { LayoutDescriptor } from "../../settings/descriptors/layoutDescriptor";
 import { LegendDescriptor } from "../../settings/descriptors/legendDescriptor";
 import { BaseContainerComponent } from "../base/baseContainerComponent";
-import { VisualComponentViewport } from "../base/visualComponent";
+import { IVisualComponentViewport } from "../base/visualComponent";
 import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 import { IVisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
 import { DateKPIComponent } from "./dateKPIComponent";
@@ -105,7 +105,7 @@ export class KPIComponent extends BaseContainerComponent<
             }
 
             if (component.getViewport) {
-                const margins: VisualComponentViewport = component.getViewport();
+                const margins: IVisualComponentViewport = component.getViewport();
 
                 switch (this.layout) {
                     case LayoutEnum.Left:
@@ -134,8 +134,8 @@ export class KPIComponent extends BaseContainerComponent<
      *
      * To fix this issue plotComponent is hidden by default.
      */
-    public getViewport(): VisualComponentViewport {
-        const viewport: VisualComponentViewport = {
+    public getViewport(): IVisualComponentViewport {
+        const viewport: IVisualComponentViewport = {
             height: 0,
             width: 0,
         };

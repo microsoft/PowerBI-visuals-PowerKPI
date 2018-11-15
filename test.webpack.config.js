@@ -13,7 +13,8 @@ module.exports = {
                     loader: 'tslint-loader',
                     options: {
                         emitErrors: true,
-                        fix: true
+                        failOnHint: true,
+                        fix: false
                     }
                 }]
             },

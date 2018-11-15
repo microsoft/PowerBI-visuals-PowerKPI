@@ -39,7 +39,7 @@ import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 import { IDataRepresentationAxis } from "../../dataRepresentation/dataRepresentationAxis";
 import { YAxisDescriptor } from "../../settings/descriptors/axis/yAxisDescriptor";
-import { VisualComponentViewport } from "../base/visualComponent";
+import { IVisualComponentViewport } from "../base/visualComponent";
 import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 
 import { createAxis } from "./helpers/axisHelper";
@@ -200,7 +200,7 @@ export class YAxisComponent
         this.gElement.call(this.axisProperties.axis);
     }
 
-    public getViewport(): VisualComponentViewport {
+    public getViewport(): IVisualComponentViewport {
         if (!this.isShown) {
             return {
                 height: 0,

@@ -25,17 +25,17 @@
  */
 
 import { BaseComponent } from "./baseComponent";
-import { VisualComponent } from "./visualComponent";
+import { IVisualComponent } from "./visualComponent";
 
 export abstract class BaseContainerComponent<ConstructorOptionsType, RenderOptionsType, ComponentsRenderOptionsType>
     extends BaseComponent<ConstructorOptionsType, RenderOptionsType> {
 
-    protected components: Array<VisualComponent<ComponentsRenderOptionsType>> = [];
+    protected components: Array<IVisualComponent<ComponentsRenderOptionsType>> = [];
 
-    public clear(components: Array<VisualComponent<ComponentsRenderOptionsType>> = this.components): void {
+    public clear(components: Array<IVisualComponent<ComponentsRenderOptionsType>> = this.components): void {
         this.forEach(
             components,
-            (component: VisualComponent<ComponentsRenderOptionsType>) => {
+            (component: IVisualComponent<ComponentsRenderOptionsType>) => {
                 component.clear();
             },
         );
@@ -43,37 +43,37 @@ export abstract class BaseContainerComponent<ConstructorOptionsType, RenderOptio
         super.clear();
     }
 
-    public destroy(components: Array<VisualComponent<any>> = this.components): void {
+    public destroy(components: Array<IVisualComponent<any>> = this.components): void {
         this.destroyComponents(components);
 
         super.destroy();
     }
 
-    public highlight(hasSelection: boolean, components: Array<VisualComponent<ComponentsRenderOptionsType>> = this.components): void {
-        this.forEach(components, (component: VisualComponent<ComponentsRenderOptionsType>) => {
+    public highlight(hasSelection: boolean, components: Array<IVisualComponent<ComponentsRenderOptionsType>> = this.components): void {
+        this.forEach(components, (component: IVisualComponent<ComponentsRenderOptionsType>) => {
             if (component.highlight) {
                 component.highlight(hasSelection);
             }
         });
     }
 
-    protected destroyComponents(components: Array<VisualComponent<any>> = this.components): void {
+    protected destroyComponents(components: Array<IVisualComponent<any>> = this.components): void {
         this.forEach(
             components.splice(0, components.length),
-            (component: VisualComponent<any>) => {
+            (component: IVisualComponent<any>) => {
                 component.destroy();
             },
         );
     }
 
     protected forEach<ComponentsRenderOptions>(
-        components: Array<VisualComponent<ComponentsRenderOptions>>,
+        components: Array<IVisualComponent<ComponentsRenderOptions>>,
         iterator: (
-            component: VisualComponent<ComponentsRenderOptions>,
+            component: IVisualComponent<ComponentsRenderOptions>,
             index: number,
         ) => void,
     ): void {
-        components.forEach((component: VisualComponent<ComponentsRenderOptions>, index: number) => {
+        components.forEach((component: IVisualComponent<ComponentsRenderOptions>, index: number) => {
             if (component) {
                 iterator(component, index);
             }
@@ -81,9 +81,9 @@ export abstract class BaseContainerComponent<ConstructorOptionsType, RenderOptio
     }
 
     protected initComponents<ComponentsRenderOptions>(
-        components: Array<VisualComponent<ComponentsRenderOptions>>,
+        components: Array<IVisualComponent<ComponentsRenderOptions>>,
         expectedAmountOfComponents: number,
-        initComponent: (index: number) => VisualComponent<ComponentsRenderOptions>,
+        initComponent: (index: number) => IVisualComponent<ComponentsRenderOptions>,
     ): void {
         if (!components) {
             return;
@@ -91,7 +91,7 @@ export abstract class BaseContainerComponent<ConstructorOptionsType, RenderOptio
 
         components
             .splice(expectedAmountOfComponents)
-            .forEach((component: VisualComponent<ComponentsRenderOptions>) => {
+            .forEach((component: IVisualComponent<ComponentsRenderOptions>) => {
                 component.clear();
                 component.destroy();
             });

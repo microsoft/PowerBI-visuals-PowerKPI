@@ -32,8 +32,8 @@ import { IVisualComponentConstructorOptions } from "./base/visualComponentConstr
 import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
 import {
-    VisualComponent,
-    VisualComponentViewport,
+    IVisualComponent,
+    IVisualComponentViewport,
 } from "./base/visualComponent";
 
 import {
@@ -59,7 +59,7 @@ export class PlotComponent extends BaseContainerComponent<
     private xAxisComponent: IAxisComponent<IXAxisComponentRenderOptions>;
     private yAxisComponent: IAxisComponent<IYAxisComponentRenderOptions>;
     private secondaryYAxisComponent: IAxisComponent<IYAxisComponentRenderOptions>;
-    private svgComponent: VisualComponent<ISvgComponentRenderOptions>;
+    private svgComponent: IVisualComponent<ISvgComponentRenderOptions>;
 
     private additionalWidthOffset: number = 5;
 
@@ -141,7 +141,7 @@ export class PlotComponent extends BaseContainerComponent<
             viewport: null,
         });
 
-        const xAxisViewport: VisualComponentViewport = this.xAxisComponent.getViewport();
+        const xAxisViewport: IVisualComponentViewport = this.xAxisComponent.getViewport();
 
         const maxYAxisHeight: number = Math.max(
             this.yAxisComponent.getViewport().height,
@@ -173,8 +173,8 @@ export class PlotComponent extends BaseContainerComponent<
             },
         });
 
-        const yAxisViewport: VisualComponentViewport = this.yAxisComponent.getViewport();
-        const secondaryYAxisViewport: VisualComponentViewport = this.secondaryYAxisComponent.getViewport();
+        const yAxisViewport: IVisualComponentViewport = this.yAxisComponent.getViewport();
+        const secondaryYAxisViewport: IVisualComponentViewport = this.secondaryYAxisComponent.getViewport();
 
         const leftOffset: number = this.getOffset(xAxisViewport.width, yAxisViewport.width);
         const rightOffset: number = this.getOffset(xAxisViewport.width2, secondaryYAxisViewport.width);

@@ -26,7 +26,7 @@
 
 import { LineType } from "../../settings/descriptors/lineDescriptor";
 import { BaseContainerComponent } from "../base/baseContainerComponent";
-import { VisualComponent } from "../base/visualComponent";
+import { IVisualComponent } from "../base/visualComponent";
 import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 
 import {
@@ -35,8 +35,8 @@ import {
 } from "./areaComponent";
 
 import {
-    LineComponent,
     ILineComponentRenderOptions,
+    LineComponent,
 } from "./lineComponent";
 
 export interface IComboComponentRenderOptions extends IAreaComponentRenderOptions {
@@ -96,7 +96,7 @@ export class ComboComponent extends BaseContainerComponent<
 
         this.forEach(
             this.components,
-            (component: VisualComponent<ILineComponentRenderOptions>) => {
+            (component: IVisualComponent<ILineComponentRenderOptions>) => {
                 component.render(options);
             },
         );

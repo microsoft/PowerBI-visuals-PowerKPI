@@ -44,7 +44,7 @@ import { IDataRepresentation } from "./dataRepresentation/dataRepresentation";
 import { EventName } from "./event/eventName";
 import { BaseDescriptor } from "./settings/descriptors/descriptor";
 import { SeriesSettings } from "./settings/seriesSettings";
-import { VisualComponent } from "./visualComponent/base/visualComponent";
+import { IVisualComponent } from "./visualComponent/base/visualComponent";
 import { IVisualComponentRenderOptions } from "./visualComponent/base/visualComponentRenderOptions";
 import { MainComponent } from "./visualComponent/mainComponent";
 
@@ -65,7 +65,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
 
     private rootElement: Selection<any, any, any, any>;
     private converter: IConverter;
-    private component: VisualComponent<IVisualComponentRenderOptions>;
+    private component: IVisualComponent<IVisualComponentRenderOptions>;
 
     private dataRepresentation: IDataRepresentation;
 

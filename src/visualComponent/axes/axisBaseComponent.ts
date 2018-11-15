@@ -40,9 +40,9 @@ import {
 
 import { DataRepresentationAxisValueType } from "../../dataRepresentation/dataRepresentationAxisValueType";
 import { BaseComponent } from "../base/baseComponent";
-import { VisualComponent } from "../base/visualComponent";
+import { IVisualComponent } from "../base/visualComponent";
 
-export interface IAxisComponent<RenderOptions> extends VisualComponent<RenderOptions> {
+export interface IAxisComponent<RenderOptions> extends IVisualComponent<RenderOptions> {
     getTicks(): DataRepresentationAxisValueType[];
     preRender(options: RenderOptions); // Preestimates size of a component as X Axis depends on Y Axis and vice versa
 }
