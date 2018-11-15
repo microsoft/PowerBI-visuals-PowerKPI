@@ -1,3 +1,4 @@
+
 /**
  *  Power BI Visualizations
  *
@@ -24,8 +25,11 @@
  *  THE SOFTWARE.
  */
 
-import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
+import {
+    AxisDescriptor,
+} from "./axisDescriptor";
 
-export interface IKPIComponentConstructorOptionsWithClassName extends IVisualComponentConstructorOptions {
-    className: string;
+export class YAxisDescriptor extends AxisDescriptor {
+    public min: number = NaN;
+    public max: number = NaN;
 }

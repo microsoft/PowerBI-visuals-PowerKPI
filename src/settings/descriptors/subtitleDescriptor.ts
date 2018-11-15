@@ -29,7 +29,7 @@ import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
 export enum SubtitleAlignment {
     left = "left",
     center = "center",
-    right = "right"
+    right = "right",
 }
 
 export class SubtitleDescriptor extends FontSizeDescriptor {

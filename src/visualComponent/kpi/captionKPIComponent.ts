@@ -27,69 +27,69 @@
 import { Selection } from "d3";
 
 import powerbi from "powerbi-visuals-api";
+import { textMeasurementService } from "powerbi-visuals-utils-formattingutils";
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
-import { textMeasurementService } from "powerbi-visuals-utils-formattingutils";
 
 import { VisualComponentViewport } from "../base/visualComponent";
-import { KPIVisualComponent } from "./kpiVisualComponent";
-import { KPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
 import {
-    CaptionKPIComponentOptions,
-    CaptionKPIComponentOptionsValueSettings
+    ICaptionKPIComponentOptions,
+    ICaptionKPIComponentOptionsValueSettings,
 } from "./captionKPIComponentOptions";
+import { IKPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
+import { IKPIVisualComponent } from "./kpiVisualComponent";
 
 import { LayoutEnum } from "../../layout/layoutEnum";
 import { AlignEnum } from "./alignEnum";
 
-interface CaptionKPIComponentAttributes {
+interface ICaptionKPIComponentAttributes {
     isShown: boolean;
     size: powerbi.IViewport;
 }
 
-export class CaptionKPIComponent implements KPIVisualComponent<CaptionKPIComponentOptions> {
+export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPIComponentOptions> {
+    protected innerContainerSelector: CssConstants.ClassAndSelector =
+        CssConstants.createClassAndSelector("captionKPIComponentInnerContainer");
+
+    protected element: Selection<any, any, any, any>;
+    protected innerContainer: Selection<any, any, any, any>;
     private className: string = "captionKPIComponent";
     private invisibleClassName: string = "invisible";
-
-    protected innerContainerSelector: CssConstants.ClassAndSelector = CssConstants.createClassAndSelector("captionKPIComponentInnerContainer");
     private captionContainerSelector: CssConstants.ClassAndSelector = CssConstants.createClassAndSelector("kpiCaptionContainer");
     private captionSelector: CssConstants.ClassAndSelector = CssConstants.createClassAndSelector("kpiCaption");
 
     private sizeOffset: powerbi.IViewport = {
+        height: 5,
         width: 15,
-        height: 5
     };
-
-    protected element: Selection<any, any, any, any>;
-    protected innerContainer: Selection<any, any, any, any>;
 
     private isComponentRendered: boolean = false;
 
     private size: powerbi.IViewport;
 
-    constructor(options: KPIComponentConstructorOptionsWithClassName) {
+    constructor(options: IKPIComponentConstructorOptionsWithClassName) {
         this.element = options.element
             .append("div")
             .classed(this.className, true)
             .classed(options.className, true);
     }
 
-    public render(options: CaptionKPIComponentOptions): void {
+    public render(options: ICaptionKPIComponentOptions): void {
         const {
             captions,
             align,
             data: {
                 viewport,
                 settings: {
-                    layout
-                }
+                    layout,
+                },
             },
         } = options;
 
-        let {
-            isShown,
-            size
-        } = this.getAttributes(captions);
+        const attributes: ICaptionKPIComponentAttributes = this.getAttributes(captions);
+
+        let { isShown } = attributes;
+        const { size } = attributes;
 
         this.size = size;
 
@@ -114,28 +114,114 @@ export class CaptionKPIComponent implements KPIVisualComponent<CaptionKPICompone
             this.captionSelector);
     }
 
-    private getAttributes(captions: CaptionKPIComponentOptionsValueSettings[][]): CaptionKPIComponentAttributes {
+    public isRendered(): boolean {
+        return this.isComponentRendered;
+    }
+
+    public clear(): void {
+        this.element.remove();
+    }
+
+    public destroy(): void {
+        this.element = null;
+    }
+
+    public getViewport(): VisualComponentViewport {
+        if (!this.size) {
+            return {
+                height: 0,
+                width: 0,
+            };
+        }
+
+        return this.size;
+    }
+
+    protected renderElement(
+        element: Selection<any, ICaptionKPIComponentOptionsValueSettings[], any, any>,
+        captions: ICaptionKPIComponentOptionsValueSettings[][],
+        containerSelector: CssConstants.ClassAndSelector,
+        selector: CssConstants.ClassAndSelector,
+    ): void {
+        const containerSelection: Selection<any, ICaptionKPIComponentOptionsValueSettings[], any, any> = element
+            .selectAll(containerSelector.selectorName)
+            .data(captions);
+
+        const elementSelection: Selection<any, ICaptionKPIComponentOptionsValueSettings, any, any> = containerSelection
+            .enter()
+            .append("div")
+            .classed(containerSelector.className, true)
+            .merge(containerSelection)
+            .selectAll(selector.selectorName)
+            .data((captionItems: ICaptionKPIComponentOptionsValueSettings[]) => {
+                return (captionItems || []).filter((options: ICaptionKPIComponentOptionsValueSettings) => {
+                    return options
+                        && options.settings
+                        && options.settings.show;
+                });
+            });
+
+        elementSelection
+            .enter()
+            .append("div")
+            .classed(selector.className, true)
+            .merge(elementSelection)
+            .attr("title", (options: ICaptionKPIComponentOptionsValueSettings) => options.title || null)
+            .attr("class", (options: ICaptionKPIComponentOptionsValueSettings) => {
+                let className: string = selector.className;
+
+                if (options.settings.isBold) {
+                    className += " boldStyle";
+                }
+
+                if (options.settings.isItalic) {
+                    className += " italicStyle";
+                }
+
+                if (options.className) {
+                    className += ` ${options.className}`;
+                }
+
+                return className;
+            })
+            .style("color", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.fontColor)
+            .style("font-size", (options: ICaptionKPIComponentOptionsValueSettings) => {
+                return pixelConverter.toString(pixelConverter.fromPointToPixel(options.settings.fontSize));
+            })
+            .style("font-family", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.fontFamily)
+            .text((options: ICaptionKPIComponentOptionsValueSettings) => options.value);
+
+        elementSelection
+            .exit()
+            .remove();
+
+        containerSelection
+            .exit()
+            .remove();
+    }
+
+    private getAttributes(captions: ICaptionKPIComponentOptionsValueSettings[][]): ICaptionKPIComponentAttributes {
         let isShown: boolean = false;
 
         const size: powerbi.IViewport = {
+            height: 0,
             width: 0,
-            height: 0
         };
 
-        captions.forEach((captionList: CaptionKPIComponentOptionsValueSettings[]) => {
+        captions.forEach((captionList: ICaptionKPIComponentOptionsValueSettings[]) => {
             let width: number = 0;
             let height: number = 0;
 
-            captionList.forEach((caption: CaptionKPIComponentOptionsValueSettings) => {
+            captionList.forEach((caption: ICaptionKPIComponentOptionsValueSettings) => {
                 isShown = isShown || caption.settings.show;
 
                 if (caption.settings.show) {
                     const text: string = caption.value || "M";
 
-                    let rect: SVGRect = textMeasurementService.textMeasurementService.measureSvgTextRect({
-                        text,
+                    const rect: SVGRect = textMeasurementService.textMeasurementService.measureSvgTextRect({
                         fontFamily: caption.settings.fontFamily,
-                        fontSize: pixelConverter.toString(pixelConverter.fromPointToPixel(caption.settings.fontSize))
+                        fontSize: pixelConverter.toString(pixelConverter.fromPointToPixel(caption.settings.fontSize)),
+                        text,
                     }, text);
 
                     height = Math.max(height, rect.height + this.sizeOffset.height);
@@ -148,8 +234,8 @@ export class CaptionKPIComponent implements KPIVisualComponent<CaptionKPICompone
         });
 
         return {
+            isShown,
             size,
-            isShown: isShown
         };
     }
 
@@ -173,7 +259,7 @@ export class CaptionKPIComponent implements KPIVisualComponent<CaptionKPICompone
         element: Selection<any, any, any, any>,
         selector: CssConstants.ClassAndSelector,
         shouldElementBeRendered: boolean,
-        align: AlignEnum
+        align: AlignEnum,
     ): Selection<any, boolean, any, any> {
         const selection: Selection<any, boolean, any, any> = element
             .selectAll(selector.selectorName)
@@ -189,91 +275,5 @@ export class CaptionKPIComponent implements KPIVisualComponent<CaptionKPICompone
             .classed(selector.className, true)
             .merge(selection)
             .attr("class", `${selector.className} ${AlignEnum[align]}`);
-    }
-
-    protected renderElement(
-        element: Selection<any, CaptionKPIComponentOptionsValueSettings[], any, any>,
-        captions: CaptionKPIComponentOptionsValueSettings[][],
-        containerSelector: CssConstants.ClassAndSelector,
-        selector: CssConstants.ClassAndSelector
-    ): void {
-        const containerSelection: Selection<any, CaptionKPIComponentOptionsValueSettings[], any, any> = element
-            .selectAll(containerSelector.selectorName)
-            .data(captions);
-
-        const elementSelection: Selection<any, CaptionKPIComponentOptionsValueSettings, any, any> = containerSelection
-            .enter()
-            .append("div")
-            .classed(containerSelector.className, true)
-            .merge(containerSelection)
-            .selectAll(selector.selectorName)
-            .data((captions: CaptionKPIComponentOptionsValueSettings[]) => {
-                return (captions || []).filter((options: CaptionKPIComponentOptionsValueSettings) => {
-                    return options
-                        && options.settings
-                        && options.settings.show;
-                });
-            });
-
-        elementSelection
-            .enter()
-            .append("div")
-            .classed(selector.className, true)
-            .merge(elementSelection)
-            .attr("title", (options: CaptionKPIComponentOptionsValueSettings) => options.title || null)
-            .attr("class", (options: CaptionKPIComponentOptionsValueSettings) => {
-                let className: string = selector.className;
-
-                if (options.settings.isBold) {
-                    className += " boldStyle";
-                }
-
-                if (options.settings.isItalic) {
-                    className += " italicStyle";
-                }
-
-                if (options.className) {
-                    className += ` ${options.className}`;
-                }
-
-                return className;
-            })
-            .style("color", (options: CaptionKPIComponentOptionsValueSettings) => options.settings.fontColor)
-            .style("font-size", (options: CaptionKPIComponentOptionsValueSettings) => {
-                return pixelConverter.toString(pixelConverter.fromPointToPixel(options.settings.fontSize));
-            })
-            .style("font-family", (options: CaptionKPIComponentOptionsValueSettings) => options.settings.fontFamily)
-            .text((options: CaptionKPIComponentOptionsValueSettings) => options.value);
-
-        elementSelection
-            .exit()
-            .remove();
-
-        containerSelection
-            .exit()
-            .remove();
-    }
-
-    public isRendered(): boolean {
-        return this.isComponentRendered;
-    }
-
-    public clear(): void {
-        this.element.remove();
-    }
-
-    public destroy(): void {
-        this.element = null;
-    }
-
-    public getViewport(): VisualComponentViewport {
-        if (!this.size) {
-            return {
-                height: 0,
-                width: 0
-            };
-        }
-
-        return this.size;
     }
 }

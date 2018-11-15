@@ -24,34 +24,30 @@
  *  THE SOFTWARE.
  */
 
-import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
+import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 import { DataRepresentationPointFilter } from "../dataRepresentation/dataRepresentationPointFilter";
-import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
-import { DataRepresentationPointIndexed } from "../dataRepresentation/dataRepresentationPointIndexed";
+import { IDataRepresentationPointIndexed } from "../dataRepresentation/dataRepresentationPointIndexed";
+import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 
 export class VarianceConverter {
     protected pointFilter: DataRepresentationPointFilter = new DataRepresentationPointFilter();
 
     public getVarianceByCurrentPointsOfSeries(
-        firstSeries: DataRepresentationSeries,
-        secondSeries: DataRepresentationSeries
+        firstSeries: IDataRepresentationSeries,
+        secondSeries: IDataRepresentationSeries,
     ): number {
         if (!this.isSeriesValid(firstSeries) || !this.isSeriesValid(secondSeries)) {
             return NaN;
         }
 
-        const firstPoint: DataRepresentationPointIndexed = firstSeries.current;
+        const firstPoint: IDataRepresentationPointIndexed = firstSeries.current;
         const index: number = firstPoint.index;
-        const secondPoint: DataRepresentationPoint = !isNaN(index) && secondSeries.points[index];
+        const secondPoint: IDataRepresentationPoint = !isNaN(index) && secondSeries.points[index];
 
         return this.getVarianceByPoints(firstPoint, secondPoint);
     }
 
-    private isSeriesValid(series: DataRepresentationSeries): boolean {
-        return series && series.current && series.current.y !== null;
-    }
-
-    public getVarianceByPoints(firstPoint: DataRepresentationPoint, secondePoint: DataRepresentationPoint): number {
+    public getVarianceByPoints(firstPoint: IDataRepresentationPoint, secondePoint: IDataRepresentationPoint): number {
         if (!this.pointFilter.isPointValid(firstPoint) || !this.pointFilter.isPointValid(secondePoint)) {
             return NaN;
         }
@@ -61,5 +57,9 @@ export class VarianceConverter {
 
     public getVariance(firstValue: number, secondValue: number): number {
         return firstValue / secondValue - 1;
+    }
+
+    private isSeriesValid(series: IDataRepresentationSeries): boolean {
+        return series && series.current && series.current.y !== null;
     }
 }

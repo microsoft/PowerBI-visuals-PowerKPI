@@ -26,30 +26,30 @@
 
 import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
-import { VisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
-import { VarianceBaseComponent } from "./varianceBaseComponent";
-import { AlignEnum } from "./alignEnum";
-import { CaptionKPIComponentOptionsValueSettings } from "./captionKPIComponentOptions";
-import { KPIVisualComponent } from "./kpiVisualComponent";
-import { KPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
 import { KPIIndicatorValueDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorValueDescriptor";
+import { IVisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
+import { AlignEnum } from "./alignEnum";
+import { ICaptionKPIComponentOptionsValueSettings } from "./captionKPIComponentOptions";
+import { IKPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
+import { IKPIVisualComponent } from "./kpiVisualComponent";
+import { VarianceBaseComponent } from "./varianceBaseComponent";
 
 export class VarianceComponentWithCustomLabel
     extends VarianceBaseComponent
-    implements KPIVisualComponent<VisualComponentRenderOptions> {
+    implements IKPIVisualComponent<IVisualComponentRenderOptions> {
 
     private componentClassName: string = "varianceComponentWithCustomLabel";
 
-    constructor(options: KPIComponentConstructorOptionsWithClassName) {
+    constructor(options: IKPIComponentConstructorOptionsWithClassName) {
         super({
+            className: options.className,
             element: options.element,
-            className: options.className
         });
 
         this.element.classed(this.componentClassName, true);
     }
 
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         const {
             series,
             variance,
@@ -62,12 +62,17 @@ export class VarianceComponentWithCustomLabel
                 kpiIndicatorLabel,
                 secondKPIIndicatorValue,
                 secondKPIIndicatorLabel,
-                kpiIndicator
-            }
+                kpiIndicator,
+            },
         } = options.data;
 
-        const varianceSettings: KPIIndicatorValueDescriptor = { ...secondKPIIndicatorValue } as KPIIndicatorValueDescriptor; // TODO: potential issue
-        const labelSettings: KPIIndicatorValueDescriptor = { ...secondKPIIndicatorLabel } as unknown as KPIIndicatorValueDescriptor; // TODO: potential issue
+        const varianceSettings: KPIIndicatorValueDescriptor = {
+            ...secondKPIIndicatorValue,
+        } as KPIIndicatorValueDescriptor; // TODO: potential issue
+
+        const labelSettings: KPIIndicatorValueDescriptor = {
+            ...secondKPIIndicatorLabel,
+        } as unknown as KPIIndicatorValueDescriptor; // TODO: potential issue
 
         labelSettings.show = secondKPIIndicatorLabel.isShown();
 
@@ -102,24 +107,24 @@ export class VarianceComponentWithCustomLabel
             secondKPIIndicatorValue.getFormat(),
         );
 
-        const valueCaption: CaptionKPIComponentOptionsValueSettings = {
-            value: formatter.format(variance[1]),
+        const valueCaption: ICaptionKPIComponentOptionsValueSettings = {
+            settings: varianceSettings,
             title: secondKPIIndicatorLabel.label || `${variance[1]}`,
-            settings: varianceSettings
+            value: formatter.format(variance[1]),
         };
 
-        const labelCaption: CaptionKPIComponentOptionsValueSettings = {
+        const labelCaption: ICaptionKPIComponentOptionsValueSettings = {
+            settings: labelSettings,
             value: secondKPIIndicatorLabel.label,
-            settings: labelSettings
         };
 
         super.render({
+            align: currentAlign,
             captions: [
                 [valueCaption],
-                [labelCaption]
+                [labelCaption],
             ],
             data: options.data,
-            align: currentAlign
         });
     }
 }

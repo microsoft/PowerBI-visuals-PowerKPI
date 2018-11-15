@@ -28,5 +28,5 @@ export enum DataRepresentationTypeEnum {
     None,
     DateType,
     NumberType,
-    StringType
+    StringType,
 }

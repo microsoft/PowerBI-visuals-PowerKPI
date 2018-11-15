@@ -26,6 +26,4 @@
 
 import { DataRepresentationAxisValueType } from "../../../dataRepresentation/dataRepresentationAxisValueType";
 
-export interface AxisReferenceLineGetPointsFunction {
-    (value: DataRepresentationAxisValueType): [number, number][];
-}
+export type IAxisReferenceLineGetPointsFunction = (value: DataRepresentationAxisValueType) => Array<[number, number]>;

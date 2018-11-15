@@ -25,40 +25,44 @@
  */
 
 import {
-    scaleTime,
     scaleLinear,
     scaleOrdinal,
-    ScaleOrdinal
+    ScaleOrdinal,
+    scaleTime,
 } from "d3-scale";
 
 import { DataRepresentationAxisScale } from "./dataRepresentationAxisScale";
-import { DataRepresentationAxisValueType, } from "./dataRepresentationAxisValueType";
+import { DataRepresentationAxisValueType } from "./dataRepresentationAxisValueType";
 import { DataRepresentationTypeEnum } from "./dataRepresentationType";
 
 export class DataRepresentationScale {
-    private isOrdinalScale: boolean = false;
-    private baseScale: DataRepresentationAxisScale;
 
-    private constructor(
-        scale: DataRepresentationAxisScale = null,
-        isOrdinal: boolean = false
-    ) {
-        this.baseScale = scale;
-        this.isOrdinalScale = isOrdinal;
+    public get isOrdinal(): boolean {
+        return this.isOrdinalScale;
     }
 
     public static create(): DataRepresentationScale {
         return new DataRepresentationScale();
     }
+    private isOrdinalScale: boolean = false;
+    private baseScale: DataRepresentationAxisScale;
+
+    private constructor(
+        scale: DataRepresentationAxisScale = null,
+        isOrdinal: boolean = false,
+    ) {
+        this.baseScale = scale;
+        this.isOrdinalScale = isOrdinal;
+    }
 
     public domain(
         values: DataRepresentationAxisValueType[],
-        type: DataRepresentationTypeEnum
+        scaleType: DataRepresentationTypeEnum,
     ): DataRepresentationScale {
         let scale: DataRepresentationAxisScale;
 
         if (values && values.length) {
-            switch (type) {
+            switch (scaleType) {
                 case DataRepresentationTypeEnum.DateType: {
                     scale = scaleTime();
                     break;
@@ -112,9 +116,5 @@ export class DataRepresentationScale {
         }
 
         return this;
-    }
-
-    public get isOrdinal(): boolean {
-        return this.isOrdinalScale;
     }
 }

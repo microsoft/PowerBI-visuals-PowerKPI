@@ -28,5 +28,5 @@ export enum LayoutToStyleEnum {
     columnLayout,
     columnReversedLayout,
     rowLayout,
-    rowReversedLayout
+    rowReversedLayout,
 }

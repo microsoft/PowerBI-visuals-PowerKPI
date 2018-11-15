@@ -26,45 +26,49 @@
 
 import powerbi from "powerbi-visuals-api";
 
+import { IAxisComponent } from "./axes/axisBaseComponent";
 import { BaseContainerComponent } from "./base/baseContainerComponent";
-import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
-import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
-import { AxisComponent } from "./axes/axisBaseComponent";
+import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
 import {
     VisualComponent,
-    VisualComponentViewport
+    VisualComponentViewport,
 } from "./base/visualComponent";
 
 import {
+    IXAxisComponentRenderOptions,
     XAxisComponent,
-    XAxisComponentRenderOptions
 } from "./axes/xAxisComponent";
 
 import {
+    IYAxisComponentRenderOptions,
     YAxisComponent,
-    YAxisComponentRenderOptions
 } from "./axes/yAxisComponent";
 
 import {
+    ISvgComponentRenderOptions,
     SvgComponent,
-    SvgComponentRenderOptions
 } from "./svgComponent";
 
-export class PlotComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions | XAxisComponentRenderOptions | YAxisComponentRenderOptions> {
-    private xAxisComponent: AxisComponent<XAxisComponentRenderOptions>;
-    private yAxisComponent: AxisComponent<YAxisComponentRenderOptions>;
-    private secondaryYAxisComponent: AxisComponent<YAxisComponentRenderOptions>;
-    private svgComponent: VisualComponent<SvgComponentRenderOptions>;
+export class PlotComponent extends BaseContainerComponent<
+    IVisualComponentConstructorOptions,
+    IVisualComponentRenderOptions,
+    IVisualComponentRenderOptions | IXAxisComponentRenderOptions | IYAxisComponentRenderOptions
+    > {
+    private xAxisComponent: IAxisComponent<IXAxisComponentRenderOptions>;
+    private yAxisComponent: IAxisComponent<IYAxisComponentRenderOptions>;
+    private secondaryYAxisComponent: IAxisComponent<IYAxisComponentRenderOptions>;
+    private svgComponent: VisualComponent<ISvgComponentRenderOptions>;
 
     private additionalWidthOffset: number = 5;
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
-            "plot"
+            "plot",
         );
 
         this.constructorOptions = {
@@ -87,7 +91,7 @@ export class PlotComponent extends BaseContainerComponent<VisualComponentConstru
         ];
     }
 
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         const {
             x,
             margin,
@@ -116,25 +120,25 @@ export class PlotComponent extends BaseContainerComponent<VisualComponentConstru
         };
 
         this.xAxisComponent.preRender({
-            axis: x,
-            settings: xAxis,
-            margin: null,
-            viewport: null,
             additionalMargin: null,
+            axis: x,
+            margin: null,
+            settings: xAxis,
+            viewport: null,
         });
 
         this.yAxisComponent.preRender({
-            margin: null,
-            viewport: null,
-            settings: yAxis,
             axis: firstGroup && firstGroup.y,
+            margin: null,
+            settings: yAxis,
+            viewport: null,
         });
 
         this.secondaryYAxisComponent.preRender({
+            axis: secondGroup && secondGroup.y,
             margin: null,
-            viewport: null,
             settings: secondaryYAxis,
-            axis: secondGroup && secondGroup.y
+            viewport: null,
         });
 
         const xAxisViewport: VisualComponentViewport = this.xAxisComponent.getViewport();
@@ -146,27 +150,27 @@ export class PlotComponent extends BaseContainerComponent<VisualComponentConstru
 
         const height: number = Math.max(
             0,
-            reducedViewport.height - xAxisViewport.height - maxYAxisHeight
+            reducedViewport.height - xAxisViewport.height - maxYAxisHeight,
         );
 
         this.yAxisComponent.render({
+            axis: firstGroup && firstGroup.y,
             margin,
+            settings: yAxis,
             viewport: {
                 height,
                 width: reducedViewport.width,
             },
-            axis: firstGroup && firstGroup.y,
-            settings: yAxis,
         });
 
         this.secondaryYAxisComponent.render({
+            axis: secondGroup && secondGroup.y,
             margin,
+            settings: secondaryYAxis,
             viewport: {
                 height,
                 width: reducedViewport.width,
             },
-            axis: secondGroup && secondGroup.y,
-            settings: secondaryYAxis,
         });
 
         const yAxisViewport: VisualComponentViewport = this.yAxisComponent.getViewport();
@@ -180,43 +184,44 @@ export class PlotComponent extends BaseContainerComponent<VisualComponentConstru
             - yAxisViewport.width
             - secondaryYAxisViewport.width
             - leftOffset
-            - rightOffset
+            - rightOffset,
         );
 
         this.xAxisComponent.render({
-            margin,
             additionalMargin: {
-                top: 0,
-                right: 0,
                 bottom: 0,
                 left: yAxisViewport.width + leftOffset,
-            },
-            viewport: {
-                width,
-                height: reducedViewport.height,
+                right: 0,
+                top: 0,
             },
             axis: x,
+            margin,
             settings: xAxis,
+            viewport: {
+                height: reducedViewport.height,
+                width,
+            },
         });
 
         this.svgComponent.render({
+            additionalMargin: {
+                bottom: 0,
+                left: leftOffset,
+                right: 0,
+                top: 0,
+            },
             data: {
                 ...options.data,
                 margin,
                 viewport: {
-                    width,
                     height,
+                    width,
                 },
             },
             xTicks: this.xAxisComponent.getTicks(),
             yTicks: this.yAxisComponent.getTicks(),
+
             secondaryYTicks: this.secondaryYAxisComponent.getTicks(),
-            additionalMargin: {
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: leftOffset
-            },
         });
     }
 

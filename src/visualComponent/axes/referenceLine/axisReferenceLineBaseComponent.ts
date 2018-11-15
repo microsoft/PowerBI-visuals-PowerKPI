@@ -33,36 +33,37 @@ import {
 import powerbi from "powerbi-visuals-api";
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
 
-import { BaseComponent } from "../../base/baseComponent";
-import { VisualComponentConstructorOptions } from "../../base/visualComponentConstructorOptions";
 import { DataRepresentationAxisValueType } from "../../../dataRepresentation/dataRepresentationAxisValueType";
 import { DataRepresentationScale } from "../../../dataRepresentation/dataRepresentationScale";
 import { AxisReferenceLineDescriptor } from "../../../settings/descriptors/axis/referenceLine/axisReferenceLineDescriptor";
-import { AxisReferenceLineGetPointsFunction } from "./axisReferenceLineGetPointsFunction";
+import { BaseComponent } from "../../base/baseComponent";
+import { IVisualComponentConstructorOptions } from "../../base/visualComponentConstructorOptions";
+import { IAxisReferenceLineGetPointsFunction } from "./axisReferenceLineGetPointsFunction";
 
-export interface AxisReferenceLineBaseComponentRenderOptions {
+export interface IAxisReferenceLineBaseComponentRenderOptions {
     settings: AxisReferenceLineDescriptor;
     ticks: DataRepresentationAxisValueType[];
     scale: DataRepresentationScale;
     viewport: powerbi.IViewport;
 }
 
-export abstract class AxisReferenceLineBaseComponent extends BaseComponent<VisualComponentConstructorOptions, AxisReferenceLineBaseComponentRenderOptions> {
+export abstract class AxisReferenceLineBaseComponent
+    extends BaseComponent<IVisualComponentConstructorOptions, IAxisReferenceLineBaseComponentRenderOptions> {
     private className: string = "axisReferenceLineComponent";
 
     private lineSelector: CssConstants.ClassAndSelector = CssConstants.createClassAndSelector("axisReferenceLine");
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
             this.className,
-            "g"
+            "g",
         );
     }
 
-    public render(options: AxisReferenceLineBaseComponentRenderOptions): void {
+    public render(options: IAxisReferenceLineBaseComponentRenderOptions): void {
         const {
             ticks,
             scale,
@@ -89,7 +90,7 @@ export abstract class AxisReferenceLineBaseComponent extends BaseComponent<Visua
                 return positions[1] || 0;
             });
 
-        const getPoints: AxisReferenceLineGetPointsFunction = this.getPoints(options);
+        const getPoints: IAxisReferenceLineGetPointsFunction = this.getPoints(options);
 
         lineSelection
             .enter()
@@ -107,5 +108,5 @@ export abstract class AxisReferenceLineBaseComponent extends BaseComponent<Visua
             .remove();
     }
 
-    protected abstract getPoints(options: AxisReferenceLineBaseComponentRenderOptions): AxisReferenceLineGetPointsFunction;
+    protected abstract getPoints(options: IAxisReferenceLineBaseComponentRenderOptions): IAxisReferenceLineGetPointsFunction;
 }

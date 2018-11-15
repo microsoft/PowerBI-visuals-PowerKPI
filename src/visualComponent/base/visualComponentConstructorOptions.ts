@@ -33,12 +33,12 @@ import powerbi from "powerbi-visuals-api";
 
 import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
 
-export interface VisualComponentBaseConstructorOptions {
+export interface IVisualComponentBaseConstructorOptions {
     element?: Selection<any, any, any, any>;
     rootElement?: Selection<any, any, any, any>;
 }
 
-export interface VisualComponentConstructorOptions extends VisualComponentBaseConstructorOptions {
+export interface IVisualComponentConstructorOptions extends IVisualComponentBaseConstructorOptions {
     eventDispatcher?: Dispatch<any>;
     interactivityService?: interactivityService.IInteractivityService;
     tooltipService?: powerbi.extensibility.ITooltipService;

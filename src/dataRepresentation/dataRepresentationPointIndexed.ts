@@ -24,9 +24,9 @@
  *  THE SOFTWARE.
  */
 
-import { DataRepresentationPoint } from "./dataRepresentationPoint";
+import { IDataRepresentationPoint } from "./dataRepresentationPoint";
 
-export interface DataRepresentationPointIndexed extends DataRepresentationPoint {
+export interface IDataRepresentationPointIndexed extends IDataRepresentationPoint {
     index: number;
     kpiIndex: number;
 }

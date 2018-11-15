@@ -26,19 +26,19 @@
 
 import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
-import { VisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
-import { VarianceBaseComponent } from "./varianceBaseComponent";
-import { KPIVisualComponent } from "./kpiVisualComponent";
-import { AlignEnum } from "./alignEnum";
-import { KPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
-import { CaptionKPIComponentOptionsValueSettings } from "./captionKPIComponentOptions";
+import { HorizontalLayoutEnum } from "../../layout/horizontalLayoutEnum";
 import { IKPIIndicatorSettings } from "../../settings/descriptors/kpi/kpiIndicatorDescriptor";
 import { KPIIndicatorValueDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorValueDescriptor";
-import { HorizontalLayoutEnum } from "../../layout/horizontalLayoutEnum";
+import { IVisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
+import { AlignEnum } from "./alignEnum";
+import { ICaptionKPIComponentOptionsValueSettings } from "./captionKPIComponentOptions";
+import { IKPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
+import { IKPIVisualComponent } from "./kpiVisualComponent";
+import { VarianceBaseComponent } from "./varianceBaseComponent";
 
 export class VarianceComponentWithIndicator
     extends VarianceBaseComponent
-    implements KPIVisualComponent<VisualComponentRenderOptions> {
+    implements IKPIVisualComponent<IVisualComponentRenderOptions> {
 
     private componentClassName: string = "varianceComponentWithSymbol";
     private indicatorClassName: string = "kpiIndicator";
@@ -48,16 +48,16 @@ export class VarianceComponentWithIndicator
 
     private glyphClassName: string = "powerKPI_glyphIcon";
 
-    constructor(options: KPIComponentConstructorOptionsWithClassName) {
+    constructor(options: IKPIComponentConstructorOptionsWithClassName) {
         super({
+            className: options.className,
             element: options.element,
-            className: options.className
         });
 
         this.element.classed(this.componentClassName, true);
     }
 
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         const {
             series,
             settings: {
@@ -69,13 +69,13 @@ export class VarianceComponentWithIndicator
                 secondKPIIndicatorLabel,
                 kpiIndicatorValue,
                 kpiIndicatorLabel,
-                kpiIndicator
+                kpiIndicator,
             },
-            variance
+            variance,
         } = options.data;
 
-        let { current } = series && series.length > 0 && series[0]
-            , kpiIndex: number = NaN;
+        const { current } = series && series.length > 0 && series[0];
+        let kpiIndex: number = NaN;
 
         if (current) {
             kpiIndex = current.kpiIndex;
@@ -132,11 +132,11 @@ export class VarianceComponentWithIndicator
 
         const title: string = kpiIndicatorLabel.label || `${variance[0]}`;
 
-        const indicatorCaption: CaptionKPIComponentOptionsValueSettings = {
+        const indicatorCaption: ICaptionKPIComponentOptionsValueSettings = {
+            className,
+            settings: indicatorSettings,
             title,
             value: "",
-            settings: indicatorSettings,
-            className: className
         };
 
         const fakedIndicatorSettings: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor();
@@ -152,13 +152,13 @@ export class VarianceComponentWithIndicator
             && kpiLabelSettings.show
             && !!kpiIndicatorLabel.label;
 
-        const fakedIndicatorCaption: CaptionKPIComponentOptionsValueSettings = {
-            title,
-            value: "",
-            settings: fakedIndicatorSettings,
+        const fakedIndicatorCaption: ICaptionKPIComponentOptionsValueSettings = {
             className: className
                 ? `${className} ${this.hiddenElementClassName} ${this.fakedKPIIndicatorClassName}`
-                : `${this.hiddenElementClassName} ${this.fakedKPIIndicatorClassName}`
+                : `${this.hiddenElementClassName} ${this.fakedKPIIndicatorClassName}`,
+            settings: fakedIndicatorSettings,
+            title,
+            value: "",
         };
 
         const formatter: valueFormatter.IValueFormatter = this.getValueFormatter(
@@ -167,19 +167,19 @@ export class VarianceComponentWithIndicator
             kpiIndicatorValue.getFormat(),
         );
 
-        const valueCaption: CaptionKPIComponentOptionsValueSettings = {
+        const valueCaption: ICaptionKPIComponentOptionsValueSettings = {
+            settings: varianceSettings,
             title,
             value: formatter.format(variance[0]),
-            settings: varianceSettings
         };
 
-        const labelCaption: CaptionKPIComponentOptionsValueSettings = {
-            value: kpiIndicatorLabel.label,
+        const labelCaption: ICaptionKPIComponentOptionsValueSettings = {
+            className: this.indicatorValueClassName,
             settings: kpiLabelSettings,
-            className: this.indicatorValueClassName
+            value: kpiIndicatorLabel.label,
         };
 
-        let captions: CaptionKPIComponentOptionsValueSettings[][] = [];
+        const captions: ICaptionKPIComponentOptionsValueSettings[][] = [];
 
         switch (HorizontalLayoutEnum[kpiIndicator.position]) {
             case HorizontalLayoutEnum.Right: {
@@ -200,9 +200,9 @@ export class VarianceComponentWithIndicator
         }
 
         super.render({
+            align: currentAlign,
             captions,
             data: options.data,
-            align: currentAlign
         });
     }
 }

@@ -27,8 +27,8 @@
 import powerbi from "powerbi-visuals-api";
 
 import {
-    Descriptor,
-    DescriptorParserOptions,
+    IDescriptor,
+    IDescriptorParserOptions,
 } from "./descriptor";
 
 import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
@@ -39,10 +39,7 @@ import {
 
 export class NumberDescriptorBase
     extends FontSizeDescriptor
-    implements Descriptor {
-
-    protected minPrecision: number = 0;
-    protected maxPrecision: number = 17;
+    implements IDescriptor {
 
     public format: string = undefined;
     public defaultFormat: string = undefined;
@@ -50,6 +47,9 @@ export class NumberDescriptorBase
 
     public displayUnits: number = 0;
     public precision: number = undefined;
+
+    protected minPrecision: number = 0;
+    protected maxPrecision: number = 17;
 
     private shouldNumericPropertiesBeHiddenByType: boolean;
 
@@ -59,7 +59,7 @@ export class NumberDescriptorBase
         this.shouldNumericPropertiesBeHiddenByType = shouldPropertiesBeHiddenByType;
     }
 
-    public parse(options: DescriptorParserOptions) {
+    public parse(options: IDescriptorParserOptions) {
         super.parse(options);
 
         this.precision = this.getValidPrecision(this.precision);
@@ -67,20 +67,24 @@ export class NumberDescriptorBase
         this.hidePropertiesByType(options.type);
     }
 
-    private hidePropertiesByType(type: DataRepresentationTypeEnum = DataRepresentationTypeEnum.NumberType): void {
-        this.applyDefaultFormatByType(type);
+    public getFormat(): string {
+        return this.format || this.columnFormat || this.defaultFormat;
+    }
 
-        if (this.shouldNumericPropertiesBeHiddenByType
-            && type !== DataRepresentationTypeEnum.NumberType
-        ) {
-            this.hideNumberProperties();
+    public setColumnFormat(format: string) {
+        if (!format) {
+            return;
         }
 
-        if (!(type === DataRepresentationTypeEnum.NumberType
-            || type === DataRepresentationTypeEnum.DateType)
-        ) {
-            this.hideFormatProperty();
+        this.columnFormat = format;
+    }
+
+    public getValueByKey(key: string): string {
+        if (key === "format") {
+            return this.getFormat();
         }
+
+        return this[key];
     }
 
     protected getValidPrecision(precision: number): number {
@@ -99,11 +103,11 @@ export class NumberDescriptorBase
     protected hideNumberProperties(): void {
         Object.defineProperties(this, {
             displayUnits: {
-                enumerable: false
+                enumerable: false,
             },
             precision: {
-                enumerable: false
-            }
+                enumerable: false,
+            },
         });
     }
 
@@ -111,8 +115,8 @@ export class NumberDescriptorBase
         Object.defineProperty(
             this,
             "format", {
-                enumerable: false
-            }
+                enumerable: false,
+            },
         );
     }
 
@@ -142,23 +146,19 @@ export class NumberDescriptorBase
         }
     }
 
-    public getFormat(): string {
-        return this.format || this.columnFormat || this.defaultFormat;
-    }
+    private hidePropertiesByType(type: DataRepresentationTypeEnum = DataRepresentationTypeEnum.NumberType): void {
+        this.applyDefaultFormatByType(type);
 
-    public setColumnFormat(format: string) {
-        if (!format) {
-            return;
+        if (this.shouldNumericPropertiesBeHiddenByType
+            && type !== DataRepresentationTypeEnum.NumberType
+        ) {
+            this.hideNumberProperties();
         }
 
-        this.columnFormat = format;
-    }
-
-    public getValueByKey(key: string): string {
-        if (key === "format") {
-            return this.getFormat();
+        if (!(type === DataRepresentationTypeEnum.NumberType
+            || type === DataRepresentationTypeEnum.DateType)
+        ) {
+            this.hideFormatProperty();
         }
-
-        return this[key];
     }
 }

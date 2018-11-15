@@ -27,7 +27,7 @@
     "no-eval": true,
     "class-name": true,
     "max-line-length": {
-      "options": [120]
+      "options": [140]
     },
     "comment-format": [
       true,
@@ -81,6 +81,8 @@
       "check-operator",
       "check-separator",
       "check-type"
-    ]
+    ],
+    "forin": false,
+    "no-reserved-keywords": false
   }
 }

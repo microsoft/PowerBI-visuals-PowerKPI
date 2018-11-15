@@ -31,61 +31,61 @@ import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 import {
     kpiColumn,
     kpiIndicatorValueColumn,
+    secondaryValuesColumn,
     secondKPIIndicatorValueColumn,
     valuesColumn,
-    secondaryValuesColumn,
 
 } from "../capabilities/columns";
 
-import { Converter } from "./converter";
-import { ConverterOptions } from "./converterOptions";
-import { VarianceConverter } from "./varianceConverter";
-import { DataRepresentation } from "../dataRepresentation/dataRepresentation";
-import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
+import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
+import { IDataRepresentationPointIndexed } from "../dataRepresentation/dataRepresentationPointIndexed";
 import { DataRepresentationScale } from "../dataRepresentation/dataRepresentationScale";
-import { Settings } from "../settings/settings";
-import { SeriesSettings } from "../settings/seriesSettings";
+import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
+import { AxisType } from "../settings/descriptors/axis/axisDescriptor";
+import { YAxisDescriptor } from "../settings/descriptors/axis/yAxisDescriptor";
 import { BaseDescriptor } from "../settings/descriptors/descriptor";
 import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorDescriptor";
-import { YAxisDescriptor } from "../settings/descriptors/axis/axisDescriptor";
-import { AxisType } from "../settings/descriptors/axis/axisDescriptor";
-import { DataRepresentationPointIndexed } from "../dataRepresentation/dataRepresentationPointIndexed";
+import { SeriesSettings } from "../settings/seriesSettings";
+import { Settings } from "../settings/settings";
+import { IConverter } from "./converter";
+import { IConverterOptions } from "./converterOptions";
+import { VarianceConverter } from "./varianceConverter";
 
 import {
-    DataRepresentationSeries,
-    DataRepresentationSeriesGroup
+    IDataRepresentationSeries,
+    IDataRepresentationSeriesGroup,
 } from "../dataRepresentation/dataRepresentationSeries";
 
 import {
-    DataRepresentationPoint,
-    DataRepresentationPointGradientColor
+    IDataRepresentationPoint,
+    IDataRepresentationPointGradientColor,
 } from "../dataRepresentation/dataRepresentationPoint";
 
-import { DataRepresentationAxisBase } from "../dataRepresentation/dataRepresentationAxis";
+import { IDataRepresentationAxisBase } from "../dataRepresentation/dataRepresentationAxis";
 import { DataRepresentationAxisValueType } from "../dataRepresentation/dataRepresentationAxisValueType";
 
-export interface DataConverterConstructorOptions {
+export interface IDataConverterConstructorOptions {
     colorPalette: powerbi.extensibility.IColorPalette;
     createSelectionIdBuilder: () => powerbi.visuals.ISelectionIdBuilder;
 }
 
 export class DataConverter
     extends VarianceConverter
-    implements Converter {
+    implements IConverter {
 
-    constructor(private constructorOptions: DataConverterConstructorOptions) {
+    constructor(private constructorOptions: IDataConverterConstructorOptions) {
         super();
     }
 
-    public convert(options: ConverterOptions): DataRepresentation {
-        const dataRepresentation: DataRepresentation = this.process(options);
+    public convert(options: IConverterOptions): IDataRepresentation {
+        const dataRepresentation: IDataRepresentation = this.process(options);
 
         this.postProcess(dataRepresentation);
 
         return dataRepresentation;
     }
 
-    public process(options: ConverterOptions): DataRepresentation {
+    public process(options: IConverterOptions): IDataRepresentation {
         const {
             dataView,
             viewport,
@@ -99,33 +99,33 @@ export class DataConverter
 
         const settings: Settings = Settings.parse(dataView) as Settings;
 
-        let type: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
+        let axisType: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
 
-        const dataRepresentation: DataRepresentation = {
-            viewport,
-            settings,
-            series: [],
+        const dataRepresentation: IDataRepresentation = {
             groups: [],
-            sortedSeries: [],
-            x: {
-                type,
-                values: [],
-                min: undefined,
-                max: undefined,
-                metadata: undefined,
-                name: undefined,
-                format: undefined,
-                scale: DataRepresentationScale.create()
+            isGrouped: false,
+            margin: {
+                bottom: 0,
+                left: 0,
+                right: 0,
+                top: 0,
             },
+            series: [],
+            settings,
+            sortedSeries: [],
             variance: [],
             variances: [],
-            margin: {
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0
+            viewport,
+            x: {
+                axisType,
+                format: undefined,
+                max: undefined,
+                metadata: undefined,
+                min: undefined,
+                name: undefined,
+                scale: DataRepresentationScale.create(),
+                values: [],
             },
-            isGrouped: false,
         };
 
         if (!dataView
@@ -153,16 +153,16 @@ export class DataConverter
         }
 
         if (axisCategoryType.text || settings.xAxis.type === AxisType.categorical) {
-            type = DataRepresentationTypeEnum.StringType;
+            axisType = DataRepresentationTypeEnum.StringType;
         } else if (axisCategoryType.dateTime) {
-            type = DataRepresentationTypeEnum.DateType;
+            axisType = DataRepresentationTypeEnum.DateType;
         } else if (axisCategoryType.integer || axisCategoryType.numeric) {
-            type = DataRepresentationTypeEnum.NumberType;
+            axisType = DataRepresentationTypeEnum.NumberType;
         }
 
-        settings.parseSettings(viewport, type);
+        settings.parseSettings(viewport, axisType);
 
-        dataRepresentation.x.type = type;
+        dataRepresentation.x.axisType = axisType;
 
         let maxThickness: number = NaN;
 
@@ -184,8 +184,8 @@ export class DataConverter
         // Applies series formats
         dataRepresentation.x.format = dataRepresentation.settings.dateValueKPI.getFormat();
 
-        dataView.categorical.values.grouped().forEach((group: powerbi.DataViewValueColumnGroup) => {
-            const groupedValues: powerbi.DataViewValueColumn[] = group.values;
+        dataView.categorical.values.grouped().forEach((columnGroup: powerbi.DataViewValueColumnGroup) => {
+            const groupedValues: powerbi.DataViewValueColumn[] = columnGroup.values;
 
             const currentKPIColumn: powerbi.DataViewValueColumn[] = groupedValues
                 .filter((groupedValue: powerbi.DataViewValueColumn) => {
@@ -229,21 +229,21 @@ export class DataConverter
                             series: [],
                             y: {
                                 format,
-                                min: undefined,
                                 max: undefined,
+                                min: undefined,
                                 scale: DataRepresentationScale.create(),
-                            }
+                            },
                         };
                     }
 
-                    const seriesGroup: DataRepresentationSeriesGroup = dataRepresentation.groups[groupIndex];
+                    const seriesGroup: IDataRepresentationSeriesGroup = dataRepresentation.groups[groupIndex];
 
-                    const currentPoint: DataRepresentationPointIndexed = {
-                        x: null,
-                        y: NaN,
+                    const currentPoint: IDataRepresentationPointIndexed = {
+                        color: undefined,
                         index: NaN,
                         kpiIndex: NaN,
-                        color: undefined,
+                        x: null,
+                        y: NaN,
                     };
 
                     const seriesSettings: SeriesSettings = (SeriesSettings.getDefault() as SeriesSettings);
@@ -257,7 +257,7 @@ export class DataConverter
                         }
                     }
 
-                    seriesSettings.parseObjects(group.objects || groupedValue.source.objects);
+                    seriesSettings.parseObjects(columnGroup.objects || groupedValue.source.objects);
 
                     if (!seriesSettings.line.fillColor
                         && colorPalette
@@ -268,9 +268,9 @@ export class DataConverter
                         seriesColorIndex++;
                     }
 
-                    const seriesY: DataRepresentationAxisBase = {
-                        min: undefined,
+                    const seriesY: IDataRepresentationAxisBase = {
                         max: undefined,
+                        min: undefined,
                     };
 
                     const { points, gradientPoints } = this.getGradientPoints(
@@ -285,7 +285,7 @@ export class DataConverter
                         currentPoint,
                     );
 
-                    const isGrouped: boolean = group && !!group.identity;
+                    const isGrouped: boolean = columnGroup && !!columnGroup.identity;
 
                     if (isGrouped) {
                         dataRepresentation.isGrouped = isGrouped;
@@ -295,8 +295,8 @@ export class DataConverter
                         .withSeries(
                             dataView.categorical.values,
                             isGrouped
-                                ? group
-                                : groupedValue
+                                ? columnGroup
+                                : groupedValue,
                         )
                         .withMeasure(groupedValue.source.queryName)
                         .createSelectionId();
@@ -305,27 +305,27 @@ export class DataConverter
                         maxThickness = seriesSettings.line.thickness;
                     }
 
-                    const name: string = isGrouped && group.name
-                        ? `${group.name} - ${groupedValue.source.displayName}`
+                    const name: string = isGrouped && columnGroup.name
+                        ? `${columnGroup.name} - ${groupedValue.source.displayName}`
                         : groupedValue.source.displayName;
 
-                    const groupName: string = isGrouped && group.name
-                        ? `${group.name}`
+                    const groupName: string = isGrouped && columnGroup.name
+                        ? `${columnGroup.name}`
                         : undefined;
 
                     seriesGroup.series.push({
-                        name,
-                        points,
+                        current: currentPoint,
+                        domain: seriesY,
                         format,
-                        identity,
+                        gradientPoints,
                         groupName,
                         hasSelection,
-                        gradientPoints,
-                        domain: seriesY,
-                        y: seriesGroup.y,
-                        current: currentPoint,
-                        settings: seriesSettings,
+                        identity,
+                        name,
+                        points,
                         selected: false,
+                        settings: seriesSettings,
+                        y: seriesGroup.y,
                     });
                 }
             });
@@ -337,16 +337,16 @@ export class DataConverter
             dataRepresentation.x.scale,
             dataRepresentation.x.min,
             dataRepresentation.x.max,
-            dataRepresentation.x.type,
-            axisCategory.values
+            dataRepresentation.x.axisType,
+            axisCategory.values,
         );
 
         dataRepresentation.margin = settings.dots.getMarginByThickness(
             maxThickness,
-            dataRepresentation.margin
+            dataRepresentation.margin,
         );
 
-        const group: DataRepresentationSeriesGroup = dataRepresentation.groups
+        const group: IDataRepresentationSeriesGroup = dataRepresentation.groups
             && (dataRepresentation.groups[0] || dataRepresentation.groups[1]);
 
         if (dataRepresentation.variances[0]) {
@@ -356,7 +356,7 @@ export class DataConverter
         } else {
             dataRepresentation.variance.push(this.getVarianceByCurrentPointsOfSeries(
                 group && group.series[0],
-                group && group.series[1]
+                group && group.series[1],
             ));
         }
 
@@ -367,11 +367,62 @@ export class DataConverter
         } else {
             dataRepresentation.variance.push(this.getVarianceByCurrentPointsOfSeries(
                 group && group.series[0],
-                group && group.series[2]
+                group && group.series[2],
             ));
         }
 
         return dataRepresentation;
+    }
+
+    public isValueFinite(value: number): boolean {
+        return value != null && isFinite(value);
+    }
+
+    public postProcess(dataRepresentation: IDataRepresentation): void {
+        if (!dataRepresentation || !dataRepresentation.groups) {
+            return;
+        }
+
+        const {
+            settings,
+            viewport,
+        } = dataRepresentation;
+
+        dataRepresentation.groups.forEach((
+            seriesGroup: IDataRepresentationSeriesGroup,
+            seriesGroupIndex: number,
+        ) => {
+            if (seriesGroup) {
+                dataRepresentation.series = dataRepresentation.series.concat(seriesGroup.series);
+
+                const yAxisSettings: YAxisDescriptor = seriesGroupIndex === 0
+                    ? settings.yAxis
+                    : settings.secondaryYAxis;
+
+                const yMin: number = this.getNotNaNValue(
+                    yAxisSettings.min,
+                    seriesGroup.y.min as number,
+                );
+
+                const yMax: number = this.getNotNaNValue(
+                    yAxisSettings.max,
+                    seriesGroup.y.max as number,
+                );
+
+                seriesGroup.y.min = Math.min(yMin, yMax);
+                seriesGroup.y.max = Math.max(yMin, yMax);
+
+                seriesGroup.y.scale.domain(
+                    [seriesGroup.y.min, seriesGroup.y.max],
+                    DataRepresentationTypeEnum.NumberType,
+                );
+            }
+        });
+
+        dataRepresentation.sortedSeries = this.sortSeries(
+            dataRepresentation.series,
+            viewport.height,
+        );
     }
 
     /**
@@ -385,23 +436,24 @@ export class DataConverter
      *   1. A data point starts a color segment
      *   2. A data point ends a color segment
      *
-     * The second approach requires to handle axisValues from the end while the first approach handles values in the natural order
+     * The second approach requires to handle axisValues from the end,
+     * while the first approach handles values in the natural order
      */
     private getGradientPoints(
         axisValues: DataRepresentationAxisValueType[],
-        dataRepresentation: DataRepresentation,
-        seriesGroup: DataRepresentationSeriesGroup,
+        dataRepresentation: IDataRepresentation,
+        seriesGroup: IDataRepresentationSeriesGroup,
         groupedValue: powerbi.DataViewValueColumn,
-        seriesY: DataRepresentationAxisBase,
+        seriesY: IDataRepresentationAxisBase,
         kpiIndexes: number[],
         seriesSettings: SeriesSettings,
         settings: Settings,
-        currentPoint: DataRepresentationPointIndexed,
+        currentPoint: IDataRepresentationPointIndexed,
     ): {
-            points: DataRepresentationPoint[],
-            gradientPoints: DataRepresentationPointGradientColor[],
+            points: IDataRepresentationPoint[],
+            gradientPoints: IDataRepresentationPointGradientColor[],
         } {
-        const gradientPoints: DataRepresentationPointGradientColor[] = [];
+        const gradientPoints: IDataRepresentationPointGradientColor[] = [];
 
         const dataPointEndsKpiColorSegment: boolean = !seriesSettings.line.dataPointStartsKpiColorSegment;
 
@@ -409,7 +461,7 @@ export class DataConverter
             ? axisValues.slice().reverse()
             : axisValues.slice();
 
-        const points: DataRepresentationPoint[] = copiedAxisValues
+        const points: IDataRepresentationPoint[] = copiedAxisValues
             .map((axisValue: DataRepresentationAxisValueType, index: number) => {
                 const categoryIndex: number = dataPointEndsKpiColorSegment
                     ? copiedAxisValues.length - 1 - index
@@ -422,7 +474,7 @@ export class DataConverter
 
                 this.applyYArguments(seriesY, value);
 
-                let kpiIndex: number = this.getKPIIndex(kpiIndexes[categoryIndex]);
+                const kpiIndex: number = this.getKPIIndex(kpiIndexes[categoryIndex]);
 
                 let color: string = seriesSettings.line.fillColor;
 
@@ -434,7 +486,9 @@ export class DataConverter
                     color = currentKPI && currentKPI.color || color;
                 }
 
-                if (this.isValueFinite(value) && (categoryIndex > currentPoint.index || !isFinite(currentPoint.index))) {
+                if (this.isValueFinite(value)
+                    && (categoryIndex > currentPoint.index || !isFinite(currentPoint.index))
+                ) {
                     currentPoint.x = axisValue;
                     currentPoint.y = value;
                     currentPoint.index = categoryIndex;
@@ -442,7 +496,7 @@ export class DataConverter
                     currentPoint.color = color;
                 }
 
-                const point: DataRepresentationPoint = {
+                const point: IDataRepresentationPoint = {
                     color,
                     kpiIndex,
                     x: axisValue,
@@ -466,69 +520,18 @@ export class DataConverter
         }
 
         return {
-            points,
             gradientPoints,
+            points,
         };
     }
 
-    public isValueFinite(value: number): boolean {
-        return value != null && isFinite(value);
-    }
-
-    public postProcess(dataRepresentation: DataRepresentation): void {
-        if (!dataRepresentation || !dataRepresentation.groups) {
-            return;
-        }
-
-        const {
-            settings,
-            viewport,
-        } = dataRepresentation;
-
-        dataRepresentation.groups.forEach((
-            seriesGroup: DataRepresentationSeriesGroup,
-            seriesGroupIndex: number
-        ) => {
-            if (seriesGroup) {
-                dataRepresentation.series = dataRepresentation.series.concat(seriesGroup.series);
-
-                const yAxisSettings: YAxisDescriptor = seriesGroupIndex === 0
-                    ? settings.yAxis
-                    : settings.secondaryYAxis;
-
-                const yMin: number = this.getNotNaNValue(
-                    yAxisSettings.min,
-                    seriesGroup.y.min as number
-                );
-
-                const yMax: number = this.getNotNaNValue(
-                    yAxisSettings.max,
-                    seriesGroup.y.max as number
-                );
-
-                seriesGroup.y.min = Math.min(yMin, yMax);
-                seriesGroup.y.max = Math.max(yMin, yMax);
-
-                seriesGroup.y.scale.domain(
-                    [seriesGroup.y.min, seriesGroup.y.max],
-                    DataRepresentationTypeEnum.NumberType
-                );
-            }
-        });
-
-        dataRepresentation.sortedSeries = this.sortSeries(
-            dataRepresentation.series,
-            viewport.height
-        );
-    }
-
     private sortSeries(
-        series: DataRepresentationSeries[],
-        height: number
-    ): DataRepresentationSeries[] {
+        series: IDataRepresentationSeries[],
+        height: number,
+    ): IDataRepresentationSeries[] {
         return series
             .slice()
-            .sort((a: DataRepresentationSeries, b: DataRepresentationSeries) => {
+            .sort((a: IDataRepresentationSeries, b: IDataRepresentationSeries) => {
                 // To sort series we have to convert value to px as scales are not the same
                 const aYScale: DataRepresentationScale = a.y.scale
                     .copy()
@@ -544,13 +547,14 @@ export class DataConverter
                 const aScaledMin: number = aYScale.scale(a.domain.min);
                 const aScaledMax: number = aYScale.scale(a.domain.max);
 
+                 // Brackets are not required but they make this condition simpler to understand
                 return (aScaledMax - bScaledMax)
-                    || (aScaledMin - bScaledMin); // Brackets are not required but they make this condition simpler to understand
+                    || (aScaledMin - bScaledMin);
             });
     }
 
     private applyXArguments(
-        dataRepresentation: DataRepresentation,
+        dataRepresentation: IDataRepresentation,
         axisValue: DataRepresentationAxisValueType,
     ): void {
         if (dataRepresentation.x.min === undefined) {
@@ -561,8 +565,8 @@ export class DataConverter
             dataRepresentation.x.max = axisValue;
         }
 
-        if (dataRepresentation.x.type === DataRepresentationTypeEnum.DateType
-            || dataRepresentation.x.type === DataRepresentationTypeEnum.NumberType
+        if (dataRepresentation.x.axisType === DataRepresentationTypeEnum.DateType
+            || dataRepresentation.x.axisType === DataRepresentationTypeEnum.NumberType
         ) {
             if (axisValue < dataRepresentation.x.min) {
                 dataRepresentation.x.min = axisValue;
@@ -571,7 +575,7 @@ export class DataConverter
             if (axisValue > dataRepresentation.x.max) {
                 dataRepresentation.x.max = axisValue;
             }
-        } else if (dataRepresentation.x.type === DataRepresentationTypeEnum.StringType) {
+        } else if (dataRepresentation.x.axisType === DataRepresentationTypeEnum.StringType) {
             const format: string = dataRepresentation.x.format;
 
             const textLength: number = this.getLength(axisValue, format);
@@ -609,8 +613,8 @@ export class DataConverter
     }
 
     private applyYArguments(
-        axis: DataRepresentationAxisBase,
-        value: number
+        axis: IDataRepresentationAxisBase,
+        value: number,
     ): void {
         if (axis.min === undefined) {
             axis.min = value;

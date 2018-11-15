@@ -26,14 +26,14 @@
 
 import { DataRepresentationAxisValueType } from "./dataRepresentationAxisValueType";
 
-export interface DataRepresentationPoint {
+export interface IDataRepresentationPoint {
     x: DataRepresentationAxisValueType;
     y: number;
     kpiIndex: number;
     color: string;
 }
 
-export interface DataRepresentationPointGradientColor {
+export interface IDataRepresentationPointGradientColor {
     color: string;
-    points: DataRepresentationPoint[];
+    points: IDataRepresentationPoint[];
 }

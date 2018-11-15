@@ -28,27 +28,27 @@ import powerbi from "powerbi-visuals-api";
 import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
 import { VarianceConverter } from "../converter/varianceConverter";
-import { VisualComponent } from "./base/visualComponent";
-import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
-import { EventPositionVisualComponentOptions } from "./eventPositionVisualComponentOptions";
-import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
-import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
+import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
+import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
-import { TooltipLabelDescriptor } from "../settings/descriptors/tooltip/tooltipLabelDescriptor";
 import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorDescriptor";
-import { SeriesSettings } from "../settings/seriesSettings";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
+import { TooltipLabelDescriptor } from "../settings/descriptors/tooltip/tooltipLabelDescriptor";
+import { SeriesSettings } from "../settings/seriesSettings";
+import { VisualComponent } from "./base/visualComponent";
+import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { IEventPositionVisualComponentOptions } from "./eventPositionVisualComponentOptions";
 
-export interface TooltipComponentConstructorOptions extends VisualComponentConstructorOptions {
+export interface ITooltipComponentConstructorOptions extends IVisualComponentConstructorOptions {
     tooltipService: powerbi.extensibility.ITooltipService;
 }
 
 enum TooltipMarkerShapeEnum {
     circle,
-    none
+    none,
 }
 
-interface VisualTooltipDataItem extends powerbi.extensibility.VisualTooltipDataItem {
+interface IVisualTooltipDataItem extends powerbi.extensibility.VisualTooltipDataItem {
     lineStyle?: string; // TODO: Extend PBI API
     markerShape?: string; // TODO: Extend PBI API
     lineColor?: string; // TODO: Extend PBI API
@@ -56,7 +56,7 @@ interface VisualTooltipDataItem extends powerbi.extensibility.VisualTooltipDataI
 
 export class TooltipComponent
     extends VarianceConverter
-    implements VisualComponent<EventPositionVisualComponentOptions> {
+    implements VisualComponent<IEventPositionVisualComponentOptions> {
 
     private varianceDisplayName: string = "Variance";
     private secondVarianceDisplayName: string = `${this.varianceDisplayName} 2`;
@@ -65,11 +65,11 @@ export class TooltipComponent
 
     private transparentColor: string = "rgba(0,0,0,0)";
 
-    constructor(private constructorOptions: TooltipComponentConstructorOptions) {
+    constructor(private constructorOptions: ITooltipComponentConstructorOptions) {
         super();
     }
 
-    public render(options: EventPositionVisualComponentOptions): void {
+    public render(options: IEventPositionVisualComponentOptions): void {
         if (!options.position || !this.constructorOptions.tooltipService) {
             return;
         }
@@ -77,7 +77,27 @@ export class TooltipComponent
         this.showTooltip(options);
     }
 
-    private showTooltip(options: EventPositionVisualComponentOptions): void {
+    public clear(): void {
+        if (!this.constructorOptions.tooltipService) {
+            return;
+        }
+
+        this.constructorOptions.tooltipService.hide({
+            immediately: true,
+            isTouchEvent: false,
+        });
+    }
+
+    public destroy(): void {
+        this.clear();
+        this.constructorOptions = null;
+    }
+
+    public hide(): void {
+        this.clear();
+    }
+
+    private showTooltip(options: IEventPositionVisualComponentOptions): void {
         const {
             position,
             data: {
@@ -91,8 +111,8 @@ export class TooltipComponent
                     tooltipValues,
                     legend,
                 },
-                variances
-            }
+                variances,
+            },
         } = options;
 
         if (!tooltipLabel.show
@@ -105,9 +125,9 @@ export class TooltipComponent
             return;
         }
 
-        let dataItems: VisualTooltipDataItem[] = [];
+        let dataItems: IVisualTooltipDataItem[] = [];
 
-        const firstVariance: VisualTooltipDataItem = this.getVarianceTooltip(
+        const firstVariance: IVisualTooltipDataItem = this.getVarianceTooltip(
             series[0] && series[0].points[0],
             series[1] && series[1].points[0],
             tooltipVariance,
@@ -125,13 +145,13 @@ export class TooltipComponent
             dataItems.push(firstVariance);
         }
 
-        const secondVariance: VisualTooltipDataItem = this.getVarianceTooltip(
+        const secondVariance: IVisualTooltipDataItem = this.getVarianceTooltip(
             series[0] && series[0].points[0],
             series[2] && series[2].points[0],
             secondTooltipVariance,
             this.secondVarianceDisplayName,
             undefined,
-            (variances[1] || [])[0]
+            (variances[1] || [])[0],
         );
 
         if (secondVariance) {
@@ -146,35 +166,35 @@ export class TooltipComponent
         }
 
         if (tooltipValues.show) {
-            series.forEach((dataSeries: DataRepresentationSeries) => {
-                const valueFormatter: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
+            series.forEach((dataSeries: IDataRepresentationSeries) => {
+                const valueFormatterInstance: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
                     dataSeries.format || this.numberFormat,
                     tooltipValues.displayUnits,
-                    tooltipValues.precision
+                    tooltipValues.precision,
                 );
 
-                const point: DataRepresentationPoint = dataSeries
+                const dataSeriesPoint: IDataRepresentationPoint = dataSeries
                     && dataSeries.points
                     && dataSeries.points[0];
 
-                if (point
-                    && point.y !== null
-                    && point.y !== undefined
-                    && !isNaN(point.y)
+                if (dataSeriesPoint
+                    && dataSeriesPoint.y !== null
+                    && dataSeriesPoint.y !== undefined
+                    && !isNaN(dataSeriesPoint.y)
                 ) {
                     dataItems.push({
-                        displayName: `${dataSeries.name}`,
-                        value: valueFormatter.format(point.y),
                         color: dataSeries.settings.line.fillColor,
+                        displayName: `${dataSeries.name}`,
+                        lineColor: dataSeries.settings.line.fillColor,
                         lineStyle: legend.getLegendLineStyle(dataSeries.settings.line.lineStyle),
                         markerShape: legend.getLegendMarkerShape(),
-                        lineColor: dataSeries.settings.line.fillColor,
+                        value: valueFormatterInstance.format(dataSeriesPoint.y),
                     });
                 }
             });
         }
 
-        const point: DataRepresentationPoint = series
+        const point: IDataRepresentationPoint = series
             && series[0]
             && series[0].points
             && series[0].points[0];
@@ -186,10 +206,10 @@ export class TooltipComponent
         ) {
             const formatter: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
                 tooltipLabel.getFormat(),
-                x.type === DataRepresentationTypeEnum.NumberType
+                x.axisType === DataRepresentationTypeEnum.NumberType
                     ? tooltipLabel.displayUnits
                     : undefined,
-                x.type === DataRepresentationTypeEnum.NumberType
+                x.axisType === DataRepresentationTypeEnum.NumberType
                     ? tooltipLabel.precision
                     : undefined);
 
@@ -199,10 +219,10 @@ export class TooltipComponent
 
             dataItems = [
                 {
-                    displayName: "",
-                    value: text,
                     color: this.transparentColor,
-                    markerShape: this.getTooltipMarkerShape(TooltipMarkerShapeEnum.circle)
+                    displayName: "",
+                    markerShape: this.getTooltipMarkerShape(TooltipMarkerShapeEnum.circle),
+                    value: text,
                 },
                 ...dataItems,
             ];
@@ -210,8 +230,8 @@ export class TooltipComponent
 
         if (dataItems.length) {
             this.constructorOptions.tooltipService.show({
-                dataItems,
                 coordinates: this.getCoordinates(position.x, position.y),
+                dataItems,
                 identities: [],
                 isTouchEvent: false,
             });
@@ -227,7 +247,7 @@ export class TooltipComponent
 
         const rootNode: HTMLElement = this.constructorOptions.rootElement.node();
 
-        let rect: ClientRect = rootNode.getBoundingClientRect();
+        const rect: ClientRect = rootNode.getBoundingClientRect();
 
         return [
             x - rect.left - rootNode.clientLeft,
@@ -235,25 +255,25 @@ export class TooltipComponent
         ];
     }
 
-    private getTooltipSeparator(): VisualTooltipDataItem {
+    private getTooltipSeparator(): IVisualTooltipDataItem {
         return {
-            displayName: "   ",
-            value: "",
             color: this.transparentColor,
-            markerShape: this.getTooltipMarkerShape(TooltipMarkerShapeEnum.none)
+            displayName: "   ",
+            markerShape: this.getTooltipMarkerShape(TooltipMarkerShapeEnum.none),
+            value: "",
         };
     }
 
     private getVarianceTooltip(
-        firstPoint: DataRepresentationPoint,
-        secondPoint: DataRepresentationPoint,
+        firstPoint: IDataRepresentationPoint,
+        secondPoint: IDataRepresentationPoint,
         settings: TooltipLabelDescriptor,
         displayName: string,
         commonKPISettings: IKPIIndicatorSettings = {},
         kpiIndicatorVariance: number,
         legendDescriptor?: LegendDescriptor,
         seriesSetting?: SeriesSettings,
-    ): VisualTooltipDataItem {
+    ): IVisualTooltipDataItem {
         if (!settings.show) {
             return null;
         }
@@ -288,10 +308,10 @@ export class TooltipComponent
 
         return {
             color,
+            displayName: `${settings.label}` || `${displayName}`,
+            lineColor,
             lineStyle,
             markerShape,
-            lineColor,
-            displayName: `${settings.label}` || `${displayName}`,
             value: varianceFormatter.format(variance),
         };
     }
@@ -299,36 +319,16 @@ export class TooltipComponent
     private getValueFormatterByFormat(
         format?: string,
         displayUnits?: number,
-        precision?: number
+        precision?: number,
     ): valueFormatter.IValueFormatter {
         return valueFormatter.valueFormatter.create({
             format,
             precision,
-            value: displayUnits
+            value: displayUnits,
         });
     }
 
     private getTooltipMarkerShape(markerShape: TooltipMarkerShapeEnum): string {
         return TooltipMarkerShapeEnum[markerShape];
-    }
-
-    public clear(): void {
-        if (!this.constructorOptions.tooltipService) {
-            return;
-        }
-
-        this.constructorOptions.tooltipService.hide({
-            isTouchEvent: false,
-            immediately: true,
-        });
-    }
-
-    public destroy(): void {
-        this.clear();
-        this.constructorOptions = null;
-    }
-
-    public hide(): void {
-        this.clear();
     }
 }

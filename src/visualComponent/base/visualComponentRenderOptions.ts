@@ -24,13 +24,13 @@
  *  THE SOFTWARE.
  */
 
-import { DataRepresentation } from "../../dataRepresentation/dataRepresentation";
-import { DataRepresentationSeries } from "../../dataRepresentation/dataRepresentationSeries";
+import { IDataRepresentation } from "../../dataRepresentation/dataRepresentation";
+import { IDataRepresentationSeries } from "../../dataRepresentation/dataRepresentationSeries";
 
-export interface VisualComponentRenderOptionsBase {
-    series?: DataRepresentationSeries;
+export interface IVisualComponentRenderOptionsBase {
+    series?: IDataRepresentationSeries;
 }
 
-export interface VisualComponentRenderOptions extends VisualComponentRenderOptionsBase {
-    data: DataRepresentation;
+export interface IVisualComponentRenderOptions extends IVisualComponentRenderOptionsBase {
+    data: IDataRepresentation;
 }

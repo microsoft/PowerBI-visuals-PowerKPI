@@ -34,7 +34,11 @@ export class LabelsDescriptor extends NumberDescriptorBase {
     public isBold: boolean = false;
     public isItalic: boolean = false;
 
-    public percentile: number = 100; // This property is an alias of density and it's defined special for Power BI. It's predefined PBI property name in order to create a percentage slider at format panel
+    /**
+     * This property is an alias of density and it's defined special for Power BI.
+     * It's predefined PBI property name in order to create a percentage slider at format panel.
+     */
+    public percentile: number = 100;
 
     public get density(): number {
         return this.percentile;

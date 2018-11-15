@@ -24,10 +24,10 @@
  *  THE SOFTWARE.
  */
 
-import { ConverterOptions } from "./converterOptions";
+import { IConverterOptions } from "./converterOptions";
 
-import { DataRepresentation } from "../dataRepresentation/dataRepresentation";
+import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
 
-export interface Converter {
-    convert(options: ConverterOptions): DataRepresentation;
+export interface IConverter {
+    convert(options: IConverterOptions): IDataRepresentation;
 }

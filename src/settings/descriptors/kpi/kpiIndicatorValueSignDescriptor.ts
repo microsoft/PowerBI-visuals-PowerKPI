@@ -27,15 +27,15 @@
 import powerbi from "powerbi-visuals-api";
 
 import {
-    Descriptor,
-    DescriptorParserOptions
+    IDescriptor,
+    IDescriptorParserOptions,
 } from "./../descriptor";
 
 import { KPIIndicatorValueDescriptor } from "./kpiIndicatorValueDescriptor";
 
 export class KPIIndicatorValueSignDescriptor
     extends KPIIndicatorValueDescriptor
-    implements Descriptor {
+    implements IDescriptor {
 
     public matchKPIColor: boolean = true;
 
@@ -50,7 +50,7 @@ export class KPIIndicatorValueSignDescriptor
         this.fontColor = "#333333";
     }
 
-    public parse(options: DescriptorParserOptions): void {
+    public parse(options: IDescriptorParserOptions): void {
         super.parse(options);
 
         this.makePropertyFontColorPropertyEnumerable(!this.matchKPIColor);
@@ -58,7 +58,7 @@ export class KPIIndicatorValueSignDescriptor
 
     private makePropertyFontColorPropertyEnumerable(isEnumerable: boolean): void {
         Object.defineProperty(this, "fontColor", {
-            enumerable: isEnumerable
+            enumerable: isEnumerable,
         });
     }
 }

@@ -24,35 +24,37 @@
  *  THE SOFTWARE.
  */
 
-import powerbi from "powerbi-visuals-api";
-
 import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
 
 import LegendPosition = legendInterfaces.LegendPosition;
 
 import { BaseContainerComponent } from "./base/baseContainerComponent";
-import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
-import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
 import {
     VisualComponent,
-    VisualComponentViewport
+    VisualComponentViewport,
 } from "./base/visualComponent";
 
-import { LegendComponent } from "./legendComponent";
-import { LayoutComponent } from "./layoutComponent";
 import { LayoutToStyleEnum } from "../layout/layoutToStyleEnum";
+import { LayoutComponent } from "./layoutComponent";
+import { LegendComponent } from "./legendComponent";
 
-export class CommonComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions> {
+export class CommonComponent extends BaseContainerComponent<
+    IVisualComponentConstructorOptions,
+    IVisualComponentRenderOptions,
+    IVisualComponentRenderOptions
+    > {
     private className: string = "commonComponent";
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
             this.className,
-            "div"
+            "div",
         );
 
         this.element.classed(this.className, true);
@@ -68,10 +70,10 @@ export class CommonComponent extends BaseContainerComponent<VisualComponentConst
         ];
     }
 
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         this.forEach(
             this.components,
-            (component: VisualComponent<VisualComponentRenderOptions>) => {
+            (component: VisualComponent<IVisualComponentRenderOptions>) => {
                 component.render(options);
 
                 if (component.getViewport) {
@@ -80,7 +82,7 @@ export class CommonComponent extends BaseContainerComponent<VisualComponentConst
                     options.data.viewport.height -= viewport.height;
                     options.data.viewport.width -= viewport.width;
                 }
-            }
+            },
         );
 
         const { data: { settings: { legend } } } = options;
@@ -88,7 +90,7 @@ export class CommonComponent extends BaseContainerComponent<VisualComponentConst
 
         this.element.attr(
             "class",
-            `${this.getClassNameWithPrefix(this.className)} ${LayoutToStyleEnum[layout]}`
+            `${this.getClassNameWithPrefix(this.className)} ${LayoutToStyleEnum[layout]}`,
         );
     }
 

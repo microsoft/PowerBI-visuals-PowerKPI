@@ -28,14 +28,14 @@ import powerbi from "powerbi-visuals-api";
 
 import { DataRepresentationTypeEnum } from "../../dataRepresentation/dataRepresentationType";
 
-export interface DescriptorParserOptions {
+export interface IDescriptorParserOptions {
     isAutoHideBehaviorEnabled: boolean;
     viewport: powerbi.IViewport;
     type: DataRepresentationTypeEnum;
 }
 
-export interface Descriptor {
-    parse?(options?: DescriptorParserOptions): void;
+export interface IDescriptor {
+    parse?(options?: IDescriptorParserOptions): void;
     setDefault?(): void;
     getValueByKey?(key: string): string | number | boolean;
     shouldKeyBeEnumerated?(key: string): boolean;
@@ -57,14 +57,14 @@ export abstract class BaseDescriptor {
     public enumerateProperties(): { [propertyName: string]: powerbi.DataViewPropertyValue; } {
         const properties: { [propertyName: string]: powerbi.DataViewPropertyValue; } = {};
 
-        for (let key in this) {
-            const shouldKeyBeEnumerated: boolean = (this as Descriptor).shouldKeyBeEnumerated
-                ? (this as Descriptor).shouldKeyBeEnumerated(key)
+        for (const key in this) {
+            const shouldKeyBeEnumerated: boolean = (this as IDescriptor).shouldKeyBeEnumerated
+                ? (this as IDescriptor).shouldKeyBeEnumerated(key)
                 : this.hasOwnProperty(key);
 
             if (shouldKeyBeEnumerated) {
-                if ((this as Descriptor).getValueByKey) {
-                    properties[key] = (this as Descriptor).getValueByKey(key);
+                if ((this as IDescriptor).getValueByKey) {
+                    properties[key] = (this as IDescriptor).getValueByKey(key);
                 } else {
                     properties[key] = this[key] as any;
                 }
@@ -74,4 +74,3 @@ export abstract class BaseDescriptor {
         return properties;
     }
 }
-

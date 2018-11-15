@@ -85,4 +85,3 @@ export class LegendDescriptor extends FontSizeDescriptor {
         return undefined;
     }
 }
-

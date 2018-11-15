@@ -24,9 +24,9 @@
  *  THE SOFTWARE.
  */
 
-import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
-export interface EventPositionVisualComponentOptions extends VisualComponentRenderOptions {
+export interface IEventPositionVisualComponentOptions extends IVisualComponentRenderOptions {
     position?: {
         x: number;
         y: number;

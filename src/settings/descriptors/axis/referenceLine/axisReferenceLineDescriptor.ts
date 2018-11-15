@@ -26,19 +26,19 @@
 
 import {
     BaseDescriptor,
-    Descriptor,
+    IDescriptor,
 } from "../../descriptor";
 
 export class AxisReferenceLineDescriptor
     extends BaseDescriptor
-    implements Descriptor {
-
-    private _minThickness: number = 0.2;
-    private _maxThickness: number = 5;
+    implements IDescriptor {
 
     public show: boolean;
     public color: string = "#e9e9e9";
     public thickness: number = 1;
+
+    private _minThickness: number = 0.2;
+    private _maxThickness: number = 5;
 
     constructor(isShown: boolean = true) {
         super();

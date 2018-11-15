@@ -28,22 +28,22 @@ import powerbi from "powerbi-visuals-api";
 import { IMargin } from "powerbi-visuals-utils-svgutils";
 
 import {
-    DataRepresentationSeries,
-    DataRepresentationSeriesGroup,
+    IDataRepresentationSeries,
+    IDataRepresentationSeriesGroup,
 } from "./dataRepresentationSeries";
 
 import { Settings } from "../settings/settings";
-import { DataRepresentationX } from "./dataRepresentationAxis";
+import { IDataRepresentationX } from "./dataRepresentationAxis";
 
-export interface DataRepresentation {
-    series: DataRepresentationSeries[];
-    sortedSeries: DataRepresentationSeries[];
-    groups: DataRepresentationSeriesGroup[];
+export interface IDataRepresentation {
+    series: IDataRepresentationSeries[];
+    sortedSeries: IDataRepresentationSeries[];
+    groups: IDataRepresentationSeriesGroup[];
     viewport: powerbi.IViewport;
     settings: Settings;
     variance: number[];
     variances: number[][];
     margin: IMargin;
-    x: DataRepresentationX;
+    x: IDataRepresentationX;
     isGrouped?: boolean;
 }

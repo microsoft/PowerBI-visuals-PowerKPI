@@ -24,43 +24,42 @@
  *  THE SOFTWARE.
  */
 
-export interface VisualDataRole {
+export interface IVisualDataRole {
     name: string; // must be aligned to capabilities.json
     displayName: string;
 }
 
-export const categoryColumn: VisualDataRole = {
-    name: "Axis",
+export const categoryColumn: IVisualDataRole = {
     displayName: "Axis",
+    name: "Axis",
 };
 
-export const kpiColumn: VisualDataRole = {
-    name: "KPI",
+export const kpiColumn: IVisualDataRole = {
     displayName: "KPI Indicator Index",
+    name: "KPI",
 };
 
-export const kpiIndicatorValueColumn: VisualDataRole = {
-    name: "KPIIndicatorValue",
+export const kpiIndicatorValueColumn: IVisualDataRole = {
     displayName: "KPI Indicator Value",
+    name: "KPIIndicatorValue",
 };
 
-export const secondKPIIndicatorValueColumn: VisualDataRole = {
-    name: "SecondKPIIndicatorValue",
+export const secondKPIIndicatorValueColumn: IVisualDataRole = {
     displayName: "Second KPI Indicator Value",
+    name: "SecondKPIIndicatorValue",
 };
 
-export const valuesColumn: VisualDataRole = {
-    name: "Values",
+export const valuesColumn: IVisualDataRole = {
     displayName: "Values",
+    name: "Values",
 };
 
-export const seriesColumn: VisualDataRole = {
-    name: "SeriesColumn",
+export const seriesColumn: IVisualDataRole = {
     displayName: "Series",
+    name: "SeriesColumn",
 };
 
-export const secondaryValuesColumn: VisualDataRole = {
-    name: "SecondaryValues",
+export const secondaryValuesColumn: IVisualDataRole = {
     displayName: "Secondary Values",
+    name: "SecondaryValues",
 };
-

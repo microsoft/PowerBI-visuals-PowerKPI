@@ -28,37 +28,37 @@ import powerbi from "powerbi-visuals-api";
 
 import {
     IMargin,
-    manipulation as svgManipulation
+    manipulation as svgManipulation,
 } from "powerbi-visuals-utils-svgutils";
 
-import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 import {
     textMeasurementService,
     valueFormatter,
 } from "powerbi-visuals-utils-formattingutils";
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
-import { DataRepresentationAxis } from "../../dataRepresentation/dataRepresentationAxis";
-import { YAxisDescriptor } from "../../settings/descriptors/axis/axisDescriptor";
-import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
+import { IDataRepresentationAxis } from "../../dataRepresentation/dataRepresentationAxis";
+import { YAxisDescriptor } from "../../settings/descriptors/axis/yAxisDescriptor";
 import { VisualComponentViewport } from "../base/visualComponent";
+import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 
-import { AxisHelper } from "./helpers/axisHelper";
+import { createAxis } from "./helpers/axisHelper";
 
 import {
-    AxisComponent,
-    AxisBaseComponent
+    AxisBaseComponent,
+    IAxisComponent,
 } from "./axisBaseComponent";
 
-export interface YAxisComponentRenderOptions {
+export interface IYAxisComponentRenderOptions {
     settings: YAxisDescriptor;
-    axis: DataRepresentationAxis;
+    axis: IDataRepresentationAxis;
     viewport: powerbi.IViewport;
     margin: IMargin;
 }
 
 export class YAxisComponent
-    extends AxisBaseComponent<VisualComponentConstructorOptions, YAxisComponentRenderOptions>
-    implements AxisComponent<YAxisComponentRenderOptions> {
+    extends AxisBaseComponent<IVisualComponentConstructorOptions, IYAxisComponentRenderOptions>
+    implements IAxisComponent<IYAxisComponentRenderOptions> {
 
     private className: string = "visualYAxis";
 
@@ -69,23 +69,21 @@ export class YAxisComponent
     private maxLabelWidth: number = 0;
     private maxLabelHeight: number = 0;
 
-    private maxXAxisLabelWidth: number = 100;
-
     private valueFormat: string = valueFormatter.valueFormatter.DefaultNumericFormat;
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
             this.className,
-            "svg"
+            "svg",
         );
 
         this.gElement = this.element.append("g");
     }
 
-    public preRender(options: YAxisComponentRenderOptions): void {
+    public preRender(options: IYAxisComponentRenderOptions): void {
         if (!this.areRenderOptionsValid(options)) {
             return;
         }
@@ -109,18 +107,18 @@ export class YAxisComponent
             undefined,
             undefined,
             settings.precision,
-            axis.format || this.valueFormat
+            axis.format || this.valueFormat,
         );
 
         this.maxLabelHeight = this.getLabelHeight(
             axis.max,
             this.formatter,
             fontSize,
-            settings.fontFamily
+            settings.fontFamily,
         );
     }
 
-    public render(options: YAxisComponentRenderOptions): void {
+    public render(options: IYAxisComponentRenderOptions): void {
         if (!this.areRenderOptionsValid(options)) {
             this.hide();
 
@@ -144,7 +142,7 @@ export class YAxisComponent
             height,
             [axis.min, axis.max],
             settings.density,
-            settings.density === settings.maxDensity
+            settings.density === settings.maxDensity,
         );
 
         if (!this.isShown) {
@@ -156,7 +154,7 @@ export class YAxisComponent
                 this.getTicks(),
                 this.formatter,
                 fontSize,
-                settings.fontFamily
+                settings.fontFamily,
             )
             : 0;
 
@@ -183,7 +181,7 @@ export class YAxisComponent
 
         this.gElement.attr("transform", svgManipulation.translate(
             this.maxLabelWidth + this.labelOffset,
-            this.maxLabelHeight / 2
+            this.maxLabelHeight / 2,
         ));
 
         this.axisProperties.axis.tickFormat((item: number) => {
@@ -192,7 +190,7 @@ export class YAxisComponent
             if (shouldLabelsBeTruncated) {
                 return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
                     this.getTextProperties(formattedLabel, fontSize, settings.fontFamily),
-                    availableWidth
+                    availableWidth,
                 );
             }
 
@@ -202,51 +200,51 @@ export class YAxisComponent
         this.gElement.call(this.axisProperties.axis);
     }
 
-    private getAxisProperties(
-        pixelSpan: number,
-        dataDomain: any[],
-        density: number,
-        isDensityAtMax: boolean
-    ) {
-        return AxisHelper.createAxis({
-            pixelSpan,
-            dataDomain,
-            density,
-            isVertical: true,
-            isScalar: true,
-            isCategoryAxis: false,
-            metaDataColumn: null,
-            formatString: undefined,
-            outerPadding: this.maxLabelHeight / 2,
-            useTickIntervalForDisplayUnits: true,
-            shouldClamp: false,
-            is100Pct: true,
-            innerPaddingRatio: 1,
-            tickLabelPadding: undefined,
-            minOrdinalRectThickness: this.maxLabelHeight,
-            shouldTheMinValueBeIncluded: isDensityAtMax
-        });
-    }
-
     public getViewport(): VisualComponentViewport {
         if (!this.isShown) {
             return {
+                height: 0,
                 width: 0,
-                height: 0
             };
         }
 
         return {
-            width: this.getTickWidth(),
             height: this.maxLabelHeight / 2,
+            width: this.getTickWidth(),
         };
+    }
+
+    private getAxisProperties(
+        pixelSpan: number,
+        dataDomain: any[],
+        density: number,
+        isDensityAtMax: boolean,
+    ) {
+        return createAxis({
+            dataDomain,
+            density,
+            formatString: undefined,
+            innerPaddingRatio: 1,
+            is100Pct: true,
+            isCategoryAxis: false,
+            isScalar: true,
+            isVertical: true,
+            metaDataColumn: null,
+            minOrdinalRectThickness: this.maxLabelHeight,
+            outerPadding: this.maxLabelHeight / 2,
+            pixelSpan,
+            shouldClamp: false,
+            shouldTheMinValueBeIncluded: isDensityAtMax,
+            tickLabelPadding: undefined,
+            useTickIntervalForDisplayUnits: true,
+        });
     }
 
     private getTickWidth(): number {
         return this.maxLabelWidth + this.additionalOffset;
     }
 
-    private areRenderOptionsValid(options: YAxisComponentRenderOptions): boolean {
+    private areRenderOptionsValid(options: IYAxisComponentRenderOptions): boolean {
         return !!(options && options.axis && options.settings);
     }
 }

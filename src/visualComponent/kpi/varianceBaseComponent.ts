@@ -26,25 +26,12 @@
 
 import {
     displayUnitSystemType,
-    valueFormatter
+    valueFormatter,
 } from "powerbi-visuals-utils-formattingutils";
 
 import { CaptionKPIComponent } from "./captionKPIComponent";
 
 export class VarianceBaseComponent extends CaptionKPIComponent {
-
-    protected getValueFormatter(
-        displayUnits: number,
-        precision: number,
-        format: string
-    ): valueFormatter.IValueFormatter {
-        return valueFormatter.valueFormatter.create({
-            format,
-            precision,
-            value: displayUnits,
-            displayUnitSystemType: displayUnitSystemType.DisplayUnitSystemType.WholeUnits,
-        });
-    }
 
     public clear(): void {
         this.element
@@ -54,5 +41,18 @@ export class VarianceBaseComponent extends CaptionKPIComponent {
 
     public destroy(): void {
         this.element = null;
+    }
+
+    protected getValueFormatter(
+        displayUnits: number,
+        precision: number,
+        format: string,
+    ): valueFormatter.IValueFormatter {
+        return valueFormatter.valueFormatter.create({
+            displayUnitSystemType: displayUnitSystemType.DisplayUnitSystemType.WholeUnits,
+            format,
+            precision,
+            value: displayUnits,
+        });
     }
 }

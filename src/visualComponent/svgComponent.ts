@@ -29,58 +29,62 @@ import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 import { IMargin } from "powerbi-visuals-utils-svgutils";
 
-import { VisualComponent } from "./base/visualComponent";
 import { BaseContainerComponent } from "./base/baseContainerComponent";
-import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { VisualComponent } from "./base/visualComponent";
+import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
 
 import {
-    VisualComponentRenderOptionsBase,
-    VisualComponentRenderOptions
+    IVisualComponentRenderOptions,
+    IVisualComponentRenderOptionsBase,
 } from "./base/visualComponentRenderOptions";
 
 import { DataRepresentationAxisValueType } from "../dataRepresentation/dataRepresentationAxisValueType";
+import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 import { DataRepresentationScale } from "../dataRepresentation/dataRepresentationScale";
-import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
-import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
-import { AxisReferenceLineBaseComponentRenderOptions } from "./axes/referenceLine/axisReferenceLineBaseComponent";
-import { EventPositionVisualComponentOptions } from "./eventPositionVisualComponentOptions";
+import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
+import { EventName } from "../event/eventName";
+import { IAxisReferenceLineBaseComponentRenderOptions } from "./axes/referenceLine/axisReferenceLineBaseComponent";
 import { XAxisReferenceLineComponent } from "./axes/referenceLine/xAxisReferenceLineComponent";
 import { YAxisReferenceLineComponent } from "./axes/referenceLine/yAxisReferenceLineComponent";
 import { ChartComponent } from "./chartComponent";
+import { DotsComponent } from "./dotsComponent";
+import { IEventPositionVisualComponentOptions } from "./eventPositionVisualComponentOptions";
 import { LabelsComponent } from "./labelsComponent";
 import { TooltipComponent } from "./tooltipComponent";
-import { DotsComponent } from "./dotsComponent";
 import { VerticalLineComponent } from "./verticalLineComponent";
-import { EventName } from "../event/eventName";
 
-export interface SvgComponentRenderOptions extends VisualComponentRenderOptions {
+export interface ISvgComponentRenderOptions extends IVisualComponentRenderOptions {
     xTicks: DataRepresentationAxisValueType[];
     yTicks: DataRepresentationAxisValueType[];
     secondaryYTicks: DataRepresentationAxisValueType[];
     additionalMargin: IMargin;
 }
 
-export class SvgComponent extends BaseContainerComponent<VisualComponentConstructorOptions, SvgComponentRenderOptions, AxisReferenceLineBaseComponentRenderOptions | VisualComponentRenderOptionsBase> {
+export class SvgComponent extends BaseContainerComponent<
+    IVisualComponentConstructorOptions,
+    ISvgComponentRenderOptions,
+    IAxisReferenceLineBaseComponentRenderOptions | IVisualComponentRenderOptionsBase
+    > {
     private className: string = "svgComponent";
 
-    private xAxisReferenceLineComponent: VisualComponent<AxisReferenceLineBaseComponentRenderOptions>;
-    private yAxisReferenceLineComponent: VisualComponent<AxisReferenceLineBaseComponentRenderOptions>;
-    private secondaryYAxisReferenceLineComponent: VisualComponent<AxisReferenceLineBaseComponentRenderOptions>;
+    private xAxisReferenceLineComponent: VisualComponent<IAxisReferenceLineBaseComponentRenderOptions>;
+    private yAxisReferenceLineComponent: VisualComponent<IAxisReferenceLineBaseComponentRenderOptions>;
+    private secondaryYAxisReferenceLineComponent: VisualComponent<IAxisReferenceLineBaseComponentRenderOptions>;
 
-    private chartComponent: VisualComponent<VisualComponentRenderOptions>;
-    private labelsComponent: VisualComponent<VisualComponentRenderOptions>;
+    private chartComponent: VisualComponent<IVisualComponentRenderOptions>;
+    private labelsComponent: VisualComponent<IVisualComponentRenderOptions>;
 
-    private dynamicComponents: VisualComponent<VisualComponentRenderOptions | EventPositionVisualComponentOptions>[] = [];
+    private dynamicComponents: Array<VisualComponent<IVisualComponentRenderOptions | IEventPositionVisualComponentOptions>> = [];
 
     private positions: number[];
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
             this.className,
-            "svg"
+            "svg",
         );
 
         this.constructorOptions = {
@@ -108,7 +112,7 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
             new DotsComponent(this.constructorOptions),
             new TooltipComponent({
                 ...this.constructorOptions,
-                tooltipService: this.constructorOptions.tooltipService
+                tooltipService: this.constructorOptions.tooltipService,
             }),
         ];
 
@@ -117,22 +121,12 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
         if (this.constructorOptions.eventDispatcher) {
             this.constructorOptions.eventDispatcher.on(
                 EventName.onClick,
-                this.clickComponentHandler.bind(this)
+                this.clickComponentHandler.bind(this),
             );
         }
     }
 
-    private bindEvents(): void {
-        this.element.on("mousemove", () => this.pointerMoveEvent(this.renderOptions));
-        this.element.on("touchmove", () => this.pointerMoveEvent(this.renderOptions));
-
-        this.element.on("mouseleave", () => this.pointerLeaveHandler());
-        this.element.on("touchend", () => this.pointerLeaveHandler());
-
-        this.element.on("click", (this.clickHandler.bind(this)));
-    }
-
-    public render(options: SvgComponentRenderOptions): void {
+    public render(options: ISvgComponentRenderOptions): void {
         const {
             data: {
                 groups: [firstGroup, secondGroup],
@@ -145,8 +139,8 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
         } = options;
 
         const reducedViewport: powerbi.IViewport = {
-            width: Math.max(0, viewport.width - margin.left - margin.right),
             height: Math.max(0, viewport.height - margin.top - margin.bottom),
+            width: Math.max(0, viewport.width - margin.left - margin.right),
         };
 
         this.updateViewport(reducedViewport);
@@ -165,27 +159,53 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
 
         this.xAxisReferenceLineComponent.render({
             scale,
-            ticks: options.xTicks,
             settings: settings.referenceLineOfXAxis,
+            ticks: options.xTicks,
             viewport: reducedViewport,
         });
 
         this.yAxisReferenceLineComponent.render({
             scale: firstGroup && firstGroup.y && firstGroup.y.scale,
-            ticks: options.yTicks,
             settings: settings.referenceLineOfYAxis,
+            ticks: options.yTicks,
             viewport: reducedViewport,
         });
 
         this.secondaryYAxisReferenceLineComponent.render({
             scale: secondGroup && secondGroup.y && secondGroup.y.scale,
-            ticks: options.secondaryYTicks,
             settings: settings.secondaryReferenceLineOfYAxis,
+            ticks: options.secondaryYTicks,
             viewport: reducedViewport,
         });
 
         this.chartComponent.render(this.renderOptions);
         this.labelsComponent.render(this.renderOptions);
+    }
+
+    public clear(): void {
+        super.clear(this.dynamicComponents);
+        super.clear();
+    }
+
+    public destroy(): void {
+        super.destroy(this.dynamicComponents);
+        super.destroy();
+
+        this.xAxisReferenceLineComponent = null;
+        this.yAxisReferenceLineComponent = null;
+        this.secondaryYAxisReferenceLineComponent = null;
+        this.chartComponent = null;
+        this.labelsComponent = null;
+    }
+
+    private bindEvents(): void {
+        this.element.on("mousemove", () => this.pointerMoveEvent(this.renderOptions));
+        this.element.on("touchmove", () => this.pointerMoveEvent(this.renderOptions));
+
+        this.element.on("mouseleave", () => this.pointerLeaveHandler());
+        this.element.on("touchend", () => this.pointerLeaveHandler());
+
+        this.element.on("click", (this.clickHandler.bind(this)));
     }
 
     private updateMargin(margin: IMargin, additionalMargin: IMargin): void {
@@ -210,7 +230,7 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
         });
     }
 
-    private pointerMoveEvent(options: SvgComponentRenderOptions): void {
+    private pointerMoveEvent(options: ISvgComponentRenderOptions): void {
         const { data: { settings, variance } } = options;
 
         const isSecondTooltipShown: boolean = variance
@@ -268,7 +288,7 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
             offsetX,
             originalXPosition,
             originalYPosition,
-            options
+            options,
         );
     }
 
@@ -277,13 +297,13 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
         offsetX: number,
         xPosition: number,
         yPosition: number,
-        baseOptions: SvgComponentRenderOptions
+        baseOptions: ISvgComponentRenderOptions,
     ) {
         const {
             data: {
                 series,
                 margin,
-                settings: { yAxis }
+                settings: { yAxis },
             },
             additionalMargin,
         } = baseOptions;
@@ -298,27 +318,27 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
 
         dataPointIndex = Math.min(Math.max(0, dataPointIndex), amountOfPoints);
 
-        const dataSeries: DataRepresentationSeries[] = [];
+        const dataSeries: IDataRepresentationSeries[] = [];
 
-        baseOptions.data.series.forEach((series: DataRepresentationSeries) => {
-            const point: DataRepresentationPoint = series.points[dataPointIndex];
+        baseOptions.data.series.forEach((seriesItem: IDataRepresentationSeries) => {
+            const point: IDataRepresentationPoint = seriesItem.points[dataPointIndex];
 
             if (point) {
-                const seriesToReturn: DataRepresentationSeries = {
-                    ...series,
-                    points: [point]
+                const seriesToReturn: IDataRepresentationSeries = {
+                    ...seriesItem,
+                    points: [point],
                 };
 
                 dataSeries.push(seriesToReturn);
             }
         });
 
-        const options: EventPositionVisualComponentOptions = {
-            position: { x: xPosition, y: yPosition },
+        const options: IEventPositionVisualComponentOptions = {
             data: {
                 ...baseOptions.data,
                 series: dataSeries,
             },
+            position: { x: xPosition, y: yPosition },
         };
 
         if (options.data.variances.length) {
@@ -335,13 +355,13 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
 
         this.forEach(
             this.dynamicComponents,
-            (component: VisualComponent<VisualComponentRenderOptions>) => {
+            (component: VisualComponent<IVisualComponentRenderOptions>) => {
                 component.render(options);
 
                 if (component.show) {
                     component.show();
                 }
-            }
+            },
         );
     }
 
@@ -397,28 +417,12 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
             this.dynamicComponents,
             (component: VisualComponent<any>) => {
                 component.hide();
-            }
+            },
         );
     }
 
-    public clear(): void {
-        super.clear(this.dynamicComponents);
-        super.clear();
-    }
-
-    public destroy(): void {
-        super.destroy(this.dynamicComponents);
-        super.destroy();
-
-        this.xAxisReferenceLineComponent = null;
-        this.yAxisReferenceLineComponent = null;
-        this.secondaryYAxisReferenceLineComponent = null;
-        this.chartComponent = null;
-        this.labelsComponent = null;
-    }
-
     private clickComponentHandler(
-        component: VisualComponent<VisualComponentRenderOptionsBase>,
+        component: VisualComponent<IVisualComponentRenderOptionsBase>,
         event: Event,
     ): void {
         if (!this.constructorOptions || !this.constructorOptions.eventDispatcher) {
@@ -435,11 +439,11 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
             return;
         }
 
-        const renderOptions: VisualComponentRenderOptionsBase = component
+        const renderOptions: IVisualComponentRenderOptionsBase = component
             && component.getRenderOptions
             && component.getRenderOptions();
 
-        const series: DataRepresentationSeries = renderOptions && renderOptions.series;
+        const series: IDataRepresentationSeries = renderOptions && renderOptions.series;
 
         if (!series) {
             return;
@@ -449,7 +453,7 @@ export class SvgComponent extends BaseContainerComponent<VisualComponentConstruc
             EventName.onSelect,
             undefined,
             event,
-            series
+            series,
         );
     }
 }

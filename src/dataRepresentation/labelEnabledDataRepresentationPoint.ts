@@ -26,9 +26,9 @@
 
 import powerbi from "powerbi-visuals-api";
 
-import { DataRepresentationPoint } from "./dataRepresentationPoint";
+import { IDataRepresentationPoint } from "./dataRepresentationPoint";
 
-export interface LabelEnabledDataRepresentationPoint extends DataRepresentationPoint {
+export interface ILabelEnabledDataRepresentationPoint extends IDataRepresentationPoint {
     size: powerbi.IViewport;
     labelFontSize: string;
 }

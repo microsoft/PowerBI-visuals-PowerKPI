@@ -24,46 +24,54 @@
  *  THE SOFTWARE.
  */
 
-import { VisualComponent } from "./visualComponent";
 import { BaseComponent } from "./baseComponent";
+import { VisualComponent } from "./visualComponent";
 
-export abstract class BaseContainerComponent<ConstructorOptionsType, RenderOptionsType, ComponentsRenderOptions>
+export abstract class BaseContainerComponent<ConstructorOptionsType, RenderOptionsType, ComponentsRenderOptionsType>
     extends BaseComponent<ConstructorOptionsType, RenderOptionsType> {
 
-    protected components: VisualComponent<ComponentsRenderOptions>[] = [];
+    protected components: Array<VisualComponent<ComponentsRenderOptionsType>> = [];
 
-    public clear(components: VisualComponent<ComponentsRenderOptions>[] = this.components): void {
+    public clear(components: Array<VisualComponent<ComponentsRenderOptionsType>> = this.components): void {
         this.forEach(
             components,
-            (component: VisualComponent<ComponentsRenderOptions>) => {
+            (component: VisualComponent<ComponentsRenderOptionsType>) => {
                 component.clear();
-            }
+            },
         );
 
         super.clear();
     }
 
-    public destroy(components: VisualComponent<any>[] = this.components): void {
+    public destroy(components: Array<VisualComponent<any>> = this.components): void {
         this.destroyComponents(components);
 
         super.destroy();
     }
 
-    protected destroyComponents(components: VisualComponent<any>[] = this.components): void {
+    public highlight(hasSelection: boolean, components: Array<VisualComponent<ComponentsRenderOptionsType>> = this.components): void {
+        this.forEach(components, (component: VisualComponent<ComponentsRenderOptionsType>) => {
+            if (component.highlight) {
+                component.highlight(hasSelection);
+            }
+        });
+    }
+
+    protected destroyComponents(components: Array<VisualComponent<any>> = this.components): void {
         this.forEach(
             components.splice(0, components.length),
             (component: VisualComponent<any>) => {
                 component.destroy();
-            }
+            },
         );
     }
 
     protected forEach<ComponentsRenderOptions>(
-        components: VisualComponent<ComponentsRenderOptions>[],
+        components: Array<VisualComponent<ComponentsRenderOptions>>,
         iterator: (
             component: VisualComponent<ComponentsRenderOptions>,
-            index: number
-        ) => void
+            index: number,
+        ) => void,
     ): void {
         components.forEach((component: VisualComponent<ComponentsRenderOptions>, index: number) => {
             if (component) {
@@ -73,9 +81,9 @@ export abstract class BaseContainerComponent<ConstructorOptionsType, RenderOptio
     }
 
     protected initComponents<ComponentsRenderOptions>(
-        components: VisualComponent<ComponentsRenderOptions>[],
+        components: Array<VisualComponent<ComponentsRenderOptions>>,
         expectedAmountOfComponents: number,
-        initComponent: (index: number) => VisualComponent<ComponentsRenderOptions>
+        initComponent: (index: number) => VisualComponent<ComponentsRenderOptions>,
     ): void {
         if (!components) {
             return;
@@ -93,13 +101,5 @@ export abstract class BaseContainerComponent<ConstructorOptionsType, RenderOptio
                 components.push(initComponent(index));
             }
         }
-    }
-
-    public highlight(hasSelection: boolean, components: VisualComponent<ComponentsRenderOptions>[] = this.components): void {
-        this.forEach(components, (component: VisualComponent<ComponentsRenderOptions>) => {
-            if (component.highlight) {
-                component.highlight(hasSelection);
-            }
-        });
     }
 }

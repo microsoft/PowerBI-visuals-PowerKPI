@@ -26,36 +26,40 @@
 
 import { BaseContainerComponent } from "./base/baseContainerComponent";
 import { VisualComponent } from "./base/visualComponent";
-import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
-import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
 import {
     DotComponent,
-    DotComponentRenderOptions
+    IDotComponentRenderOptions,
 } from "./dotComponent";
 
 import {
     ComboComponent,
-    ComboComponentRenderOptions
+    IComboComponentRenderOptions,
 } from "./combo/comboComponent";
 
+import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
+import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { EventName } from "../event/eventName";
-import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
-import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 
-export class ChartComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, DotComponentRenderOptions | ComboComponentRenderOptions> {
+export class ChartComponent extends BaseContainerComponent<
+    IVisualComponentConstructorOptions,
+    IVisualComponentRenderOptions,
+    IDotComponentRenderOptions | IComboComponentRenderOptions
+    > {
     private className: string = "multiShapeComponent";
 
     private amountOfDataPointsForFallbackComponents: number = 1;
     private shouldRenderFallbackComponents: boolean = false;
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
             this.className,
-            "g"
+            "g",
         );
 
         this.constructorOptions = {
@@ -66,12 +70,12 @@ export class ChartComponent extends BaseContainerComponent<VisualComponentConstr
         if (this.constructorOptions.eventDispatcher) {
             this.constructorOptions.eventDispatcher.on(
                 EventName.onHighlight,
-                this.highlight.bind(this)
+                this.highlight.bind(this),
             );
         }
     }
 
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         const { data: { sortedSeries, viewport, x, settings } } = options;
 
         const shouldRenderFallbackComponents: boolean = sortedSeries
@@ -84,7 +88,7 @@ export class ChartComponent extends BaseContainerComponent<VisualComponentConstr
                 this.components,
                 (component: VisualComponent<any>) => {
                     component.destroy();
-                }
+                },
             );
 
             this.components = [];
@@ -99,43 +103,43 @@ export class ChartComponent extends BaseContainerComponent<VisualComponentConstr
                 return this.shouldRenderFallbackComponents
                     ? new DotComponent(this.constructorOptions)
                     : new ComboComponent(this.constructorOptions);
-            }
+            },
         );
 
         this.forEach(
             this.components,
-            (component: VisualComponent<DotComponentRenderOptions | ComboComponentRenderOptions>, componentIndex: number) => {
-                const currentSeries: DataRepresentationSeries = sortedSeries[componentIndex];
+            (component: VisualComponent<IDotComponentRenderOptions | IComboComponentRenderOptions>, componentIndex: number) => {
+                const currentSeries: IDataRepresentationSeries = sortedSeries[componentIndex];
 
                 if (this.shouldRenderFallbackComponents) {
-                    const point: DataRepresentationPoint = currentSeries.points[0];
+                    const point: IDataRepresentationPoint = currentSeries.points[0];
 
                     component.render({
+                        opacity: currentSeries.settings.line.opacity,
                         point,
-                        viewport,
+                        radiusFactor: settings.dots.radiusFactor,
+                        series: currentSeries,
                         thickness: currentSeries.settings.line.thickness,
+                        viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,
-                        radiusFactor: settings.dots.radiusFactor,
-                        opacity: currentSeries.settings.line.opacity,
-                        series: currentSeries,
                     });
                 } else {
                     component.render({
-                        viewport,
-                        thickness: currentSeries.settings.line.thickness,
-                        x: x.scale,
-                        y: currentSeries.y.scale,
+                        areaOpacity: currentSeries.settings.line.areaOpacity,
+                        gradientPoints: currentSeries.gradientPoints,
                         interpolation: currentSeries.settings.line.getInterpolation(),
                         lineStyle: currentSeries.settings.line.lineStyle,
-                        gradientPoints: currentSeries.gradientPoints,
                         lineType: currentSeries.settings.line.lineType,
                         opacity: currentSeries.settings.line.opacity,
-                        areaOpacity: currentSeries.settings.line.areaOpacity,
                         series: currentSeries,
+                        thickness: currentSeries.settings.line.thickness,
+                        viewport,
+                        x: x.scale,
+                        y: currentSeries.y.scale,
                     });
                 }
-            }
+            },
         );
     }
 }

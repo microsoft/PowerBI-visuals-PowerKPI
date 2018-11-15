@@ -30,7 +30,6 @@ import {
 
 import powerbi from "powerbi-visuals-api";
 
-
 import { EventName } from "../../event/eventName";
 
 import {
@@ -42,7 +41,7 @@ import {
 } from "powerbi-visuals-utils-typeutils";
 
 import {
-    VisualComponentConstructorOptions
+    IVisualComponentConstructorOptions,
 } from "./visualComponentConstructorOptions";
 
 import {
@@ -50,9 +49,13 @@ import {
     VisualComponentViewport,
 } from "./visualComponent";
 
-export abstract class BaseComponent<ConstructorOptionsType extends VisualComponentConstructorOptions, RenderOptionsType> implements VisualComponent<RenderOptionsType> {
-    private isComponentShown: boolean = true;
-    private classNamePrefix: string = "powerKpi_";
+export abstract class BaseComponent<ConstructorOptionsType
+    extends IVisualComponentConstructorOptions, RenderOptionsType>
+    implements VisualComponent<RenderOptionsType> {
+
+    public get isShown(): boolean {
+        return this.isComponentShown;
+    }
 
     protected hiddenClassName: string = this.getClassNameWithPrefix("hidden");
 
@@ -70,41 +73,25 @@ export abstract class BaseComponent<ConstructorOptionsType extends VisualCompone
 
     protected minHeight: number = 20;
     protected height: number = 0;
+    private isComponentShown: boolean = true;
+    private classNamePrefix: string = "powerKpi_";
 
     public abstract render(options: RenderOptionsType): void;
 
-    public highlight(hasSelection: boolean): void { }
+    public highlight(hasSelection: boolean): void {
+        return;
+    }
 
     public initElement(
         baseElement: Selection<any, RenderOptionsType, any, any>,
         className: string,
-        tagName: string = "div"
+        tagName: string = "div",
     ): void {
         this.element = this.createElement(
             baseElement,
             className,
-            tagName
+            tagName,
         );
-    }
-
-    protected createElement(
-        baseElement: Selection<any, RenderOptionsType, any, any>,
-        className: string,
-        tagName: string = "div"
-    ): Selection<any, RenderOptionsType, any, any> {
-        return baseElement
-            .append(tagName)
-            .classed(this.getClassNameWithPrefix(className), true);
-    }
-
-    protected getClassNameWithPrefix(className: string): string {
-        return className
-            ? `${this.classNamePrefix}${className}`
-            : className;
-    }
-
-    protected getSelectorWithPrefix(className: string): CssConstants.ClassAndSelector {
-        return CssConstants.createClassAndSelector(this.getClassNameWithPrefix(className));
     }
 
     public clear(): void {
@@ -115,12 +102,6 @@ export abstract class BaseComponent<ConstructorOptionsType extends VisualCompone
         this.clearElement(this.element);
     }
 
-    protected clearElement(element: Selection<any, any, any, any>): void {
-        element
-            .selectAll("*")
-            .remove();
-    }
-
     public destroy(): void {
         if (this.element) {
             this.element.remove();
@@ -129,12 +110,6 @@ export abstract class BaseComponent<ConstructorOptionsType extends VisualCompone
         this.element = null;
         this.constructorOptions = null;
         this.renderOptions = null;
-    }
-
-    protected updateViewport(viewport: powerbi.IViewport): void {
-        this.element
-            .style("width", pixelConverter.toString(viewport.width))
-            .style("height", pixelConverter.toString(viewport.height));
     }
 
     public hide(): void {
@@ -165,18 +140,6 @@ export abstract class BaseComponent<ConstructorOptionsType extends VisualCompone
         }
     }
 
-    public get isShown(): boolean {
-        return this.isComponentShown;
-    }
-
-    protected updateBackgroundColor(element: Selection<any, any, any, any>, color: string): void {
-        if (!element) {
-            return;
-        }
-
-        element.style("background-color", color || null);
-    }
-
     public updateSize(width: number, height: number): void {
         if (!isNaN(width) && isFinite(width)) {
             this.width = Math.max(this.minWidth, width);
@@ -193,6 +156,57 @@ export abstract class BaseComponent<ConstructorOptionsType extends VisualCompone
         this.updateSizeOfElement(this.width, this.height);
     }
 
+    public getViewport(): VisualComponentViewport {
+        return {
+            height: this.height,
+            width: this.width,
+        };
+    }
+
+    public getRenderOptions(): RenderOptionsType {
+        return this.renderOptions || null;
+    }
+
+    protected createElement(
+        baseElement: Selection<any, RenderOptionsType, any, any>,
+        className: string,
+        tagName: string = "div",
+    ): Selection<any, RenderOptionsType, any, any> {
+        return baseElement
+            .append(tagName)
+            .classed(this.getClassNameWithPrefix(className), true);
+    }
+
+    protected getClassNameWithPrefix(className: string): string {
+        return className
+            ? `${this.classNamePrefix}${className}`
+            : className;
+    }
+
+    protected getSelectorWithPrefix(className: string): CssConstants.ClassAndSelector {
+        return CssConstants.createClassAndSelector(this.getClassNameWithPrefix(className));
+    }
+
+    protected clearElement(element: Selection<any, any, any, any>): void {
+        element
+            .selectAll("*")
+            .remove();
+    }
+
+    protected updateViewport(viewport: powerbi.IViewport): void {
+        this.element
+            .style("width", pixelConverter.toString(viewport.width))
+            .style("height", pixelConverter.toString(viewport.height));
+    }
+
+    protected updateBackgroundColor(element: Selection<any, any, any, any>, color: string): void {
+        if (!element) {
+            return;
+        }
+
+        element.style("background-color", color || null);
+    }
+
     protected updateSizeOfElement(width: number, height: number): void {
         if (!this.element) {
             return;
@@ -200,14 +214,14 @@ export abstract class BaseComponent<ConstructorOptionsType extends VisualCompone
 
         const styleObject: any = {};
 
-        styleObject["width"]
+        styleObject.width
             = styleObject["min-width"]
             = styleObject["max-width"]
             = width !== undefined && width !== null
                 ? pixelConverter.toString(width)
                 : null;
 
-        styleObject["height"]
+        styleObject.height
             = styleObject["min-height"]
             = styleObject["max-height"]
             = height !== undefined && height !== null
@@ -215,13 +229,6 @@ export abstract class BaseComponent<ConstructorOptionsType extends VisualCompone
                 : null;
 
         this.element.style(styleObject);
-    }
-
-    public getViewport(): VisualComponentViewport {
-        return {
-            width: this.width,
-            height: this.height,
-        };
     }
 
     protected updateElementOrder(element: Selection<any, any, any, any>, order: number): void {
@@ -241,7 +248,7 @@ export abstract class BaseComponent<ConstructorOptionsType extends VisualCompone
         element: Selection<any, any, any, any>,
         opacity: number,
         selected: boolean,
-        hasSelection: boolean
+        hasSelection: boolean,
     ): void {
         if (!element) {
             return;
@@ -252,10 +259,6 @@ export abstract class BaseComponent<ConstructorOptionsType extends VisualCompone
             : true;
 
         element.style("opacity", shouldBeSelected ? opacity : opacity / 3);
-    }
-
-    public getRenderOptions(): RenderOptionsType {
-        return this.renderOptions || null;
     }
 
     protected clickHandler(): void {

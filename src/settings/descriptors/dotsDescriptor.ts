@@ -33,7 +33,7 @@ export class DotsDescriptor extends BaseDescriptor {
 
     public getMarginByThickness(
         thickness: number,
-        defaultMargin: IMargin
+        defaultMargin: IMargin,
     ): IMargin {
         if (isNaN(thickness)) {
             return defaultMargin;
@@ -42,10 +42,10 @@ export class DotsDescriptor extends BaseDescriptor {
         const currentThickness: number = thickness * this.radiusFactor;
 
         return {
-            top: currentThickness,
-            right: currentThickness,
             bottom: currentThickness,
-            left: currentThickness
+            left: currentThickness,
+            right: currentThickness,
+            top: currentThickness,
         };
     }
 }

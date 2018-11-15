@@ -26,5 +26,5 @@
 
 export enum HorizontalLayoutEnum {
     Left,
-    Right
+    Right,
 }

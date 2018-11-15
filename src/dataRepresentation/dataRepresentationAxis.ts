@@ -27,22 +27,23 @@
 import powerbi from "powerbi-visuals-api";
 
 import { DataRepresentationAxisValueType } from "./dataRepresentationAxisValueType";
+import { IDataRepresentationFormat } from "./dataRepresentationFormat";
 import { DataRepresentationScale } from "./dataRepresentationScale";
-import { DataRepresentationFormat } from "./dataRepresentationFormat";
 import { DataRepresentationTypeEnum } from "./dataRepresentationType";
 
-export interface DataRepresentationAxisBase {
+export interface IDataRepresentationAxisBase {
     min: DataRepresentationAxisValueType;
     max: DataRepresentationAxisValueType;
 }
 
-export interface DataRepresentationAxis extends DataRepresentationAxisBase, DataRepresentationFormat {
+export interface IDataRepresentationAxis extends IDataRepresentationAxisBase, IDataRepresentationFormat {
     scale: DataRepresentationScale;
 }
 
-export interface DataRepresentationX extends DataRepresentationAxis {
-    values: DataRepresentationAxisValueType[]; // We have to keep original value in order to be able to get index of the value by its position
+export interface IDataRepresentationX extends IDataRepresentationAxis {
     metadata: powerbi.DataViewMetadataColumn;
     name: string;
-    type: DataRepresentationTypeEnum;
+    axisType: DataRepresentationTypeEnum;
+    // We have to keep original value in order to be able to get index of the value by its position
+    values: DataRepresentationAxisValueType[];
 }

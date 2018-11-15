@@ -24,6 +24,6 @@
  *  THE SOFTWARE.
  */
 
-export interface DataRepresentationFormat {
+export interface IDataRepresentationFormat {
     format: string;
-}
+};

@@ -24,18 +24,18 @@
  *  THE SOFTWARE.
  */
 
-import { VisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
 import { KPIIndicatorValueDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorValueDescriptor";
+import { IVisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
 import { AlignEnum } from "./alignEnum";
 
-export interface CaptionKPIComponentOptionsValueSettings {
+export interface ICaptionKPIComponentOptionsValueSettings {
     value: string;
     title?: string;
     settings: KPIIndicatorValueDescriptor;
     className?: string;
 }
 
-export interface CaptionKPIComponentOptions extends VisualComponentRenderOptions {
-    captions?: CaptionKPIComponentOptionsValueSettings[][]; // Each array is a row
+export interface ICaptionKPIComponentOptions extends IVisualComponentRenderOptions {
+    captions?: ICaptionKPIComponentOptionsValueSettings[][]; // Each array is a row
     align: AlignEnum;
 }

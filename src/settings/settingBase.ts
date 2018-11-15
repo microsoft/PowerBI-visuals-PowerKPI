@@ -28,28 +28,28 @@ import powerbi from "powerbi-visuals-api";
 
 import {
     dataViewObjects,
-    dataViewObjectsParser
+    dataViewObjectsParser,
 } from "powerbi-visuals-utils-dataviewutils";
 
 import {
     BaseDescriptor,
-    Descriptor,
+    IDescriptor,
 } from "./descriptors/descriptor";
 
 export class SettingsBase extends dataViewObjectsParser.DataViewObjectsParser {
     public parse(dataView: powerbi.DataView): SettingsBase {
         return this.parseObjects(dataView
             && dataView.metadata
-            && dataView.metadata.objects
+            && dataView.metadata.objects,
         );
     }
 
     public parseObjects(objects: powerbi.DataViewObjects): SettingsBase {
         if (objects) {
-            let properties: dataViewObjectsParser.DataViewProperties = this.getProperties();
+            const properties: dataViewObjectsParser.DataViewProperties = this.getProperties();
 
-            for (let objectName in properties) {
-                for (let propertyName in properties[objectName]) {
+            for (const objectName in properties) {
+                for (const propertyName in properties[objectName]) {
                     const defaultValue: any = this[objectName][propertyName];
 
                     this[objectName][propertyName] = dataViewObjects.DataViewObjects.getCommonValue(
@@ -65,15 +65,9 @@ export class SettingsBase extends dataViewObjectsParser.DataViewObjectsParser {
         return this as any;
     }
 
-    protected processDescriptor(descriptor: Descriptor): void {
-        if (!descriptor || !descriptor.parse) {
-            return;
-        }
-
-        descriptor.parse();
-    }
-
-    public enumerateObjectInstances(options: powerbi.EnumerateVisualObjectInstancesOptions): powerbi.VisualObjectInstance[] {
+    public enumerateObjectInstances(
+        options: powerbi.EnumerateVisualObjectInstancesOptions,
+    ): powerbi.VisualObjectInstance[] {
         const descriptor: BaseDescriptor = this[options.objectName];
 
         if (!descriptor) {
@@ -82,8 +76,16 @@ export class SettingsBase extends dataViewObjectsParser.DataViewObjectsParser {
 
         return [{
             objectName: options.objectName,
-            selector: null,
             properties: descriptor.enumerateProperties(),
+            selector: null,
         }];
+    }
+
+    protected processDescriptor(descriptor: IDescriptor): void {
+        if (!descriptor || !descriptor.parse) {
+            return;
+        }
+
+        descriptor.parse();
     }
 }

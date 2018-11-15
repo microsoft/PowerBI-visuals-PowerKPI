@@ -29,22 +29,22 @@ import powerbi from "powerbi-visuals-api";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 import {
-    Descriptor,
-    DescriptorParserOptions,
+    IDescriptor,
+    IDescriptorParserOptions,
 } from "../descriptor";
 
 import { ShowDescriptor } from "./showDescriptor";
 
 export class FontSizeDescriptor
     extends ShowDescriptor
-    implements Descriptor {
+    implements IDescriptor {
 
     private minFontSize: number = 8;
     private isMinFontSizeApplied: boolean = false;
 
     private viewportForFontSize8: powerbi.IViewport = {
+        height: 210,
         width: 210,
-        height: 210
     };
 
     private _fontSize: number = this.minFontSize; // This value is in pt.
@@ -58,10 +58,10 @@ export class FontSizeDescriptor
             {
                 ...Object.getOwnPropertyDescriptor(
                     FontSizeDescriptor.prototype,
-                    "fontSize"
+                    "fontSize",
                 ),
-                enumerable: true
-            }
+                enumerable: true,
+            },
         );
     }
 
@@ -73,10 +73,6 @@ export class FontSizeDescriptor
         return this._fontSize;
     }
 
-    public get fontSizeInPx(): number {
-        return pixelConverter.fromPointToPixel(this.fontSize);
-    }
-
     public set fontSize(fontSize: number) {
         // Power BI returns numbers as strings for some unknown reason. This is why we convert value to number.
         const parsedFontSize: number = +fontSize;
@@ -86,7 +82,11 @@ export class FontSizeDescriptor
             : parsedFontSize;
     }
 
-    public parse(options: DescriptorParserOptions): void {
+    public get fontSizeInPx(): number {
+        return pixelConverter.fromPointToPixel(this.fontSize);
+    }
+
+    public parse(options: IDescriptorParserOptions): void {
         super.parse(options);
 
         this.isMinFontSizeApplied =

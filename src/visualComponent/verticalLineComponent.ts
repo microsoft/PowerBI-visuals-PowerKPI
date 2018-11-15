@@ -28,39 +28,39 @@ import { Selection } from "d3";
 
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
 
-import { BaseComponent } from "./base/baseComponent";
-import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
-import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 import { DataRepresentationScale } from "../dataRepresentation/dataRepresentationScale";
-import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
+import { BaseComponent } from "./base/baseComponent";
+import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
-export class VerticalLineComponent extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
+export class VerticalLineComponent extends BaseComponent<IVisualComponentConstructorOptions, IVisualComponentRenderOptions> {
     private className: string = "verticalLineComponent";
     private lineSelector: CssConstants.ClassAndSelector = CssConstants.createClassAndSelector("verticalLine");
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
             this.className,
-            "g"
+            "g",
         );
     }
 
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         const { series, viewport, x } = options.data;
 
         const xScale: DataRepresentationScale = x.scale
             .copy()
             .range([0, viewport.width]);
 
-        const points: DataRepresentationPoint[] = series
+        const points: IDataRepresentationPoint[] = series
             && series[0]
             && series[0].points
             || [];
 
-        const lineSelection: Selection<any, DataRepresentationPoint, any, any> = this.element
+        const lineSelection: Selection<any, IDataRepresentationPoint, any, any> = this.element
             .selectAll(this.lineSelector.selectorName)
             .data(points);
 
@@ -69,9 +69,9 @@ export class VerticalLineComponent extends BaseComponent<VisualComponentConstruc
             .append("line")
             .classed(this.lineSelector.className, true)
             .merge(lineSelection)
-            .attr("x1", (point: DataRepresentationPoint) => xScale.scale(point.x))
+            .attr("x1", (point: IDataRepresentationPoint) => xScale.scale(point.x))
             .attr("y1", 0)
-            .attr("x2", (point: DataRepresentationPoint) => xScale.scale(point.x))
+            .attr("x2", (point: IDataRepresentationPoint) => xScale.scale(point.x))
             .attr("y2", viewport.height);
 
         lineSelection

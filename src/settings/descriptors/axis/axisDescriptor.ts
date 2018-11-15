@@ -27,48 +27,25 @@
 import powerbi from "powerbi-visuals-api";
 
 import {
-    Descriptor,
-    DescriptorParserOptions,
+    IDescriptor,
+    IDescriptorParserOptions,
 } from "../descriptor";
 
 import { NumberDescriptorBase } from "../numberDescriptorBase";
 
+export enum AxisType {
+    continuous,
+    categorical,
+}
+
 export class AxisDescriptor
     extends NumberDescriptorBase
-    implements Descriptor {
+    implements IDescriptor {
 
-    private shouldDensityBeAtMax: boolean = false;
-    private viewportToIncreaseDensity: powerbi.IViewport;
-
-    public maxDensity: number = 100;
-
-    public fontColor: string = "rgb(0,0,0)";
-
-    private _percentile: number = this.maxDensity;
-
-    constructor(
-        viewportToBeHidden: powerbi.IViewport,
-        viewportToIncreaseDensity: powerbi.IViewport,
-        shouldPropertiesBeHiddenByType: boolean = false
-    ) {
-        super(viewportToBeHidden, shouldPropertiesBeHiddenByType);
-
-        this.viewportToIncreaseDensity = viewportToIncreaseDensity;
-
-        Object.defineProperty(
-            this,
-            "percentile",
-            {
-                ...Object.getOwnPropertyDescriptor(
-                    AxisDescriptor.prototype,
-                    "percentile"
-                ),
-                enumerable: true
-            }
-        );
-    }
-
-    // This property is an alias of density and it's defined special for Power BI. It's predefined PBI property name in order to create a percentage slider at format panel
+    /**
+     * This property is an alias of density and it's defined special for Power BI
+     * It's predefined PBI property name in order to create a percentage slider at format panel
+     */
     public get percentile(): number {
         if (this.shouldDensityBeAtMax) {
             return this.maxDensity;
@@ -85,9 +62,40 @@ export class AxisDescriptor
         return this.percentile;
     }
 
+    public maxDensity: number = 100;
+
+    public fontColor: string = "rgb(0,0,0)";
+
     public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
 
-    public parse(options: DescriptorParserOptions) {
+    private shouldDensityBeAtMax: boolean = false;
+    private viewportToIncreaseDensity: powerbi.IViewport;
+
+    private _percentile: number = this.maxDensity;
+
+    constructor(
+        viewportToBeHidden: powerbi.IViewport,
+        viewportToIncreaseDensity: powerbi.IViewport,
+        shouldPropertiesBeHiddenByType: boolean = false,
+    ) {
+        super(viewportToBeHidden, shouldPropertiesBeHiddenByType);
+
+        this.viewportToIncreaseDensity = viewportToIncreaseDensity;
+
+        Object.defineProperty(
+            this,
+            "percentile",
+            {
+                ...Object.getOwnPropertyDescriptor(
+                    AxisDescriptor.prototype,
+                    "percentile",
+                ),
+                enumerable: true,
+            },
+        );
+    }
+
+    public parse(options: IDescriptorParserOptions) {
         super.parse(options);
 
         this.shouldDensityBeAtMax = options.isAutoHideBehaviorEnabled
@@ -97,18 +105,4 @@ export class AxisDescriptor
                 ||
                 options.viewport.height <= this.viewportToIncreaseDensity.height);
     }
-}
-
-export enum AxisType {
-    continuous,
-    categorical,
-}
-
-export class XAxisDescriptor extends AxisDescriptor {
-    public type: AxisType = AxisType.continuous;
-}
-
-export class YAxisDescriptor extends AxisDescriptor {
-    public min: number = NaN;
-    public max: number = NaN;
 }

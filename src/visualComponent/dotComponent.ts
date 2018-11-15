@@ -26,29 +26,29 @@
 
 import powerbi from "powerbi-visuals-api";
 
-import { VisualComponentRenderOptionsBase } from "./base/visualComponentRenderOptions";
-import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
-import { BaseComponent } from "./base/baseComponent";
+import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 import { DataRepresentationScale } from "../dataRepresentation/dataRepresentationScale";
-import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
+import { BaseComponent } from "./base/baseComponent";
+import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { IVisualComponentRenderOptionsBase } from "./base/visualComponentRenderOptions";
 
-export interface DotComponentRenderOptions extends VisualComponentRenderOptionsBase {
+export interface IDotComponentRenderOptions extends IVisualComponentRenderOptionsBase {
     thickness: number;
     viewport: powerbi.IViewport;
     x: DataRepresentationScale;
     y: DataRepresentationScale;
-    point: DataRepresentationPoint;
+    point: IDataRepresentationPoint;
     radiusFactor: number;
 }
 
-export class DotComponent extends BaseComponent<VisualComponentConstructorOptions, DotComponentRenderOptions> {
-    constructor(options: VisualComponentConstructorOptions) {
+export class DotComponent extends BaseComponent<IVisualComponentConstructorOptions, IDotComponentRenderOptions> {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
             "dotComponent",
-            "circle"
+            "circle",
         );
 
         this.element.on("click", this.clickHandler.bind(this));
@@ -59,7 +59,7 @@ export class DotComponent extends BaseComponent<VisualComponentConstructorOption
         };
     }
 
-    public render(options: DotComponentRenderOptions): void {
+    public render(options: IDotComponentRenderOptions): void {
         const {
             x,
             y,

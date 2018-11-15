@@ -25,65 +25,65 @@
  */
 
 import {
-    Selection,
-    line,
-    Line,
-    CurveFactory,
     curveBasis,
     curveBasisClosed,
     curveBasisOpen,
     curveCardinal,
     curveCardinalClosed,
     curveCardinalOpen,
-    curveMonotoneX,
+    CurveFactory,
     curveLinear,
+    curveMonotoneX,
     curveStepAfter,
     curveStepBefore,
+    line,
+    Line,
+    Selection,
 } from "d3";
 
 import powerbi from "powerbi-visuals-api";
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
-import { BaseComponent } from "../base/baseComponent";
-import { VisualComponentRenderOptionsBase } from "../base/visualComponentRenderOptions";
-import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 import { DataRepresentationScale } from "../../dataRepresentation/dataRepresentationScale";
+import { BaseComponent } from "../base/baseComponent";
+import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
+import { IVisualComponentRenderOptionsBase } from "../base/visualComponentRenderOptions";
 
 import {
-    DataRepresentationPoint,
-    DataRepresentationPointGradientColor
+    IDataRepresentationPoint,
+    IDataRepresentationPointGradientColor,
 } from "../../dataRepresentation/dataRepresentationPoint";
 
 import {
     LineInterpolation,
-    LineStyle
+    LineStyle,
 } from "../../settings/descriptors/lineDescriptor";
 
-export interface LineComponentRenderOptions extends VisualComponentRenderOptionsBase {
+export interface ILineComponentRenderOptions extends IVisualComponentRenderOptionsBase {
     thickness: number;
     viewport: powerbi.IViewport;
     x: DataRepresentationScale;
     y: DataRepresentationScale;
     interpolation: LineInterpolation;
     lineStyle: LineStyle;
-    gradientPoints: DataRepresentationPointGradientColor[];
+    gradientPoints: IDataRepresentationPointGradientColor[];
     opacity: number;
 }
 
-export class LineComponent extends BaseComponent<VisualComponentConstructorOptions, LineComponentRenderOptions> {
+export class LineComponent extends BaseComponent<IVisualComponentConstructorOptions, ILineComponentRenderOptions> {
     private className: string = "lineComponent";
     private lineSelector: CssConstants.ClassAndSelector = this.getSelectorWithPrefix(`${this.className}_line`);
 
-    private lineSelection: Selection<any, DataRepresentationPointGradientColor, any, any>;
+    private lineSelection: Selection<any, IDataRepresentationPointGradientColor, any, any>;
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
             this.className,
-            "g"
+            "g",
         );
 
         this.constructorOptions = {
@@ -92,7 +92,7 @@ export class LineComponent extends BaseComponent<VisualComponentConstructorOptio
         };
     }
 
-    public render(options: LineComponentRenderOptions): void {
+    public render(options: ILineComponentRenderOptions): void {
         const {
             x,
             y,
@@ -114,7 +114,7 @@ export class LineComponent extends BaseComponent<VisualComponentConstructorOptio
             .copy()
             .range([viewport.height, 0]);
 
-        const lineSelection: Selection<any, DataRepresentationPointGradientColor, any, any> = this.element
+        const lineSelection: Selection<any, IDataRepresentationPointGradientColor, any, any> = this.element
             .selectAll(this.lineSelector.selectorName)
             .data(gradientPoints);
 
@@ -127,33 +127,33 @@ export class LineComponent extends BaseComponent<VisualComponentConstructorOptio
             .classed(this.lineSelector.className, true)
             .on("click", this.clickHandler.bind(this))
             .merge(lineSelection)
-            .attr("d", (gradientGroup: DataRepresentationPointGradientColor) => {
+            .attr("d", (gradientGroup: IDataRepresentationPointGradientColor) => {
                 return this.getLine(
                     xScale,
                     yScale,
-                    interpolation
+                    interpolation,
                 )(gradientGroup.points);
             })
             .attr("class", `${this.lineSelector.className} ${lineStyle}`)
-            .style("stroke", (gradientGroup: DataRepresentationPointGradientColor) => gradientGroup.color)
+            .style("stroke", (gradientGroup: IDataRepresentationPointGradientColor) => gradientGroup.color)
             .style("stroke-width", () => pixelConverter.toString(thickness));
 
         this.highlight(series && series.hasSelection);
     }
 
-    private getLine(
-        xScale: DataRepresentationScale,
-        yScale: DataRepresentationScale,
-        interpolation: LineInterpolation,
-    ): Line<DataRepresentationPoint> {
-        return line<DataRepresentationPoint>()
-            .x((data: DataRepresentationPoint) => {
-                return xScale.scale(data.x);
-            })
-            .y((data: DataRepresentationPoint) => {
-                return yScale.scale(data.y);
-            })
-            .curve(this.getInterpolator(interpolation));
+    public destroy(): void {
+        this.lineSelection = null;
+
+        super.destroy();
+    }
+
+    public highlight(hasSelection: boolean): void {
+        this.updateElementOpacity(
+            this.lineSelection,
+            this.renderOptions && this.renderOptions.opacity,
+            this.renderOptions && this.renderOptions.series && this.renderOptions.series.selected,
+            hasSelection,
+        );
     }
 
     protected getInterpolator(interpolation: LineInterpolation): CurveFactory {
@@ -192,18 +192,18 @@ export class LineComponent extends BaseComponent<VisualComponentConstructorOptio
         }
     }
 
-    public destroy(): void {
-        this.lineSelection = null;
-
-        super.destroy();
-    }
-
-    public highlight(hasSelection: boolean): void {
-        this.updateElementOpacity(
-            this.lineSelection,
-            this.renderOptions && this.renderOptions.opacity,
-            this.renderOptions && this.renderOptions.series && this.renderOptions.series.selected,
-            hasSelection,
-        );
+    private getLine(
+        xScale: DataRepresentationScale,
+        yScale: DataRepresentationScale,
+        interpolation: LineInterpolation,
+    ): Line<IDataRepresentationPoint> {
+        return line<IDataRepresentationPoint>()
+            .x((data: IDataRepresentationPoint) => {
+                return xScale.scale(data.x);
+            })
+            .y((data: IDataRepresentationPoint) => {
+                return yScale.scale(data.y);
+            })
+            .curve(this.getInterpolator(interpolation));
     }
 }

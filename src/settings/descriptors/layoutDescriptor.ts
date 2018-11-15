@@ -26,28 +26,28 @@
 
 import {
     BaseDescriptor,
-    Descriptor,
-    DescriptorParserOptions,
+    IDescriptor,
+    IDescriptorParserOptions,
 } from "./descriptor";
 
 import { LayoutEnum } from "../../layout/layoutEnum";
 
 export class LayoutDescriptor
     extends BaseDescriptor
-    implements Descriptor {
-
-    private _layout: string;
-
-    private _minSupportedHeight: number = 250;
+    implements IDescriptor {
 
     public autoHideVisualComponents: boolean = true;
     public auto: boolean = true;
     public layout: string = LayoutEnum[LayoutEnum.Top];
 
-    public parse(options: DescriptorParserOptions): void {
+    private _layout: string;
+
+    private _minSupportedHeight: number = 250;
+
+    public parse(options: IDescriptorParserOptions): void {
         if (this.auto) {
             Object.defineProperty(this, "layout", {
-                enumerable: false
+                enumerable: false,
             });
 
             if (options.viewport.height < this._minSupportedHeight) {
@@ -66,4 +66,3 @@ export class LayoutDescriptor
         return this._layout;
     }
 }
-

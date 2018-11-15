@@ -30,28 +30,32 @@ import { BaseContainerComponent } from "./base/baseContainerComponent";
 
 import {
     VisualComponent,
-    VisualComponentViewport
+    VisualComponentViewport,
 } from "./base/visualComponent";
 
-import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
-import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
-import { SubtitleComponent } from "./subtitleComponent";
 import { CommonComponent } from "./commonComponent";
+import { SubtitleComponent } from "./subtitleComponent";
 
 import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorDescriptor";
 
-export class MainComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions> {
+export class MainComponent extends BaseContainerComponent<
+    IVisualComponentConstructorOptions,
+    IVisualComponentRenderOptions,
+    IVisualComponentRenderOptions
+    > {
 
     private className: string = "powerKPI";
     private classNameForPhantomJs: string = "powerKPI_phantom_js";
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
-            this.className
+            this.className,
         );
 
         this.element.classed(this.classNameForPhantomJs, this.isExecutedInPhantomJs());
@@ -67,29 +71,15 @@ export class MainComponent extends BaseContainerComponent<VisualComponentConstru
         ];
     }
 
-    /**
-     * We detect Phantom JS in order to detect PBI Snapshot Service
-     * This is required as phantom js does not support CSS Flex Box well
-     *
-     * This code must be removed once PBI Snapshot Service is updated to Chromium
-     */
-    private isExecutedInPhantomJs(): boolean {
-        try {
-            return /PhantomJS/.test(window.navigator.userAgent);
-        } catch (_) {
-            return false;
-        }
-    }
-
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         const {
             data: {
                 series,
                 viewport,
                 settings: {
-                    kpiIndicator
-                }
-            }
+                    kpiIndicator,
+                },
+            },
         } = options;
 
         let backgroundColor: string = null;
@@ -114,7 +104,7 @@ export class MainComponent extends BaseContainerComponent<VisualComponentConstru
 
         this.forEach(
             this.components,
-            (component: VisualComponent<VisualComponentRenderOptions>) => {
+            (component: VisualComponent<IVisualComponentRenderOptions>) => {
                 component.render(options);
 
                 if (component.getViewport) {
@@ -123,7 +113,21 @@ export class MainComponent extends BaseContainerComponent<VisualComponentConstru
                     options.data.viewport.height -= margins.height;
                     options.data.viewport.width -= margins.width;
                 }
-            }
+            },
         );
+    }
+
+    /**
+     * We detect Phantom JS in order to detect PBI Snapshot Service
+     * This is required as phantom js does not support CSS Flex Box well
+     *
+     * This code must be removed once PBI Snapshot Service is updated to Chromium
+     */
+    private isExecutedInPhantomJs(): boolean {
+        try {
+            return /PhantomJS/.test(window.navigator.userAgent);
+        } catch (_) {
+            return false;
+        }
     }
 }

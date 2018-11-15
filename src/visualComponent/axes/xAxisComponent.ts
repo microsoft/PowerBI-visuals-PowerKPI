@@ -28,31 +28,31 @@ import powerbi from "powerbi-visuals-api";
 
 import {
     IMargin,
-    manipulation as svgManipulation
+    manipulation as svgManipulation,
 } from "powerbi-visuals-utils-svgutils";
 
-import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 import {
     textMeasurementService,
     valueFormatter,
 } from "powerbi-visuals-utils-formattingutils";
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
-import { DataRepresentationX } from "../../dataRepresentation/dataRepresentationAxis";
-import { DataRepresentationTypeEnum } from "../../dataRepresentation/dataRepresentationType";
+import { IDataRepresentationX } from "../../dataRepresentation/dataRepresentationAxis";
 import { DataRepresentationAxisValueType } from "../../dataRepresentation/dataRepresentationAxisValueType";
+import { DataRepresentationTypeEnum } from "../../dataRepresentation/dataRepresentationType";
 import { AxisDescriptor } from "../../settings/descriptors/axis/axisDescriptor";
-import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 import { VisualComponentViewport } from "../base/visualComponent";
+import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 
-import { AxisHelper } from "./helpers/axisHelper";
+import { createAxis } from "./helpers/axisHelper";
 
 import {
-    AxisComponent,
-    AxisBaseComponent
+    AxisBaseComponent,
+    IAxisComponent,
 } from "./axisBaseComponent";
 
-export interface XAxisComponentRenderOptions {
-    axis: DataRepresentationX;
+export interface IXAxisComponentRenderOptions {
+    axis: IDataRepresentationX;
     settings: AxisDescriptor;
     viewport: powerbi.IViewport;
     margin: IMargin;
@@ -60,8 +60,8 @@ export interface XAxisComponentRenderOptions {
 }
 
 export class XAxisComponent
-    extends AxisBaseComponent<VisualComponentConstructorOptions, XAxisComponentRenderOptions>
-    implements AxisComponent<XAxisComponentRenderOptions> {
+    extends AxisBaseComponent<IVisualComponentConstructorOptions, IXAxisComponentRenderOptions>
+    implements IAxisComponent<IXAxisComponentRenderOptions> {
 
     private labelPadding: number = 8;
 
@@ -81,7 +81,7 @@ export class XAxisComponent
     private additionalLabelHeight: number = 5;
     private additionalLabelWidth: number = 8;
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.element = options.element
@@ -95,7 +95,7 @@ export class XAxisComponent
             .attr("transform", svgManipulation.translate(0, this.mainElementYOffset));
     }
 
-    public preRender(options: XAxisComponentRenderOptions): void {
+    public preRender(options: IXAxisComponentRenderOptions): void {
         if (!this.areRenderOptionsValid(options)) {
             return;
         }
@@ -121,32 +121,32 @@ export class XAxisComponent
             axis.max,
             this.formatter,
             fontSize,
-            settings.fontFamily
+            settings.fontFamily,
         );
 
         this.maxElementWidth = this.getLabelWidth(
             [axis.min, axis.max],
             this.formatter,
             fontSize,
-            settings.fontFamily
+            settings.fontFamily,
         );
 
         this.firstLabelWidth = this.getLabelWidthWithAdditionalOffset(
             [domain[0] || ""],
             this.formatter,
             fontSize,
-            settings.fontFamily
+            settings.fontFamily,
         ) / 2;
 
         this.latestLabelWidth = this.getLabelWidthWithAdditionalOffset(
             [domain.slice(-1)[0] || ""],
             this.formatter,
             fontSize,
-            settings.fontFamily
+            settings.fontFamily,
         ) / 2;
     }
 
-    public render(options: XAxisComponentRenderOptions): void {
+    public render(options: IXAxisComponentRenderOptions): void {
         if (!this.areRenderOptionsValid(options)) {
             this.hide();
 
@@ -172,7 +172,7 @@ export class XAxisComponent
             axis.scale.getDomain(),
             axis.metadata,
             !axis.scale.isOrdinal,
-            settings.density
+            settings.density,
         );
 
         if (!this.isShown) {
@@ -185,24 +185,24 @@ export class XAxisComponent
             .style("fill", settings.fontColor);
 
         this.updateViewport({
+            height: this.maxElementHeight,
             width,
-            height: this.maxElementHeight
         });
 
         this.element.style(
             "margin-left",
-            pixelConverter.toString(margin.left + additionalMargin.left)
+            pixelConverter.toString(margin.left + additionalMargin.left),
         );
 
         this.gElement.attr("transform", svgManipulation.translate(0, 0));
 
         this.axisProperties.axis
             .tickFormat((item: number) => {
-                const currentValue: any = axis.type === DataRepresentationTypeEnum.DateType
+                const currentValue: any = axis.axisType === DataRepresentationTypeEnum.DateType
                     ? new Date(item)
                     : item;
 
-                const formattedLabel: string = axis.type === DataRepresentationTypeEnum.DateType
+                const formattedLabel: string = axis.axisType === DataRepresentationTypeEnum.DateType
                     ? this.axisProperties.formatter.format(currentValue)
                     : this.formatter.format(currentValue);
 
@@ -215,7 +215,7 @@ export class XAxisComponent
                 if (!isNaN(availableWidth)) {
                     return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
                         this.getTextProperties(formattedLabel, fontSize, settings.fontFamily),
-                        availableWidth
+                        availableWidth,
                     );
                 }
 
@@ -225,37 +225,12 @@ export class XAxisComponent
         this.gElement.call(this.axisProperties.axis);
     }
 
-    private getAxisProperties(
-        pixelSpan: number,
-        dataDomain: any[],
-        metaDataColumn: powerbi.DataViewMetadataColumn,
-        isScalar: boolean,
-        density: number,
-    ) {
-        return AxisHelper.createAxis({
-            pixelSpan,
-            dataDomain,
-            isScalar,
-            density,
-            metaDataColumn,
-            isVertical: false,
-            isCategoryAxis: true,
-            formatString: undefined,
-            outerPadding: 0,
-            useTickIntervalForDisplayUnits: true,
-            shouldClamp: false,
-            innerPaddingRatio: 1,
-            tickLabelPadding: undefined,
-            minOrdinalRectThickness: this.maxElementWidth + this.labelPadding
-        });
-    }
-
     public getViewport(): VisualComponentViewport {
         if (!this.isShown) {
             return {
-                width: 0,
                 height: 0,
                 height2: 0,
+                width: 0,
                 width2: 0,
             };
         }
@@ -263,23 +238,66 @@ export class XAxisComponent
         const height: number = this.maxElementHeight + this.additionalLabelHeight;
 
         return {
-            width: this.firstLabelWidth,
-            width2: this.latestLabelWidth,
             height,
             height2: 0,
+            width: this.firstLabelWidth,
+            width2: this.latestLabelWidth,
         };
     }
 
-    private areRenderOptionsValid(options: XAxisComponentRenderOptions): boolean {
+    protected getLabelWidthWithAdditionalOffset(
+        values: DataRepresentationAxisValueType[],
+        formatter: valueFormatter.IValueFormatter,
+        fontSize: number,
+        fontFamily: string,
+    ): number {
+        const width: number = this.getLabelWidth(
+            values,
+            formatter,
+            fontSize,
+            fontFamily,
+        );
+
+        return width > 0
+            ? width + this.additionalLabelWidth
+            : 0;
+    }
+
+    private getAxisProperties(
+        pixelSpan: number,
+        dataDomain: any[],
+        metaDataColumn: powerbi.DataViewMetadataColumn,
+        isScalar: boolean,
+        density: number,
+    ) {
+        return createAxis({
+            dataDomain,
+            density,
+            formatString: undefined,
+            innerPaddingRatio: 1,
+            isCategoryAxis: true,
+            isScalar,
+            isVertical: false,
+            metaDataColumn,
+            minOrdinalRectThickness: this.maxElementWidth + this.labelPadding,
+            outerPadding: 0,
+            pixelSpan,
+            shouldClamp: false,
+            tickLabelPadding: undefined,
+            useTickIntervalForDisplayUnits: true,
+        });
+    }
+
+    private areRenderOptionsValid(options: IXAxisComponentRenderOptions): boolean {
         return !!(options && options.axis && options.settings);
     }
 
-    private getValueFormatterOfXAxis(x: DataRepresentationX, xAxis: AxisDescriptor): valueFormatter.IValueFormatter {
+    private getValueFormatterOfXAxis(x: IDataRepresentationX, xAxis: AxisDescriptor): valueFormatter.IValueFormatter {
         let minValue: DataRepresentationAxisValueType;
         let maxValue: DataRepresentationAxisValueType;
         let precision: number;
 
-        if (x.type === DataRepresentationTypeEnum.NumberType) {
+        if (x.axisType === DataRepresentationTypeEnum.NumberType) {
             minValue = xAxis.displayUnits || x.max;
             precision = xAxis.precision;
         } else {
@@ -287,7 +305,7 @@ export class XAxisComponent
             maxValue = x.max;
         }
 
-        const tickNumber: number = x.type === DataRepresentationTypeEnum.StringType
+        const tickNumber: number = x.axisType === DataRepresentationTypeEnum.StringType
             ? undefined
             : this.defaultTickNumber;
 
@@ -297,25 +315,7 @@ export class XAxisComponent
             x.metadata,
             tickNumber,
             precision,
-            x.format || undefined
+            x.format || undefined,
         );
-    }
-
-    protected getLabelWidthWithAdditionalOffset(
-        values: DataRepresentationAxisValueType[],
-        formatter: valueFormatter.IValueFormatter,
-        fontSize: number,
-        fontFamily: string
-    ): number {
-        const width: number = this.getLabelWidth(
-            values,
-            formatter,
-            fontSize,
-            fontFamily
-        );
-
-        return width > 0
-            ? width + this.additionalLabelWidth
-            : 0;
     }
 }

@@ -29,21 +29,25 @@ import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 import { BaseContainerComponent } from "./base/baseContainerComponent";
 import {
     VisualComponent,
-    VisualComponentViewport
+    VisualComponentViewport,
 } from "./base/visualComponent";
 
-import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
-import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+import { LayoutEnum } from "../layout/layoutEnum";
+import { LayoutToStyleEnum } from "../layout/layoutToStyleEnum";
+import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 import { KPIComponent } from "./kpi/kpiComponent";
 import { PlotComponent } from "./plotComponent";
-import { LayoutToStyleEnum } from "../layout/layoutToStyleEnum";
-import { LayoutEnum } from "../layout/layoutEnum";
 
-export class LayoutComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions> {
+export class LayoutComponent extends BaseContainerComponent<
+    IVisualComponentConstructorOptions,
+    IVisualComponentRenderOptions,
+    IVisualComponentRenderOptions
+    > {
 
     private className: string = "layoutComponent";
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
@@ -62,7 +66,7 @@ export class LayoutComponent extends BaseContainerComponent<VisualComponentConst
         ];
     }
 
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         const { data: { viewport, settings: { layout } } } = options;
 
         const selectedLayout: LayoutToStyleEnum = this.getLayout(layout.getLayout());
@@ -81,7 +85,7 @@ export class LayoutComponent extends BaseContainerComponent<VisualComponentConst
 
         this.forEach(
             this.components,
-            (component: VisualComponent<VisualComponentRenderOptions>) => {
+            (component: VisualComponent<IVisualComponentRenderOptions>) => {
                 component.render(options);
 
                 if (component.getViewport) {
@@ -90,7 +94,7 @@ export class LayoutComponent extends BaseContainerComponent<VisualComponentConst
                     options.data.viewport.height -= margins.height;
                     options.data.viewport.width -= margins.width;
                 }
-            }
+            },
         );
     }
 

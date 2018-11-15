@@ -30,39 +30,39 @@ import {
     interactivityService,
 } from "powerbi-visuals-utils-interactivityutils";
 
+import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { EventName } from "../event/eventName";
-import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 
-export interface BehaviorOptions {
+export interface IBehaviorOptions {
     eventDispatcher: Dispatch<any>;
     interactivityService: interactivityService.IInteractivityService;
 }
 
 export class Behavior implements interactivityService.IInteractiveBehavior {
-    private options: BehaviorOptions;
+    private options: IBehaviorOptions;
 
     public bindEvents(
-        options: BehaviorOptions,
-        selectionHandler: interactivityService.ISelectionHandler
+        options: IBehaviorOptions,
+        selectionHandler: interactivityService.ISelectionHandler,
     ): void {
         this.options = options;
 
         this.options.eventDispatcher.on(
             EventName.onSelect,
-            (event: MouseEvent, series: DataRepresentationSeries) => {
+            (event: MouseEvent, series: IDataRepresentationSeries) => {
                 if (!event || !series) {
                     return;
                 }
 
                 selectionHandler.handleSelection(series, event.ctrlKey);
-            }
+            },
         );
 
         this.options.eventDispatcher.on(
             EventName.onClearSelection,
             () => {
                 selectionHandler.handleClearSelection();
-            }
+            },
         );
     }
 

@@ -26,6 +26,6 @@
 
 import { VisualComponent } from "../base/visualComponent";
 
-export interface KPIVisualComponent<RenderOptions> extends VisualComponent<RenderOptions> {
+export interface IKPIVisualComponent<RenderOptions> extends VisualComponent<RenderOptions> {
     isRendered(): boolean;
 }

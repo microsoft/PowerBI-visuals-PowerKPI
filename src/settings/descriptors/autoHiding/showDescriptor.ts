@@ -29,13 +29,13 @@ import powerbi from "powerbi-visuals-api";
 import { ViewportDescriptor } from "./viewportDescriptor";
 
 import {
-    Descriptor,
-    DescriptorParserOptions,
+    IDescriptor,
+    IDescriptorParserOptions,
 } from "../descriptor";
 
 export class ShowDescriptor
     extends ViewportDescriptor
-    implements Descriptor {
+    implements IDescriptor {
 
     private _show: boolean = true;
 
@@ -50,10 +50,10 @@ export class ShowDescriptor
             {
                 ...Object.getOwnPropertyDescriptor(
                     ShowDescriptor.prototype,
-                    "show"
+                    "show",
                 ),
-                enumerable: true
-            }
+                enumerable: true,
+            },
         );
     }
 
@@ -69,7 +69,7 @@ export class ShowDescriptor
         this._show = isShown;
     }
 
-    public parse(options: DescriptorParserOptions): void {
+    public parse(options: IDescriptorParserOptions): void {
         this.isAbleToBeShown = !(
             options
             && options.isAutoHideBehaviorEnabled
@@ -84,4 +84,3 @@ export class ShowDescriptor
         );
     }
 }
-

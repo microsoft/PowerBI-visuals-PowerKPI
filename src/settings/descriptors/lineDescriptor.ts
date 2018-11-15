@@ -26,7 +26,7 @@
 
 import {
     BaseDescriptor,
-    Descriptor,
+    IDescriptor,
 } from "./descriptor";
 
 export enum LineInterpolation {
@@ -55,7 +55,7 @@ export enum LineType {
     column = "column",
 }
 
-export interface LineDescriptorBase {
+export interface ILineDescriptorBase {
     fillColor: string;
     shouldMatchKpiColor: boolean;
     dataPointStartsKpiColorSegment: boolean;
@@ -66,13 +66,15 @@ export interface LineDescriptorBase {
 
 export class LineDescriptor
     extends BaseDescriptor
-    implements Descriptor, LineDescriptorBase {
+    implements IDescriptor, ILineDescriptorBase {
 
-    private minThickness: number = 0.25;
-    private maxThickness: number = 10;
+    public get opacity(): number {
+        return this.convertOpacityToCssFormat(this.rawOpacity);
+    }
 
-    private minOpacity: number = 15;
-    private maxOpacity: number = 100;
+    public get areaOpacity(): number {
+        return this.convertOpacityToCssFormat(this.rawAreaOpacity);
+    }
 
     public fillColor: string = undefined;
     public shouldMatchKpiColor: boolean = false;
@@ -85,13 +87,11 @@ export class LineDescriptor
     public interpolation: LineInterpolation = LineInterpolation.linear;
     public interpolationWithColorizedLine: LineInterpolation = LineInterpolation.linear;
 
-    public get opacity(): number {
-        return this.convertOpacityToCssFormat(this.rawOpacity);
-    }
+    private minThickness: number = 0.25;
+    private maxThickness: number = 10;
 
-    public get areaOpacity(): number {
-        return this.convertOpacityToCssFormat(this.rawAreaOpacity);
-    }
+    private minOpacity: number = 15;
+    private maxOpacity: number = 100;
 
     public convertOpacityToCssFormat(opacity: number): number {
         return opacity / 100;
@@ -109,21 +109,11 @@ export class LineDescriptor
                 this.minThickness,
                 this.thickness,
             ),
-            this.maxThickness
+            this.maxThickness,
         );
 
         this.rawOpacity = this.getOpacity(this.rawOpacity);
         this.rawAreaOpacity = this.getOpacity(this.rawAreaOpacity);
-    }
-
-    private getOpacity(opacity: number): number {
-        return Math.min(
-            this.maxOpacity,
-            Math.max(
-                this.minOpacity,
-                opacity
-            )
-        );
     }
 
     public shouldKeyBeEnumerated?(key: string): boolean {
@@ -144,5 +134,15 @@ export class LineDescriptor
         }
 
         return this.hasOwnProperty(key);
+    }
+
+    private getOpacity(opacity: number): number {
+        return Math.min(
+            this.maxOpacity,
+            Math.max(
+                this.minOpacity,
+                opacity,
+            ),
+        );
     }
 }

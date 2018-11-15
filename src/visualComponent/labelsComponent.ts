@@ -25,28 +25,28 @@
  */
 
 import {
+    range as d3Range,
     ScaleQuantize,
     scaleQuantize,
-    range as d3Range
 } from "d3";
 
-import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 import { label as NewLabelUtils } from "powerbi-visuals-utils-chartutils";
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 import {
-    valueFormatter,
     textMeasurementService,
+    valueFormatter,
 } from "powerbi-visuals-utils-formattingutils";
 
-import { BaseComponent } from "./base/baseComponent";
-import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
-import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 import { DataRepresentationPointFilter } from "../dataRepresentation/dataRepresentationPointFilter";
 import { DataRepresentationScale } from "../dataRepresentation/dataRepresentationScale";
-import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
-import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
+import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
+import { BaseComponent } from "./base/baseComponent";
+import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
-export class LabelsComponent extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions>   {
+export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOptions, IVisualComponentRenderOptions>   {
     private className: string = "labelsComponent";
 
     private minimumLabelsToRender: number = 1;
@@ -54,17 +54,17 @@ export class LabelsComponent extends BaseComponent<VisualComponentConstructorOpt
 
     private pointFilter: DataRepresentationPointFilter = new DataRepresentationPointFilter();
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
             this.className,
-            "g"
+            "g",
         );
     }
 
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         const { settings: { labels } } = options.data;
 
         if (labels.show) {
@@ -78,19 +78,20 @@ export class LabelsComponent extends BaseComponent<VisualComponentConstructorOpt
         }
     }
 
-    private renderLabels(options: VisualComponentRenderOptions): void {
+    private renderLabels(options: IVisualComponentRenderOptions): void {
         const { viewport, settings: { labels } } = options.data;
 
         this.element
             .classed(this.italicClassName, labels.isItalic)
             .classed(this.boldClassName, labels.isBold);
 
-        // TODO: Fix label component
-        const labelLayoutOptions: NewLabelUtils.labelLayout.DataLabelLayoutOptions = NewLabelUtils.labelUtils.LabelUtils.getDataLabelLayoutOptions(null);
+        const labelLayoutOptions: NewLabelUtils.labelLayout.DataLabelLayoutOptions =
+            NewLabelUtils.labelUtils.LabelUtils.getDataLabelLayoutOptions(null);
 
         const labelLayout: NewLabelUtils.labelLayout.LabelLayout = new NewLabelUtils.labelLayout.LabelLayout(labelLayoutOptions);
 
-        const labelGroups: NewLabelUtils.labelLayout.LabelDataPointGroup<NewLabelUtils.labelLayout.LabelDataPoint[]>[] = this.getLabelGroups(options);
+        const labelGroups: Array<NewLabelUtils.labelLayout.LabelDataPointGroup<NewLabelUtils.labelLayout.LabelDataPoint[]>> =
+            this.getLabelGroups(options);
 
         const dataLabels: NewLabelUtils.labelLayout.Label[] = labelLayout.layout(labelGroups, viewport);
 
@@ -100,16 +101,18 @@ export class LabelsComponent extends BaseComponent<VisualComponentConstructorOpt
     private getTextProperties(
         text: string,
         fontSize: number,
-        fontFamily: string
+        fontFamily: string,
     ): textMeasurementService.TextProperties {
         return {
-            text,
             fontFamily,
-            fontSize: pixelConverter.toString(fontSize)
+            fontSize: pixelConverter.toString(fontSize),
+            text,
         };
     }
 
-    private getLabelGroups(options: VisualComponentRenderOptions): NewLabelUtils.labelLayout.LabelDataPointGroup<NewLabelUtils.labelLayout.LabelDataPoint[]>[] {
+    private getLabelGroups(
+        options: IVisualComponentRenderOptions,
+    ): Array<NewLabelUtils.labelLayout.LabelDataPointGroup<NewLabelUtils.labelLayout.LabelDataPoint[]>> {
         const {
             x,
             series,
@@ -132,7 +135,7 @@ export class LabelsComponent extends BaseComponent<VisualComponentConstructorOpt
 
         const lastPointIndex: number = pointsLength - 1;
 
-        let availableAmountOfLabels: number = NewLabelUtils.labelUtils.LabelUtils.getNumberOfLabelsToRender(
+        const availableAmountOfLabels: number = NewLabelUtils.labelUtils.LabelUtils.getNumberOfLabelsToRender(
             viewport.width,
             labels.density,
             this.minimumLabelsToRender,
@@ -144,12 +147,12 @@ export class LabelsComponent extends BaseComponent<VisualComponentConstructorOpt
             .domain([0, maxNumberOfLabels])
             .range(d3Range(0, pointsLength, 1));
 
-        return series.map((currentSeries: DataRepresentationSeries, seriesIndex: number) => {
+        return series.map((currentSeries: IDataRepresentationSeries, seriesIndex: number) => {
             const labelDataPoints: NewLabelUtils.labelLayout.LabelDataPoint[] = [];
 
             const labelDisplayUnits: number = labels.displayUnits || (currentSeries.domain.max as number);
 
-            const valueFormatters: valueFormatter.IValueFormatter[] = series.map((seriesGroup: DataRepresentationSeries) => {
+            const valueFormatters: valueFormatter.IValueFormatter[] = series.map((seriesGroup: IDataRepresentationSeries) => {
                 return this.getValueFormatter(
                     labelDisplayUnits,
                     labels.precision,
@@ -163,7 +166,7 @@ export class LabelsComponent extends BaseComponent<VisualComponentConstructorOpt
             for (let index: number = 0, previousPointIndex: number = -1; index <= maxNumberOfLabels; index++) {
                 const pointIndex: number = indexScale(index);
 
-                const point: DataRepresentationPoint = currentSeries.points[pointIndex];
+                const point: IDataRepresentationPoint = currentSeries.points[pointIndex];
 
                 if (previousPointIndex !== pointIndex && this.pointFilter.isPointValid(point)) {
                     previousPointIndex = pointIndex;
@@ -178,7 +181,7 @@ export class LabelsComponent extends BaseComponent<VisualComponentConstructorOpt
                     const textWidth: number = textMeasurementService.textMeasurementService.measureSvgTextWidth(textProperties);
                     const textHeight: number = textMeasurementService.textMeasurementService.estimateSvgTextHeight(textProperties);
 
-                    let parentShape: NewLabelUtils.labelLayout.LabelParentPoint = {
+                    const parentShape: NewLabelUtils.labelLayout.LabelParentPoint = {
                         point: {
                             x: xScale.scale(point.x),
                             y: yScale.scale(point.y),
@@ -188,27 +191,27 @@ export class LabelsComponent extends BaseComponent<VisualComponentConstructorOpt
                             NewLabelUtils.labelLayout.NewPointLabelPosition.Above,
                             NewLabelUtils.labelLayout.NewPointLabelPosition.Below,
                             NewLabelUtils.labelLayout.NewPointLabelPosition.Left,
-                            NewLabelUtils.labelLayout.NewPointLabelPosition.Right
-                        ]
+                            NewLabelUtils.labelLayout.NewPointLabelPosition.Right,
+                        ],
                     };
 
-                    let labelDataPoint: NewLabelUtils.labelLayout.LabelDataPoint = {
+                    const labelDataPoint: NewLabelUtils.labelLayout.LabelDataPoint = {
+                        fontProperties: {
+                            color: labels.color,
+                            family: labels.fontFamily,
+                            size: NewLabelUtils.units.Units.FontSize.createFromPt(labels.fontSize),
+                        },
+                        identity: null,
+                        insideFill: labels.color,
                         isPreferred: pointIndex === 0 || pointIndex === lastPointIndex,
+                        outsideFill: labels.color,
+                        parentShape,
+                        parentType: NewLabelUtils.labelLayout.LabelDataPointParentType.Point,
                         text: formattedValue,
                         textSize: {
+                            height: textHeight,
                             width: textWidth,
-                            height: textHeight
                         },
-                        outsideFill: labels.color,
-                        insideFill: labels.color,
-                        parentType: NewLabelUtils.labelLayout.LabelDataPointParentType.Point,
-                        parentShape: parentShape,
-                        fontProperties: {
-                            family: labels.fontFamily,
-                            color: labels.color,
-                            size: NewLabelUtils.units.Units.FontSize.createFromPt(labels.fontSize)
-                        },
-                        identity: null
                     };
 
                     labelDataPoints.push(labelDataPoint);
@@ -217,7 +220,7 @@ export class LabelsComponent extends BaseComponent<VisualComponentConstructorOpt
 
             return {
                 labelDataPoints,
-                maxNumberOfLabels: labelDataPoints.length
+                maxNumberOfLabels: labelDataPoints.length,
             };
         });
     }
@@ -225,12 +228,12 @@ export class LabelsComponent extends BaseComponent<VisualComponentConstructorOpt
     private getValueFormatter(
         displayUnits: number,
         precision: number,
-        format: string
+        format: string,
     ): valueFormatter.IValueFormatter {
         return valueFormatter.valueFormatter.create({
             format,
             precision,
-            value: displayUnits
+            value: displayUnits,
         });
     }
 }

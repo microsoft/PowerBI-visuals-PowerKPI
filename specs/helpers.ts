@@ -30,6 +30,6 @@ export function getDateRange(start: Date, stop: Date, step: number): Date[] {
     return d3Range(
         start.getTime(),
         stop.getTime(),
-        step
-    ).map(value => new Date(value));
+        step,
+    ).map((value) => new Date(value));
 }

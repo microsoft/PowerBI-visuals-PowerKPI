@@ -34,36 +34,36 @@ import {
 
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
 
-import { VisualComponent } from "../base/visualComponent";
-import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 import { DataRepresentationScale } from "../../dataRepresentation/dataRepresentationScale";
+import { VisualComponent } from "../base/visualComponent";
+import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 
 import {
-    DataRepresentationPoint,
-    DataRepresentationPointGradientColor,
+    IDataRepresentationPoint,
+    IDataRepresentationPointGradientColor,
 } from "../../dataRepresentation/dataRepresentationPoint";
 
 import { LineInterpolation } from "../../settings/descriptors/lineDescriptor";
 
 import {
     LineComponent,
-    LineComponentRenderOptions
+    ILineComponentRenderOptions,
 } from "./lineComponent";
 
-export interface AreaComponentRenderOptions extends LineComponentRenderOptions {
+export interface IAreaComponentRenderOptions extends ILineComponentRenderOptions {
     areaOpacity: number;
 }
 
 export class AreaComponent
     extends LineComponent
-    implements VisualComponent<LineComponentRenderOptions> {
+    implements VisualComponent<ILineComponentRenderOptions> {
 
     private additionalClassName: string = "areaComponent";
     private areaSelector: CssConstants.ClassAndSelector = this.getSelectorWithPrefix(`${this.additionalClassName}_area`);
 
-    private areaSelection: Selection<any, DataRepresentationPointGradientColor, any, any>;
+    private areaSelection: Selection<any, IDataRepresentationPointGradientColor, any, any>;
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super(options);
 
         this.element.classed(this.additionalClassName, true);
@@ -74,12 +74,12 @@ export class AreaComponent
         };
     }
 
-    public render(options: AreaComponentRenderOptions): void {
+    public render(options: IAreaComponentRenderOptions): void {
         this.renderArea(options);
         super.render(options);
     }
 
-    public renderArea(options: AreaComponentRenderOptions): void {
+    public renderArea(options: IAreaComponentRenderOptions): void {
         const {
             x,
             y,
@@ -99,7 +99,7 @@ export class AreaComponent
             .copy()
             .range([viewport.height, 0]);
 
-        const areaSelection: Selection<any, DataRepresentationPointGradientColor, any, any> = this.element
+        const areaSelection: Selection<any, IDataRepresentationPointGradientColor, any, any> = this.element
             .selectAll(this.areaSelector.selectorName)
             .data(gradientPoints);
 
@@ -112,34 +112,17 @@ export class AreaComponent
             .classed(this.areaSelector.className, true)
             .on("click", this.clickHandler.bind(this))
             .merge(areaSelection)
-            .attr("d", (gradientGroup: DataRepresentationPointGradientColor) => {
+            .attr("d", (gradientGroup: IDataRepresentationPointGradientColor) => {
                 return this.getArea(
                     xScale,
                     yScale,
                     viewport,
-                    interpolation
+                    interpolation,
                 )(gradientGroup.points);
             })
-            .style("fill", (gradientGroup: DataRepresentationPointGradientColor) => gradientGroup.color);
+            .style("fill", (gradientGroup: IDataRepresentationPointGradientColor) => gradientGroup.color);
 
         this.highlight(series && series.hasSelection);
-    }
-
-    private getArea(
-        xScale: DataRepresentationScale,
-        yScale: DataRepresentationScale,
-        viewport: powerbi.IViewport,
-        interpolation: LineInterpolation,
-    ): Area<DataRepresentationPoint> {
-        return area<DataRepresentationPoint>()
-            .x((dataPoint: DataRepresentationPoint) => {
-                return xScale.scale(dataPoint.x);
-            })
-            .y0(viewport.height)
-            .y1((dataPoint: DataRepresentationPoint) => {
-                return yScale.scale(dataPoint.y);
-            })
-            .curve(this.getInterpolator(interpolation));
     }
 
     public destroy(): void {
@@ -151,11 +134,28 @@ export class AreaComponent
     public highlight(hasSelection: boolean): void {
         this.updateElementOpacity(
             this.areaSelection,
-            this.renderOptions && (this.renderOptions as AreaComponentRenderOptions).areaOpacity,
+            this.renderOptions && (this.renderOptions as IAreaComponentRenderOptions).areaOpacity,
             this.renderOptions && this.renderOptions.series && this.renderOptions.series.selected,
             hasSelection,
         );
 
         super.highlight(hasSelection);
+    }
+
+    private getArea(
+        xScale: DataRepresentationScale,
+        yScale: DataRepresentationScale,
+        viewport: powerbi.IViewport,
+        interpolation: LineInterpolation,
+    ): Area<IDataRepresentationPoint> {
+        return area<IDataRepresentationPoint>()
+            .x((dataPoint: IDataRepresentationPoint) => {
+                return xScale.scale(dataPoint.x);
+            })
+            .y0(viewport.height)
+            .y1((dataPoint: IDataRepresentationPoint) => {
+                return yScale.scale(dataPoint.y);
+            })
+            .curve(this.getInterpolator(interpolation));
     }
 }

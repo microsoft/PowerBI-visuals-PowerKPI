@@ -25,12 +25,12 @@
  */
 
 import {
-    DataRepresentationPoint,
-    DataRepresentationPointGradientColor,
+    IDataRepresentationPoint,
+    IDataRepresentationPointGradientColor,
 } from "./dataRepresentationPoint";
 
 export class DataRepresentationPointFilter {
-    public isPointValid(point: DataRepresentationPoint): boolean {
+    public isPointValid(point: IDataRepresentationPoint): boolean {
         return point
             && point.y !== null
             && point.y !== undefined
@@ -38,15 +38,15 @@ export class DataRepresentationPointFilter {
     }
 
     public groupPointByColor(
-        gradientPoints: DataRepresentationPointGradientColor[],
-        point: DataRepresentationPoint,
-        dataPointEndsKpiColorSegment: boolean
+        gradientPoints: IDataRepresentationPointGradientColor[],
+        point: IDataRepresentationPoint,
+        dataPointEndsKpiColorSegment: boolean,
     ): void {
         if (!this.isPointValid(point) || !gradientPoints) {
             return;
         }
 
-        const currentGradient: DataRepresentationPointGradientColor = gradientPoints.slice(-1)[0];
+        const currentGradient: IDataRepresentationPointGradientColor = gradientPoints.slice(-1)[0];
 
         if (!currentGradient) {
             gradientPoints.push({

@@ -29,8 +29,8 @@ import powerbi from "powerbi-visuals-api";
 import { SettingsBase } from "./settingBase";
 
 import {
+    ILineDescriptorBase,
     LineDescriptor,
-    LineDescriptorBase,
     LineStyle,
 } from "./descriptors/lineDescriptor";
 
@@ -39,7 +39,7 @@ export class SeriesSettings extends SettingsBase {
 
     public parseObjects(objects: powerbi.DataViewObjects): SettingsBase {
         if (objects) {
-            let lineObject: LineDescriptorBase = (objects.line as any || {}) as LineDescriptorBase;
+            const lineObject: ILineDescriptorBase = (objects.line as any || {}) as ILineDescriptorBase;
 
             if (!lineObject.fillColor
                 && objects.series
@@ -66,7 +66,7 @@ export class SeriesSettings extends SettingsBase {
 
             return super.parseObjects({
                 ...objects,
-                line: lineObject as any
+                line: lineObject as any,
             });
         }
 

@@ -24,28 +24,32 @@
  *  THE SOFTWARE.
  */
 
-import { VisualComponent } from "./base/visualComponent";
-import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
-import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
+import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
+import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { BaseContainerComponent } from "./base/baseContainerComponent";
-import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
-import { DataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
+import { VisualComponent } from "./base/visualComponent";
+import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
 import {
     DotComponent,
-    DotComponentRenderOptions,
+    IDotComponentRenderOptions,
 } from "./dotComponent";
 
-export class DotsComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, DotComponentRenderOptions> {
+export class DotsComponent extends BaseContainerComponent<
+    IVisualComponentConstructorOptions,
+    IVisualComponentRenderOptions,
+    IDotComponentRenderOptions
+    > {
     private className: string = "dotsComponent";
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
             this.className,
-            "g"
+            "g",
         );
 
         this.constructorOptions = {
@@ -54,12 +58,12 @@ export class DotsComponent extends BaseContainerComponent<VisualComponentConstru
         };
     }
 
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         const {
             x,
             series,
             viewport,
-            settings: { dots }
+            settings: { dots },
         } = options.data;
 
         this.initComponents(
@@ -67,35 +71,35 @@ export class DotsComponent extends BaseContainerComponent<VisualComponentConstru
             series.length,
             () => {
                 return new DotComponent(this.constructorOptions);
-            }
+            },
         );
 
         this.forEach(
             this.components,
-            (component: VisualComponent<DotComponentRenderOptions>, componentIndex: number) => {
-                const currentSeries: DataRepresentationSeries = series[componentIndex];
+            (component: VisualComponent<IDotComponentRenderOptions>, componentIndex: number) => {
+                const currentSeries: IDataRepresentationSeries = series[componentIndex];
 
-                const point: DataRepresentationPoint = currentSeries.points
-                    .filter((point: DataRepresentationPoint) => {
-                        return point.y !== null && !isNaN(point.y);
+                const point: IDataRepresentationPoint = currentSeries.points
+                    .filter((currentPoint: IDataRepresentationPoint) => {
+                        return currentPoint.y !== null && !isNaN(currentPoint.y);
                     })[0];
 
                 if (point) {
                     component.show();
 
                     component.render({
-                        x: x.scale,
                         point,
-                        viewport,
-                        y: currentSeries.y.scale,
-                        thickness: currentSeries.settings.line.thickness,
                         radiusFactor: dots.radiusFactor,
                         series: currentSeries,
+                        thickness: currentSeries.settings.line.thickness,
+                        viewport,
+                        x: x.scale,
+                        y: currentSeries.y.scale,
                     });
                 } else {
                     component.hide();
                 }
-            }
+            },
         );
     }
 }

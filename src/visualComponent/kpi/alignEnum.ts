@@ -27,5 +27,5 @@
 export enum AlignEnum {
     alignLeft,
     alignCenter,
-    alignRight
+    alignRight,
 }

@@ -26,28 +26,28 @@
 
 import {
     displayUnitSystemType,
-    valueFormatter
+    valueFormatter,
 } from "powerbi-visuals-utils-formattingutils";
 
-import { VisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
+import { IVisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
 import { AlignEnum } from "./alignEnum";
 import { CaptionKPIComponent } from "./captionKPIComponent";
-import { KPIVisualComponent } from "./kpiVisualComponent";
-import { KPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
-import { CaptionKPIComponentOptions, CaptionKPIComponentOptionsValueSettings} from "./captionKPIComponentOptions";
+import { ICaptionKPIComponentOptions, ICaptionKPIComponentOptionsValueSettings } from "./captionKPIComponentOptions";
+import { IKPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
+import { IKPIVisualComponent } from "./kpiVisualComponent";
 
 export class ValueKPIComponent
     extends CaptionKPIComponent
-    implements KPIVisualComponent<VisualComponentRenderOptions> {
+    implements IKPIVisualComponent<IVisualComponentRenderOptions> {
 
     private extraClassName: string = "valueKPIComponent";
 
     private valueFormat: string;
 
-    constructor(options: KPIComponentConstructorOptionsWithClassName) {
+    constructor(options: IKPIComponentConstructorOptionsWithClassName) {
         super({
+            className: options.className,
             element: options.element,
-            className: options.className
         });
 
         this.element.classed(this.extraClassName, true);
@@ -55,13 +55,13 @@ export class ValueKPIComponent
         this.valueFormat = valueFormatter.valueFormatter.DefaultNumericFormat;
     }
 
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         const { series, settings, variance } = options.data;
-        const captionDetailsKPIComponentOptions: CaptionKPIComponentOptions = { ...options } as CaptionKPIComponentOptions;
+        const captionDetailsKPIComponentOptions: ICaptionKPIComponentOptions = { ...options } as ICaptionKPIComponentOptions;
 
-        let caption: string = ""
-            , details: string = ""
-            , title: string = "";
+        let caption: string = "";
+        let details: string = "";
+        let title: string = "";
 
         if (options.data.series
             && options.data.series[0]
@@ -69,10 +69,10 @@ export class ValueKPIComponent
             && !isNaN(options.data.series[0].current.y)
         ) {
             const formatter: valueFormatter.IValueFormatter = valueFormatter.valueFormatter.create({
+                displayUnitSystemType: displayUnitSystemType.DisplayUnitSystemType.WholeUnits,
                 format: options.data.series[0].format || this.valueFormat,
                 precision: settings.actualValueKPI.precision,
                 value: settings.actualValueKPI.displayUnits || series[0].domain.max,
-                displayUnitSystemType: displayUnitSystemType.DisplayUnitSystemType.WholeUnits,
             });
 
             const value: number = options.data.series[0].current.y;
@@ -82,20 +82,20 @@ export class ValueKPIComponent
             details = options.data.series[0].name;
         }
 
-        const valueCaption: CaptionKPIComponentOptionsValueSettings = {
+        const valueCaption: ICaptionKPIComponentOptionsValueSettings = {
+            settings: settings.actualValueKPI,
             title: details || title,
             value: caption,
-            settings: settings.actualValueKPI
         };
 
-        const labelCaption: CaptionKPIComponentOptionsValueSettings = {
+        const labelCaption: ICaptionKPIComponentOptionsValueSettings = {
+            settings: settings.actualLabelKPI,
             value: details,
-            settings: settings.actualLabelKPI
         };
 
         captionDetailsKPIComponentOptions.captions = [
             [valueCaption],
-            [labelCaption]
+            [labelCaption],
         ];
 
         const isVarianceKPIAvailable: boolean = series
@@ -109,7 +109,9 @@ export class ValueKPIComponent
         if (!settings.dateLabelKPI.show && !settings.dateValueKPI.show) {
             currentAlign = AlignEnum.alignLeft;
         } else if (((!settings.kpiIndicatorValue.show || isNaN(variance[0]))
-            && (!settings.kpiIndicatorLabel.isShown() || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex)))
+            && (!settings.kpiIndicatorLabel.isShown()
+                || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex))
+            )
             && (!isVarianceKPIAvailable || !settings.kpiIndicator.show))
             && (!settings.secondKPIIndicatorValue.show && !settings.secondKPIIndicatorLabel.isShown()
                 || isNaN(variance[1]))

@@ -26,17 +26,17 @@
 
 import {
     AxisReferenceLineBaseComponent,
-    AxisReferenceLineBaseComponentRenderOptions,
+    IAxisReferenceLineBaseComponentRenderOptions,
 } from "./axisReferenceLineBaseComponent";
 
-import { AxisReferenceLineGetPointsFunction } from "./axisReferenceLineGetPointsFunction";
-import { DataRepresentationScale } from "../../../dataRepresentation/dataRepresentationScale";
 import { DataRepresentationAxisValueType } from "../../../dataRepresentation/dataRepresentationAxisValueType";
+import { DataRepresentationScale } from "../../../dataRepresentation/dataRepresentationScale";
+import { IAxisReferenceLineGetPointsFunction } from "./axisReferenceLineGetPointsFunction";
 
 export class XAxisReferenceLineComponent extends AxisReferenceLineBaseComponent {
 
-    protected getPoints(options: AxisReferenceLineBaseComponentRenderOptions): AxisReferenceLineGetPointsFunction {
-        const { scale, viewport, } = options;
+    protected getPoints(options: IAxisReferenceLineBaseComponentRenderOptions): IAxisReferenceLineGetPointsFunction {
+        const { scale, viewport } = options;
 
         const xScale: DataRepresentationScale = scale
             .copy()
@@ -47,7 +47,7 @@ export class XAxisReferenceLineComponent extends AxisReferenceLineBaseComponent 
 
             return [
                 [x, 0],
-                [x, viewport.height]
+                [x, viewport.height],
             ];
         };
     }

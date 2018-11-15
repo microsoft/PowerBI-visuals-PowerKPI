@@ -24,37 +24,41 @@
  *  THE SOFTWARE.
  */
 
-import { VisualComponent } from "../base/visualComponent";
-import { BaseContainerComponent } from "../base/baseContainerComponent";
-import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 import { LineType } from "../../settings/descriptors/lineDescriptor";
+import { BaseContainerComponent } from "../base/baseContainerComponent";
+import { VisualComponent } from "../base/visualComponent";
+import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
 
 import {
     AreaComponent,
-    AreaComponentRenderOptions
+    IAreaComponentRenderOptions,
 } from "./areaComponent";
 
 import {
     LineComponent,
-    LineComponentRenderOptions
+    ILineComponentRenderOptions,
 } from "./lineComponent";
 
-export interface ComboComponentRenderOptions extends AreaComponentRenderOptions {
+export interface IComboComponentRenderOptions extends IAreaComponentRenderOptions {
     lineType: LineType;
 }
 
-export class ComboComponent extends BaseContainerComponent<VisualComponentConstructorOptions, ComboComponentRenderOptions, LineComponentRenderOptions> {
+export class ComboComponent extends BaseContainerComponent<
+    IVisualComponentConstructorOptions,
+    IComboComponentRenderOptions,
+    ILineComponentRenderOptions
+    > {
     private className: string = "comboComponent";
 
     private currentLineType: LineType;
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
             this.className,
-            "g"
+            "g",
         );
 
         this.constructorOptions = {
@@ -63,7 +67,7 @@ export class ComboComponent extends BaseContainerComponent<VisualComponentConstr
         };
     }
 
-    public render(options: ComboComponentRenderOptions): void {
+    public render(options: IComboComponentRenderOptions): void {
         const { lineType } = options;
 
         this.renderOptions = options;
@@ -87,15 +91,14 @@ export class ComboComponent extends BaseContainerComponent<VisualComponentConstr
                         return new LineComponent(this.constructorOptions);
                     }
                 }
-            }
+            },
         );
 
         this.forEach(
             this.components,
-            (component: VisualComponent<LineComponentRenderOptions>) => {
+            (component: VisualComponent<ILineComponentRenderOptions>) => {
                 component.render(options);
-            }
+            },
         );
     }
 }
-

@@ -25,24 +25,24 @@
  */
 
 import {
-    legendInterfaces,
     legend as legendModule,
+    legendInterfaces,
 } from "powerbi-visuals-utils-chartutils";
 
-import { VisualComponentViewport } from "./base/visualComponent";
-import { BaseComponent } from "./base/baseComponent";
-import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
-import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
-import { DataRepresentation } from "../dataRepresentation/dataRepresentation";
-import { DataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
+import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
+import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
+import { BaseComponent } from "./base/baseComponent";
+import { VisualComponentViewport } from "./base/visualComponent";
+import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
-export class LegendComponent extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
+export class LegendComponent extends BaseComponent<IVisualComponentConstructorOptions, IVisualComponentRenderOptions> {
     private className: string = "legendComponent";
 
     private legend: legendInterfaces.ILegend;
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
@@ -52,26 +52,13 @@ export class LegendComponent extends BaseComponent<VisualComponentConstructorOpt
 
         this.constructorOptions = {
             ...options,
-            element: this.element
+            element: this.element,
         };
 
         this.legend = this.createLegend(this.constructorOptions);
     }
 
-    private createLegend(options: VisualComponentConstructorOptions): legendInterfaces.ILegend {
-        try {
-            return legendModule.createLegend(
-                options.element.node(),
-                false,
-                options.interactivityService || undefined,
-                true,
-            );
-        } catch (_) {
-            return null;
-        }
-    }
-
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         const { data: { settings: { legend } } } = options;
 
         if (!this.legend || !legend.show) {
@@ -95,16 +82,46 @@ export class LegendComponent extends BaseComponent<VisualComponentConstructorOpt
         }
     }
 
-    private createLegendData(data: DataRepresentation, settings: LegendDescriptor): legendInterfaces.LegendData {
+    public destroy(): void {
+        this.legend = null;
+
+        super.destroy();
+    }
+
+    public getViewport(): VisualComponentViewport {
+        if (!this.legend || !this.isShown) {
+            return {
+                height: 0,
+                width: 0,
+            };
+        }
+
+        return this.legend.getMargins();
+    }
+
+    private createLegend(options: IVisualComponentConstructorOptions): legendInterfaces.ILegend {
+        try {
+            return legendModule.createLegend(
+                options.element.node(),
+                false,
+                options.interactivityService || undefined,
+                true,
+            );
+        } catch (_) {
+            return null;
+        }
+    }
+
+    private createLegendData(data: IDataRepresentation, settings: LegendDescriptor): legendInterfaces.LegendData {
         const dataPoints: legendInterfaces.LegendDataPoint[] = data.series
-            .map((series: DataRepresentationSeries) => {
+            .map((series: IDataRepresentationSeries) => {
                 const dataPoint: legendInterfaces.LegendDataPoint = {
                     color: series.settings.line.fillColor,
-                    label: series.name,
                     identity: series.identity,
-                    selected: series.selected,
+                    label: series.name,
                     lineStyle: settings.getLegendLineStyle(series.settings.line.lineStyle),
                     markerShape: settings.getLegendMarkerShape(),
+                    selected: series.selected,
                 };
 
                 return dataPoint;
@@ -116,10 +133,10 @@ export class LegendComponent extends BaseComponent<VisualComponentConstructorOpt
 
         return {
             dataPoints,
-            title,
             fontSize: settings.fontSize,
             grouped: false,
             labelColor: settings.labelColor,
+            title,
         };
     }
 
@@ -129,22 +146,5 @@ export class LegendComponent extends BaseComponent<VisualComponentConstructorOpt
         return positionIndex === undefined
             ? legendInterfaces.LegendPosition.BottomCenter
             : positionIndex;
-    }
-
-    public destroy(): void {
-        this.legend = null;
-
-        super.destroy();
-    }
-
-    public getViewport(): VisualComponentViewport {
-        if (!this.legend || !this.isShown) {
-            return {
-                width: 0,
-                height: 0
-            };
-        }
-
-        return this.legend.getMargins();
     }
 }

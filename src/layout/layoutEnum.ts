@@ -28,5 +28,5 @@ export enum LayoutEnum {
     Top,
     Right,
     Bottom,
-    Left
+    Left,
 }

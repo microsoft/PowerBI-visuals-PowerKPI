@@ -25,9 +25,9 @@
  */
 
 import { KPIIndicatorValueDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorValueDescriptor";
-import { CaptionKPIComponentOptions } from "./captionKPIComponentOptions";
+import { ICaptionKPIComponentOptions } from "./captionKPIComponentOptions";
 
-export interface VarianceKPIComponentOptions extends CaptionKPIComponentOptions {
+export interface IVarianceKPIComponentOptions extends ICaptionKPIComponentOptions {
     variance: number;
     varianceSettings: KPIIndicatorValueDescriptor;
     label: string;

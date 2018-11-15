@@ -29,67 +29,65 @@ import powerbi from "powerbi-visuals-api";
 import { SettingsBase } from "./settingBase";
 
 import {
-    Descriptor,
-    DescriptorParserOptions
+    IDescriptor,
+    IDescriptorParserOptions,
 } from "./descriptors/descriptor";
 
 import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
 
-import { LayoutDescriptor } from "./descriptors/layoutDescriptor";
-import { FakeTitleDescriptor } from "./descriptors/fakeTitleDescriptor";
-import { SubtitleDescriptor } from "./descriptors/subtitleDescriptor";
-import { KPIIndicatorDescriptor } from "./descriptors/kpi/kpiIndicatorDescriptor";
-import { KPIIndicatorValueSignDescriptor } from "./descriptors/kpi/kpiIndicatorValueSignDescriptor";
-import { KPIIndicatorCustomizableLabelDescriptor } from "./descriptors/kpi/kpiIndicatorCustomizableLabelDescriptor";
-import { KPIIndicatorValueDescriptor } from "./descriptors/kpi/kpiIndicatorValueDescriptor";
-import { KPIIndicatorLabelDescriptor } from "./descriptors/kpi/kpiIndicatorLabelDescriptor";
-import { LabelsDescriptor } from "./descriptors/labelsDescriptor";
-import { LineDescriptor } from "./descriptors/lineDescriptor";
 import { DotsDescriptor } from "./descriptors/dotsDescriptor";
+import { FakeTitleDescriptor } from "./descriptors/fakeTitleDescriptor";
+import { KPIIndicatorCustomizableLabelDescriptor } from "./descriptors/kpi/kpiIndicatorCustomizableLabelDescriptor";
+import { KPIIndicatorDescriptor } from "./descriptors/kpi/kpiIndicatorDescriptor";
+import { KPIIndicatorLabelDescriptor } from "./descriptors/kpi/kpiIndicatorLabelDescriptor";
+import { KPIIndicatorValueDescriptor } from "./descriptors/kpi/kpiIndicatorValueDescriptor";
+import { KPIIndicatorValueSignDescriptor } from "./descriptors/kpi/kpiIndicatorValueSignDescriptor";
+import { LabelsDescriptor } from "./descriptors/labelsDescriptor";
+import { LayoutDescriptor } from "./descriptors/layoutDescriptor";
 import { LegendDescriptor } from "./descriptors/legendDescriptor";
+import { LineDescriptor } from "./descriptors/lineDescriptor";
+import { SubtitleDescriptor } from "./descriptors/subtitleDescriptor";
 
-import {
-    XAxisDescriptor,
-    YAxisDescriptor
-} from "./descriptors/axis/axisDescriptor";
+import { XAxisDescriptor } from "./descriptors/axis/xAxisDescriptor";
+import { YAxisDescriptor } from "./descriptors/axis/yAxisDescriptor";
 
 import { AxisReferenceLineDescriptor } from "./descriptors/axis/referenceLine/axisReferenceLineDescriptor";
 import { TooltipDescriptor } from "./descriptors/tooltip/tooltipDescriptor";
 import { TooltipLabelDescriptor } from "./descriptors/tooltip/tooltipLabelDescriptor";
 
 const kpiCaptionViewport: powerbi.IViewport = {
+    height: 90,
     width: 90,
-    height: 90
 };
 
 const kpiLabelViewport: powerbi.IViewport = {
+    height: 165,
     width: 165,
-    height: 165
 };
 
 const subtitleViewport: powerbi.IViewport = {
+    height: 150,
     width: 150,
-    height: 150
 };
 
 const legendViewport: powerbi.IViewport = {
+    height: 120,
     width: 120,
-    height: 120
 };
 
 const LabelsViewport: powerbi.IViewport = {
+    height: 80,
     width: 80,
-    height: 80
 };
 
 const axisViewportToDecreaseFontSize: powerbi.IViewport = {
+    height: 70,
     width: 70,
-    height: 70
 };
 
 const axisViewportToIncreaseDensity: powerbi.IViewport = {
+    height: 250,
     width: 250,
-    height: 250
 };
 
 export class Settings extends SettingsBase {
@@ -98,9 +96,13 @@ export class Settings extends SettingsBase {
     public subtitle: SubtitleDescriptor = new SubtitleDescriptor(subtitleViewport);
     public kpiIndicator: KPIIndicatorDescriptor = new KPIIndicatorDescriptor(kpiCaptionViewport);
     public kpiIndicatorValue: KPIIndicatorValueSignDescriptor = new KPIIndicatorValueSignDescriptor(kpiCaptionViewport);
-    public kpiIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(kpiLabelViewport);
+    public kpiIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
+        kpiLabelViewport,
+    );
     public secondKPIIndicatorValue: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport);
-    public secondKPIIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(kpiLabelViewport);
+    public secondKPIIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
+        kpiLabelViewport,
+    );
     public actualValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport);
     public actualLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport);
     public dateValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport, true);
@@ -133,15 +135,15 @@ export class Settings extends SettingsBase {
     }
 
     public parseSettings(viewport: powerbi.IViewport, type: DataRepresentationTypeEnum): void {
-        const options: DescriptorParserOptions = {
-            viewport,
+        const options: IDescriptorParserOptions = {
+            isAutoHideBehaviorEnabled: this.layout.autoHideVisualComponents,
             type,
-            isAutoHideBehaviorEnabled: this.layout.autoHideVisualComponents
+            viewport,
         };
 
         Object.keys(this)
             .forEach((settingName: string) => {
-                const settingsObj: Descriptor = this[settingName] as Descriptor;
+                const settingsObj: IDescriptor = this[settingName] as IDescriptor;
 
                 if (settingsObj.parse) {
                     settingsObj.parse(options);
@@ -149,5 +151,7 @@ export class Settings extends SettingsBase {
             });
     }
 
-    protected processDescriptor(descriptor: Descriptor): void { }
+    protected processDescriptor(): void {
+        return;
+    }
 }

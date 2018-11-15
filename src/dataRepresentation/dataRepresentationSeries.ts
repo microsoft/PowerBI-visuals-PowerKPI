@@ -27,33 +27,33 @@
 import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
 
 import {
-    DataRepresentationPoint,
-    DataRepresentationPointGradientColor,
+    IDataRepresentationPoint,
+    IDataRepresentationPointGradientColor,
 } from "./dataRepresentationPoint";
 
-import { DataRepresentationPointIndexed } from "./dataRepresentationPointIndexed";
+import { IDataRepresentationPointIndexed } from "./dataRepresentationPointIndexed";
 
 import {
-    DataRepresentationAxis,
-    DataRepresentationAxisBase,
+    IDataRepresentationAxis,
+    IDataRepresentationAxisBase,
 } from "./dataRepresentationAxis";
 
 import { SeriesSettings } from "../settings/seriesSettings";
 
-export interface DataRepresentationSeries extends interactivityService.SelectableDataPoint {
-    points: DataRepresentationPoint[];
-    gradientPoints: DataRepresentationPointGradientColor[];
+export interface IDataRepresentationSeries extends interactivityService.SelectableDataPoint {
+    points: IDataRepresentationPoint[];
+    gradientPoints: IDataRepresentationPointGradientColor[];
     name: string;
-    current: DataRepresentationPointIndexed; // The current value represents the latest non-null value
+    current: IDataRepresentationPointIndexed; // The current value represents the latest non-null value
     format: string;
     settings: SeriesSettings;
-    domain: DataRepresentationAxisBase;
-    y: DataRepresentationAxis;
+    domain: IDataRepresentationAxisBase;
+    y: IDataRepresentationAxis;
     hasSelection: boolean;
     groupName?: string;
 }
 
-export interface DataRepresentationSeriesGroup {
-    series: DataRepresentationSeries[];
-    y: DataRepresentationAxis;
+export interface IDataRepresentationSeriesGroup {
+    series: IDataRepresentationSeries[];
+    y: IDataRepresentationAxis;
 }

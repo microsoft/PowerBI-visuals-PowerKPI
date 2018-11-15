@@ -30,13 +30,13 @@ import { HorizontalLayoutEnum } from "../../../layout/horizontalLayoutEnum";
 
 import { FontSizeDescriptor } from "../autoHiding/fontSizeDescriptor";
 
-interface PropertyConfiguration {
+interface IPropertyConfiguration {
     name: string;
     defaultValue: any | ((index: number) => any);
     displayName: (text: string) => string;
 }
 
-interface EnumPropertyConfiguration {
+interface IEnumPropertyConfiguration {
     name: string;
     displayName: string;
 }
@@ -47,6 +47,10 @@ export interface IKPIIndicatorSettings { // This should be synchronized with _pr
 }
 
 export class KPIIndicatorDescriptor extends FontSizeDescriptor {
+
+    public static createDefault(): KPIIndicatorDescriptor {
+        return new KPIIndicatorDescriptor();
+    }
     public position: string = HorizontalLayoutEnum[HorizontalLayoutEnum.Left];
     public shouldBackgroundColorMatchKpiColor: boolean = false;
 
@@ -54,7 +58,7 @@ export class KPIIndicatorDescriptor extends FontSizeDescriptor {
 
     private _default: IKPIIndicatorSettings = Object.freeze({
         color: null,
-        shape: null
+        shape: null,
     });
 
     private kpiIndexPropertyName: string = "kpiIndex";
@@ -64,10 +68,10 @@ export class KPIIndicatorDescriptor extends FontSizeDescriptor {
         "#f2c80f",
         "#fd625e",
         "#a66999",
-        "#374649"
+        "#374649",
     ];
 
-    private _shapes: EnumPropertyConfiguration[] = [
+    private _shapes: IEnumPropertyConfiguration[] = [
         { name: "circle-full", displayName: "Circle" },
         { name: "triangle", displayName: "Triangle" },
         { name: "rhombus", displayName: "Diamond" },
@@ -87,37 +91,46 @@ export class KPIIndicatorDescriptor extends FontSizeDescriptor {
         { name: "circle-checkmark", displayName: "Circle Checkmark" },
         { name: "x", displayName: "X" },
         { name: "star-empty", displayName: "Star Empty" },
-        { name: "star-full", displayName: "Star Full" }
+        { name: "star-full", displayName: "Star Full" },
     ];
 
-    private _properties: PropertyConfiguration[] = [
+    private _properties: IPropertyConfiguration[] = [
         {
-            name: "color",
-            displayName: (text: string) => text,
             defaultValue: (index: number) => {
                 const color: string = this.getElementByIndex<string>(this._colors, index);
 
                 return color || this._colors[0];
             },
+            displayName: (text: string) => text,
+            name: "color",
         },
         {
-            name: "shape",
-            displayName: () => "    Indicator",
             defaultValue: (index: number) => {
-                const shape: EnumPropertyConfiguration =
-                    this.getElementByIndex<EnumPropertyConfiguration>(this._shapes, index);
+                const shape: IEnumPropertyConfiguration =
+                    this.getElementByIndex<IEnumPropertyConfiguration>(this._shapes, index);
 
                 return shape
                     ? shape.name
                     : this._shapes[0].name;
             },
+            displayName: () => "    Indicator",
+            name: "shape",
         },
         {
-            name: this.kpiIndexPropertyName,
-            displayName: () => "    Value",
             defaultValue: (index: number) => index + 1,
+            displayName: () => "    Value",
+            name: this.kpiIndexPropertyName,
         },
     ];
+
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport);
+
+        this.applySettingToContext();
+
+        this.show = true;
+        this.fontSize = 12;
+    }
 
     public getElementByIndex<Type>(setOfValues: Type[], index: number): Type {
         const amountOfValues: number = setOfValues.length;
@@ -129,32 +142,6 @@ export class KPIIndicatorDescriptor extends FontSizeDescriptor {
         return setOfValues[currentIndex];
     }
 
-    constructor(viewport?: powerbi.IViewport) {
-        super(viewport);
-
-        this.applySettingToContext();
-
-        this.show = true;
-        this.fontSize = 12;
-    }
-
-    private applySettingToContext(): void {
-        for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
-            this._properties.forEach((property: PropertyConfiguration) => {
-                const indexedName: string = this.getPropertyName(property.name, index);
-
-                this[indexedName] = typeof property.defaultValue === "function"
-                    ? property.defaultValue(index)
-                    : property.defaultValue;
-            });
-        }
-    }
-
-
-    private getPropertyName(name: string, index: number): string {
-        return `${name}_${index}`;
-    }
-
     public getCurrentKPI(kpiIndex: number): IKPIIndicatorSettings {
         if (!isNaN(kpiIndex) && kpiIndex !== null) {
             for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
@@ -163,7 +150,7 @@ export class KPIIndicatorDescriptor extends FontSizeDescriptor {
                 if (currentKPIIndex === kpiIndex) {
                     return this._properties.reduce((
                         current: IKPIIndicatorSettings,
-                        property: PropertyConfiguration
+                        property: IPropertyConfiguration,
                     ) => {
                         const indexedName: string = this.getPropertyName(property.name, index);
 
@@ -178,8 +165,19 @@ export class KPIIndicatorDescriptor extends FontSizeDescriptor {
         return this._default;
     }
 
-    public static createDefault(): KPIIndicatorDescriptor {
-        return new KPIIndicatorDescriptor();
+    private applySettingToContext(): void {
+        for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
+            this._properties.forEach((property: IPropertyConfiguration) => {
+                const indexedName: string = this.getPropertyName(property.name, index);
+
+                this[indexedName] = typeof property.defaultValue === "function"
+                    ? property.defaultValue(index)
+                    : property.defaultValue;
+            });
+        }
+    }
+
+    private getPropertyName(name: string, index: number): string {
+        return `${name}_${index}`;
     }
 }
-

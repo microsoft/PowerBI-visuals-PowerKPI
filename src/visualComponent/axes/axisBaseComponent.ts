@@ -30,25 +30,25 @@ import powerbi from "powerbi-visuals-api";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 import {
-    valueFormatter,
     textMeasurementService,
+    valueFormatter,
 } from "powerbi-visuals-utils-formattingutils";
 
 import {
     axisInterfaces,
 } from "powerbi-visuals-utils-chartutils";
 
-import { VisualComponent } from "../base/visualComponent";
-import { BaseComponent } from "../base/baseComponent";
 import { DataRepresentationAxisValueType } from "../../dataRepresentation/dataRepresentationAxisValueType";
+import { BaseComponent } from "../base/baseComponent";
+import { VisualComponent } from "../base/visualComponent";
 
-
-export interface AxisComponent<RenderOptions> extends VisualComponent<RenderOptions> {
+export interface IAxisComponent<RenderOptions> extends VisualComponent<RenderOptions> {
     getTicks(): DataRepresentationAxisValueType[];
     preRender(options: RenderOptions); // Preestimates size of a component as X Axis depends on Y Axis and vice versa
 }
 
-export abstract class AxisBaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
+export abstract class AxisBaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions>
+    extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
     protected gElement: Selection<any, any, any, any>;
 
     protected formatter: valueFormatter.IValueFormatter;
@@ -74,7 +74,7 @@ export abstract class AxisBaseComponent<VisualComponentConstructorOptions, Visua
         value: DataRepresentationAxisValueType,
         formatter: valueFormatter.IValueFormatter,
         fontSize: number,
-        fontFamily: string
+        fontFamily: string,
     ): number {
         const text: string = formatter.format(value);
         const textProperties: textMeasurementService.TextProperties = this.getTextProperties(text, fontSize, fontFamily);
@@ -85,7 +85,7 @@ export abstract class AxisBaseComponent<VisualComponentConstructorOptions, Visua
     protected getTextWidth(
         text: string,
         fontSize: number,
-        fontFamily: string
+        fontFamily: string,
     ): number {
         const textProperties: textMeasurementService.TextProperties = this.getTextProperties(text, fontSize, fontFamily);
 
@@ -96,7 +96,7 @@ export abstract class AxisBaseComponent<VisualComponentConstructorOptions, Visua
         values: DataRepresentationAxisValueType[],
         formatter: valueFormatter.IValueFormatter,
         fontSize: number,
-        fontFamily: string
+        fontFamily: string,
     ): number {
         const width: number = Math.max(...values.map((value: number) => {
             const text: string = formatter.format(value);
@@ -112,12 +112,12 @@ export abstract class AxisBaseComponent<VisualComponentConstructorOptions, Visua
     protected getTextProperties(
         text: string,
         fontSize: number,
-        fontFamily: string
+        fontFamily: string,
     ): textMeasurementService.TextProperties {
         return {
-            text,
             fontFamily,
             fontSize: pixelConverter.toString(fontSize),
+            text,
         };
     }
 
@@ -127,15 +127,15 @@ export abstract class AxisBaseComponent<VisualComponentConstructorOptions, Visua
         metadata?: powerbi.DataViewMetadataColumn,
         tickCount?: number,
         precision?: number,
-        valueFormat?: string
+        valueFormat?: string,
     ): valueFormatter.IValueFormatter {
         return valueFormatter.valueFormatter.create({
-            tickCount,
-            precision,
+            columnType: metadata && metadata.type,
             format: valueFormat,
+            precision,
+            tickCount,
             value: min,
             value2: max,
-            columnType: metadata && metadata.type,
         });
     }
 }

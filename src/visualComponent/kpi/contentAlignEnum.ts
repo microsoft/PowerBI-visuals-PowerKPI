@@ -26,5 +26,5 @@
 
 export enum ContentAlignEnum {
     contentLeft,
-    contentRight
+    contentRight,
 }

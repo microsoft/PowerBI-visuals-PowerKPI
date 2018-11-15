@@ -26,8 +26,8 @@
 
 import powerbi from "powerbi-visuals-api";
 
+import { getRandomNumbers, testDataViewBuilder } from "powerbi-visuals-utils-testutils";
 import { valueType } from "powerbi-visuals-utils-typeutils";
-import { testDataViewBuilder, getRandomNumbers } from "powerbi-visuals-utils-testutils";
 
 import { getDateRange } from "./helpers";
 
@@ -35,10 +35,10 @@ export class DataBuilder extends testDataViewBuilder.TestDataViewBuilder {
     private static CategoryColumnName: string = "Axis";
     private static ValuesColumnName: string = "Values";
 
-    private amountOfSeries: number = 10;
-
     public dates: Date[] = [];
     public seriesValues: number[][] = [];
+
+    private amountOfSeries: number = 10;
 
     constructor() {
         super();
@@ -46,14 +46,14 @@ export class DataBuilder extends testDataViewBuilder.TestDataViewBuilder {
         this.dates = getDateRange(
             new Date(2016, 0, 1),
             new Date(2016, 0, 10),
-            1000 * 24 * 3600
+            1000 * 24 * 3600,
         );
 
         for (let i: number = 0; i < this.amountOfSeries; i++) {
             this.seriesValues.push(getRandomNumbers(
                 this.dates.length,
                 -Number.MAX_VALUE,
-                Number.MAX_VALUE)
+                Number.MAX_VALUE),
             );
         }
     }
@@ -64,9 +64,9 @@ export class DataBuilder extends testDataViewBuilder.TestDataViewBuilder {
                 displayName: DataBuilder.CategoryColumnName,
                 format: "%M/%d/yyyy",
                 type: valueType.ValueType.fromDescriptor({ dateTime: true }),
-                roles: { Axis: true }
+                roles: { Axis: true },
             },
-            values: this.dates
+            values: this.dates,
         };
 
         const valuesCategory = this.seriesValues.map((values: number[]) => {
@@ -75,15 +75,15 @@ export class DataBuilder extends testDataViewBuilder.TestDataViewBuilder {
                 source: {
                     displayName: DataBuilder.ValuesColumnName,
                     type: valueType.ValueType.fromDescriptor({ integer: true }),
-                    roles: { Values: true }
-                }
+                    roles: { Values: true },
+                },
             };
         });
 
         return this.createCategoricalDataViewBuilder(
             [datesCategory],
             valuesCategory,
-            columnNames
+            columnNames,
         ).build();
     }
 }

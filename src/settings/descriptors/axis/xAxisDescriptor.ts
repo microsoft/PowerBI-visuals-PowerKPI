@@ -24,8 +24,11 @@
  *  THE SOFTWARE.
  */
 
-import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
+import {
+    AxisDescriptor,
+    AxisType,
+} from "./axisDescriptor";
 
-export interface IKPIComponentConstructorOptionsWithClassName extends IVisualComponentConstructorOptions {
-    className: string;
+export class XAxisDescriptor extends AxisDescriptor {
+    public type: AxisType = AxisType.continuous;
 }

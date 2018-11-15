@@ -31,44 +31,48 @@ import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
 import LegendPosition = legendInterfaces.LegendPosition;
 
-import { VisualComponentViewport } from "../base/visualComponent";
-import { VisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
-import { BaseContainerComponent } from "../base/baseContainerComponent";
-import { VisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
 import { LayoutEnum } from "../../layout/layoutEnum";
 import { LayoutToStyleEnum } from "../../layout/layoutToStyleEnum";
-import { KPIVisualComponent } from "./kpiVisualComponent";
-import { KPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
-import { VarianceComponentWithIndicator } from "./varianceComponentWithIndicator";
-import { DateKPIComponent } from "./dateKPIComponent";
-import { ValueKPIComponent } from "./valueKPIComponent";
-import { VarianceComponentWithCustomLabel } from "./varianceComponentWithCustomLabel";
 import { LayoutDescriptor } from "../../settings/descriptors/layoutDescriptor";
 import { LegendDescriptor } from "../../settings/descriptors/legendDescriptor";
+import { BaseContainerComponent } from "../base/baseContainerComponent";
+import { VisualComponentViewport } from "../base/visualComponent";
+import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
+import { IVisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
+import { DateKPIComponent } from "./dateKPIComponent";
+import { IKPIComponentConstructorOptionsWithClassName } from "./kpiComponentConstructorOptionsWithClassName";
+import { IKPIVisualComponent } from "./kpiVisualComponent";
+import { ValueKPIComponent } from "./valueKPIComponent";
+import { VarianceComponentWithCustomLabel } from "./varianceComponentWithCustomLabel";
+import { VarianceComponentWithIndicator } from "./varianceComponentWithIndicator";
 
 enum KPIComponentLayoutEnum {
     kpiComponentRow,
-    kpiComponentColumn
+    kpiComponentColumn,
 }
 
-export class KPIComponent extends BaseContainerComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions, VisualComponentRenderOptions> {
+export class KPIComponent extends BaseContainerComponent<
+    IVisualComponentConstructorOptions,
+    IVisualComponentRenderOptions,
+    IVisualComponentRenderOptions
+    > {
     private className: string = "kpiComponent";
 
     private layout: LayoutEnum = LayoutEnum.Top;
 
     private childSelector: CssConstants.ClassAndSelector = CssConstants.createClassAndSelector("kpiComponentChild");
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
             options.element,
-            this.className
+            this.className,
         );
 
         const className: string = this.childSelector.className;
 
-        const constructorOptions: KPIComponentConstructorOptionsWithClassName = {
+        const constructorOptions: IKPIComponentConstructorOptionsWithClassName = {
             ...options,
             className,
             element: this.element,
@@ -82,7 +86,7 @@ export class KPIComponent extends BaseContainerComponent<VisualComponentConstruc
         ];
     }
 
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         const { viewport: { width, height }, settings: { layout, legend } } = options.data;
 
         const viewport: powerbi.IViewport = { width, height };
@@ -92,7 +96,7 @@ export class KPIComponent extends BaseContainerComponent<VisualComponentConstruc
         this.applyStyleBasedOnLayout(layout, legend, viewport);
 
         let howManyComponentsWasRendered: number = 0;
-        this.components.forEach((component: KPIVisualComponent<VisualComponentRenderOptions>) => {
+        this.components.forEach((component: IKPIVisualComponent<IVisualComponentRenderOptions>) => {
 
             component.render(options);
 
@@ -124,14 +128,47 @@ export class KPIComponent extends BaseContainerComponent<VisualComponentConstruc
         this.applyWidthToChildren(howManyComponentsWasRendered);
     }
 
+    /**
+     * The clientHeight and clientWidth might return invalid values if some DOM elements force this element to squash.
+     * Such issue often occurs if flex layout is used
+     *
+     * To fix this issue plotComponent is hidden by default.
+     */
+    public getViewport(): VisualComponentViewport {
+        const viewport: VisualComponentViewport = {
+            height: 0,
+            width: 0,
+        };
+
+        if (this.element) {
+            const element: HTMLDivElement = this.element.node();
+
+            switch (this.layout) {
+                case LayoutEnum.Left:
+                case LayoutEnum.Right: {
+                    viewport.width = element.clientWidth;
+                    break;
+                }
+                case LayoutEnum.Top:
+                case LayoutEnum.Bottom:
+                default: {
+                    viewport.height = element.clientHeight;
+                    break;
+                }
+            }
+        }
+
+        return viewport;
+    }
+
     private applyStyleBasedOnLayout(
         layoutSettings: LayoutDescriptor,
         legend: LegendDescriptor,
-        viewport: powerbi.IViewport
+        viewport: powerbi.IViewport,
     ): void {
-        let currentLayout: LayoutToStyleEnum
-            , kpiLayout: KPIComponentLayoutEnum
-            , maxWidth: string;
+        let currentLayout: LayoutToStyleEnum;
+        let kpiLayout: KPIComponentLayoutEnum;
+        let maxWidth: string;
 
         switch (LayoutEnum[layoutSettings.getLayout()]) {
             case LayoutEnum.Left:
@@ -180,38 +217,5 @@ export class KPIComponent extends BaseContainerComponent<VisualComponentConstruc
             .selectAll(this.childSelector.selectorName)
             .style("width", widthInPercentage)
             .style("max-width", widthInPercentage);
-    }
-
-    /**
-     * The clientHeight and clientWidth might return invalid values if some DOM elements force this element to squash.
-     * Such issue often occurs if flex layout is used
-     *
-     * To fix this issue plotComponent is hidden by default.
-     */
-    public getViewport(): VisualComponentViewport {
-        const viewport: VisualComponentViewport = {
-            height: 0,
-            width: 0
-        };
-
-        if (this.element) {
-            const element: HTMLDivElement = this.element.node();
-
-            switch (this.layout) {
-                case LayoutEnum.Left:
-                case LayoutEnum.Right: {
-                    viewport.width = element.clientWidth;
-                    break;
-                }
-                case LayoutEnum.Top:
-                case LayoutEnum.Bottom:
-                default: {
-                    viewport.height = element.clientHeight;
-                    break;
-                }
-            }
-        }
-
-        return viewport;
     }
 }

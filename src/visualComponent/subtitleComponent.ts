@@ -28,20 +28,20 @@ import * as $ from "jquery";
 
 import { Selection } from "d3";
 
-import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
-import { VisualComponentViewport } from "./base/visualComponent";
-import { BaseComponent } from "./base/baseComponent";
-import { VisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
-import { VisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 import { SubtitleDescriptor } from "../settings/descriptors/subtitleDescriptor";
+import { BaseComponent } from "./base/baseComponent";
+import { VisualComponentViewport } from "./base/visualComponent";
+import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
+import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
 
-export class SubtitleComponent extends BaseComponent<VisualComponentConstructorOptions, VisualComponentRenderOptions> {
+export class SubtitleComponent extends BaseComponent<IVisualComponentConstructorOptions, IVisualComponentRenderOptions> {
     private className: string = "subtitleComponent";
     private subTitleSelector: CssConstants.ClassAndSelector = CssConstants.createClassAndSelector("subtitle");
 
-    constructor(options: VisualComponentConstructorOptions) {
+    constructor(options: IVisualComponentConstructorOptions) {
         super();
 
         this.initElement(
@@ -50,7 +50,7 @@ export class SubtitleComponent extends BaseComponent<VisualComponentConstructorO
         );
     }
 
-    public render(options: VisualComponentRenderOptions): void {
+    public render(options: IVisualComponentRenderOptions): void {
         const { subtitle } = options.data.settings;
 
         const data: SubtitleDescriptor[] = subtitle.show
@@ -85,7 +85,7 @@ export class SubtitleComponent extends BaseComponent<VisualComponentConstructorO
     public getViewport(): VisualComponentViewport {
         const viewport: VisualComponentViewport = {
             height: 0,
-            width: 0
+            width: 0,
         };
 
         if (this.element) {
