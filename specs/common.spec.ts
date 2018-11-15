@@ -24,8 +24,10 @@
  *  THE SOFTWARE.
  */
 
+import "jasmine-jquery";
+
 import {
-    select as d3Select
+    select as d3Select,
 } from "d3-selection";
 
 import powerbi from "powerbi-visuals-api";
@@ -35,6 +37,8 @@ import {
 } from "powerbi-visuals-utils-chartutils";
 
 import {
+    createColorPalette,
+    createSelectionIdBuilder,
     createTooltipService,
     renderTimeout,
     testDom,
@@ -47,22 +51,22 @@ import { VisualComponentConstructorOptions } from "../src/visualComponent/base/v
 
 import {
     DataRepresentationPoint,
-    DataRepresentationPointGradientColor
+    DataRepresentationPointGradientColor,
 } from "../src/dataRepresentation/dataRepresentationPoint";
 
 import { DataRepresentation } from "../src/dataRepresentation/dataRepresentation";
 import { DataRepresentationX } from "../src/dataRepresentation/dataRepresentationAxis";
-import { DataRepresentationTypeEnum } from "../src/dataRepresentation/dataRepresentationType";
-import { EventPositionVisualComponentOptions } from "../src/visualComponent/eventPositionVisualComponentOptions";
+import { DataRepresentationPointFilter } from "../src/dataRepresentation/dataRepresentationPointFilter";
 import { DataRepresentationSeries } from "../src/dataRepresentation/dataRepresentationSeries";
-import { TooltipComponent } from "../src/visualComponent/tooltipComponent";
+import { DataRepresentationTypeEnum } from "../src/dataRepresentation/dataRepresentationType";
 import { SeriesSettings } from "../src/settings/seriesSettings";
 import { Settings } from "../src/settings/settings";
-import { DataRepresentationPointFilter } from "../src/dataRepresentation/dataRepresentationPointFilter";
+import { EventPositionVisualComponentOptions } from "../src/visualComponent/eventPositionVisualComponentOptions";
+import { TooltipComponent } from "../src/visualComponent/tooltipComponent";
 
 import {
     LineComponent,
-    LineComponentRenderOptions
+    LineComponentRenderOptions,
 } from "../src/visualComponent/combo/lineComponent";
 
 import {
@@ -75,14 +79,14 @@ import { AreaComponent } from "../src/visualComponent/combo/areaComponent";
 import { ComboComponent } from "../src/visualComponent/combo/comboComponent";
 
 import {
-    LineType,
     LineInterpolation,
+    LineType,
     LineStyle,
 } from "../src/settings/descriptors/lineDescriptor";
 
+import { DataConverter } from "../src/converter/dataConverter";
 import { DataRepresentationScale } from "../src/dataRepresentation/dataRepresentationScale";
 import { AxisType } from "../src/settings/descriptors/axis/axisDescriptor";
-import { DataConverter } from "../src/converter/dataConverter";
 
 import {
     DotComponent,
@@ -94,9 +98,15 @@ import {
     IKPIIndicatorSettings
 } from "../src/settings/descriptors/kpi/kpiIndicatorDescriptor";
 
-import {DataBuilder} from "./dataBuilder";
+import { DataBuilder } from "./dataBuilder";
 
 describe("Power KPI", () => {
+    // describe("capabilities", () => {
+    //     it("the capabilities object should be defined", () => {
+    //         expect(require("../capabilities.json")).toBeDefined();
+    //     });
+    // });
+
     describe("DOM", () => {
         it("Root element should be defined in DOM", (done) => {
             const testWrapper: TestWrapper = TestWrapper.create();
@@ -313,7 +323,7 @@ describe("Power KPI", () => {
 
             const element = renderLineBasedComponent(points, createLineComponent);
 
-            expect(element.selectAll(".powerKpi_lineComponent_line")[0].length).toBe(1);
+            expect(element.selectAll(".powerKpi_lineComponent_line").nodes().length).toBe(1);
         });
 
         it("two lines should be rendered if points have two different colors", () => {
@@ -346,7 +356,7 @@ describe("Power KPI", () => {
 
             const element = renderLineBasedComponent(points, createLineComponent);
 
-            expect(element.selectAll(".powerKpi_lineComponent_line")[0].length).toBe(2);
+            expect(element.selectAll(".powerKpi_lineComponent_line").nodes().length).toBe(2);
         });
 
         function createLineComponent(options: VisualComponentConstructorOptions): LineComponent {
@@ -385,7 +395,7 @@ describe("Power KPI", () => {
 
             const element = renderLineBasedComponent(points, createAreaComponent);
 
-            expect(element.selectAll(".powerKpi_areaComponent_area")[0].length).toBe(1);
+            expect(element.selectAll(".powerKpi_areaComponent_area").nodes().length).toBe(1);
         });
 
         it("two areas should be rendered if points have two different colors", () => {
@@ -418,7 +428,7 @@ describe("Power KPI", () => {
 
             const element = renderLineBasedComponent(points, createAreaComponent);
 
-            expect(element.selectAll(".powerKpi_areaComponent_area")[0].length).toBe(2);
+            expect(element.selectAll(".powerKpi_areaComponent_area").nodes().length).toBe(2);
         });
 
         function createAreaComponent(options: VisualComponentConstructorOptions): AreaComponent {
@@ -809,16 +819,16 @@ describe("Power KPI", () => {
                 expect(legendDescriptor.getLegendMarkerShape()).toBe(legendInterfaces.MarkerShape.square);
             });
 
-            it("should return LegendMarkerShape.circle if style is LegendStyle.line", () => {
+            it("should return LegendMarkerShape.longDash if style is LegendStyle.line", () => {
                 legendDescriptor.style = LegendStyle.line;
 
-                expect(legendDescriptor.getLegendMarkerShape()).toBe(legendInterfaces.MarkerShape.circle);
+                expect(legendDescriptor.getLegendMarkerShape()).toBe(legendInterfaces.MarkerShape.longDash);
             });
 
-            it("should return LegendMarkerShape.circle if style is LegendStyle.styledLine", () => {
+            it("should return LegendMarkerShape.longDash if style is LegendStyle.styledLine", () => {
                 legendDescriptor.style = LegendStyle.styledLine;
 
-                expect(legendDescriptor.getLegendMarkerShape()).toBe(legendInterfaces.MarkerShape.circle);
+                expect(legendDescriptor.getLegendMarkerShape()).toBe(legendInterfaces.MarkerShape.longDash);
             });
 
             it("should return LegendMarkerShape.circle if style is LegendStyle.circle", () => {
@@ -874,8 +884,8 @@ describe("Power KPI", () => {
             };
 
             const dataConverter: DataConverter = new DataConverter({
-                colorPalette: null,
-                createSelectionIdBuilder: () => null,
+                createSelectionIdBuilder,
+                colorPalette: createColorPalette(),
             });
 
             const dataRepresentation: DataRepresentation = dataConverter.convert({
@@ -890,8 +900,8 @@ describe("Power KPI", () => {
         describe("isValueFinite", () => {
             it("should return false if value is null", () => {
                 const dataConverter: DataConverter = new DataConverter({
-                    colorPalette: null,
-                    createSelectionIdBuilder: () => null,
+                    createSelectionIdBuilder,
+                    colorPalette: createColorPalette(),
                 });
 
                 expect(dataConverter.isValueFinite(null)).toBeFalsy();
@@ -899,8 +909,8 @@ describe("Power KPI", () => {
 
             it("should return true if value is a valid number", () => {
                 const dataConverter: DataConverter = new DataConverter({
-                    colorPalette: null,
-                    createSelectionIdBuilder: () => null,
+                    createSelectionIdBuilder,
+                    colorPalette: createColorPalette(),
                 });
 
                 expect(dataConverter.isValueFinite(5)).toBeTruthy();

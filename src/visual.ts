@@ -93,7 +93,6 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     }
 
     public update(options: powerbi.extensibility.visual.VisualUpdateOptions): void {
-        console.log(options);
         const dataView: powerbi.DataView = options && options.dataViews && options.dataViews[0];
 
         const viewport: powerbi.IViewport = options
@@ -132,28 +131,28 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
         this.dataRepresentation = dataRepresentation;
 
         this.component.render({
-            data: this.dataRepresentation
+            data: this.dataRepresentation,
         });
     }
 
-    public enumerateObjectInstances(options: powerbi.EnumerateVisualObjectInstancesOptions): powerbi.VisualObjectInstanceEnumeration {
+    public enumerateObjectInstances(
+        options: powerbi.EnumerateVisualObjectInstancesOptions,
+        ): powerbi.VisualObjectInstanceEnumeration {
         const { objectName } = options;
 
         const shouldUseContainers: boolean = Object.keys(new SeriesSettings()).indexOf(objectName) !== -1;
 
         if (shouldUseContainers) {
             const enumerationObject: powerbi.VisualObjectInstanceEnumerationObject = {
-                instances: [],
                 containers: [],
+                instances: [],
             };
 
             this.enumerateSettings(
                 enumerationObject,
                 objectName,
-                this.getSettings.bind(this)
+                this.getSettings.bind(this),
             );
-
-            console.log("enumerationObject: ", enumerationObject);
 
             return enumerationObject;
         }

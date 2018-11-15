@@ -1,4 +1,6 @@
 {
+  "extends": "tslint:recommended",
+  "rulesDirectory": ["./node_modules/tslint-microsoft-contrib"],
   "rules": {
     "insecure-random": true,
     "no-banned-terms": true,
@@ -24,6 +26,9 @@
     "react-no-dangerous-html": true,
     "no-eval": true,
     "class-name": true,
+    "max-line-length": {
+      "options": [120]
+    },
     "comment-format": [
       true,
       "check-space"
