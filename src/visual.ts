@@ -93,6 +93,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     }
 
     public update(options: powerbi.extensibility.visual.VisualUpdateOptions): void {
+        console.log(options);
         const dataView: powerbi.DataView = options && options.dataViews && options.dataViews[0];
 
         const viewport: powerbi.IViewport = options
@@ -151,6 +152,8 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
                 objectName,
                 this.getSettings.bind(this)
             );
+
+            console.log("enumerationObject: ", enumerationObject);
 
             return enumerationObject;
         }

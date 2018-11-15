@@ -31,10 +31,15 @@
   "homepage": "https://github.com/Microsoft/PowerBI-visuals-PowerKPI#readme",
   "devDependencies": {
     "@types/d3": "^5.0.1",
+    "@types/jasmine": "^2.8.11",
+    "@types/jasmine-jquery": "^1.5.33",
     "@types/jquery": "^3.3.22",
     "@types/node": "^10.12.2",
+    "jasmine": "^3.3.0",
+    "jasmine-jquery": "^2.1.1",
     "powerbi-visuals-api": "^2.2.2",
-    "powerbi-visuals-tools": "^3.0.5"
+    "powerbi-visuals-tools": "^3.0.5",
+    "powerbi-visuals-utils-testutils": "^2.1.4"
   },
   "dependencies": {
     "d3": "^5.7.0",
