@@ -1,24 +1,6 @@
 {
-  "compilerOptions": {
-    "allowJs": false,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "module": "es2015",
-    "target": "es2015",
-    "sourceMap": true,
-    "outDir": "./.tmp/build/",
-    "sourceRoot": "../../src/",
-    "moduleResolution": "node",
-    "declaration": true,
-    "lib": [
-      "es2015",
-      "dom"
-    ]
-  },
+  "extends": "./tsconfig.json",
   "files": [
     "./spec/*.ts"
-  ],
-  "include": [
-    "./src/*.ts"
   ]
 }
