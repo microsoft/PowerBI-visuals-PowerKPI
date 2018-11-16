@@ -16,6 +16,5 @@
   "assets": {
     "icon": "./assets/icon.png"
   },
-  "capabilities": "./capabilities.json",
-  "style": "./styles/styles.less"
+  "capabilities": "./capabilities.json"
 }
