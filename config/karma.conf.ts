@@ -36,12 +36,10 @@ const tsconfig = require("./test.tsconfig.json");
 import { Config, ConfigOptions } from "karma";
 
 const testRecursivePath = "specs/*.spec.ts";
-// const srcOriginalRecursivePath = "src/**/*.ts";
 const coverageFolder = "coverage";
 
 module.exports = (config: Config) => {
     config.set({
-        // browserNoActivityTimeout: 100000,
         browsers: ["ChromeHeadless"],
         colors: true,
         coverageIstanbulReporter: {
@@ -68,11 +66,6 @@ module.exports = (config: Config) => {
         },
         files: [
             testRecursivePath,
-            // {
-            //     included: false,
-            //     pattern: srcOriginalRecursivePath,
-            //     served: true,
-            // },
         ],
         frameworks: ["jasmine"],
         junitReporter: {
@@ -83,22 +76,11 @@ module.exports = (config: Config) => {
         mime: {
             "text/x-typescript": ["ts", "tsx"],
         },
-        // plugins: [
-        //     "karma-coverage",
-        //     // "karma-typescript",
-        //     "karma-webpack",
-        //     "karma-jasmine",
-        //     "karma-sourcemap-loader",
-        //     "karma-chrome-launcher",
-        //     "karma-junit-reporter",
-        //     "karma-coverage-istanbul-reporter",
-        // ],
         reporters: [
             "progress",
             "junit",
             "coverage-istanbul",
         ],
-
         preprocessors: {
             [testRecursivePath]: ["webpack", "sourcemap"],
         },
@@ -108,7 +90,6 @@ module.exports = (config: Config) => {
         },
         webpack: webpackConfig,
         webpackMiddleware: {
-            // stats: "errors-only",
             noInfo: true,
         },
     } as ConfigOptions);
