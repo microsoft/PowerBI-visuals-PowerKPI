@@ -11,9 +11,8 @@
     "supportUrl": "https://aka.ms/customvisualscommunity"
   },
   "scripts": {
-    "pbiviz": "pbiviz",
-    "start": "pbiviz start",
-    "package": "webpack --config ./config/package.webpack.config.js",
+    "start": "webpack-dev-server --config start.webpack.config.js",
+    "package": "webpack --config package.webpack.config.js",
     "test": "karma start"
   },
   "repository": {
@@ -63,7 +62,7 @@
     "mini-css-extract-plugin": "^0.4.4",
     "powerbi-visuals-api": "^2.2.2",
     "powerbi-visuals-utils-testutils": "^2.1.4",
-    "powerbi-visuals-webpack-plugin": "^1.0.13",
+    "powerbi-visuals-webpack-plugin": "1.0.13",
     "puppeteer": "^1.10.0",
     "style-loader": "^0.23.1",
     "ts-loader": "^5.3.0",
@@ -73,7 +72,8 @@
     "tslint-microsoft-contrib": "^5.2.1",
     "typescript": "^3.1.6",
     "webpack": "^4.25.1",
-    "webpack-cli": "^3.1.2"
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10"
   },
   "dependencies": {
     "d3": "^5.7.0",

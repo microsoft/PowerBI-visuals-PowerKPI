@@ -1,34 +1,16 @@
 const pathModule = require('path');
 const webpack = require('webpack');
+const powerbiVisualsApi = require('powerbi-visuals-api');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const PowerBICustomVisualsWebpackPlugin = require('powerbi-visuals-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const powerbiVisualsApi = require('powerbi-visuals-api');
 
-const package = require('../package.json');
-const capabilities = require('../capabilities/capabilities.json');
+const pluginLocation = resolvePath('.tmp/precompile/visualPlugin.ts');
+const capabilities = require('./capabilities.json');
+const package = require('./package.json');
 
 function resolvePath(path) {
     return pathModule.resolve(__dirname, path);
 }
-
-const pbivizConfig = {
-    author: {
-        ...package.author,
-    },
-    assets: {
-        icon: './assets/icon.png'
-    },
-    visual: {
-        ...package.visual,
-        displayName: `${package.visual.displayName} ${package.version}`,
-        gitHubUrl: package.homepage,
-        version: package.version,
-        description: package.description,
-    },
-};
-
-const visualEntry = resolvePath('../src/visual.ts');
 
 const babelLoader = {
     loader: 'babel-loader',
@@ -46,9 +28,41 @@ const babelLoader = {
     }
 };
 
-module.exports = {
+const pbivizConfig = {
+    author: {
+        ...package.author,
+    },
+    assets: {
+        icon: './assets/icon.png'
+    },
+    visual: {
+        ...package.visual,
+        displayName: `${package.visual.displayName} ${package.version}`,
+        gitHubUrl: package.homepage,
+        version: package.version,
+        description: package.description,
+    },
+};
+
+function getPowerBICustomVisualsWebpackPlugin(devMode) {
+    return new PowerBICustomVisualsWebpackPlugin({
+        ...pbivizConfig,
+        capabilities,
+        devMode,
+        packageOutPath: resolvePath('dist'),
+        stringResources: [],
+        visualSourceLocation: '../../src/visual.ts',
+        apiVersion: powerbiVisualsApi.version,
+        capabilitiesSchema: powerbiVisualsApi.schemas.capabilities,
+        pbivizSchema: powerbiVisualsApi.schemas.pbiviz,
+        stringResourcesSchema: powerbiVisualsApi.schemas.stringResources,
+        dependenciesSchema: powerbiVisualsApi.schemas.dependencies,
+    });
+}
+
+const config = {
     entry: {
-        'visual.js': [visualEntry]
+        'visual.js': [pluginLocation]
     },
     mode: 'production',
     module: {
@@ -101,30 +115,22 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js', '.css']
     },
     output: {
-        path: resolvePath('../.tmp/drop'),
+        path: resolvePath('./.tmp/drop'),
         publicPath: 'assets',
         filename: '[name]',
-        library: `CustomVisual_${pbivizConfig.visual.guid}`,
+        library: `CustomVisual_${package.visual.guid}`,
     },
     plugins: [
+        new webpack.WatchIgnorePlugin([pluginLocation]),
         new MiniCssExtractPlugin({
             chunkFilename: '[id].css',
             filename: 'visual.css',
         }),
         new webpack.HashedModuleIdsPlugin(),
-        new PowerBICustomVisualsWebpackPlugin({
-            ...pbivizConfig,
-            capabilities,
-            devMode: false,
-            packageOutPath: resolvePath('../dist'),
-            stringResources: [],
-            visualSourceLocation: visualEntry,
-            apiVersion: powerbiVisualsApi.version,
-            capabilitiesSchema: powerbiVisualsApi.schemas.capabilities,
-            pbivizSchema: powerbiVisualsApi.schemas.pbiviz,
-            stringResourcesSchema: powerbiVisualsApi.schemas.stringResources,
-            dependenciesSchema: powerbiVisualsApi.schemas.dependencies,
-        }),
-
     ]
+};
+
+module.exports = {
+    getPowerBICustomVisualsWebpackPlugin,
+    config,
 };
