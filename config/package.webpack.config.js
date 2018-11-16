@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const PowerBICustomVisualsWebpackPlugin = require('powerbi-visuals-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const powerbiVisualsApi = require('powerbi-visuals-api');
 
 const package = require('../package.json');
 const capabilities = require('../capabilities/capabilities.json');
@@ -23,10 +24,27 @@ const pbivizConfig = {
         displayName: `${package.visual.displayName} ${package.version}`,
         gitHubUrl: package.homepage,
         version: package.version,
+        description: package.description,
     },
 };
 
 const visualEntry = resolvePath('../src/visual.ts');
+
+const babelLoader = {
+    loader: 'babel-loader',
+    options: {
+        presets: [
+            [
+                '@babel/preset-env',
+                {
+                    "targets": {
+                        "ie": "11"
+                    }
+                }
+            ]
+        ]
+    }
+};
 
 module.exports = {
     entry: {
@@ -42,18 +60,21 @@ module.exports = {
             {
                 test: /\.ts$/,
                 exclude: /node_modules/,
-                use: [{
-                    loader: 'ts-loader',
-                    options: {
-                        configFile: resolvePath('./tsconfig.json'),
-                    }
-                }],
+                use: [
+                    babelLoader,
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            configFile: resolvePath('./tsconfig.json'),
+                        }
+                    },
+                ],
             },
-            // {
-            //     test: /\.json$/,
-            //     loader: require.resolve('json-loader'),
-            //     type: 'javascript/auto'
-            // },
+            {
+                test: /\.js$/,
+                include: /powerbi-visuals-utils-/,
+                use: babelLoader,
+            },
             {
                 test: /\.less$/,
                 use: [{
@@ -85,19 +106,6 @@ module.exports = {
         filename: '[name]',
         library: `CustomVisual_${pbivizConfig.visual.guid}`,
     },
-    optimization: {
-        minimize: true,
-        minimizer: [
-            new UglifyJsPlugin({
-                sourceMap: false,
-                cache: false,
-                extractComments: true,
-                uglifyOptions: {
-                    'dead_code': true
-                }
-            })
-        ]
-    },
     plugins: [
         new MiniCssExtractPlugin({
             chunkFilename: '[id].css',
@@ -111,6 +119,12 @@ module.exports = {
             packageOutPath: resolvePath('../dist'),
             stringResources: [],
             visualSourceLocation: visualEntry,
+            apiVersion: powerbiVisualsApi.version,
+            capabilitiesSchema: powerbiVisualsApi.schemas.capabilities,
+            pbivizSchema: powerbiVisualsApi.schemas.pbiviz,
+            stringResourcesSchema: powerbiVisualsApi.schemas.stringResources,
+            dependenciesSchema: powerbiVisualsApi.schemas.dependencies,
         }),
+
     ]
 };
