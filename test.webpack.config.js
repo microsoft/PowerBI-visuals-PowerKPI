@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require("webpack");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
     devtool: 'inline-source-map',
@@ -64,6 +65,13 @@ module.exports = {
     plugins: [
         new webpack.ProvidePlugin({
             'powerbi-visuals-api': null
+        }),
+        new BundleAnalyzerPlugin({
+            analyzerMode: "static",
+            generateStatsFile: true,
+            openAnalyzer: false,
+            reportFilename: path.resolve(__dirname, './coverage/bundle-analyzer-report.html'),
+            statsFilename: path.resolve(__dirname, './coverage/bundle-analyzer-stats.json'),
         }),
     ],
 };
