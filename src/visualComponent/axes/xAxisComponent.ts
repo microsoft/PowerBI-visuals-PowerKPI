@@ -163,8 +163,6 @@ export class XAxisComponent
             additionalMargin,
         } = options;
 
-        const fontSize: number = settings.fontSizeInPx;
-
         const width: number = Math.max(0, viewport.width - margin.left - margin.right);
 
         this.axisProperties = this.getAxisProperties(
@@ -178,11 +176,6 @@ export class XAxisComponent
         if (!this.isShown) {
             return;
         }
-
-        this.element
-            .style("font-family", settings.fontFamily)
-            .style("font-size", pixelConverter.toString(fontSize))
-            .style("fill", settings.fontColor);
 
         this.updateViewport({
             height: this.maxElementHeight,
@@ -214,7 +207,7 @@ export class XAxisComponent
 
                 if (!isNaN(availableWidth)) {
                     return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
-                        this.getTextProperties(formattedLabel, fontSize, settings.fontFamily),
+                        this.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.fontFamily),
                         availableWidth,
                     );
                 }
@@ -222,7 +215,12 @@ export class XAxisComponent
                 return formattedLabel;
             });
 
-        this.gElement.call(this.axisProperties.axis);
+        this.gElement
+            .call(this.axisProperties.axis)
+            .attr("font-family", settings.fontFamily)
+            .attr("font-size", settings.fontSizeInPx)
+            .attr("fill", settings.fontColor)
+            .attr("color", settings.fontColor);
     }
 
     public getViewport(): IVisualComponentViewport {

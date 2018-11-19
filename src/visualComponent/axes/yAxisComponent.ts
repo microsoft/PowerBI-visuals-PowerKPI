@@ -134,8 +134,6 @@ export class YAxisComponent
             viewport,
         } = options;
 
-        const fontSize: number = settings.fontSizeInPx;
-
         const height: number = Math.max(0, viewport.height - margin.top - margin.bottom);
 
         this.axisProperties = this.getAxisProperties(
@@ -153,7 +151,7 @@ export class YAxisComponent
             ? this.getLabelWidth(
                 this.getTicks(),
                 this.formatter,
-                fontSize,
+                settings.fontSizeInPx,
                 settings.fontFamily,
             )
             : 0;
@@ -169,9 +167,6 @@ export class YAxisComponent
         }
 
         this.element
-            .style("font-family", settings.fontFamily)
-            .style("font-size", pixelConverter.toString(fontSize))
-            .style("fill", settings.fontColor)
             .style("padding", `${pixelConverter.toString(margin.top)} 0 ${pixelConverter.toString(this.maxLabelHeight / 2)} 0`);
 
         this.updateViewport({
@@ -189,7 +184,7 @@ export class YAxisComponent
 
             if (shouldLabelsBeTruncated) {
                 return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
-                    this.getTextProperties(formattedLabel, fontSize, settings.fontFamily),
+                    this.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.fontFamily),
                     availableWidth,
                 );
             }
@@ -197,7 +192,12 @@ export class YAxisComponent
             return formattedLabel;
         });
 
-        this.gElement.call(this.axisProperties.axis);
+        this.gElement
+            .call(this.axisProperties.axis)
+            .attr("font-family", settings.fontFamily)
+            .attr("font-size", settings.fontSizeInPx)
+            .attr("fill", settings.fontColor)
+            .attr("color", settings.fontColor);
     }
 
     public getViewport(): IVisualComponentViewport {
