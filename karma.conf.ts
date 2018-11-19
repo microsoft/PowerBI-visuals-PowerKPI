@@ -31,7 +31,7 @@ process.env.CHROME_BIN = require("puppeteer").executablePath();
 const path = require("path");
 
 const webpackConfig = require("./test.webpack.config.js");
-const tsconfig = require("./test.tsconfig.json");
+const tsconfig = require("./tsconfig.json");
 
 import { Config, ConfigOptions } from "karma";
 
