@@ -74,7 +74,6 @@ export abstract class BaseComponent<ConstructorOptionsType
     protected minHeight: number = 20;
     protected height: number = 0;
     private isComponentShown: boolean = true;
-    private classNamePrefix: string = "powerKpi_";
 
     public abstract render(options: RenderOptionsType): void;
 
@@ -177,9 +176,13 @@ export abstract class BaseComponent<ConstructorOptionsType
             .classed(this.getClassNameWithPrefix(className), true);
     }
 
+    protected getClassNamePrefix(): string {
+        return "powerKpi_";
+    }
+
     protected getClassNameWithPrefix(className: string): string {
         return className
-            ? `${this.classNamePrefix}${className}`
+            ? `${this.getClassNamePrefix()}${className}`
             : className;
     }
 
