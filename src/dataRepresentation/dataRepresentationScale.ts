@@ -26,8 +26,8 @@
 
 import {
     scaleLinear,
-    scaleOrdinal,
-    ScaleOrdinal,
+    scalePoint,
+    ScalePoint,
     scaleTime,
 } from "d3-scale";
 
@@ -37,14 +37,14 @@ import { DataRepresentationTypeEnum } from "./dataRepresentationType";
 
 export class DataRepresentationScale {
 
-    public get isOrdinal(): boolean {
-        return this.isOrdinalScale;
+    public get isCategorical(): boolean {
+        return this.isCategoricalScale;
     }
 
     public static create(): DataRepresentationScale {
         return new DataRepresentationScale();
     }
-    private isOrdinalScale: boolean = false;
+    private isCategoricalScale: boolean = false;
     private baseScale: DataRepresentationAxisScale;
 
     private constructor(
@@ -52,7 +52,7 @@ export class DataRepresentationScale {
         isOrdinal: boolean = false,
     ) {
         this.baseScale = scale;
-        this.isOrdinalScale = isOrdinal;
+        this.isCategoricalScale = isOrdinal;
     }
 
     public domain(
@@ -60,7 +60,6 @@ export class DataRepresentationScale {
         scaleType: DataRepresentationTypeEnum,
     ): DataRepresentationScale {
         let scale: DataRepresentationAxisScale;
-
         if (values && values.length) {
             switch (scaleType) {
                 case DataRepresentationTypeEnum.DateType: {
@@ -72,15 +71,15 @@ export class DataRepresentationScale {
                     break;
                 }
                 case DataRepresentationTypeEnum.StringType: {
-                    scale = scaleOrdinal();
-                    this.isOrdinalScale = true;
+                    scale = scalePoint().padding(0);
+                    this.isCategoricalScale = true;
                     break;
                 }
             }
         }
 
         if (scale) {
-            (scale as ScaleOrdinal<DataRepresentationAxisValueType, DataRepresentationAxisValueType>).domain(values);
+            (scale as ScalePoint<DataRepresentationAxisValueType>).domain(values);
         }
 
         this.baseScale = scale;
@@ -107,12 +106,12 @@ export class DataRepresentationScale {
     public copy(): DataRepresentationScale {
         return new DataRepresentationScale(
             this.baseScale && this.baseScale.copy(),
-            this.isOrdinalScale);
+            this.isCategoricalScale);
     }
 
     public range(rangeValues): DataRepresentationScale {
         if (this.baseScale) {
-            (this.baseScale as ScaleOrdinal<any, any>).range(rangeValues);
+            (this.baseScale as ScalePoint<DataRepresentationAxisValueType>).range(rangeValues);
         }
 
         return this;

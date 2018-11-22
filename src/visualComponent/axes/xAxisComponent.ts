@@ -169,7 +169,7 @@ export class XAxisComponent
             width,
             axis.scale.getDomain(),
             axis.metadata,
-            !axis.scale.isOrdinal,
+            !axis.scale.isCategorical,
             settings.density,
         );
 

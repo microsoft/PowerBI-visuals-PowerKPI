@@ -26,7 +26,7 @@
 
 import {
     ScaleLinear,
-    ScaleOrdinal,
+    ScalePoint,
     ScaleTime,
 } from "d3-scale";
 
@@ -34,4 +34,4 @@ import { DataRepresentationAxisValueType } from "./dataRepresentationAxisValueTy
 
 export type DataRepresentationAxisScale = ScaleTime<DataRepresentationAxisValueType, number>
     | ScaleLinear<DataRepresentationAxisValueType, number>
-    | ScaleOrdinal<DataRepresentationAxisValueType, number>;
+    | ScalePoint<DataRepresentationAxisValueType>;

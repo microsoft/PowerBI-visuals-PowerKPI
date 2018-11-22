@@ -31,8 +31,8 @@ import {
     range as d3Range,
     ScaleLinear,
     scaleLinear,
-    ScaleOrdinal,
-    scaleOrdinal,
+    ScalePoint,
+    scalePoint,
 } from "d3";
 
 import powerbi from "powerbi-visuals-api";
@@ -580,7 +580,7 @@ export function createScale(options: ICreateAxisOptions): ICreateScaleResult {
         : null;
 
     let bestTickCount: number = maxTicks;
-    let scale: ScaleLinear<number, number> | ScaleOrdinal<any, any>;
+    let scale: ScaleLinear<number, number> | ScalePoint<string>;
     let usingDefaultDomain: boolean = false;
 
     if (dataDomain == null
@@ -597,7 +597,7 @@ export function createScale(options: ICreateAxisOptions): ICreateScaleResult {
         }
 
         if (isOrdinal(dataType)) {
-            scale = createOrdinalScale(pixelSpan, dataDomain);
+            scale = createPointScale(pixelSpan, dataDomain);
         }
         else {
             scale = createNumericalScale(
@@ -661,7 +661,7 @@ export function createScale(options: ICreateAxisOptions): ICreateScaleResult {
                 : bestTickCount;
         }
         else if (dataType.text || dataType.dateTime || dataType.numeric || dataType.bool) {
-            scale = createOrdinalScale(pixelSpan, scalarDomain);
+            scale = createPointScale(pixelSpan, scalarDomain);
 
             bestTickCount = maxTicks === 0
                 ? 0
@@ -707,16 +707,16 @@ export function normalizeInfinityInScale(scale: ScaleLinear<number, number>): vo
     scale.domain(scaledDomain);
 }
 
-export function createOrdinalScale(
+export function createPointScale(
     pixelSpan: number,
-    dataDomain: any[]): ScaleOrdinal<any, any> {
-
-    return scaleOrdinal()
+    dataDomain: any[],
+): ScalePoint<string> {
+    return scalePoint()
         .range([0, pixelSpan])
-        .domain(dataDomain);
+        .domain(dataDomain)
+        .padding(0);
 }
 
-// TODO: Types have been removed
 function normalizeLinearDomain(domain) {
     if (isNaN(domain.min) || isNaN(domain.max)) {
         domain.min = emptyDomain[0];
