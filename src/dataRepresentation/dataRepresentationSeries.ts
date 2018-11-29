@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
+import { interactivitySelectionService } from "powerbi-visuals-utils-interactivityutils";
 
 import {
     IDataRepresentationPoint,
@@ -40,7 +40,7 @@ import {
 
 import { SeriesSettings } from "../settings/seriesSettings";
 
-export interface IDataRepresentationSeries extends interactivityService.SelectableDataPoint {
+export interface IDataRepresentationSeries extends interactivitySelectionService.SelectableDataPoint {
     points: IDataRepresentationPoint[];
     gradientPoints: IDataRepresentationPointGradientColor[];
     name: string;

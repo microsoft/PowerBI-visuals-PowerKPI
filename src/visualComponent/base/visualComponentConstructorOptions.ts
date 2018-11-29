@@ -30,8 +30,9 @@ import {
 } from "d3";
 
 import powerbi from "powerbi-visuals-api";
+import { interactivityBaseService } from "powerbi-visuals-utils-interactivityutils";
 
-import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
+import { IDataRepresentationSeries } from "../../dataRepresentation/dataRepresentationSeries";
 
 export interface IVisualComponentBaseConstructorOptions {
     element?: Selection<any, any, any, any>;
@@ -40,6 +41,6 @@ export interface IVisualComponentBaseConstructorOptions {
 
 export interface IVisualComponentConstructorOptions extends IVisualComponentBaseConstructorOptions {
     eventDispatcher?: Dispatch<any>;
-    interactivityService?: interactivityService.IInteractivityService;
+    interactivityService?: interactivityBaseService.IInteractivityService<IDataRepresentationSeries>;
     tooltipService?: powerbi.extensibility.ITooltipService;
 }

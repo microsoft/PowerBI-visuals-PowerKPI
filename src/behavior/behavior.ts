@@ -27,23 +27,23 @@
 import { Dispatch } from "d3";
 
 import {
-    interactivityService,
+    interactivityBaseService,
 } from "powerbi-visuals-utils-interactivityutils";
 
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { EventName } from "../event/eventName";
 
-export interface IBehaviorOptions {
+export interface IBehaviorOptions extends interactivityBaseService.IBehaviorOptions<IDataRepresentationSeries> {
     eventDispatcher: Dispatch<any>;
-    interactivityService: interactivityService.IInteractivityService;
+    interactivityService: interactivityBaseService.IInteractivityService<IDataRepresentationSeries>;
 }
 
-export class Behavior implements interactivityService.IInteractiveBehavior {
+export class Behavior implements interactivityBaseService.IInteractiveBehavior {
     private options: IBehaviorOptions;
 
     public bindEvents(
         options: IBehaviorOptions,
-        selectionHandler: interactivityService.ISelectionHandler,
+        selectionHandler: interactivityBaseService.ISelectionHandler,
     ): void {
         this.options = options;
 

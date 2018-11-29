@@ -29,6 +29,8 @@ import {
     legendInterfaces,
 } from "powerbi-visuals-utils-chartutils";
 
+import { interactivityBaseService } from "powerbi-visuals-utils-interactivityutils";
+
 import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
@@ -100,11 +102,14 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
     }
 
     private createLegend(options: IVisualComponentConstructorOptions): legendInterfaces.ILegend {
+        const interactivityService: interactivityBaseService.IInteractivityService<legendInterfaces.LegendDataPoint> =
+            (options.interactivityService as interactivityBaseService.IInteractivityService<any>) || undefined;
+
         try {
             return legendModule.createLegend(
                 options.element.node(),
                 false,
-                options.interactivityService || undefined,
+                interactivityService,
                 true,
             );
         } catch (_) {

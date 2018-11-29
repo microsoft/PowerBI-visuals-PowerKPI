@@ -36,7 +36,11 @@ import {
 import powerbi from "powerbi-visuals-api";
 
 import { ColorHelper } from "powerbi-visuals-utils-colorutils";
-import { interactivityService } from "powerbi-visuals-utils-interactivityutils";
+
+import {
+    interactivityBaseService,
+    interactivitySelectionService,
+} from "powerbi-visuals-utils-interactivityutils";
 
 import { IConverter } from "./converter/converter";
 import { DataConverter } from "./converter/dataConverter";
@@ -70,7 +74,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     private dataRepresentation: IDataRepresentation;
 
     private behavior: Behavior;
-    private interactivityService: interactivityService.IInteractivityService;
+    private interactivityService: interactivityBaseService.IInteractivityService<IDataRepresentationSeries>;
 
     constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
         this.rootElement = d3Select(options.element);
@@ -81,7 +85,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
         });
 
         this.behavior = new Behavior();
-        this.interactivityService = interactivityService.createInteractivityService(options.host);
+        this.interactivityService = interactivitySelectionService.createInteractivitySelectionService(options.host);
 
         this.component = new MainComponent({
             element: this.rootElement,
@@ -113,15 +117,13 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
             this.interactivityService.applySelectionStateToData(dataRepresentation.series);
 
             const behaviorOptions: IBehaviorOptions = {
+                behavior: this.behavior,
+                dataPoints: dataRepresentation.series,
                 eventDispatcher: this.eventDispatcher,
                 interactivityService: this.interactivityService,
             };
 
-            this.interactivityService.bind(
-                dataRepresentation.series,
-                this.behavior,
-                behaviorOptions,
-            );
+            this.interactivityService.bind(behaviorOptions);
         }
 
         this.render(dataRepresentation);
