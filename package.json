@@ -1,0 +1,90 @@
+{
+  "name": "powerbi-visuals-powerkpi",
+  "version": "2.0.0",
+  "description": "A powerful KPI Indicator with multi-line chart and labels for current date, value and variances. Rich customization options, including current status labels and symbols, trend and comparison lines, multiple variances, auto-scaling, text formatting, and density controls. Highly flexible for use in large, detailed report tiles or tiny, summary dashboard tiles.",
+  "main": "index.js",
+  "visual": {
+    "name": "PowerKPI",
+    "displayName": "Power KPI",
+    "guid": "powerKPI462CE5C2666F4EC8A8BDD7E5587320A3_PREVIEW",
+    "visualClassName": "PowerKPI",
+    "supportUrl": "https://aka.ms/customvisualscommunity"
+  },
+  "scripts": {
+    "start": "webpack-dev-server --config start.webpack.config.js",
+    "package": "webpack --config package.webpack.config.js",
+    "test": "karma start",
+    "watch": "karma start --single-run=false"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Microsoft/PowerBI-visuals-PowerKPI.git"
+  },
+  "keywords": [
+    "powerbi-visuals",
+    "PowerKPI",
+    "Power KPI",
+    "KPI"
+  ],
+  "author": {
+    "name": "Microsoft",
+    "email": "pbicvsupport@microsoft.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Microsoft/PowerBI-visuals-PowerKPI/issues"
+  },
+  "homepage": "https://github.com/Microsoft/PowerBI-visuals-PowerKPI#readme",
+  "devDependencies": {
+    "@babel/core": "^7.1.6",
+    "@babel/preset-env": "^7.1.6",
+    "@types/d3": "^5.0.1",
+    "@types/jasmine": "^2.8.11",
+    "@types/jasmine-jquery": "^1.5.33",
+    "@types/jquery": "^3.3.22",
+    "@types/karma": "^3.0.0",
+    "@types/node": "^10.12.8",
+    "@types/puppeteer": "^1.10.0",
+    "babel-loader": "^8.0.4",
+    "css-loader": "^1.0.1",
+    "istanbul-instrumenter-loader": "^3.0.1",
+    "jasmine": "^3.3.0",
+    "jasmine-jquery": "^2.1.1",
+    "karma": "^3.1.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-coverage-istanbul-reporter": "^2.0.4",
+    "karma-jasmine": "^2.0.0",
+    "karma-junit-reporter": "^1.2.0",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^3.0.5",
+    "less": "^3.8.1",
+    "less-loader": "^4.1.0",
+    "mini-css-extract-plugin": "^0.4.4",
+    "powerbi-visuals-api": "^2.2.2",
+    "powerbi-visuals-utils-testutils": "^2.1.4",
+    "powerbi-visuals-webpack-plugin": "^1.0.15",
+    "puppeteer": "^1.10.0",
+    "style-loader": "^0.23.1",
+    "ts-loader": "^5.3.0",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "tslint-loader": "^3.5.4",
+    "tslint-microsoft-contrib": "^5.2.1",
+    "typescript": "^3.1.6",
+    "webpack": "^4.25.1",
+    "webpack-bundle-analyzer": "^3.0.3",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10"
+  },
+  "dependencies": {
+    "d3": "^5.7.0",
+    "jquery": "^3.3.1",
+    "powerbi-visuals-utils-chartutils": "^2.2.1",
+    "powerbi-visuals-utils-colorutils": "^2.1.0",
+    "powerbi-visuals-utils-dataviewutils": "^2.1.0",
+    "powerbi-visuals-utils-formattingutils": "^4.1.1",
+    "powerbi-visuals-utils-interactivityutils": "^5.4.0",
+    "powerbi-visuals-utils-svgutils": "^2.1.0",
+    "powerbi-visuals-utils-typeutils": "^2.1.0"
+  }
+}
