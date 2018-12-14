@@ -7,4 +7,5 @@ typings
 *.log
 /coverage
 webpack.statistics.html
+webpack.statistics.*.html
 TESTS-report.xml
