@@ -65,10 +65,7 @@
     "tslint-loader": "^3.5.4",
     "tslint-microsoft-contrib": "^5.2.1",
     "typescript": "^3.1.6",
-    "webpack": "^4.25.1",
-    "webpack-bundle-analyzer": "^3.0.3",
-    "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.10"
+    "webpack": "^4.25.1"
   },
   "dependencies": {
     "d3": "^5.7.0",
