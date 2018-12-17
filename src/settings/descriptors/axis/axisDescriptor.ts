@@ -90,6 +90,7 @@ export class AxisDescriptor
                     AxisDescriptor.prototype,
                     "percentile",
                 ),
+                configurable: true,
                 enumerable: true,
             },
         );

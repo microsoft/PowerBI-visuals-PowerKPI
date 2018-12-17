@@ -41,12 +41,12 @@ export class NumberDescriptorBase
     extends FontSizeDescriptor
     implements IDescriptor {
 
-    public format: string = undefined;
-    public defaultFormat: string = undefined;
-    public columnFormat: string = undefined;
+    public format: string = null;
+    public defaultFormat: string = null;
+    public columnFormat: string = null;
 
     public displayUnits: number = 0;
-    public precision: number = undefined;
+    public precision: number = null;
 
     protected minPrecision: number = 0;
     protected maxPrecision: number = 17;
@@ -88,13 +88,14 @@ export class NumberDescriptorBase
     }
 
     protected getValidPrecision(precision: number): number {
-        if (isNaN(precision)) {
+        if (isNaN(precision) || precision == null) {
             return precision;
         }
 
         return Math.min(
             Math.max(this.minPrecision, precision),
-            this.maxPrecision);
+            this.maxPrecision,
+        );
     }
 
     /**
@@ -103,9 +104,11 @@ export class NumberDescriptorBase
     protected hideNumberProperties(): void {
         Object.defineProperties(this, {
             displayUnits: {
+                configurable: true,
                 enumerable: false,
             },
             precision: {
+                configurable: true,
                 enumerable: false,
             },
         });
@@ -115,6 +118,7 @@ export class NumberDescriptorBase
         Object.defineProperty(
             this,
             "format", {
+                configurable: true,
                 enumerable: false,
             },
         );

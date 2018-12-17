@@ -24,6 +24,8 @@
  *  THE SOFTWARE.
  */
 
+import "@babel/polyfill";
+
 import "../styles/styles.less";
 
 import {

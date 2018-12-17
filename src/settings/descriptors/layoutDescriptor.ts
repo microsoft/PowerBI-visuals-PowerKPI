@@ -47,6 +47,7 @@ export class LayoutDescriptor
     public parse(options: IDescriptorParserOptions): void {
         if (this.auto) {
             Object.defineProperty(this, "layout", {
+                configurable: true,
                 enumerable: false,
             });
 

@@ -58,6 +58,7 @@ export class KPIIndicatorValueSignDescriptor
 
     private makePropertyFontColorPropertyEnumerable(isEnumerable: boolean): void {
         Object.defineProperty(this, "fontColor", {
+            configurable: true,
             enumerable: isEnumerable,
         });
     }
