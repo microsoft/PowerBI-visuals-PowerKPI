@@ -52,6 +52,7 @@ export class ShowDescriptor
                     ShowDescriptor.prototype,
                     "show",
                 ),
+                configurable: true,
                 enumerable: true,
             },
         );

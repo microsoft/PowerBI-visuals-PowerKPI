@@ -60,6 +60,7 @@ export class FontSizeDescriptor
                     FontSizeDescriptor.prototype,
                     "fontSize",
                 ),
+                configurable: true,
                 enumerable: true,
             },
         );
