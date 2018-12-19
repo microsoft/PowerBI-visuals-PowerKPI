@@ -64,12 +64,16 @@ import {
     IBehaviorOptions,
 } from "./behavior/behavior";
 
+export interface IPowerKPIConstructorOptions extends powerbi.extensibility.visual.VisualConstructorOptions {
+    rootElement?: HTMLElement;
+}
+
 export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     private static ViewportReducer: number = 3;
 
     private eventDispatcher: Dispatch<any> = dispatch(...Object.keys(EventName));
 
-    private rootElement: Selection<any, any, any, any>;
+    private element: Selection<any, any, any, any>;
     private converter: IConverter;
     private component: IVisualComponent<IVisualComponentRenderOptions>;
 
@@ -78,8 +82,8 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     private behavior: Behavior;
     private interactivityService: interactivityBaseService.IInteractivityService<IDataRepresentationSeries>;
 
-    constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
-        this.rootElement = d3Select(options.element);
+    constructor(options: IPowerKPIConstructorOptions) {
+        this.element = d3Select(options.element);
 
         this.converter = new DataConverter({
             colorPalette: options.host.colorPalette,
@@ -89,11 +93,13 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
         this.behavior = new Behavior();
         this.interactivityService = interactivitySelectionService.createInteractivitySelectionService(options.host);
 
+        const rootElement = options.rootElement && d3Select(options.rootElement) || this.element;
+
         this.component = new MainComponent({
-            element: this.rootElement,
+            element: this.element,
             eventDispatcher: this.eventDispatcher,
             interactivityService: this.interactivityService,
-            rootElement: this.rootElement,
+            rootElement,
             tooltipService: options.host.tooltipService,
         });
     }
@@ -238,7 +244,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
         this.component.destroy();
 
         this.converter = null;
-        this.rootElement = null;
+        this.element = null;
         this.component = null;
         this.dataRepresentation = null;
         this.interactivityService = null;
