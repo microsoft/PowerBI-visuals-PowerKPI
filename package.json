@@ -44,6 +44,7 @@
     "istanbul-instrumenter-loader": "^3.0.1",
     "jasmine": "^3.3.0",
     "jasmine-jquery": "^2.1.1",
+    "jquery": "^3.3.1",
     "karma": "^3.1.1",
     "karma-chrome-launcher": "^2.2.0",
     "karma-coverage-istanbul-reporter": "^2.0.4",
@@ -69,7 +70,6 @@
   },
   "dependencies": {
     "d3": "^5.7.0",
-    "jquery": "^3.3.1",
     "powerbi-visuals-utils-chartutils": "^2.2.1",
     "powerbi-visuals-utils-colorutils": "^2.1.0",
     "powerbi-visuals-utils-dataviewutils": "^2.1.0",

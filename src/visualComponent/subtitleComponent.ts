@@ -24,8 +24,6 @@
  *  THE SOFTWARE.
  */
 
-import * as $ from "jquery";
-
 import { Selection } from "d3";
 
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
@@ -83,15 +81,18 @@ export class SubtitleComponent extends BaseComponent<IVisualComponentConstructor
     }
 
     public getViewport(): IVisualComponentViewport {
-        const viewport: IVisualComponentViewport = {
-            height: 0,
-            width: 0,
-        };
-
-        if (this.element) {
-            viewport.height = $(this.element.node()).height(); // TODO: check if we are able to remove jQuery.
+        if (!this.element) {
+            return {
+                height: 0,
+                width: 0,
+            };
         }
 
-        return viewport;
+        const height: number = (this.element.node() as Element).clientHeight;
+
+        return {
+            height,
+            width: 0,
+        };
     }
 }
