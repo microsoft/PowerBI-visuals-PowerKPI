@@ -367,7 +367,7 @@ export class SvgComponent extends BaseContainerComponent<
 
     private getXScale(container: SVGElement): number {
         const rect: ClientRect = container.getBoundingClientRect();
-        const clientWidth: number = container.clientWidth || $(container).width();
+        const clientWidth: number = container.clientWidth || 1;
 
         return rect.width / clientWidth;
     }
