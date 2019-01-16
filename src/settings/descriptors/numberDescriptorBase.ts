@@ -133,7 +133,7 @@ export class NumberDescriptorBase
             case DataRepresentationTypeEnum.DateType: {
                 this.defaultFormat = "%M/%d/yyyy";
 
-                if (this.format === undefined) {
+                if (this.format == null) {
                     this.format = this.defaultFormat;
                 }
 
