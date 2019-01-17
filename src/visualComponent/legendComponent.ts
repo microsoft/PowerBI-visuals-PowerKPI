@@ -69,8 +69,6 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
             return;
         }
 
-        this.element.style("font-family", legend.fontFamily);
-
         try {
             const legendData: legendInterfaces.LegendData = this.createLegendData(options.data, legend);
 
@@ -138,6 +136,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
 
         return {
             dataPoints,
+            fontFamily: settings.fontFamily,
             fontSize: settings.fontSize,
             grouped: false,
             labelColor: settings.labelColor,
