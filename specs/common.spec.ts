@@ -72,8 +72,9 @@ import {
 import {
     LegendDescriptor,
     LegendStyle,
-
 } from "../src/settings/descriptors/legendDescriptor";
+
+import { NumberDescriptorBase } from "../src/settings/descriptors/numberDescriptorBase";
 
 import { AreaComponent } from "../src/visualComponent/combo/areaComponent";
 import { ComboComponent } from "../src/visualComponent/combo/comboComponent";
@@ -282,6 +283,23 @@ describe("Power KPI", () => {
                 expect(actualKPI.shape).toBeDefined();
                 expect(actualKPI.color).toBeDefined();
             });
+        });
+    });
+
+    describe("NumberDescriptorBase", () => {
+        it("defaultFormat and format must be equal to %M/%d/yyyy if type is date", () => {
+            const numberDescriptorBase: NumberDescriptorBase = new NumberDescriptorBase();
+
+            numberDescriptorBase.parse({
+                isAutoHideBehaviorEnabled: false,
+                type: DataRepresentationTypeEnum.DateType,
+                viewport: {height: 600, width: 800},
+            });
+
+            const expectedFormat: string = "%M/%d/yyyy";
+
+            expect(numberDescriptorBase.defaultFormat).toBe(expectedFormat);
+            expect(numberDescriptorBase.format).toBe(expectedFormat);
         });
     });
 
