@@ -99,6 +99,8 @@ import {
     KPIIndicatorDescriptor,
 } from "../src/settings/descriptors/kpi/kpiIndicatorDescriptor";
 
+import { labelMeasurementService } from "../src/services/labelMeasurementService";
+
 import { ComboComponentAreaComponentTest } from "./comboComponentAreaComponentTest";
 import { TestWrapper } from "./testWrapper";
 
@@ -293,7 +295,7 @@ describe("Power KPI", () => {
             numberDescriptorBase.parse({
                 isAutoHideBehaviorEnabled: false,
                 type: DataRepresentationTypeEnum.DateType,
-                viewport: {height: 600, width: 800},
+                viewport: { height: 600, width: 800 },
             });
 
             const expectedFormat: string = "%M/%d/yyyy";
@@ -909,6 +911,19 @@ describe("Power KPI", () => {
                 });
 
                 expect(dataConverter.isValueFinite(5)).toBeTruthy();
+            });
+        });
+    });
+
+    describe("LabelMeasurementService", () => {
+        describe("getLabelWidth", () => {
+            it("should return 0 if Date object is not valid", () => {
+                expect(labelMeasurementService.getLabelWidth(
+                    [new Date("Power BI rocks")],
+                    null,
+                    8,
+                    "",
+                )).toBe(0);
             });
         });
     });

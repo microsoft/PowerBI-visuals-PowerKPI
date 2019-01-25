@@ -26,13 +26,7 @@
 
 import { Selection } from "d3";
 
-import powerbi from "powerbi-visuals-api";
-import { pixelConverter } from "powerbi-visuals-utils-typeutils";
-
-import {
-    textMeasurementService,
-    valueFormatter,
-} from "powerbi-visuals-utils-formattingutils";
+import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
 import {
     axisInterfaces,
@@ -68,74 +62,5 @@ export abstract class AxisBaseComponent<VisualComponentConstructorOptions, Visua
 
         this.element = null;
         this.gElement = null;
-    }
-
-    protected getLabelHeight(
-        value: DataRepresentationAxisValueType,
-        formatter: valueFormatter.IValueFormatter,
-        fontSize: number,
-        fontFamily: string,
-    ): number {
-        const text: string = formatter.format(value);
-        const textProperties: textMeasurementService.TextProperties = this.getTextProperties(text, fontSize, fontFamily);
-
-        return textMeasurementService.textMeasurementService.measureSvgTextHeight(textProperties, text);
-    }
-
-    protected getTextWidth(
-        text: string,
-        fontSize: number,
-        fontFamily: string,
-    ): number {
-        const textProperties: textMeasurementService.TextProperties = this.getTextProperties(text, fontSize, fontFamily);
-
-        return textMeasurementService.textMeasurementService.measureSvgTextWidth(textProperties, text);
-    }
-
-    protected getLabelWidth(
-        values: DataRepresentationAxisValueType[],
-        formatter: valueFormatter.IValueFormatter,
-        fontSize: number,
-        fontFamily: string,
-    ): number {
-        const width: number = Math.max(...values.map((value: number) => {
-            const text: string = formatter.format(value);
-
-            return this.getTextWidth(text, fontSize, fontFamily);
-        }));
-
-        return isFinite(width)
-            ? width
-            : 0;
-    }
-
-    protected getTextProperties(
-        text: string,
-        fontSize: number,
-        fontFamily: string,
-    ): textMeasurementService.TextProperties {
-        return {
-            fontFamily,
-            fontSize: pixelConverter.toString(fontSize),
-            text,
-        };
-    }
-
-    protected getValueFormatter(
-        min: DataRepresentationAxisValueType,
-        max: DataRepresentationAxisValueType,
-        metadata?: powerbi.DataViewMetadataColumn,
-        tickCount?: number,
-        precision?: number,
-        valueFormat?: string,
-    ): valueFormatter.IValueFormatter {
-        return valueFormatter.valueFormatter.create({
-            columnType: metadata && metadata.type,
-            format: valueFormat,
-            precision,
-            tickCount,
-            value: min,
-            value2: max,
-        });
     }
 }

@@ -51,6 +51,8 @@ import {
     IAxisComponent,
 } from "./axisBaseComponent";
 
+import { labelMeasurementService } from "../../services/labelMeasurementService";
+
 export interface IXAxisComponentRenderOptions {
     axis: IDataRepresentationX;
     settings: AxisDescriptor;
@@ -117,14 +119,14 @@ export class XAxisComponent
 
         const domain: any[] = axis.scale.getDomain();
 
-        this.maxElementHeight = this.getLabelHeight(
+        this.maxElementHeight = labelMeasurementService.getLabelHeight(
             axis.max,
             this.formatter,
             fontSize,
             settings.fontFamily,
         );
 
-        this.maxElementWidth = this.getLabelWidth(
+        this.maxElementWidth = labelMeasurementService.getLabelWidth(
             [axis.min, axis.max],
             this.formatter,
             fontSize,
@@ -207,7 +209,7 @@ export class XAxisComponent
 
                 if (!isNaN(availableWidth)) {
                     return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
-                        this.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.fontFamily),
+                        labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.fontFamily),
                         availableWidth,
                     );
                 }
@@ -249,7 +251,7 @@ export class XAxisComponent
         fontSize: number,
         fontFamily: string,
     ): number {
-        const width: number = this.getLabelWidth(
+        const width: number = labelMeasurementService.getLabelWidth(
             values,
             formatter,
             fontSize,
@@ -307,7 +309,7 @@ export class XAxisComponent
             ? undefined
             : this.defaultTickNumber;
 
-        return this.getValueFormatter(
+        return labelMeasurementService.getValueFormatter(
             minValue,
             maxValue,
             x.metadata,
