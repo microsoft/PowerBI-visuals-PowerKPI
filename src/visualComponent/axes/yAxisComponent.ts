@@ -49,6 +49,8 @@ import {
     IAxisComponent,
 } from "./axisBaseComponent";
 
+import { labelMeasurementService } from "../../services/labelMeasurementService";
+
 export interface IYAxisComponentRenderOptions {
     settings: YAxisDescriptor;
     axis: IDataRepresentationAxis;
@@ -101,7 +103,7 @@ export class YAxisComponent
 
         const fontSize: number = settings.fontSizeInPx;
 
-        this.formatter = this.getValueFormatter(
+        this.formatter = labelMeasurementService.getValueFormatter(
             settings.displayUnits || axis.max,
             undefined,
             undefined,
@@ -110,7 +112,7 @@ export class YAxisComponent
             axis.format || this.valueFormat,
         );
 
-        this.maxLabelHeight = this.getLabelHeight(
+        this.maxLabelHeight = labelMeasurementService.getLabelHeight(
             axis.max,
             this.formatter,
             fontSize,
@@ -148,7 +150,7 @@ export class YAxisComponent
         }
 
         this.maxLabelWidth = settings.show
-            ? this.getLabelWidth(
+            ? labelMeasurementService.getLabelWidth(
                 this.getTicks(),
                 this.formatter,
                 settings.fontSizeInPx,
@@ -184,7 +186,7 @@ export class YAxisComponent
 
             if (shouldLabelsBeTruncated) {
                 return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
-                    this.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.fontFamily),
+                    labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.fontFamily),
                     availableWidth,
                 );
             }
