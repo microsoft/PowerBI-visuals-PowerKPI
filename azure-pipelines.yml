@@ -24,3 +24,12 @@ steps:
     testResultsFiles: '**/TESTS-*.xml'
     testRunTitle: 'Custom Visual unit-tests'
     mergeTestResults: true
+
+trigger:
+- master
+- releases/*
+
+pr:
+- master
+- releases/*
+
