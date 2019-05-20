@@ -22,4 +22,4 @@ Some of the key features include:
 - Total Control Over KPI Thresholds. Map your data to the desired KPI Indicators in one of two ways: 1) include a column in your data model with the index number of the symbol; 2) add a calculated column and set your own auto thresholds in the report
 - Auto-Scaling. Design a larger tile in your report with rich details. After pinning it to a Power BI Dashboard, you may resize to smaller versions of the tile without losing essential details and without having to create separate report tiles for this purpose.
 
-See also [PowerKPI at Microsoft AppSource](https://appsource.microsoft.com/en-us/product/power-bi-visuals/WA104381763)
+See also [PowerKPI at Microsoft AppSource](https://appsource.microsoft.com/en-us/product/power-bi-visuals/WA104381083)
