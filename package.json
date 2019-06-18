@@ -29,7 +29,6 @@
   },
   "homepage": "https://github.com/Microsoft/PowerBI-visuals-PowerKPI#readme",
   "devDependencies": {
-    "@babel/polyfill": "^7.2.5",
     "@types/d3": "^5.7.0",
     "@types/jasmine": "^3.3.5",
     "@types/jasmine-jquery": "^1.5.33",
@@ -53,7 +52,7 @@
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.5.0",
     "powerbi-visuals-api": "^2.5.0",
-    "powerbi-visuals-tools": "^3.1.1",
+    "powerbi-visuals-tools": "^3.1.2",
     "powerbi-visuals-utils-testutils": "^2.1.4",
     "puppeteer": "^1.17.0",
     "regenerator-runtime": "0.13.2",

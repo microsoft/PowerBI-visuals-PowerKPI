@@ -1,4 +1,5 @@
 ## 2.0.1
+* Conditional loading of `core-js/stable` only for sandbox mode
 * API 2.5.0
 * `@babel/polyfill` replacement by `core-js/stable`
 

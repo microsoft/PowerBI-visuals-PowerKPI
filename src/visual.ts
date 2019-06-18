@@ -23,10 +23,6 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-
-import "core-js/stable";
-import "regenerator-runtime/runtime";
-
 import "../styles/styles.less";
 
 import {
@@ -84,6 +80,10 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     private interactivityService: interactivityBaseService.IInteractivityService<IDataRepresentationSeries>;
 
     constructor(options: IPowerKPIConstructorOptions) {
+        if (window.location !== window.parent.location) {
+            require("core-js/stable");
+        }
+
         this.element = d3Select(options.element);
 
         this.converter = new DataConverter({
@@ -148,7 +148,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
 
     public enumerateObjectInstances(
         options: powerbi.EnumerateVisualObjectInstancesOptions,
-        ): powerbi.VisualObjectInstanceEnumeration {
+    ): powerbi.VisualObjectInstanceEnumeration {
         const { objectName } = options;
 
         const shouldUseContainers: boolean = Object.keys(new SeriesSettings()).indexOf(objectName) !== -1;
