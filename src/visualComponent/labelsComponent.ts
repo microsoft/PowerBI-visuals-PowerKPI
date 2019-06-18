@@ -86,7 +86,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
             .classed(this.boldClassName, labels.isBold);
 
         const labelLayoutOptions: NewLabelUtils.labelLayout.DataLabelLayoutOptions =
-            NewLabelUtils.labelUtils.LabelUtils.getDataLabelLayoutOptions(null);
+            NewLabelUtils.labelUtils.getDataLabelLayoutOptions(null);
 
         const labelLayout: NewLabelUtils.labelLayout.LabelLayout = new NewLabelUtils.labelLayout.LabelLayout(labelLayoutOptions);
 
@@ -95,7 +95,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
 
         const dataLabels: NewLabelUtils.labelLayout.Label[] = labelLayout.layout(labelGroups, viewport);
 
-        NewLabelUtils.labelUtils.LabelUtils.drawDefaultLabels(this.element, dataLabels, true);
+        NewLabelUtils.labelUtils.drawDefaultLabels(this.element, dataLabels, true);
     }
 
     private getTextProperties(
@@ -135,7 +135,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
 
         const lastPointIndex: number = pointsLength - 1;
 
-        const availableAmountOfLabels: number = NewLabelUtils.labelUtils.LabelUtils.getNumberOfLabelsToRender(
+        const availableAmountOfLabels: number = NewLabelUtils.labelUtils.getNumberOfLabelsToRender(
             viewport.width,
             labels.density,
             this.minimumLabelsToRender,
@@ -199,7 +199,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
                         fontProperties: {
                             color: labels.color,
                             family: labels.fontFamily,
-                            size: NewLabelUtils.units.Units.FontSize.createFromPt(labels.fontSize),
+                            size: NewLabelUtils.units.FontSize.createFromPt(labels.fontSize),
                         },
                         identity: null,
                         insideFill: labels.color,
