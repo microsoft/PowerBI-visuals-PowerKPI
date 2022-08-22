@@ -32,20 +32,67 @@ import {
 
 import { LayoutEnum } from "../../layout/layoutEnum";
 
-export class LayoutDescriptor
-    extends BaseDescriptor
-    implements IDescriptor {
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-    public autoHideVisualComponents: boolean = true;
-    public auto: boolean = true;
-    public layout: string = LayoutEnum[LayoutEnum.Top];
+import FormattingSettingsCard = formattingSettings.Card;
+import FormattingSettingsSlice = formattingSettings.Slice;
+
+export class LayoutDescriptor
+    extends BaseDescriptor {
+
+    autoHideVisualComponents = new formattingSettings.ToggleSwitch({
+        name: "autoHideVisualComponents",
+        displayName: "Auto Scale",
+        value: true
+    });
+
+    auto = new formattingSettings.ToggleSwitch({
+        name: "auto",
+        displayName: "Auto",
+        value: true,
+    });
+
+    layout = new formattingSettings.ItemDropdown({
+        name: "layout",
+        displayName: "Layout",
+        items: [
+            {
+                value: LayoutEnum[LayoutEnum.Top],
+                displayName: "Top"
+            },
+            {
+                value: LayoutEnum[LayoutEnum.Right],
+                displayName: "Right"
+            },
+            {
+                value: LayoutEnum[LayoutEnum.Bottom],
+                displayName: "Bottom"
+            },
+            {
+                value: LayoutEnum[LayoutEnum.Left],
+                displayName: "Left"
+            }
+        ],
+        value: {
+            value: LayoutEnum[LayoutEnum.Top],
+            displayName: "Top"
+        }
+    });
 
     private _layout: string;
 
     private _minSupportedHeight: number = 250;
 
+    constructor() {
+        super()
+        
+        this.name = "layout";
+        this.displayName = "Layout";
+        this.slices.push(this.autoHideVisualComponents, this.auto, this.layout);
+    }
+
     public parse(options: IDescriptorParserOptions): void {
-        if (this.auto) {
+        if (this.auto.value) {
             Object.defineProperty(this, "layout", {
                 configurable: true,
                 enumerable: false,
@@ -60,7 +107,7 @@ export class LayoutDescriptor
             return;
         }
 
-        this._layout = this.layout;
+        this._layout = this.layout.value.value.toString();
     }
 
     public getLayout(): string {

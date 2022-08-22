@@ -25,19 +25,18 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import { NumberDescriptorBase } from "../numberDescriptorBase";
+import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
 
-export class KPIIndicatorValueDescriptor extends NumberDescriptorBase {
-    public fontColor: string = "#333333";
-    public isBold: boolean = true;
-    public isItalic: boolean = false;
-    public fontFamily: string = "'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif";
-
-    constructor(viewport?: powerbi.IViewport, shouldPropertiesBeHiddenByType: boolean = false) {
+export class KPIIndicatorValueDescriptor extends KPIIndicatorDescriptor {
+    constructor(viewport?: powerbi.IViewport, shouldPropertiesBeHiddenByType: boolean = false, name?: string, displayName?: string) {
         super(viewport, shouldPropertiesBeHiddenByType);
 
-        this.fontSize = 12;
-        this.displayUnits = 1;
+        if(name && displayName){
+            this.name = name;
+            this.displayName = displayName;
+            this.slices.push(this.font, this.precision, this.fontColor)
+        }
     }
 }

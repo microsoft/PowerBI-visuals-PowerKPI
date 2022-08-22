@@ -44,6 +44,12 @@ export class LegendDescriptor extends FontSizeDescriptor {
     public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
     public style: LegendStyle = LegendStyle.circle;
 
+    constructor(viewport: powerbi.IViewport) {
+        super(viewport)
+
+        this.name = "legend"
+        this.displayName = "Legend"
+    }
     public getLegendMarkerShape(): legendInterfaces.MarkerShape {
         switch (this.style) {
             case LegendStyle.box: {

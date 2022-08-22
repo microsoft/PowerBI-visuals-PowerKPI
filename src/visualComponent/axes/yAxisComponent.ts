@@ -95,7 +95,7 @@ export class YAxisComponent
             settings,
         } = options;
 
-        if (settings.show) {
+        if (settings.showElement()) {
             this.show();
         } else {
             this.hide();
@@ -108,7 +108,7 @@ export class YAxisComponent
             undefined,
             undefined,
             undefined,
-            settings.precision,
+            settings.precision.value,
             axis.format || this.valueFormat,
         );
 
@@ -149,7 +149,7 @@ export class YAxisComponent
             return;
         }
 
-        this.maxLabelWidth = settings.show
+        this.maxLabelWidth = settings.showElement()
             ? labelMeasurementService.getLabelWidth(
                 this.getTicks(),
                 this.formatter,

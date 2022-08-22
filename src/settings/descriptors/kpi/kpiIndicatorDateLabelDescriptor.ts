@@ -25,22 +25,16 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import { NumberDescriptorBase } from "../numberDescriptorBase";
+import { KPIIndicatorLabelDescriptor } from "./kpiIndicatorLabelDescriptor";
 
-export class KPIIndicatorDescriptor extends NumberDescriptorBase {
-    fontColor = new formattingSettings.ColorPicker({
-        name: "fontColor",
-        displayName: "Font Color",
-        value: { value: "#333333" }
-    });
+export class KPIIndicatorDateLabelDescriptor extends KPIIndicatorLabelDescriptor {
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport);
 
-    constructor(viewport?: powerbi.IViewport, shouldPropertiesBeHiddenByType: boolean = false) {
-        super(viewport, shouldPropertiesBeHiddenByType);
-
-        this.displayUnits = 1;
-        this.fontSize = 12;
-        this.font.bold.value = true;
+        this.name = "dateLabelKPI"
+        this.displayName = "KPI Date Label"
+        this.slices.push(this.font, this.precision, this.fontColor)
     }
 }
+ 

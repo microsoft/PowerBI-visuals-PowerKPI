@@ -1,33 +1,41 @@
 {
-  "dataRoles": [{
-    "name": "Axis",
-    "displayName": "Axis",
-    "kind": "Grouping"
-  }, {
-    "name": "SeriesColumn",
-    "displayName": "Series",
-    "kind": "Grouping"
-  }, {
-    "name": "Values",
-    "displayName": "Values",
-    "kind": "Measure"
-  }, {
-    "name": "SecondaryValues",
-    "displayName": "Secondary Values",
-    "kind": "Measure"
-  }, {
-    "name": "KPI",
-    "displayName": "KPI Indicator Index",
-    "kind": "Measure"
-  }, {
-    "name": "KPIIndicatorValue",
-    "displayName": "KPI Indicator Value",
-    "kind": "Measure"
-  }, {
-    "name": "SecondKPIIndicatorValue",
-    "displayName": "Second KPI Indicator Value",
-    "kind": "Measure"
-  }],
+  "dataRoles": [
+    {
+      "name": "Axis",
+      "displayName": "Axis",
+      "kind": "Grouping"
+    },
+    {
+      "name": "SeriesColumn",
+      "displayName": "Series",
+      "kind": "Grouping"
+    },
+    {
+      "name": "Values",
+      "displayName": "Values",
+      "kind": "Measure"
+    },
+    {
+      "name": "SecondaryValues",
+      "displayName": "Secondary Values",
+      "kind": "Measure"
+    },
+    {
+      "name": "KPI",
+      "displayName": "KPI Indicator Index",
+      "kind": "Measure"
+    },
+    {
+      "name": "KPIIndicatorValue",
+      "displayName": "KPI Indicator Value",
+      "kind": "Measure"
+    },
+    {
+      "name": "SecondKPIIndicatorValue",
+      "displayName": "Second KPI Indicator Value",
+      "kind": "Measure"
+    }
+  ],
   "objects": {
     "layout": {
       "displayName": "Layout",
@@ -47,20 +55,24 @@
         "layout": {
           "displayName": "Layout",
           "type": {
-            "enumeration": [{
-              "value": "Top",
-              "displayName": "Top"
-            }, {
-              "value": "Left",
-              "displayName": "Left"
-            }, {
-              "value": "Bottom",
-              "displayName": "Bottom"
-            }, {
-              "value": "Right",
-              "displayName": "Right"
-            }]
-
+            "enumeration": [
+              {
+                "value": "Top",
+                "displayName": "Top"
+              },
+              {
+                "value": "Left",
+                "displayName": "Left"
+              },
+              {
+                "value": "Bottom",
+                "displayName": "Bottom"
+              },
+              {
+                "value": "Right",
+                "displayName": "Right"
+              }
+            ]
           }
         }
       }
@@ -84,6 +96,18 @@
             "text": true
           },
           "suppressFormatPainterCopy": true
+        },
+        "fontBold": {
+          "displayName": "Bold",
+          "type": {
+            "bool": true
+          }
+        },
+        "fontItalic": {
+          "displayName": "Italic",
+          "type": {
+            "bool": true
+          }
         },
         "fontColor": {
           "displayName": "Font Color",
@@ -127,7 +151,8 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         }
@@ -150,68 +175,88 @@
         "shape_0": {
           "displayName": "    Indicator",
           "type": {
-            "enumeration": [{
-              "value": "circle-full",
-              "displayName": "Circle"
-            }, {
-              "value": "triangle",
-              "displayName": "Triangle"
-            }, {
-              "value": "rhombus",
-              "displayName": "Diamond"
-            }, {
-              "value": "square",
-              "displayName": "Square"
-            }, {
-              "value": "flag",
-              "displayName": "Flag"
-            }, {
-              "value": "exclamation",
-              "displayName": "Exclamation"
-            }, {
-              "value": "checkmark",
-              "displayName": "Checkmark"
-            }, {
-              "value": "arrow-up",
-              "displayName": "Arrow Up"
-            }, {
-              "value": "arrow-right-up",
-              "displayName": "Arrow Right Up"
-            }, {
-              "value": "arrow-right-down",
-              "displayName": "Arrow Right Down"
-            }, {
-              "value": "arrow-down",
-              "displayName": "Arrow Down"
-            }, {
-              "value": "caret-up",
-              "displayName": "Caret Up"
-            }, {
-              "value": "caret-down",
-              "displayName": "Caret Down"
-            }, {
-              "value": "circle-empty",
-              "displayName": "Circle Empty"
-            }, {
-              "value": "circle-x",
-              "displayName": "Circle X"
-            }, {
-              "value": "circle-exclamation",
-              "displayName": "Circle Exclamation"
-            }, {
-              "value": "circle-checkmark",
-              "displayName": "Circle Checkmark"
-            }, {
-              "value": "x",
-              "displayName": "X"
-            }, {
-              "value": "star-empty",
-              "displayName": "Star Empty"
-            }, {
-              "value": "star-full",
-              "displayName": "Star Full"
-            }]
-
+            "enumeration": [
+              {
+                "value": "circle-full",
+                "displayName": "Circle"
+              },
+              {
+                "value": "triangle",
+                "displayName": "Triangle"
+              },
+              {
+                "value": "rhombus",
+                "displayName": "Diamond"
+              },
+              {
+                "value": "square",
+                "displayName": "Square"
+              },
+              {
+                "value": "flag",
+                "displayName": "Flag"
+              },
+              {
+                "value": "exclamation",
+                "displayName": "Exclamation"
+              },
+              {
+                "value": "checkmark",
+                "displayName": "Checkmark"
+              },
+              {
+                "value": "arrow-up",
+                "displayName": "Arrow Up"
+              },
+              {
+                "value": "arrow-right-up",
+                "displayName": "Arrow Right Up"
+              },
+              {
+                "value": "arrow-right-down",
+                "displayName": "Arrow Right Down"
+              },
+              {
+                "value": "arrow-down",
+                "displayName": "Arrow Down"
+              },
+              {
+                "value": "caret-up",
+                "displayName": "Caret Up"
+              },
+              {
+                "value": "caret-down",
+                "displayName": "Caret Down"
+              },
+              {
+                "value": "circle-empty",
+                "displayName": "Circle Empty"
+              },
+              {
+                "value": "circle-x",
+                "displayName": "Circle X"
+              },
+              {
+                "value": "circle-exclamation",
+                "displayName": "Circle Exclamation"
+              },
+              {
+                "value": "circle-checkmark",
+                "displayName": "Circle Checkmark"
+              },
+              {
+                "value": "x",
+                "displayName": "X"
+              },
+              {
+                "value": "star-empty",
+                "displayName": "Star Empty"
+              },
+              {
+                "value": "star-full",
+                "displayName": "Star Full"
+              }
+            ]
           }
         },
         "kpiIndex_0": {
@@ -233,68 +278,88 @@
         "shape_1": {
           "displayName": "    Indicator",
           "type": {
-            "enumeration": [{
-              "value": "circle-full",
-              "displayName": "Circle"
-            }, {
-              "value": "triangle",
-              "displayName": "Triangle"
-            }, {
-              "value": "rhombus",
-              "displayName": "Diamond"
-            }, {
-              "value": "square",
-              "displayName": "Square"
-            }, {
-              "value": "flag",
-              "displayName": "Flag"
-            }, {
-              "value": "exclamation",
-              "displayName": "Exclamation"
-            }, {
-              "value": "checkmark",
-              "displayName": "Checkmark"
-            }, {
-              "value": "arrow-up",
-              "displayName": "Arrow Up"
-            }, {
-              "value": "arrow-right-up",
-              "displayName": "Arrow Right Up"
-            }, {
-              "value": "arrow-right-down",
-              "displayName": "Arrow Right Down"
-            }, {
-              "value": "arrow-down",
-              "displayName": "Arrow Down"
-            }, {
-              "value": "caret-up",
-              "displayName": "Caret Up"
-            }, {
-              "value": "caret-down",
-              "displayName": "Caret Down"
-            }, {
-              "value": "circle-empty",
-              "displayName": "Circle Empty"
-            }, {
-              "value": "circle-x",
-              "displayName": "Circle X"
-            }, {
-              "value": "circle-exclamation",
-              "displayName": "Circle Exclamation"
-            }, {
-              "value": "circle-checkmark",
-              "displayName": "Circle Checkmark"
-            }, {
-              "value": "x",
-              "displayName": "X"
-            }, {
-              "value": "star-empty",
-              "displayName": "Star Empty"
-            }, {
-              "value": "star-full",
-              "displayName": "Star Full"
-            }]
-
+            "enumeration": [
+              {
+                "value": "circle-full",
+                "displayName": "Circle"
+              },
+              {
+                "value": "triangle",
+                "displayName": "Triangle"
+              },
+              {
+                "value": "rhombus",
+                "displayName": "Diamond"
+              },
+              {
+                "value": "square",
+                "displayName": "Square"
+              },
+              {
+                "value": "flag",
+                "displayName": "Flag"
+              },
+              {
+                "value": "exclamation",
+                "displayName": "Exclamation"
+              },
+              {
+                "value": "checkmark",
+                "displayName": "Checkmark"
+              },
+              {
+                "value": "arrow-up",
+                "displayName": "Arrow Up"
+              },
+              {
+                "value": "arrow-right-up",
+                "displayName": "Arrow Right Up"
+              },
+              {
+                "value": "arrow-right-down",
+                "displayName": "Arrow Right Down"
+              },
+              {
+                "value": "arrow-down",
+                "displayName": "Arrow Down"
+              },
+              {
+                "value": "caret-up",
+                "displayName": "Caret Up"
+              },
+              {
+                "value": "caret-down",
+                "displayName": "Caret Down"
+              },
+              {
+                "value": "circle-empty",
+                "displayName": "Circle Empty"
+              },
+              {
+                "value": "circle-x",
+                "displayName": "Circle X"
+              },
+              {
+                "value": "circle-exclamation",
+                "displayName": "Circle Exclamation"
+              },
+              {
+                "value": "circle-checkmark",
+                "displayName": "Circle Checkmark"
+              },
+              {
+                "value": "x",
+                "displayName": "X"
+              },
+              {
+                "value": "star-empty",
+                "displayName": "Star Empty"
+              },
+              {
+                "value": "star-full",
+                "displayName": "Star Full"
+              }
+            ]
           }
         },
         "kpiIndex_1": {
@@ -316,67 +381,88 @@
         "shape_2": {
           "displayName": "    Indicator",
           "type": {
-            "enumeration": [{
-              "value": "circle-full",
-              "displayName": "Circle"
-            }, {
-              "value": "triangle",
-              "displayName": "Triangle"
-            }, {
-              "value": "rhombus",
-              "displayName": "Diamond"
-            }, {
-              "value": "square",
-              "displayName": "Square"
-            }, {
-              "value": "flag",
-              "displayName": "Flag"
-            }, {
-              "value": "exclamation",
-              "displayName": "Exclamation"
-            }, {
-              "value": "checkmark",
-              "displayName": "Checkmark"
-            }, {
-              "value": "arrow-up",
-              "displayName": "Arrow Up"
-            }, {
-              "value": "arrow-right-up",
-              "displayName": "Arrow Right Up"
-            }, {
-              "value": "arrow-right-down",
-              "displayName": "Arrow Right Down"
-            }, {
-              "value": "arrow-down",
-              "displayName": "Arrow Down"
-            }, {
-              "value": "caret-up",
-              "displayName": "Caret Up"
-            }, {
-              "value": "caret-down",
-              "displayName": "Caret Down"
-            }, {
-              "value": "circle-empty",
-              "displayName": "Circle Empty"
-            }, {
-              "value": "circle-x",
-              "displayName": "Circle X"
-            }, {
-              "value": "circle-exclamation",
-              "displayName": "Circle Exclamation"
-            }, {
-              "value": "circle-checkmark",
-              "displayName": "Circle Checkmark"
-            }, {
-              "value": "x",
-              "displayName": "X"
-            }, {
-              "value": "star-empty",
-              "displayName": "Star Empty"
-            }, {
-              "value": "star-full",
-              "displayName": "Star Full"
-            }]
+            "enumeration": [
+              {
+                "value": "circle-full",
+                "displayName": "Circle"
+              },
+              {
+                "value": "triangle",
+                "displayName": "Triangle"
+              },
+              {
+                "value": "rhombus",
+                "displayName": "Diamond"
+              },
+              {
+                "value": "square",
+                "displayName": "Square"
+              },
+              {
+                "value": "flag",
+                "displayName": "Flag"
+              },
+              {
+                "value": "exclamation",
+                "displayName": "Exclamation"
+              },
+              {
+                "value": "checkmark",
+                "displayName": "Checkmark"
+              },
+              {
+                "value": "arrow-up",
+                "displayName": "Arrow Up"
+              },
+              {
+                "value": "arrow-right-up",
+                "displayName": "Arrow Right Up"
+              },
+              {
+                "value": "arrow-right-down",
+                "displayName": "Arrow Right Down"
+              },
+              {
+                "value": "arrow-down",
+                "displayName": "Arrow Down"
+              },
+              {
+                "value": "caret-up",
+                "displayName": "Caret Up"
+              },
+              {
+                "value": "caret-down",
+                "displayName": "Caret Down"
+              },
+              {
+                "value": "circle-empty",
+                "displayName": "Circle Empty"
+              },
+              {
+                "value": "circle-x",
+                "displayName": "Circle X"
+              },
+              {
+                "value": "circle-exclamation",
+                "displayName": "Circle Exclamation"
+              },
+              {
+                "value": "circle-checkmark",
+                "displayName": "Circle Checkmark"
+              },
+              {
+                "value": "x",
+                "displayName": "X"
+              },
+              {
+                "value": "star-empty",
+                "displayName": "Star Empty"
+              },
+              {
+                "value": "star-full",
+                "displayName": "Star Full"
+              }
+            ]
           }
         },
         "kpiIndex_2": {
@@ -398,67 +484,88 @@
         "shape_3": {
           "displayName": "    Indicator",
           "type": {
-            "enumeration": [{
-              "value": "circle-full",
-              "displayName": "Circle"
-            }, {
-              "value": "triangle",
-              "displayName": "Triangle"
-            }, {
-              "value": "rhombus",
-              "displayName": "Diamond"
-            }, {
-              "value": "square",
-              "displayName": "Square"
-            }, {
-              "value": "flag",
-              "displayName": "Flag"
-            }, {
-              "value": "exclamation",
-              "displayName": "Exclamation"
-            }, {
-              "value": "checkmark",
-              "displayName": "Checkmark"
-            }, {
-              "value": "arrow-up",
-              "displayName": "Arrow Up"
-            }, {
-              "value": "arrow-right-up",
-              "displayName": "Arrow Right Up"
-            }, {
-              "value": "arrow-right-down",
-              "displayName": "Arrow Right Down"
-            }, {
-              "value": "arrow-down",
-              "displayName": "Arrow Down"
-            }, {
-              "value": "caret-up",
-              "displayName": "Caret Up"
-            }, {
-              "value": "caret-down",
-              "displayName": "Caret Down"
-            }, {
-              "value": "circle-empty",
-              "displayName": "Circle Empty"
-            }, {
-              "value": "circle-x",
-              "displayName": "Circle X"
-            }, {
-              "value": "circle-exclamation",
-              "displayName": "Circle Exclamation"
-            }, {
-              "value": "circle-checkmark",
-              "displayName": "Circle Checkmark"
-            }, {
-              "value": "x",
-              "displayName": "X"
-            }, {
-              "value": "star-empty",
-              "displayName": "Star Empty"
-            }, {
-              "value": "star-full",
-              "displayName": "Star Full"
-            }]
+            "enumeration": [
+              {
+                "value": "circle-full",
+                "displayName": "Circle"
+              },
+              {
+                "value": "triangle",
+                "displayName": "Triangle"
+              },
+              {
+                "value": "rhombus",
+                "displayName": "Diamond"
+              },
+              {
+                "value": "square",
+                "displayName": "Square"
+              },
+              {
+                "value": "flag",
+                "displayName": "Flag"
+              },
+              {
+                "value": "exclamation",
+                "displayName": "Exclamation"
+              },
+              {
+                "value": "checkmark",
+                "displayName": "Checkmark"
+              },
+              {
+                "value": "arrow-up",
+                "displayName": "Arrow Up"
+              },
+              {
+                "value": "arrow-right-up",
+                "displayName": "Arrow Right Up"
+              },
+              {
+                "value": "arrow-right-down",
+                "displayName": "Arrow Right Down"
+              },
+              {
+                "value": "arrow-down",
+                "displayName": "Arrow Down"
+              },
+              {
+                "value": "caret-up",
+                "displayName": "Caret Up"
+              },
+              {
+                "value": "caret-down",
+                "displayName": "Caret Down"
+              },
+              {
+                "value": "circle-empty",
+                "displayName": "Circle Empty"
+              },
+              {
+                "value": "circle-x",
+                "displayName": "Circle X"
+              },
+              {
+                "value": "circle-exclamation",
+                "displayName": "Circle Exclamation"
+              },
+              {
+                "value": "circle-checkmark",
+                "displayName": "Circle Checkmark"
+              },
+              {
+                "value": "x",
+                "displayName": "X"
+              },
+              {
+                "value": "star-empty",
+                "displayName": "Star Empty"
+              },
+              {
+                "value": "star-full",
+                "displayName": "Star Full"
+              }
+            ]
           }
         },
         "kpiIndex_3": {
@@ -480,67 +587,88 @@
         "shape_4": {
           "displayName": "    Indicator",
           "type": {
-            "enumeration": [{
-              "value": "circle-full",
-              "displayName": "Circle"
-            }, {
-              "value": "triangle",
-              "displayName": "Triangle"
-            }, {
-              "value": "rhombus",
-              "displayName": "Diamond"
-            }, {
-              "value": "square",
-              "displayName": "Square"
-            }, {
-              "value": "flag",
-              "displayName": "Flag"
-            }, {
-              "value": "exclamation",
-              "displayName": "Exclamation"
-            }, {
-              "value": "checkmark",
-              "displayName": "Checkmark"
-            }, {
-              "value": "arrow-up",
-              "displayName": "Arrow Up"
-            }, {
-              "value": "arrow-right-up",
-              "displayName": "Arrow Right Up"
-            }, {
-              "value": "arrow-right-down",
-              "displayName": "Arrow Right Down"
-            }, {
-              "value": "arrow-down",
-              "displayName": "Arrow Down"
-            }, {
-              "value": "caret-up",
-              "displayName": "Caret Up"
-            }, {
-              "value": "caret-down",
-              "displayName": "Caret Down"
-            }, {
-              "value": "circle-empty",
-              "displayName": "Circle Empty"
-            }, {
-              "value": "circle-x",
-              "displayName": "Circle X"
-            }, {
-              "value": "circle-exclamation",
-              "displayName": "Circle Exclamation"
-            }, {
-              "value": "circle-checkmark",
-              "displayName": "Circle Checkmark"
-            }, {
-              "value": "x",
-              "displayName": "X"
-            }, {
-              "value": "star-empty",
-              "displayName": "Star Empty"
-            }, {
-              "value": "star-full",
-              "displayName": "Star Full"
-            }]
+            "enumeration": [
+              {
+                "value": "circle-full",
+                "displayName": "Circle"
+              },
+              {
+                "value": "triangle",
+                "displayName": "Triangle"
+              },
+              {
+                "value": "rhombus",
+                "displayName": "Diamond"
+              },
+              {
+                "value": "square",
+                "displayName": "Square"
+              },
+              {
+                "value": "flag",
+                "displayName": "Flag"
+              },
+              {
+                "value": "exclamation",
+                "displayName": "Exclamation"
+              },
+              {
+                "value": "checkmark",
+                "displayName": "Checkmark"
+              },
+              {
+                "value": "arrow-up",
+                "displayName": "Arrow Up"
+              },
+              {
+                "value": "arrow-right-up",
+                "displayName": "Arrow Right Up"
+              },
+              {
+                "value": "arrow-right-down",
+                "displayName": "Arrow Right Down"
+              },
+              {
+                "value": "arrow-down",
+                "displayName": "Arrow Down"
+              },
+              {
+                "value": "caret-up",
+                "displayName": "Caret Up"
+              },
+              {
+                "value": "caret-down",
+                "displayName": "Caret Down"
+              },
+              {
+                "value": "circle-empty",
+                "displayName": "Circle Empty"
+              },
+              {
+                "value": "circle-x",
+                "displayName": "Circle X"
+              },
+              {
+                "value": "circle-exclamation",
+                "displayName": "Circle Exclamation"
+              },
+              {
+                "value": "circle-checkmark",
+                "displayName": "Circle Checkmark"
+              },
+              {
+                "value": "x",
+                "displayName": "X"
+              },
+              {
+                "value": "star-empty",
+                "displayName": "Star Empty"
+              },
+              {
+                "value": "star-full",
+                "displayName": "Star Full"
+              }
+            ]
           }
         },
         "kpiIndex_4": {
@@ -566,13 +694,16 @@
         "position": {
           "displayName": "Position",
           "type": {
-            "enumeration": [{
-              "value": "Left",
-              "displayName": "Left"
-            }, {
-              "value": "Right",
-              "displayName": "Right"
-            }]
+            "enumeration": [
+              {
+                "value": "Left",
+                "displayName": "Left"
+              },
+              {
+                "value": "Right",
+                "displayName": "Right"
+              }
+            ]
           }
         },
         "shouldBackgroundColorMatchKpiColor": {
@@ -610,13 +741,13 @@
             }
           }
         },
-        "isBold": {
+        "fontBold": {
           "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
-        "isItalic": {
+        "fontItalic": {
           "displayName": "Italic",
           "type": {
             "bool": true
@@ -626,7 +757,8 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         },
@@ -649,7 +781,6 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -690,13 +821,13 @@
             }
           }
         },
-        "isBold": {
+        "fontBold": {
           "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
-        "isItalic": {
+        "fontItalic": {
           "displayName": "Italic",
           "type": {
             "bool": true
@@ -706,7 +837,8 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         },
@@ -745,13 +877,13 @@
             }
           }
         },
-        "isBold": {
+        "fontBold": {
           "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
-        "isItalic": {
+        "fontItalic": {
           "displayName": "Italic",
           "type": {
             "bool": true
@@ -761,7 +893,8 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         },
@@ -784,7 +917,6 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -819,13 +951,13 @@
             }
           }
         },
-        "isBold": {
+        "fontBold": {
           "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
-        "isItalic": {
+        "fontItalic": {
           "displayName": "Italic",
           "type": {
             "bool": true
@@ -835,7 +967,8 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         },
@@ -874,13 +1007,13 @@
             }
           }
         },
-        "isBold": {
+        "fontBold": {
           "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
-        "isItalic": {
+        "fontItalic": {
           "displayName": "Italic",
           "type": {
             "bool": true
@@ -890,7 +1023,8 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         },
@@ -907,7 +1041,6 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -942,13 +1075,13 @@
             }
           }
         },
-        "isBold": {
+        "fontBold": {
           "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
-        "isItalic": {
+        "fontItalic": {
           "displayName": "Italic",
           "type": {
             "bool": true
@@ -958,7 +1091,8 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         }
@@ -991,13 +1125,13 @@
             }
           }
         },
-        "isBold": {
+        "fontBold": {
           "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
-        "isItalic": {
+        "fontItalic": {
           "displayName": "Italic",
           "type": {
             "bool": true
@@ -1007,7 +1141,8 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         },
@@ -1030,7 +1165,6 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1065,13 +1199,13 @@
             }
           }
         },
-        "isBold": {
+        "fontBold": {
           "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
-        "isItalic": {
+        "fontItalic": {
           "displayName": "Italic",
           "type": {
             "bool": true
@@ -1081,7 +1215,8 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         }
@@ -1120,7 +1255,6 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1138,17 +1272,18 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         },
-        "isBold": {
+        "fontBold": {
           "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
-        "isItalic": {
+        "fontItalic": {
           "displayName": "Italic",
           "type": {
             "bool": true
@@ -1191,13 +1326,16 @@
         "lineType": {
           "displayName": "Type",
           "type": {
-            "enumeration": [{
-              "value": "line",
-              "displayName": "Line"
-            }, {
-              "value": "area",
-              "displayName": "Area"
-            }]
+            "enumeration": [
+              {
+                "value": "line",
+                "displayName": "Line"
+              },
+              {
+                "value": "area",
+                "displayName": "Area"
+              }
+            ]
           }
         },
         "thickness": {
@@ -1221,70 +1359,90 @@
         "lineStyle": {
           "displayName": "Style",
           "type": {
-            "enumeration": [{
-              "value": "solidLine",
-              "displayName": "Solid"
-            }, {
-              "value": "dottedLine",
-              "displayName": "Dotted"
-            }, {
-              "value": "dashedLine",
-              "displayName": "Dashed"
-            }, {
-              "value": "dotDashedLine",
-              "displayName": "Dot-dashed"
-            }]
+            "enumeration": [
+              {
+                "value": "solidLine",
+                "displayName": "Solid"
+              },
+              {
+                "value": "dottedLine",
+                "displayName": "Dotted"
+              },
+              {
+                "value": "dashedLine",
+                "displayName": "Dashed"
+              },
+              {
+                "value": "dotDashedLine",
+                "displayName": "Dot-dashed"
+              }
+            ]
           }
         },
         "interpolation": {
           "displayName": "Interpolation",
           "type": {
-            "enumeration": [{
-              "value": "linear",
-              "displayName": "Linear"
-            }, {
-              "value": "step-before",
-              "displayName": "Step-before"
-            }, {
-              "value": "step-after",
-              "displayName": "Step-after"
-            }, {
-              "value": "basis",
-              "displayName": "Basis"
-            }, {
-              "value": "basis-open",
-              "displayName": "Basis-open"
-            }, {
-              "value": "basis-closed",
-              "displayName": "Basis-closed"
-            }, {
-              "value": "cardinal",
-              "displayName": "Cardinal"
-            }, {
-              "value": "cardinal-open",
-              "displayName": "Cardinal-open"
-            }, {
-              "value": "cardinal-closed",
-              "displayName": "Cardinal-closed"
-            }, {
-              "value": "monotone",
-              "displayName": "Monotone"
-            }]
+            "enumeration": [
+              {
+                "value": "linear",
+                "displayName": "Linear"
+              },
+              {
+                "value": "step-before",
+                "displayName": "Step-before"
+              },
+              {
+                "value": "step-after",
+                "displayName": "Step-after"
+              },
+              {
+                "value": "basis",
+                "displayName": "Basis"
+              },
+              {
+                "value": "basis-open",
+                "displayName": "Basis-open"
+              },
+              {
+                "value": "basis-closed",
+                "displayName": "Basis-closed"
+              },
+              {
+                "value": "cardinal",
+                "displayName": "Cardinal"
+              },
+              {
+                "value": "cardinal-open",
+                "displayName": "Cardinal-open"
+              },
+              {
+                "value": "cardinal-closed",
+                "displayName": "Cardinal-closed"
+              },
+              {
+                "value": "monotone",
+                "displayName": "Monotone"
+              }
+            ]
           }
         },
         "interpolationWithColorizedLine": {
           "displayName": "Interpolation",
           "type": {
-            "enumeration": [{
-              "value": "linear",
-              "displayName": "Linear"
-            }, {
-              "value": "step-before",
-              "displayName": "Step-before"
-            }, {
-              "value": "step-after",
-              "displayName": "Step-after"
-            }]
+            "enumeration": [
+              {
+                "value": "linear",
+                "displayName": "Linear"
+              },
+              {
+                "value": "step-before",
+                "displayName": "Step-before"
+              },
+              {
+                "value": "step-after",
+                "displayName": "Step-after"
+              }
+            ]
           }
         }
       }
@@ -1309,19 +1467,24 @@
       "properties": {
         "lineStyle": {
           "type": {
-            "enumeration": [{
-              "value": "solidLine",
-              "displayName": "Solid"
-            }, {
-              "value": "dottedLine",
-              "displayName": "Dotted"
-            }, {
-              "value": "dashedLine",
-              "displayName": "Dashed"
-            }, {
-              "value": "dotDashedLine",
-              "displayName": "Dot-dashed"
-            }]
+            "enumeration": [
+              {
+                "value": "solidLine",
+                "displayName": "Solid"
+              },
+              {
+                "value": "dottedLine",
+                "displayName": "Dotted"
+              },
+              {
+                "value": "dashedLine",
+                "displayName": "Dashed"
+              },
+              {
+                "value": "dotDashedLine",
+                "displayName": "Dot-dashed"
+              }
+            ]
           }
         }
       }
@@ -1349,31 +1512,40 @@
         "position": {
           "displayName": "Position",
           "type": {
-            "enumeration": [{
-              "value": "Top",
-              "displayName": "Top"
-            }, {
-              "value": "Bottom",
-              "displayName": "Bottom"
-            }, {
-              "value": "Left",
-              "displayName": "Left"
-            }, {
-              "value": "Right",
-              "displayName": "Right"
-            }, {
-              "value": "TopCenter",
-              "displayName": "Top Center"
-            }, {
-              "value": "BottomCenter",
-              "displayName": "Bottom Center"
-            }, {
-              "value": "LeftCenter",
-              "displayName": "Left Center"
-            }, {
-              "value": "RightCenter",
-              "displayName": "Right Center"
-            }]
+            "enumeration": [
+              {
+                "value": "Top",
+                "displayName": "Top"
+              },
+              {
+                "value": "Bottom",
+                "displayName": "Bottom"
+              },
+              {
+                "value": "Left",
+                "displayName": "Left"
+              },
+              {
+                "value": "Right",
+                "displayName": "Right"
+              },
+              {
+                "value": "TopCenter",
+                "displayName": "Top Center"
+              },
+              {
+                "value": "BottomCenter",
+                "displayName": "Bottom Center"
+              },
+              {
+                "value": "LeftCenter",
+                "displayName": "Left Center"
+              },
+              {
+                "value": "RightCenter",
+                "displayName": "Right Center"
+              }
+            ]
           }
         },
         "showTitle": {
@@ -1402,7 +1574,8 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         },
@@ -1417,19 +1590,24 @@
         "style": {
           "displayName": "Style",
           "type": {
-            "enumeration": [{
-              "value": "circle",
-              "displayName": "Circle"
-            }, {
-              "value": "box",
-              "displayName": "Box"
-            }, {
-              "value": "line",
-              "displayName": "Line"
-            }, {
-              "value": "styledLine",
-              "displayName": "Styled Line"
-            }]
+            "enumeration": [
+              {
+                "value": "circle",
+                "displayName": "Circle"
+              },
+              {
+                "value": "box",
+                "displayName": "Box"
+              },
+              {
+                "value": "line",
+                "displayName": "Line"
+              },
+              {
+                "value": "styledLine",
+                "displayName": "Styled Line"
+              }
+            ]
           }
         }
       }
@@ -1466,7 +1644,6 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1491,20 +1668,24 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         },
         "type": {
           "displayName": "Type",
           "type": {
-            "enumeration": [{
-              "value": "0",
-              "displayName": "Continuous"
-            }, {
-              "value": "1",
-              "displayName": "Categorical"
-            }]
+            "enumeration": [
+              {
+                "value": "0",
+                "displayName": "Continuous"
+              },
+              {
+                "value": "1",
+                "displayName": "Categorical"
+              }
+            ]
           }
         }
       }
@@ -1541,7 +1722,6 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1566,13 +1746,13 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         },
         "min": {
           "displayName": "Min",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1580,7 +1760,6 @@
         },
         "max": {
           "displayName": "Max",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1620,7 +1799,6 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1645,13 +1823,13 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true
+              "fontFamily": true,
+              "labelDisplayUnits": false
             }
           }
         },
         "min": {
           "displayName": "Min",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1659,7 +1837,6 @@
         },
         "max": {
           "displayName": "Max",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1773,7 +1950,6 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1816,7 +1992,6 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1859,7 +2034,6 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1902,7 +2076,6 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
-          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1918,157 +2091,173 @@
       }
     }
   },
-  "dataViewMappings": [{
-    "conditions": [{
-      "Axis": {
-        "max": 1
-      },
-      "SeriesColumn": {
-        "max": 0
-      },
-      "Values": {
-        "max": 0
-      },
-      "SecondaryValues": {
-        "max": 0
-      },
-      "KPI": {
-        "max": 0
-      },
-      "KPIIndicatorValue": {
-        "max": 0
-      },
-      "SecondKPIIndicatorValue": {
-        "max": 0
-      }
-    }, {
-      "Axis": {
-        "max": 1
-      },
-      "SeriesColumn": {
-        "max": 1
-      },
-      "Values": {
-        "max": 1
-      },
-      "SecondaryValues": {
-        "max": 1
-      },
-      "KPI": {
-        "max": 0
-      },
-      "KPIIndicatorValue": {
-        "max": 1
-      },
-      "SecondKPIIndicatorValue": {
-        "max": 1
-      }
-    }, {
-      "Axis": {
-        "max": 1
-      },
-      "SeriesColumn": {
-        "max": 0
-      },
-      "Values": {
-        "min": 1
-      },
-      "KPI": {
-        "max": 0
-      },
-      "KPIIndicatorValue": {
-        "max": 1
-      },
-      "SecondKPIIndicatorValue": {
-        "max": 1
-      }
-    }, {
-      "Axis": {
-        "max": 1
-      },
-      "SeriesColumn": {
-        "max": 1
-      },
-      "Values": {
-        "max": 1
-      },
-      "SecondaryValues": {
-        "max": 1
-      },
-      "KPI": {
-        "max": 1
-      },
-      "KPIIndicatorValue": {
-        "max": 1
-      },
-      "SecondKPIIndicatorValue": {
-        "max": 1
-      }
-    }, {
-      "Axis": {
-        "max": 1
-      },
-      "SeriesColumn": {
-        "max": 0
-      },
-      "Values": {
-        "min": 1
-      },
-      "KPI": {
-        "max": 1
-      },
-      "KPIIndicatorValue": {
-        "max": 1
-      },
-      "SecondKPIIndicatorValue": {
-        "max": 1
-      }
-    }],
-    "categorical": {
-      "categories": {
-        "for": {
-          "in": "Axis"
+  "dataViewMappings": [
+    {
+      "conditions": [
+        {
+          "Axis": {
+            "max": 1
+          },
+          "SeriesColumn": {
+            "max": 0
+          },
+          "Values": {
+            "max": 0
+          },
+          "SecondaryValues": {
+            "max": 0
+          },
+          "KPI": {
+            "max": 0
+          },
+          "KPIIndicatorValue": {
+            "max": 0
+          },
+          "SecondKPIIndicatorValue": {
+            "max": 0
+          }
         },
-        "dataReductionAlgorithm": {
-          "window": {
-            "count": 30000
+        {
+          "Axis": {
+            "max": 1
+          },
+          "SeriesColumn": {
+            "max": 1
+          },
+          "Values": {
+            "max": 1
+          },
+          "SecondaryValues": {
+            "max": 1
+          },
+          "KPI": {
+            "max": 0
+          },
+          "KPIIndicatorValue": {
+            "max": 1
+          },
+          "SecondKPIIndicatorValue": {
+            "max": 1
+          }
+        },
+        {
+          "Axis": {
+            "max": 1
+          },
+          "SeriesColumn": {
+            "max": 0
+          },
+          "Values": {
+            "min": 1
+          },
+          "KPI": {
+            "max": 0
+          },
+          "KPIIndicatorValue": {
+            "max": 1
+          },
+          "SecondKPIIndicatorValue": {
+            "max": 1
+          }
+        },
+        {
+          "Axis": {
+            "max": 1
+          },
+          "SeriesColumn": {
+            "max": 1
+          },
+          "Values": {
+            "max": 1
+          },
+          "SecondaryValues": {
+            "max": 1
+          },
+          "KPI": {
+            "max": 1
+          },
+          "KPIIndicatorValue": {
+            "max": 1
+          },
+          "SecondKPIIndicatorValue": {
+            "max": 1
+          }
+        },
+        {
+          "Axis": {
+            "max": 1
+          },
+          "SeriesColumn": {
+            "max": 0
+          },
+          "Values": {
+            "min": 1
+          },
+          "KPI": {
+            "max": 1
+          },
+          "KPIIndicatorValue": {
+            "max": 1
+          },
+          "SecondKPIIndicatorValue": {
+            "max": 1
           }
         }
-      },
-      "values": {
-        "group": {
-          "by": "SeriesColumn",
-          "select": [{
-            "for": {
-              "in": "Values"
+      ],
+      "categorical": {
+        "categories": {
+          "for": {
+            "in": "Axis"
+          },
+          "dataReductionAlgorithm": {
+            "window": {
+              "count": 30000
             }
-          }, {
-            "for": {
-              "in": "SecondaryValues"
-            }
-          }, {
-            "for": {
-              "in": "KPI"
-            }
-          }, {
-            "for": {
-              "in": "KPIIndicatorValue"
-            }
-          }, {
-            "for": {
-              "in": "SecondKPIIndicatorValue"
-            }
-          }]
+          }
+        },
+        "values": {
+          "group": {
+            "by": "SeriesColumn",
+            "select": [
+              {
+                "for": {
+                  "in": "Values"
+                }
+              },
+              {
+                "for": {
+                  "in": "SecondaryValues"
+                }
+              },
+              {
+                "for": {
+                  "in": "KPI"
+                }
+              },
+              {
+                "for": {
+                  "in": "KPIIndicatorValue"
+                }
+              },
+              {
+                "for": {
+                  "in": "SecondKPIIndicatorValue"
+                }
+              }
+            ]
+          }
         }
       }
     }
-  }],
+  ],
   "sorting": {
     "implicit": {
-      "clauses": [{
-        "role": "Axis",
-        "direction": 1
-      }]
+      "clauses": [
+        {
+          "role": "Axis",
+          "direction": 1
+        }
+      ]
     }
   }
 }

@@ -44,7 +44,7 @@ import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresenta
 import { AxisType } from "../settings/descriptors/axis/axisDescriptor";
 import { YAxisDescriptor } from "../settings/descriptors/axis/yAxisDescriptor";
 import { BaseDescriptor } from "../settings/descriptors/descriptor";
-import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorDescriptor";
+import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 import { SeriesSettings } from "../settings/seriesSettings";
 import { Settings } from "../settings/settings";
 import { IConverter } from "./converter";
@@ -90,14 +90,13 @@ export class DataConverter
             dataView,
             viewport,
             hasSelection,
+            settings
         } = options;
 
         const {
             colorPalette,
             createSelectionIdBuilder,
         } = this.constructorOptions;
-
-        const settings: Settings = Settings.parse(dataView) as Settings;
 
         let axisType: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
 
@@ -144,7 +143,7 @@ export class DataConverter
         dataRepresentation.x.metadata = axisCategory.source;
         dataRepresentation.x.name = axisCategory.source.displayName;
 
-        settings.parse(dataView);
+        // settings.populateFrom(dataView);
 
         const axisCategoryType: powerbi.ValueTypeDescriptor = axisCategory.source.type;
 
@@ -197,6 +196,7 @@ export class DataConverter
                 && currentKPIColumn[0].values as number[]
             ) || [];
 
+            debugger
             groupedValues.forEach((groupedValue: powerbi.DataViewValueColumn) => {
                 const format: string = this.getFormatStringByColumn(groupedValue.source);
 

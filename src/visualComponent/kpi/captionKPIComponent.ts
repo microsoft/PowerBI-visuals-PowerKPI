@@ -93,7 +93,7 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
 
         this.size = size;
 
-        isShown = layout.autoHideVisualComponents
+        isShown = layout.autoHideVisualComponents.value
             ? isShown && this.canComponentBeRenderedAtViewport(viewport, layout.getLayout())
             : isShown;
 
@@ -157,7 +157,7 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
                 return (captionItems || []).filter((options: ICaptionKPIComponentOptionsValueSettings) => {
                     return options
                         && options.settings
-                        && options.settings.show;
+                        && options.settings.showElement();
                 });
             });
 
@@ -170,11 +170,11 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
             .attr("class", (options: ICaptionKPIComponentOptionsValueSettings) => {
                 let className: string = selector.className;
 
-                if (options.settings.isBold) {
+                if (options.settings.font.bold.value) {
                     className += " boldStyle";
                 }
 
-                if (options.settings.isItalic) {
+                if (options.settings.font.italic.value) {
                     className += " italicStyle";
                 }
 
@@ -184,11 +184,11 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
 
                 return className;
             })
-            .style("color", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.fontColor)
+            .style("color", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.fontColor.value.value)
             .style("font-size", (options: ICaptionKPIComponentOptionsValueSettings) => {
                 return pixelConverter.toString(pixelConverter.fromPointToPixel(options.settings.fontSize));
             })
-            .style("font-family", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.fontFamily)
+            .style("font-family", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.font.fontFamily.value)
             .text((options: ICaptionKPIComponentOptionsValueSettings) => options.value);
 
         elementSelection
@@ -213,13 +213,13 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
             let height: number = 0;
 
             captionList.forEach((caption: ICaptionKPIComponentOptionsValueSettings) => {
-                isShown = isShown || caption.settings.show;
+                isShown = isShown || caption.settings.showElement();
 
-                if (caption.settings.show) {
+                if (caption.settings.showElement()) {
                     const text: string = caption.value || "M";
 
                     const rect: SVGRect = textMeasurementService.textMeasurementService.measureSvgTextRect({
-                        fontFamily: caption.settings.fontFamily,
+                        fontFamily: caption.settings.font.fontFamily.value,
                         fontSize: pixelConverter.toString(pixelConverter.fromPointToPixel(caption.settings.fontSize)),
                         text,
                     }, text);

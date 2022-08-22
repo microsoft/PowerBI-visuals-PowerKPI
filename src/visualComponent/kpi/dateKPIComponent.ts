@@ -72,7 +72,7 @@ export class DateKPIComponent
                 x.axisType,
                 settings.dateValueKPI.getFormat(),
                 settings.dateValueKPI.displayUnits || x.max,
-                settings.dateValueKPI.precision);
+                settings.dateValueKPI.precision.value);
 
             if (formatter) {
                 formattedValue = formatter.format(axisValue);

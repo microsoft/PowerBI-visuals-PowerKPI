@@ -67,7 +67,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
     public render(options: IVisualComponentRenderOptions): void {
         const { settings: { labels } } = options.data;
 
-        if (labels.show) {
+        if (labels.showElement()) {
             try { // This try-catch protects visual from being destroyed by PBI core team due to changes for core visuals
                 this.renderLabels(options);
             } catch (err) {
@@ -82,8 +82,8 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
         const { viewport, settings: { labels } } = options.data;
 
         this.element
-            .classed(this.italicClassName, labels.isItalic)
-            .classed(this.boldClassName, labels.isBold);
+            .classed(this.italicClassName, labels.font.italic.value)
+            .classed(this.boldClassName, labels.font.bold.value);
 
         const labelLayoutOptions: NewLabelUtils.labelLayout.DataLabelLayoutOptions =
             NewLabelUtils.labelUtils.getDataLabelLayoutOptions(null);
@@ -137,11 +137,11 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
 
         const availableAmountOfLabels: number = NewLabelUtils.labelUtils.getNumberOfLabelsToRender(
             viewport.width,
-            labels.density,
+            labels.density.value,
             this.minimumLabelsToRender,
             this.estimatedLabelWidth);
 
-        const maxNumberOfLabels: number = Math.round(availableAmountOfLabels * labels.density / 100);
+        const maxNumberOfLabels: number = Math.round(availableAmountOfLabels * labels.density.value / 100);
 
         const indexScale: ScaleQuantize<number> = scaleQuantize()
             .domain([0, maxNumberOfLabels])
@@ -155,7 +155,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
             const valueFormatters: valueFormatter.IValueFormatter[] = series.map((seriesGroup: IDataRepresentationSeries) => {
                 return this.getValueFormatter(
                     labelDisplayUnits,
-                    labels.precision,
+                    labels.precision.value,
                     seriesGroup.format);
             });
 
@@ -176,7 +176,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
                     const textProperties: textMeasurementService.TextProperties = this.getTextProperties(
                         formattedValue,
                         fontSizeInPx,
-                        labels.fontFamily);
+                        labels.font.fontFamily.value);
 
                     const textWidth: number = textMeasurementService.textMeasurementService.measureSvgTextWidth(textProperties);
                     const textHeight: number = textMeasurementService.textMeasurementService.estimateSvgTextHeight(textProperties);
@@ -197,14 +197,14 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
 
                     const labelDataPoint: NewLabelUtils.labelLayout.LabelDataPoint = {
                         fontProperties: {
-                            color: labels.color,
-                            family: labels.fontFamily,
+                            color: labels.color.value.value,
+                            family: labels.font.fontFamily.value,
                             size: NewLabelUtils.units.FontSize.createFromPt(labels.fontSize),
                         },
                         identity: null,
-                        insideFill: labels.color,
+                        insideFill: labels.color.value.value,
                         isPreferred: pointIndex === 0 || pointIndex === lastPointIndex,
-                        outsideFill: labels.color,
+                        outsideFill: labels.color.value.value,
                         parentShape,
                         parentType: NewLabelUtils.labelLayout.LabelDataPointParentType.Point,
                         text: formattedValue,

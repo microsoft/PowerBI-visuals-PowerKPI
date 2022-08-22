@@ -24,8 +24,8 @@
  *  THE SOFTWARE.
  */
 
-import { TooltipDescriptor } from "./tooltipDescriptor";
+import { NumberDescriptorBase } from "../numberDescriptorBase";
 
-export class TooltipLabelDescriptor extends TooltipDescriptor {
+export class TooltipLabelDescriptor extends NumberDescriptorBase {
     public label: string = "";
 }

@@ -107,7 +107,7 @@ export class XAxisComponent
             settings,
         } = options;
 
-        if (settings.show) {
+        if (settings.showElement()) {
             this.show();
         } else {
             this.hide();
@@ -299,7 +299,7 @@ export class XAxisComponent
 
         if (x.axisType === DataRepresentationTypeEnum.NumberType) {
             minValue = xAxis.displayUnits || x.max;
-            precision = xAxis.precision;
+            precision = xAxis.precision.value;
         } else {
             minValue = x.min;
             maxValue = x.max;

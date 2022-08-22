@@ -25,6 +25,7 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
@@ -47,38 +48,48 @@ export class FontSizeDescriptor
         width: 210,
     };
 
-    private _fontSize: number = this.minFontSize; // This value is in pt.
-
-    constructor(viewport?: powerbi.IViewport) {
-        super(viewport);
-
-        Object.defineProperty(
-            this,
-            "fontSize",
-            {
-                ...Object.getOwnPropertyDescriptor(
-                    FontSizeDescriptor.prototype,
-                    "fontSize",
-                ),
-                configurable: true,
-                enumerable: true,
-            },
-        );
-    }
+    font = new formattingSettings.FontControl({
+        name: "font",
+        displayName: "Font",
+        fontFamily: new formattingSettings.FontPicker({
+            name: "fontFamily",
+            displayName: "Text Color",
+            value: "Segoe UI, wf_segoe-ui_normal, helvetica, arial, sans-serif"
+        }),
+        fontSize: new formattingSettings.NumUpDown({
+            name: "fontSize",
+            displayName: "Text Size",
+            value: this.minFontSize, 
+            options: {
+                minValue: {
+                    type: powerbi.visuals.ValidatorType.Min,
+                    value: this.minFontSize,
+                }
+            }
+        }),
+        bold: new formattingSettings.ToggleSwitch({
+            name: "fontBold",
+            value: false
+        }),
+        italic:  new formattingSettings.ToggleSwitch({
+            name: "fontItalic",
+            value: false
+        })
+    });
 
     public get fontSize(): number {
         if (this.isMinFontSizeApplied) {
             return this.minFontSize;
         }
 
-        return this._fontSize;
+        return this.font.fontSize.value;
     }
 
     public set fontSize(fontSize: number) {
         // Power BI returns numbers as strings for some unknown reason. This is why we convert value to number.
         const parsedFontSize: number = +fontSize;
 
-        this._fontSize = isNaN(parsedFontSize)
+        this.font.fontSize.value = isNaN(parsedFontSize)
             ? this.minFontSize
             : parsedFontSize;
     }
@@ -102,3 +113,4 @@ export class FontSizeDescriptor
             );
     }
 }
+ 

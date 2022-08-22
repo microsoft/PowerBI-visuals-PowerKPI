@@ -38,9 +38,11 @@ import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresenta
 import { DotsDescriptor } from "./descriptors/dotsDescriptor";
 import { FakeTitleDescriptor } from "./descriptors/fakeTitleDescriptor";
 import { KPIIndicatorCustomizableLabelDescriptor } from "./descriptors/kpi/kpiIndicatorCustomizableLabelDescriptor";
-import { KPIIndicatorDescriptor } from "./descriptors/kpi/kpiIndicatorDescriptor";
+import { KPIIndicatorsListDescriptor } from "./descriptors/kpi/kpiIndicatorsListDescriptor";
 import { KPIIndicatorLabelDescriptor } from "./descriptors/kpi/kpiIndicatorLabelDescriptor";
+import { KPIIndicatorDateLabelDescriptor } from "./descriptors/kpi/kpiIndicatorDateLabelDescriptor";
 import { KPIIndicatorValueDescriptor } from "./descriptors/kpi/kpiIndicatorValueDescriptor";
+import { KPIIndicatorDateDescriptor } from "./descriptors/kpi/kpiIndicatorDateDescriptor";
 import { KPIIndicatorValueSignDescriptor } from "./descriptors/kpi/kpiIndicatorValueSignDescriptor";
 import { LabelsDescriptor } from "./descriptors/labelsDescriptor";
 import { LayoutDescriptor } from "./descriptors/layoutDescriptor";
@@ -52,8 +54,9 @@ import { XAxisDescriptor } from "./descriptors/axis/xAxisDescriptor";
 import { YAxisDescriptor } from "./descriptors/axis/yAxisDescriptor";
 
 import { AxisReferenceLineDescriptor } from "./descriptors/axis/referenceLine/axisReferenceLineDescriptor";
-import { TooltipDescriptor } from "./descriptors/tooltip/tooltipDescriptor";
 import { TooltipLabelDescriptor } from "./descriptors/tooltip/tooltipLabelDescriptor";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+import { NumberDescriptorBase } from "./descriptors/numberDescriptorBase";
 
 const kpiCaptionViewport: powerbi.IViewport = {
     height: 90,
@@ -90,23 +93,32 @@ const axisViewportToIncreaseDensity: powerbi.IViewport = {
     width: 250,
 };
 
-export class Settings extends SettingsBase {
+export class Settings extends formattingSettings.Model {
     public layout: LayoutDescriptor = new LayoutDescriptor();
     public title: FakeTitleDescriptor = new FakeTitleDescriptor();
-    public subtitle: SubtitleDescriptor = new SubtitleDescriptor(subtitleViewport);
-    public kpiIndicator: KPIIndicatorDescriptor = new KPIIndicatorDescriptor(kpiCaptionViewport);
+    public subtitle: SubtitleDescriptor = new SubtitleDescriptor();
+    public kpiIndicator: KPIIndicatorsListDescriptor = new KPIIndicatorsListDescriptor(kpiCaptionViewport);
     public kpiIndicatorValue: KPIIndicatorValueSignDescriptor = new KPIIndicatorValueSignDescriptor(kpiCaptionViewport);
     public kpiIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
         kpiLabelViewport,
+        "KPIIndicatorLabel",
+        "KPI Indicator Label"
     );
-    public secondKPIIndicatorValue: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport);
+    public secondKPIIndicatorValue: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(
+        kpiCaptionViewport, 
+        false, 
+        "secondKPIIndicatorValue", 
+        "Second KPI Indicator Value"
+    );
     public secondKPIIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
         kpiLabelViewport,
+        "secondKPIIndicatorLabel",
+        "Second KPI Indicator Label"
     );
-    public actualValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport);
-    public actualLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport);
-    public dateValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport, true);
-    public dateLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport);
+    public actualValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport, false, "actualValueKPI", "KPI Actual Value");
+    public actualLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport, "actualLabelKPI", "KPI Actual Label");
+    public dateValueKPI: KPIIndicatorDateDescriptor = new KPIIndicatorDateDescriptor(kpiCaptionViewport, true);
+    public dateLabelKPI: KPIIndicatorDateLabelDescriptor = new KPIIndicatorDateLabelDescriptor(kpiLabelViewport);
     public labels: LabelsDescriptor = new LabelsDescriptor(LabelsViewport);
     public line: LineDescriptor = new LineDescriptor();
     public dots: DotsDescriptor = new DotsDescriptor();
@@ -117,11 +129,24 @@ export class Settings extends SettingsBase {
     public referenceLineOfXAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(false);
     public referenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor();
     public secondaryReferenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(false);
-    public tooltipLabel: TooltipDescriptor = new TooltipDescriptor(undefined, true);
+    public tooltipLabel: NumberDescriptorBase = new NumberDescriptorBase(undefined, true);
     public tooltipVariance: TooltipLabelDescriptor = new TooltipLabelDescriptor();
     public secondTooltipVariance: TooltipLabelDescriptor = new TooltipLabelDescriptor();
-    public tooltipValues: TooltipDescriptor = new TooltipDescriptor();
-
+    public tooltipValues: NumberDescriptorBase = new NumberDescriptorBase();
+    cards = [
+        this.layout, this.title, this.subtitle,
+        this.actualValueKPI, this.actualLabelKPI, this.dateValueKPI, this.dateLabelKPI,
+        this.labels,
+        // this.kpiIndicator, this.kpiIndicatorLabel, this.secondKPIIndicatorLabel, this.kpiIndicatorValue,
+        
+        // this.secondKPIIndicatorValue, 
+        
+        this.line, this.dots, this.legend, this.xAxis,
+        this.yAxis, this.secondaryYAxis, this.referenceLineOfXAxis, this.referenceLineOfYAxis,
+        this.secondaryReferenceLineOfYAxis, this.tooltipLabel, this.tooltipVariance, 
+        this.secondTooltipVariance, this.tooltipValues
+    ]
+    
     constructor() {
         super();
 
@@ -136,7 +161,7 @@ export class Settings extends SettingsBase {
 
     public parseSettings(viewport: powerbi.IViewport, type: DataRepresentationTypeEnum): void {
         const options: IDescriptorParserOptions = {
-            isAutoHideBehaviorEnabled: this.layout.autoHideVisualComponents,
+            isAutoHideBehaviorEnabled: this.layout.autoHideVisualComponents.value,
             type,
             viewport,
         };

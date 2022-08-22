@@ -176,7 +176,7 @@ export class KPIComponent extends BaseContainerComponent<
                 kpiLayout = KPIComponentLayoutEnum.kpiComponentColumn;
                 maxWidth = null;
 
-                if (!legend.show
+                if (!legend.showElement()
                     || (LegendPosition[legend.position]
                         && (LegendPosition[legend.position] === LegendPosition.Bottom
                             || LegendPosition[legend.position] === LegendPosition.BottomCenter))

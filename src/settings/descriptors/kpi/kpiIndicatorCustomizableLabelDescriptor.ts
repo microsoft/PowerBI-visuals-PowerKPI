@@ -25,19 +25,31 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { KPIIndicatorLabelDescriptor } from "./kpiIndicatorLabelDescriptor";
 
 export class KPIIndicatorCustomizableLabelDescriptor extends KPIIndicatorLabelDescriptor {
-    public label: string = "";
+    label = new formattingSettings.TextInput({
+        name: "label",
+        displayName: "Label",
+        value: "",
+        placeholder: ""
+    });
+;
 
-    constructor(viewport?: powerbi.IViewport) {
+    constructor(viewport?: powerbi.IViewport, name?: string, displayName?: string) {
         super(viewport);
 
-        this.show = false;
+        this.show.value = false;
+        this.slices.push(this.label)
+        if(name && displayName){
+            this.name = name;
+            this.displayName = displayName;
+        }
     }
 
     public isShown(): boolean {
-        return this.show && !!this.label;
+        return this.showElement() && !!this.label.value;
     }
 }

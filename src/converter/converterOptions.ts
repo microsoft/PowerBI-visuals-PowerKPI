@@ -26,8 +26,11 @@
 
 import powerbi from "powerbi-visuals-api";
 
+import { Settings } from "../settings/settings";
+ 
 export interface IConverterOptions {
     dataView: powerbi.DataView;
     viewport: powerbi.IViewport;
     hasSelection: boolean;
+    settings: Settings;
 }

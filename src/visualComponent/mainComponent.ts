@@ -39,7 +39,7 @@ import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptio
 import { CommonComponent } from "./commonComponent";
 import { SubtitleComponent } from "./subtitleComponent";
 
-import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorDescriptor";
+import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 
 export class MainComponent extends BaseContainerComponent<
     IVisualComponentConstructorOptions,

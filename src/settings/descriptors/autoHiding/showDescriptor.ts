@@ -25,6 +25,7 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { ViewportDescriptor } from "./viewportDescriptor";
 
@@ -37,37 +38,18 @@ export class ShowDescriptor
     extends ViewportDescriptor
     implements IDescriptor {
 
-    private _show: boolean = true;
+    show = new formattingSettings.ToggleSwitch({
+        name: "show",
+        value: true,
+        topLevelToggle: true
+    });
 
     private isAbleToBeShown: boolean = true;
 
     constructor(viewport: powerbi.IViewport = { width: 0, height: 0 }) {
         super(viewport);
 
-        Object.defineProperty(
-            this,
-            "show",
-            {
-                ...Object.getOwnPropertyDescriptor(
-                    ShowDescriptor.prototype,
-                    "show",
-                ),
-                configurable: true,
-                enumerable: true,
-            },
-        );
-    }
-
-    public get show(): boolean {
-        if (!this.isAbleToBeShown) {
-            return false;
-        }
-
-        return this._show;
-    }
-
-    public set show(isShown: boolean) {
-        this._show = isShown;
+        this.slices.push(this.show)
     }
 
     public parse(options: IDescriptorParserOptions): void {
@@ -84,4 +66,10 @@ export class ShowDescriptor
             )
         );
     }
+
+    public showElement(): boolean {
+        console.log(`${this.isAbleToBeShown && this.show.value} --- ${this.displayName}`)
+        return this.isAbleToBeShown && this.show.value
+    }
 }
+ 

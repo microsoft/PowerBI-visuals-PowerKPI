@@ -26,14 +26,18 @@
 
 import powerbi from "powerbi-visuals-api";
 
-import { KPIIndicatorValueDescriptor } from "./kpiIndicatorValueDescriptor";
+import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
 
-export class KPIIndicatorLabelDescriptor extends KPIIndicatorValueDescriptor {
-    constructor(viewport?: powerbi.IViewport) {
+export class KPIIndicatorLabelDescriptor extends KPIIndicatorDescriptor {
+    constructor(viewport?: powerbi.IViewport, name?: string, displayName?: string) {
         super(viewport);
 
-        this.fontColor = "#acacac";
+        this.fontColor.value.value = "#acacac";
         this.fontSize = 9;
-        this.isBold = false;
+        if(name && displayName){
+            this.name = name
+            this.displayName = displayName
+            this.slices.push(this.font, this.fontColor)
+        }
     }
 }

@@ -24,6 +24,7 @@
  *  THE SOFTWARE.
  */
 
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
 
 export enum SubtitleAlignment {
@@ -33,9 +34,32 @@ export enum SubtitleAlignment {
 }
 
 export class SubtitleDescriptor extends FontSizeDescriptor {
-    public titleText: string = "";
-    public fontColor: string = "#A6A6A6";
-    public background: string = "";
-    public alignment: SubtitleAlignment = SubtitleAlignment.left;
-    public fontFamily: string = "'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif";
+    titleText = new formattingSettings.TextInput({
+        name: "titleText",
+        displayName: "Title text",
+        value: "",
+        placeholder: ""
+    });
+
+    fontColor = new formattingSettings.ColorPicker({
+        name: "fontColor",
+        displayName: "Font Color",
+        value: { value: "#A6A6A6" }
+    });
+
+    background = new formattingSettings.ColorPicker({
+        name: "background",
+        displayName: "Background Color",
+        value: { value: "#A6A6A6" }
+    });
+
+    // public alignment: SubtitleAlignment = SubtitleAlignment.left;
+
+    constructor() {
+        super()
+
+        this.name = "subtitle";
+        this.displayName = "Subtitle";
+        this.slices.push(this.titleText, this.fontColor, this.background);
+    }
 }

@@ -25,6 +25,7 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import {
     IDescriptor,
@@ -37,23 +38,49 @@ import {
     DataRepresentationTypeEnum,
 } from "../../dataRepresentation/dataRepresentationType";
 
+import FormattingSettingsSlice = formattingSettings.Slice;
+
 export class NumberDescriptorBase
     extends FontSizeDescriptor
     implements IDescriptor {
-
-    public format: string = null;
+;
     public defaultFormat: string = null;
     public columnFormat: string = null;
 
     public displayUnits: number = 0;
-    public precision: number = null;
 
     protected minPrecision: number = 0;
     protected maxPrecision: number = 17;
 
+    format = new formattingSettings.TextInput({
+        name: "format",
+        displayName: "Format",
+        value: null,
+        placeholder: ""
+    });
+
+    precision = new formattingSettings.NumUpDown({
+        name: "precision",
+        displayName: "Decimal Places",
+        value: 0,
+        options: {
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: this.maxPrecision,
+            },
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: this.minPrecision,
+            },
+        }
+    });
+
     private shouldNumericPropertiesBeHiddenByType: boolean;
 
-    constructor(viewport?: powerbi.IViewport, shouldPropertiesBeHiddenByType: boolean = false) {
+    constructor(
+        viewport?: powerbi.IViewport, 
+        shouldPropertiesBeHiddenByType: boolean = false
+    ) {
         super(viewport);
 
         this.shouldNumericPropertiesBeHiddenByType = shouldPropertiesBeHiddenByType;
@@ -62,13 +89,11 @@ export class NumberDescriptorBase
     public parse(options: IDescriptorParserOptions) {
         super.parse(options);
 
-        this.precision = this.getValidPrecision(this.precision);
-
         this.hidePropertiesByType(options.type);
     }
 
     public getFormat(): string {
-        return this.format || this.columnFormat || this.defaultFormat;
+        return this.format.value || this.columnFormat || this.defaultFormat;
     }
 
     public setColumnFormat(format: string) {
@@ -85,17 +110,6 @@ export class NumberDescriptorBase
         }
 
         return this[key];
-    }
-
-    protected getValidPrecision(precision: number): number {
-        if (isNaN(precision) || precision == null) {
-            return precision;
-        }
-
-        return Math.min(
-            Math.max(this.minPrecision, precision),
-            this.maxPrecision,
-        );
     }
 
     /**
@@ -133,8 +147,8 @@ export class NumberDescriptorBase
             case DataRepresentationTypeEnum.DateType: {
                 this.defaultFormat = "%M/%d/yyyy";
 
-                if (this.format == null) {
-                    this.format = this.defaultFormat;
+                if (this.format.value == null) {
+                    this.format.value = this.defaultFormat;
                 }
 
                 break;

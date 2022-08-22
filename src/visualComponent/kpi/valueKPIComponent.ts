@@ -71,7 +71,7 @@ export class ValueKPIComponent
             const formatter: valueFormatter.IValueFormatter = valueFormatter.valueFormatter.create({
                 displayUnitSystemType: displayUnitSystemType.DisplayUnitSystemType.WholeUnits,
                 format: options.data.series[0].format || this.valueFormat,
-                precision: settings.actualValueKPI.precision,
+                precision: settings.actualValueKPI.precision.value,
                 value: settings.actualValueKPI.displayUnits || series[0].domain.max,
             });
 
@@ -106,14 +106,14 @@ export class ValueKPIComponent
 
         let currentAlign: AlignEnum = AlignEnum.alignCenter;
 
-        if (!settings.dateLabelKPI.show && !settings.dateValueKPI.show) {
+        if (!settings.dateLabelKPI.showElement() && !settings.dateValueKPI.showElement()) {
             currentAlign = AlignEnum.alignLeft;
-        } else if (((!settings.kpiIndicatorValue.show || isNaN(variance[0]))
+        } else if (((!settings.kpiIndicatorValue.showElement() || isNaN(variance[0]))
             && (!settings.kpiIndicatorLabel.isShown()
                 || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex))
             )
-            && (!isVarianceKPIAvailable || !settings.kpiIndicator.show))
-            && (!settings.secondKPIIndicatorValue.show && !settings.secondKPIIndicatorLabel.isShown()
+            && (!isVarianceKPIAvailable || !settings.kpiIndicator.showElement()))
+            && (!settings.secondKPIIndicatorValue.showElement() && !settings.secondKPIIndicatorLabel.isShown()
                 || isNaN(variance[1]))
         ) {
             currentAlign = AlignEnum.alignRight;

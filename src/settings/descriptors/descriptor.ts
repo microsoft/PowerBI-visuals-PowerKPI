@@ -23,10 +23,13 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-
 import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { DataRepresentationTypeEnum } from "../../dataRepresentation/dataRepresentationType";
+
+import FormattingSettingsCard = formattingSettings.Card;
+import FormattingSettingsSlice = formattingSettings.Slice;
 
 export interface IDescriptorParserOptions {
     isAutoHideBehaviorEnabled: boolean;
@@ -41,7 +44,7 @@ export interface IDescriptor {
     shouldKeyBeEnumerated?(key: string): boolean;
 }
 
-export abstract class BaseDescriptor {
+export abstract class BaseDescriptor extends FormattingSettingsCard {
     public applyDefault(defaultSettings: BaseDescriptor) {
         if (!defaultSettings) {
             return;
@@ -73,4 +76,8 @@ export abstract class BaseDescriptor {
 
         return properties;
     }
+    
+    name: string = "";
+    displayName: string = "";
+    slices: Array<FormattingSettingsSlice> = [];
 }

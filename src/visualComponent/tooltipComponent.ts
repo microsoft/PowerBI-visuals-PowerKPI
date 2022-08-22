@@ -31,7 +31,7 @@ import { VarianceConverter } from "../converter/varianceConverter";
 import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
-import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorDescriptor";
+import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
 import { TooltipLabelDescriptor } from "../settings/descriptors/tooltip/tooltipLabelDescriptor";
 import { SeriesSettings } from "../settings/seriesSettings";
@@ -115,10 +115,10 @@ export class TooltipComponent
             },
         } = options;
 
-        if (!tooltipLabel.show
-            && !tooltipVariance.show
-            && !tooltipValues.show
-            && !secondTooltipVariance.show
+        if (!tooltipLabel.showElement()
+            && !tooltipVariance.showElement()
+            && !tooltipValues.showElement()
+            && !secondTooltipVariance.showElement()
         ) {
             this.clear();
 
@@ -165,12 +165,12 @@ export class TooltipComponent
             );
         }
 
-        if (tooltipValues.show) {
+        if (tooltipValues.showElement()) {
             series.forEach((dataSeries: IDataRepresentationSeries) => {
                 const valueFormatterInstance: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
                     dataSeries.format || this.numberFormat,
                     tooltipValues.displayUnits,
-                    tooltipValues.precision,
+                    tooltipValues.precision.value,
                 );
 
                 const dataSeriesPoint: IDataRepresentationPoint = dataSeries
@@ -199,7 +199,7 @@ export class TooltipComponent
             && series[0].points
             && series[0].points[0];
 
-        if (tooltipLabel.show
+        if (tooltipLabel.showElement()
             && point
             && point.x !== undefined
             && point.x !== null
@@ -210,7 +210,7 @@ export class TooltipComponent
                     ? tooltipLabel.displayUnits
                     : undefined,
                 x.axisType === DataRepresentationTypeEnum.NumberType
-                    ? tooltipLabel.precision
+                    ? tooltipLabel.precision.value
                     : undefined);
 
             const text: string = formatter
@@ -274,7 +274,7 @@ export class TooltipComponent
         legendDescriptor?: LegendDescriptor,
         seriesSetting?: SeriesSettings,
     ): IVisualTooltipDataItem {
-        if (!settings.show) {
+        if (!settings.showElement()) {
             return null;
         }
 
@@ -289,7 +289,7 @@ export class TooltipComponent
         const varianceFormatter: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
             settings.getFormat(),
             settings.displayUnits,
-            settings.precision,
+            settings.precision.value,
         );
 
         const lineStyle: string = legendDescriptor && seriesSetting

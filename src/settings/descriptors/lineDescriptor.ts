@@ -93,6 +93,13 @@ export class LineDescriptor
     private minOpacity: number = 15;
     private maxOpacity: number = 100;
 
+    constructor() {
+        super()
+
+        this.name = "line"
+        this.displayName = "Line"
+    }
+
     public convertOpacityToCssFormat(opacity: number): number {
         return opacity / 100;
     }

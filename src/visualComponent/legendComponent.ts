@@ -63,7 +63,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
     public render(options: IVisualComponentRenderOptions): void {
         const { data: { settings: { legend } } } = options;
 
-        if (!this.legend || !legend.show) {
+        if (!this.legend || !legend.showElement()) {
             this.hide();
 
             return;
