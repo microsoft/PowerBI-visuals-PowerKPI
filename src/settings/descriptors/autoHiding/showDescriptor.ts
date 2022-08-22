@@ -68,7 +68,6 @@ export class ShowDescriptor
     }
 
     public showElement(): boolean {
-        console.log(`${this.isAbleToBeShown && this.show.value} --- ${this.displayName}`)
         return this.isAbleToBeShown && this.show.value
     }
 }

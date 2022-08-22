@@ -66,14 +66,11 @@ export class VarianceComponentWithCustomLabel
             },
         } = options.data;
 
-        const varianceSettings: KPIIndicatorDescriptor = {
-            ...secondKPIIndicatorValue,
-        } as KPIIndicatorDescriptor; // TODO: potential issue
+        const varianceSettings: KPIIndicatorDescriptor = this.cloneClass<KPIIndicatorDescriptor>(secondKPIIndicatorValue);
 
-        const labelSettings: KPIIndicatorDescriptor = {
-            ...secondKPIIndicatorLabel,
-        } as unknown as KPIIndicatorDescriptor; // TODO: potential issue
+        const labelSettings: KPIIndicatorDescriptor = this.cloneClass<KPIIndicatorDescriptor>(secondKPIIndicatorLabel);
 
+        debugger
         labelSettings.show.value = secondKPIIndicatorLabel.isShown();
 
         if (isNaN(variance[1])) {
@@ -126,5 +123,11 @@ export class VarianceComponentWithCustomLabel
             ],
             data: options.data,
         });
+    }
+
+    private cloneClass<T>(instance: T): T {
+        const copy = new (instance.constructor as { new (): T })();
+        Object.assign(copy, instance);
+        return copy;
     }
 }

@@ -105,7 +105,7 @@ export class ValueKPIComponent
             && !isNaN(series[0].current.kpiIndex);
 
         let currentAlign: AlignEnum = AlignEnum.alignCenter;
-
+debugger
         if (!settings.dateLabelKPI.showElement() && !settings.dateValueKPI.showElement()) {
             currentAlign = AlignEnum.alignLeft;
         } else if (((!settings.kpiIndicatorValue.showElement() || isNaN(variance[0]))

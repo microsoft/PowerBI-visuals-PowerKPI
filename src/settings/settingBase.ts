@@ -65,22 +65,6 @@ export class SettingsBase extends dataViewObjectsParser.DataViewObjectsParser {
         return this as any;
     }
 
-    public enumerateObjectInstances(
-        options: powerbi.EnumerateVisualObjectInstancesOptions,
-    ): powerbi.VisualObjectInstance[] {
-        const descriptor: BaseDescriptor = this[options.objectName];
-
-        if (!descriptor) {
-            return [];
-        }
-
-        return [{
-            objectName: options.objectName,
-            properties: descriptor.enumerateProperties(),
-            selector: null,
-        }];
-    }
-
     protected processDescriptor(descriptor: IDescriptor): void {
         if (!descriptor || !descriptor.parse) {
             return;

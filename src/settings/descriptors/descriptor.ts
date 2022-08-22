@@ -57,26 +57,6 @@ export abstract class BaseDescriptor extends FormattingSettingsCard {
             });
     }
 
-    public enumerateProperties(): { [propertyName: string]: powerbi.DataViewPropertyValue; } {
-        const properties: { [propertyName: string]: powerbi.DataViewPropertyValue; } = {};
-
-        for (const key in this) {
-            const shouldKeyBeEnumerated: boolean = (this as IDescriptor).shouldKeyBeEnumerated
-                ? (this as IDescriptor).shouldKeyBeEnumerated(key)
-                : this.hasOwnProperty(key);
-
-            if (shouldKeyBeEnumerated) {
-                if ((this as IDescriptor).getValueByKey) {
-                    properties[key] = (this as IDescriptor).getValueByKey(key);
-                } else {
-                    properties[key] = this[key] as any;
-                }
-            }
-        }
-
-        return properties;
-    }
-    
     name: string = "";
     displayName: string = "";
     slices: Array<FormattingSettingsSlice> = [];

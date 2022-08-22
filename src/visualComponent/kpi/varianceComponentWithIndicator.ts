@@ -84,8 +84,8 @@ export class VarianceComponentWithIndicator
         debugger
         const kpiIndicatorSettings: IKPIIndicatorSettings = kpiIndicator.getCurrentKPI(kpiIndex);
 
-        const varianceSettings: KPIIndicatorDescriptor = { ...kpiIndicatorValue } as unknown as KPIIndicatorDescriptor;
-        const kpiLabelSettings: KPIIndicatorDescriptor = { ...kpiIndicatorLabel } as unknown as KPIIndicatorDescriptor;
+        const varianceSettings: KPIIndicatorDescriptor = this.cloneClass<KPIIndicatorDescriptor>(kpiIndicatorValue);
+        const kpiLabelSettings: KPIIndicatorDescriptor = this.cloneClass<KPIIndicatorDescriptor>(kpiIndicatorLabel);
 
         kpiLabelSettings.show.value = kpiIndicatorLabel.isShown();
 
@@ -120,7 +120,6 @@ export class VarianceComponentWithIndicator
         }
 
         let currentAlign: AlignEnum = AlignEnum.alignRight;
-
         if (!dateLabelKPI.showElement()
             && !dateValueKPI.showElement()
             && !actualLabelKPI.showElement()
@@ -209,5 +208,11 @@ export class VarianceComponentWithIndicator
             captions,
             data: options.data,
         });
+    }
+
+    private cloneClass<T>(instance: T): T {
+        const copy = new (instance.constructor as { new (): T })();
+        Object.assign(copy, instance);
+        return copy;
     }
 }

@@ -196,7 +196,6 @@ export class DataConverter
                 && currentKPIColumn[0].values as number[]
             ) || [];
 
-            debugger
             groupedValues.forEach((groupedValue: powerbi.DataViewValueColumn) => {
                 const format: string = this.getFormatStringByColumn(groupedValue.source);
 

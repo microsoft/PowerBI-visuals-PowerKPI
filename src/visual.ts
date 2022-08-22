@@ -97,7 +97,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
         this.interactivityService = interactivitySelectionService.createInteractivitySelectionService(options.host);
 
         const rootElement = options.rootElement && d3Select(options.rootElement) || this.element;
-debugger
+
         this.component = new MainComponent({
             element: this.element,
             eventDispatcher: this.eventDispatcher,

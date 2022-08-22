@@ -40,12 +40,12 @@ export class LabelsDescriptor extends NumberDescriptorBase {
         name: "percentile",
         displayName: "Label Density",
         value: 100,
-        // options: {
-        //     maxValue: {
-        //         type: powerbi.visuals.ValidatorType.Max,
-        //         value: 100,
-        //     }
-        // }
+        options: {
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 100,
+            }
+        }
     });
 
     constructor(viewport: powerbi.IViewport) {
