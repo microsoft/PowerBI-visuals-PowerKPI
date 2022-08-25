@@ -33,7 +33,7 @@ export class KPIIndicatorLabelDescriptor extends KPIIndicatorDescriptor {
         super(viewport);
 
         this.fontColor.value.value = "#acacac";
-        this.fontSize = 9;
+        this.font.fontSize.value = 9;
         if(name && displayName){
             this.name = name
             this.displayName = displayName

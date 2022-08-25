@@ -51,7 +51,7 @@ export class SubtitleComponent extends BaseComponent<IVisualComponentConstructor
     public render(options: IVisualComponentRenderOptions): void {
         const { subtitle } = options.data.settings;
 
-        const data: SubtitleDescriptor[] = subtitle.showElement()
+        const data: SubtitleDescriptor[] = subtitle.isElementShown()
             ? [subtitle]
             : [];
 

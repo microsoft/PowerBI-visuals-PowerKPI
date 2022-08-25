@@ -137,7 +137,7 @@ export class LineComponent extends BaseComponent<IVisualComponentConstructorOpti
             .attr("class", `${this.lineSelector.className} ${lineStyle}`)
             .style("stroke", (gradientGroup: IDataRepresentationPointGradientColor) => gradientGroup.color)
             .style("stroke-width", () => pixelConverter.toString(thickness));
-
+debugger
         this.highlight(series && series.hasSelection);
     }
 

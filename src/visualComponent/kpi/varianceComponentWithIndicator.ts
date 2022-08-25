@@ -81,7 +81,6 @@ export class VarianceComponentWithIndicator
             kpiIndex = current.kpiIndex;
         }
 
-        debugger
         const kpiIndicatorSettings: IKPIIndicatorSettings = kpiIndicator.getCurrentKPI(kpiIndex);
 
         const varianceSettings: KPIIndicatorDescriptor = this.cloneClass<KPIIndicatorDescriptor>(kpiIndicatorValue);
@@ -106,9 +105,9 @@ export class VarianceComponentWithIndicator
         const indicatorSettings: KPIIndicatorDescriptor = new KPIIndicatorDescriptor();
 
         indicatorSettings.fontColor.value.value = kpiIndicatorSettings.color;
-        indicatorSettings.show.value = kpiIndicator.showElement();
+        indicatorSettings.show.value = kpiIndicator.isElementShown();
         indicatorSettings.font.bold.value = false; // This options doesn't make any sense for symbol
-        indicatorSettings.fontSize = kpiIndicator.fontSize;
+        indicatorSettings.font.fontSize.value = kpiIndicator.font.fontSize.value;
         indicatorSettings.font.fontFamily.value = null;
 
         if (isNaN(kpiIndex)) {
@@ -120,13 +119,13 @@ export class VarianceComponentWithIndicator
         }
 
         let currentAlign: AlignEnum = AlignEnum.alignRight;
-        if (!dateLabelKPI.showElement()
-            && !dateValueKPI.showElement()
-            && !actualLabelKPI.showElement()
-            && (!actualValueKPI.showElement() || series[0] && series[0].current && isNaN(series[0] && series[0].current.y))
-            && (!secondKPIIndicatorValue.showElement() && !secondKPIIndicatorLabel.isShown() || isNaN(variance[1]))) {
+        if (!dateLabelKPI.isElementShown()
+            && !dateValueKPI.isElementShown()
+            && !actualLabelKPI.isElementShown()
+            && (!actualValueKPI.isElementShown() || series[0] && series[0].current && isNaN(series[0] && series[0].current.y))
+            && (!secondKPIIndicatorValue.isElementShown() && !secondKPIIndicatorLabel.isShown() || isNaN(variance[1]))) {
             currentAlign = AlignEnum.alignLeft;
-        } else if (!varianceSettings.showElement() && !kpiLabelSettings.showElement()) {
+        } else if (!varianceSettings.isElementShown() && !kpiLabelSettings.isElementShown()) {
             currentAlign = AlignEnum.alignCenter;
         }
 
@@ -147,13 +146,13 @@ export class VarianceComponentWithIndicator
 
         // We should implement a copy method for settings
         fakedIndicatorSettings.fontColor.value.value = indicatorSettings.fontColor.value.value;
-        fakedIndicatorSettings.show.value = indicatorSettings.showElement();
+        fakedIndicatorSettings.show.value = indicatorSettings.isElementShown();
         fakedIndicatorSettings.font.bold.value = indicatorSettings.font.bold.value;
-        fakedIndicatorSettings.fontSize = indicatorSettings.fontSize;
+        fakedIndicatorSettings.font.fontSize.value = indicatorSettings.font.fontSize.value;
 
-        fakedIndicatorSettings.show.value = fakedIndicatorSettings.showElement()
-            && varianceSettings.showElement()
-            && kpiLabelSettings.showElement()
+        fakedIndicatorSettings.show.value = fakedIndicatorSettings.isElementShown()
+            && varianceSettings.isElementShown()
+            && kpiLabelSettings.isElementShown()
             && !!kpiIndicatorLabel.label.value;
 
         const fakedIndicatorCaption: ICaptionKPIComponentOptionsValueSettings = {

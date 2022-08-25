@@ -67,7 +67,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
     public render(options: IVisualComponentRenderOptions): void {
         const { settings: { labels } } = options.data;
 
-        if (labels.showElement()) {
+        if (labels.isElementShown()) {
             try { // This try-catch protects visual from being destroyed by PBI core team due to changes for core visuals
                 this.renderLabels(options);
             } catch (err) {
@@ -125,7 +125,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
             .copy()
             .range([0, viewport.width]);
 
-        const fontSizeInPx: number = pixelConverter.fromPointToPixel(labels.fontSize);
+        const fontSizeInPx: number = pixelConverter.fromPointToPixel(labels.font.fontSize.value);
 
         const pointsLength: number = series
             && series[0]
@@ -199,7 +199,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
                         fontProperties: {
                             color: labels.color.value.value,
                             family: labels.font.fontFamily.value,
-                            size: NewLabelUtils.units.FontSize.createFromPt(labels.fontSize),
+                            size: NewLabelUtils.units.FontSize.createFromPt(labels.font.fontSize.value),
                         },
                         identity: null,
                         insideFill: labels.color.value.value,

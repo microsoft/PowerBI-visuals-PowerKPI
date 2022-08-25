@@ -33,6 +33,7 @@ import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentat
 import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
 import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
+import { LineStyle } from "../settings/descriptors/lineDescriptor";
 import { TooltipLabelDescriptor } from "../settings/descriptors/tooltip/tooltipLabelDescriptor";
 import { SeriesSettings } from "../settings/seriesSettings";
 import { IVisualComponent } from "./base/visualComponent";
@@ -115,10 +116,10 @@ export class TooltipComponent
             },
         } = options;
 
-        if (!tooltipLabel.showElement()
-            && !tooltipVariance.showElement()
-            && !tooltipValues.showElement()
-            && !secondTooltipVariance.showElement()
+        if (!tooltipLabel.isElementShown()
+            && !tooltipVariance.isElementShown()
+            && !tooltipValues.isElementShown()
+            && !secondTooltipVariance.isElementShown()
         ) {
             this.clear();
 
@@ -165,7 +166,7 @@ export class TooltipComponent
             );
         }
 
-        if (tooltipValues.showElement()) {
+        if (tooltipValues.isElementShown()) {
             series.forEach((dataSeries: IDataRepresentationSeries) => {
                 const valueFormatterInstance: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
                     dataSeries.format || this.numberFormat,
@@ -183,10 +184,10 @@ export class TooltipComponent
                     && !isNaN(dataSeriesPoint.y)
                 ) {
                     dataItems.push({
-                        color: dataSeries.settings.line.fillColor,
+                        color: dataSeries.settings.line.fillColor.value.value,
                         displayName: `${dataSeries.name}`,
-                        lineColor: dataSeries.settings.line.fillColor,
-                        lineStyle: legend.getLegendLineStyle(dataSeries.settings.line.lineStyle),
+                        lineColor: dataSeries.settings.line.fillColor.value.value,
+                        lineStyle: legend.getLegendLineStyle(dataSeries.settings.line.lineStyle.value.value as LineStyle),
                         markerShape: legend.getLegendMarkerShape(),
                         value: valueFormatterInstance.format(dataSeriesPoint.y),
                     });
@@ -199,7 +200,7 @@ export class TooltipComponent
             && series[0].points
             && series[0].points[0];
 
-        if (tooltipLabel.showElement()
+        if (tooltipLabel.isElementShown()
             && point
             && point.x !== undefined
             && point.x !== null
@@ -274,7 +275,7 @@ export class TooltipComponent
         legendDescriptor?: LegendDescriptor,
         seriesSetting?: SeriesSettings,
     ): IVisualTooltipDataItem {
-        if (!settings.showElement()) {
+        if (!settings.isElementShown()) {
             return null;
         }
 
@@ -293,7 +294,7 @@ export class TooltipComponent
         );
 
         const lineStyle: string = legendDescriptor && seriesSetting
-            ? legendDescriptor.getLegendLineStyle(seriesSetting.line.lineStyle)
+            ? legendDescriptor.getLegendLineStyle(seriesSetting.line.lineStyle.value.value as LineStyle)
             : undefined;
 
         const markerShape: string = legendDescriptor

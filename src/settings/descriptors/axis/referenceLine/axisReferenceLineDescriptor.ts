@@ -51,4 +51,5 @@ export class AxisReferenceLineDescriptor
             Math.max(this._minThickness, this.thickness),
             this._maxThickness);
     }
+
 }

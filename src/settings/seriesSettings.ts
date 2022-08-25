@@ -32,6 +32,7 @@ import {
     ILineDescriptorBase,
     LineDescriptor,
     LineStyle,
+    lineStyleOptions,
 } from "./descriptors/lineDescriptor";
 
 export class SeriesSettings extends SettingsBase {
@@ -41,27 +42,27 @@ export class SeriesSettings extends SettingsBase {
         if (objects) {
             const lineObject: ILineDescriptorBase = (objects.line as any || {}) as ILineDescriptorBase;
 
-            if (!lineObject.fillColor
+            if (!lineObject.fillColor.value.value
                 && objects.series
                 && objects.series.fillColor
             ) {
-                lineObject.fillColor = objects.series.fillColor as string;
+                lineObject.fillColor.value.value = objects.series.fillColor as string;
             }
 
-            if (!lineObject.lineStyle
+            if (!lineObject.lineStyle.value.value
                 && objects.lineStyle
                 && objects.lineStyle.lineStyle !== undefined
                 && objects.lineStyle.lineStyle !== null
             ) {
-                lineObject.lineStyle = objects.lineStyle.lineStyle as LineStyle;
+                lineObject.lineStyle.value = lineStyleOptions.filter(el => el.value === objects.lineStyle.lineStyle)[0]
             }
 
-            if (!lineObject.thickness
+            if (!lineObject.thickness.value
                 && objects.lineThickness
                 && objects.lineThickness.thickness !== undefined
                 && objects.lineThickness.thickness !== null
             ) {
-                lineObject.thickness = objects.lineThickness.thickness as number;
+                lineObject.thickness.value = objects.lineThickness.thickness as number;
             }
 
             return super.parseObjects({

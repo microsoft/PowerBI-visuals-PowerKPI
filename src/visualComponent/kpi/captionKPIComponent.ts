@@ -94,7 +94,7 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
         this.size = size;
 
         isShown = layout.autoHideVisualComponents.value
-            ? isShown && this.canComponentBeRenderedAtViewport(viewport, layout.getLayout())
+            ? isShown && this.canComponentBeRenderedAtViewport(viewport, layout.layout.value.value as LayoutEnum)
             : isShown;
 
         this.isComponentRendered = isShown;
@@ -157,7 +157,7 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
                 return (captionItems || []).filter((options: ICaptionKPIComponentOptionsValueSettings) => {
                     return options
                         && options.settings
-                        && options.settings.showElement();
+                        && options.settings.isElementShown();
                 });
             });
 
@@ -186,7 +186,7 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
             })
             .style("color", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.fontColor.value.value)
             .style("font-size", (options: ICaptionKPIComponentOptionsValueSettings) => {
-                return pixelConverter.toString(pixelConverter.fromPointToPixel(options.settings.fontSize));
+                return pixelConverter.toString(pixelConverter.fromPointToPixel(options.settings.font.fontSize.value));
             })
             .style("font-family", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.font.fontFamily.value)
             .text((options: ICaptionKPIComponentOptionsValueSettings) => options.value);
@@ -213,14 +213,14 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
             let height: number = 0;
 
             captionList.forEach((caption: ICaptionKPIComponentOptionsValueSettings) => {
-                isShown = isShown || caption.settings.showElement();
+                isShown = isShown || caption.settings.isElementShown();
 
-                if (caption.settings.showElement()) {
+                if (caption.settings.isElementShown()) {
                     const text: string = caption.value || "M";
 
                     const rect: SVGRect = textMeasurementService.textMeasurementService.measureSvgTextRect({
                         fontFamily: caption.settings.font.fontFamily.value,
-                        fontSize: pixelConverter.toString(pixelConverter.fromPointToPixel(caption.settings.fontSize)),
+                        fontSize: pixelConverter.toString(pixelConverter.fromPointToPixel(caption.settings.font.fontSize.value)),
                         text,
                     }, text);
 
@@ -239,8 +239,8 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
         };
     }
 
-    private canComponentBeRenderedAtViewport(viewport: powerbi.IViewport, layout: string): boolean {
-        switch (LayoutEnum[layout]) {
+    private canComponentBeRenderedAtViewport(viewport: powerbi.IViewport, layout: LayoutEnum): boolean {
+        switch (layout) {
             case LayoutEnum.Left:
             case LayoutEnum.Right: {
                 return viewport.height >= this.size.height;

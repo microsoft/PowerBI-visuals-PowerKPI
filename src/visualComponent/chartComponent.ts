@@ -42,6 +42,7 @@ import {
 import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { EventName } from "../event/eventName";
+import { LineType, LineStyle } from "../settings/descriptors/lineDescriptor";
 
 export class ChartComponent extends BaseContainerComponent<
     IVisualComponentConstructorOptions,
@@ -119,7 +120,7 @@ export class ChartComponent extends BaseContainerComponent<
                         point,
                         radiusFactor: settings.dots.radiusFactor,
                         series: currentSeries,
-                        thickness: currentSeries.settings.line.thickness,
+                        thickness: currentSeries.settings.line.thickness.value,
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,
@@ -129,11 +130,11 @@ export class ChartComponent extends BaseContainerComponent<
                         areaOpacity: currentSeries.settings.line.areaOpacity,
                         gradientPoints: currentSeries.gradientPoints,
                         interpolation: currentSeries.settings.line.getInterpolation(),
-                        lineStyle: currentSeries.settings.line.lineStyle,
-                        lineType: currentSeries.settings.line.lineType,
+                        lineStyle: currentSeries.settings.line.lineStyle.value.value as LineStyle,
+                        lineType: currentSeries.settings.line.lineType.value.value as LineType,
                         opacity: currentSeries.settings.line.opacity,
                         series: currentSeries,
-                        thickness: currentSeries.settings.line.thickness,
+                        thickness: currentSeries.settings.line.thickness.value,
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,

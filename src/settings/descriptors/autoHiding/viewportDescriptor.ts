@@ -28,7 +28,7 @@ import powerbi from "powerbi-visuals-api";
 
 import { BaseDescriptor } from "../descriptor";
 
-export class ViewportDescriptor extends BaseDescriptor {
+export abstract class ViewportDescriptor extends BaseDescriptor {
     constructor(protected _viewport: powerbi.IViewport = { width: 0, height: 0 }) {
         super();
     }

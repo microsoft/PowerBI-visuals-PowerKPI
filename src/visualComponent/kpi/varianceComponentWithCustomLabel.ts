@@ -70,7 +70,6 @@ export class VarianceComponentWithCustomLabel
 
         const labelSettings: KPIIndicatorDescriptor = this.cloneClass<KPIIndicatorDescriptor>(secondKPIIndicatorLabel);
 
-        debugger
         labelSettings.show.value = secondKPIIndicatorLabel.isShown();
 
         if (isNaN(variance[1])) {
@@ -86,15 +85,15 @@ export class VarianceComponentWithCustomLabel
 
         let currentAlign: AlignEnum = AlignEnum.alignCenter;
 
-        if (!dateLabelKPI.showElement()
-            && !dateValueKPI.showElement()
-            && (!actualValueKPI.showElement() || series[0] && series[0].current && isNaN(series[0] && series[0].current.y))
-            && !actualLabelKPI.showElement()
+        if (!dateLabelKPI.isElementShown()
+            && !dateValueKPI.isElementShown()
+            && (!actualValueKPI.isElementShown() || series[0] && series[0].current && isNaN(series[0] && series[0].current.y))
+            && !actualLabelKPI.isElementShown()
         ) {
             currentAlign = AlignEnum.alignLeft;
-        } else if ((!kpiIndicatorValue.showElement() || isNaN(variance[0]))
+        } else if ((!kpiIndicatorValue.isElementShown() || isNaN(variance[0]))
             && (!kpiIndicatorLabel.isShown() || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex)))
-            && (!isVarianceKPIAvailable || !kpiIndicator.showElement())) {
+            && (!isVarianceKPIAvailable || !kpiIndicator.isElementShown())) {
             currentAlign = AlignEnum.alignRight;
         }
 

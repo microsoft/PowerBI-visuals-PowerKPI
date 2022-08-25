@@ -40,6 +40,7 @@ export class ShowDescriptor
 
     show = new formattingSettings.ToggleSwitch({
         name: "show",
+        displayName: "Show",
         value: true,
         topLevelToggle: true
     });
@@ -60,14 +61,13 @@ export class ShowDescriptor
             && this._viewport
             &&
             (
-                options.viewport.width <= this._viewport.width
-                ||
+                options.viewport.width <= this._viewport.width ||
                 options.viewport.height <= this._viewport.height
             )
         );
     }
 
-    public showElement(): boolean {
+    public isElementShown(): boolean {
         return this.isAbleToBeShown && this.show.value
     }
 }

@@ -50,6 +50,6 @@ export class KPIIndicatorCustomizableLabelDescriptor extends KPIIndicatorLabelDe
     }
 
     public isShown(): boolean {
-        return this.showElement() && !!this.label.value;
+        return this.isElementShown() && !!this.label.value;
     }
 }

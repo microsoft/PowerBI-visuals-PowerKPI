@@ -49,8 +49,17 @@ export class NumberDescriptorBase
 
     public displayUnits: number = 0;
 
-    protected minPrecision: number = 0;
-    protected maxPrecision: number = 17;
+    public density = new formattingSettings.Slider({
+        name: "percentile",
+        displayName: "Label Density",
+        value: 100,
+        options: {
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 100,
+            }
+        }
+    });
 
     format = new formattingSettings.TextInput({
         name: "format",
@@ -59,6 +68,8 @@ export class NumberDescriptorBase
         placeholder: ""
     });
 
+    protected minPrecision: number = 0;
+    protected maxPrecision: number = 17;
     precision = new formattingSettings.NumUpDown({
         name: "precision",
         displayName: "Decimal Places",

@@ -176,10 +176,10 @@ export class KPIComponent extends BaseContainerComponent<
                 kpiLayout = KPIComponentLayoutEnum.kpiComponentColumn;
                 maxWidth = null;
 
-                if (!legend.showElement()
-                    || (LegendPosition[legend.position]
-                        && (LegendPosition[legend.position] === LegendPosition.Bottom
-                            || LegendPosition[legend.position] === LegendPosition.BottomCenter))
+                if (
+                    !legend.isElementShown() || 
+                    legend.position.value.value === LegendPosition.Bottom || 
+                    legend.position.value.value === LegendPosition.BottomCenter
                 ) {
                     currentLayout = LayoutToStyleEnum.columnReversedLayout;
                 } else {

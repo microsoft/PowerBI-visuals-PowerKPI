@@ -40,7 +40,7 @@ export class KPIIndicatorDescriptor extends NumberDescriptorBase {
         super(viewport, shouldPropertiesBeHiddenByType);
 
         this.displayUnits = 1;
-        this.fontSize = 12;
+        this.font.fontSize.value = 12;
         this.font.bold.value = true;
     }
 }

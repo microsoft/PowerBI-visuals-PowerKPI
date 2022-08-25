@@ -95,7 +95,7 @@ export class YAxisComponent
             settings,
         } = options;
 
-        if (settings.showElement()) {
+        if (settings.isElementShown()) {
             this.show();
         } else {
             this.hide();
@@ -116,7 +116,7 @@ export class YAxisComponent
             axis.max,
             this.formatter,
             fontSize,
-            settings.fontFamily,
+            settings.font.fontFamily.value,
         );
     }
 
@@ -141,20 +141,20 @@ export class YAxisComponent
         this.axisProperties = this.getAxisProperties(
             height,
             [axis.min, axis.max],
-            settings.density,
-            settings.density === settings.maxDensity,
+            settings.density.value,
+            settings.density.value === settings.maxDensity,
         );
 
         if (!this.isShown) {
             return;
         }
 
-        this.maxLabelWidth = settings.showElement()
+        this.maxLabelWidth = settings.isElementShown()
             ? labelMeasurementService.getLabelWidth(
                 this.getTicks(),
                 this.formatter,
                 settings.fontSizeInPx,
-                settings.fontFamily,
+                settings.font.fontFamily.value,
             )
             : 0;
 
@@ -186,7 +186,7 @@ export class YAxisComponent
 
             if (shouldLabelsBeTruncated) {
                 return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
-                    labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.fontFamily),
+                    labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.font.fontFamily.value),
                     availableWidth,
                 );
             }
@@ -196,10 +196,10 @@ export class YAxisComponent
 
         this.gElement
             .call(this.axisProperties.axis)
-            .attr("font-family", settings.fontFamily)
+            .attr("font-family", settings.font.fontFamily.value)
             .attr("font-size", settings.fontSizeInPx)
-            .attr("fill", settings.fontColor)
-            .attr("color", settings.fontColor);
+            .attr("fill", settings.fontColor.value.value)
+            .attr("color", settings.fontColor.value.value);
     }
 
     public getViewport(): IVisualComponentViewport {

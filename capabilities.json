@@ -1350,7 +1350,7 @@
             "numeric": true
           }
         },
-        "rawAreaOpacity": {
+        "areaOpacity": {
           "displayName": "Area Opacity",
           "type": {
             "numeric": true

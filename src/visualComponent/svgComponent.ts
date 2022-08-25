@@ -235,11 +235,11 @@ export class SvgComponent extends BaseContainerComponent<
 
         const isSecondTooltipShown: boolean = variance
             && !isNaN(variance[1])
-            && settings.secondTooltipVariance.showElement();
+            && settings.secondTooltipVariance.isElementShown();
 
-        if (!settings.tooltipLabel.showElement()
-            && !settings.tooltipValues.showElement()
-            && !settings.tooltipVariance.showElement()
+        if (!settings.tooltipLabel.isElementShown()
+            && !settings.tooltipValues.isElementShown()
+            && !settings.tooltipVariance.isElementShown()
             && !isSecondTooltipShown
         ) {
             this.pointerLeaveHandler();

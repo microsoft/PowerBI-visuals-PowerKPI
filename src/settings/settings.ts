@@ -139,9 +139,9 @@ export class Settings extends formattingSettings.Model {
         this.labels,
         // this.kpiIndicator, this.kpiIndicatorLabel, this.secondKPIIndicatorLabel, this.kpiIndicatorValue,
         
-        // this.secondKPIIndicatorValue, 
+        // this.secondKPIIndicatorValue, this.dots,
         
-        this.line, this.dots, this.legend, this.xAxis,
+        this.line, this.legend, this.xAxis,
         this.yAxis, this.secondaryYAxis, this.referenceLineOfXAxis, this.referenceLineOfYAxis,
         this.secondaryReferenceLineOfYAxis, this.tooltipLabel, this.tooltipVariance, 
         this.secondTooltipVariance, this.tooltipValues
@@ -166,9 +166,8 @@ export class Settings extends formattingSettings.Model {
             viewport,
         };
 
-        Object.keys(this)
-            .forEach((settingName: string) => {
-                const settingsObj: IDescriptor = this[settingName] as IDescriptor;
+        this.cards.forEach((setting) => {
+                const settingsObj: IDescriptor = setting as IDescriptor;
 
                 if (settingsObj.parse) {
                     settingsObj.parse(options);

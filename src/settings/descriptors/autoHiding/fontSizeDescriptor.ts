@@ -48,7 +48,7 @@ export class FontSizeDescriptor
         width: 210,
     };
 
-    font = new formattingSettings.FontControl({
+    public font = new formattingSettings.FontControl({
         name: "font",
         displayName: "Font",
         fontFamily: new formattingSettings.FontPicker({
@@ -77,25 +77,8 @@ export class FontSizeDescriptor
         })
     });
 
-    public get fontSize(): number {
-        if (this.isMinFontSizeApplied) {
-            return this.minFontSize;
-        }
-
-        return this.font.fontSize.value;
-    }
-
-    public set fontSize(fontSize: number) {
-        // Power BI returns numbers as strings for some unknown reason. This is why we convert value to number.
-        const parsedFontSize: number = +fontSize;
-
-        this.font.fontSize.value = isNaN(parsedFontSize)
-            ? this.minFontSize
-            : parsedFontSize;
-    }
-
     public get fontSizeInPx(): number {
-        return pixelConverter.fromPointToPixel(this.fontSize);
+        return pixelConverter.fromPointToPixel(this.font.fontSize.value);
     }
 
     public parse(options: IDescriptorParserOptions): void {
@@ -111,6 +94,10 @@ export class FontSizeDescriptor
                 ||
                 options.viewport.height <= this.viewportForFontSize8.height
             );
+
+        if (this.isMinFontSizeApplied) {
+            this.font.fontSize.value = this.minFontSize;
+        }
     }
 }
  

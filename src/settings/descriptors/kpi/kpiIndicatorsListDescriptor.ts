@@ -127,7 +127,7 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor {
         this.name = "kpiIndicator"
         this.displayName = "KPI Indicator"
         this.show.value = true;
-        this.fontSize = 12;
+        this.font.fontSize.value = 12;
     }
 
     public getElementByIndex<Type>(setOfValues: Type[], index: number): Type {

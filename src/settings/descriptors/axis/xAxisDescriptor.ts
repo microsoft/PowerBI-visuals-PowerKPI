@@ -31,4 +31,15 @@ import {
 
 export class XAxisDescriptor extends AxisDescriptor {
     public type: AxisType = AxisType.continuous;
+
+    constructor(viewportToBeHidden: powerbi.IViewport, 
+        viewportToIncreaseDensity: powerbi.IViewport, 
+        shouldPropertiesBeHiddenByType: boolean = false
+    ) {
+        super(viewportToBeHidden, viewportToIncreaseDensity, shouldPropertiesBeHiddenByType)
+
+        this.name = "xAxis";
+        this.displayName = "X Axis";
+        this.slices.push(this.font, this.fontColor, this.density)
+    }
 }

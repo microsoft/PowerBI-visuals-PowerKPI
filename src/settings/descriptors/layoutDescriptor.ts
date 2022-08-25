@@ -37,6 +37,25 @@ import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import FormattingSettingsCard = formattingSettings.Card;
 import FormattingSettingsSlice = formattingSettings.Slice;
 
+const layoutOptions = [
+    {
+        value: LayoutEnum[LayoutEnum.Top],
+        displayName: "Top"
+    },
+    {
+        value: LayoutEnum[LayoutEnum.Right],
+        displayName: "Right"
+    },
+    {
+        value: LayoutEnum[LayoutEnum.Bottom],
+        displayName: "Bottom"
+    },
+    {
+        value: LayoutEnum[LayoutEnum.Left],
+        displayName: "Left"
+    }
+]
+
 export class LayoutDescriptor
     extends BaseDescriptor {
 
@@ -55,28 +74,8 @@ export class LayoutDescriptor
     layout = new formattingSettings.ItemDropdown({
         name: "layout",
         displayName: "Layout",
-        items: [
-            {
-                value: LayoutEnum[LayoutEnum.Top],
-                displayName: "Top"
-            },
-            {
-                value: LayoutEnum[LayoutEnum.Right],
-                displayName: "Right"
-            },
-            {
-                value: LayoutEnum[LayoutEnum.Bottom],
-                displayName: "Bottom"
-            },
-            {
-                value: LayoutEnum[LayoutEnum.Left],
-                displayName: "Left"
-            }
-        ],
-        value: {
-            value: LayoutEnum[LayoutEnum.Top],
-            displayName: "Top"
-        }
+        items: layoutOptions,
+        value: layoutOptions[0]
     });
 
     private _layout: string;
@@ -93,21 +92,14 @@ export class LayoutDescriptor
 
     public parse(options: IDescriptorParserOptions): void {
         if (this.auto.value) {
-            Object.defineProperty(this, "layout", {
-                configurable: true,
-                enumerable: false,
-            });
-
             if (options.viewport.height < this._minSupportedHeight) {
-                this._layout = LayoutEnum[LayoutEnum.Left];
+                this.layout.value = layoutOptions[3];
             } else {
-                this._layout = LayoutEnum[LayoutEnum.Top];
+                this.layout.value = layoutOptions[0];
             }
 
             return;
         }
-
-        this._layout = this.layout.value.value.toString();
     }
 
     public getLayout(): string {

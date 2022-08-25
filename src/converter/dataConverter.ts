@@ -170,9 +170,9 @@ export class DataConverter
         if (dataView.categorical.values
             && dataView.categorical.values.source
             && dataView.categorical.values.source.displayName
-            && settings.legend.titleText === undefined
+            && settings.legend.titleText.value === undefined
         ) {
-            settings.legend.titleText = dataView.categorical.values.source.displayName;
+            settings.legend.titleText.value = dataView.categorical.values.source.displayName;
         }
 
         const axisCategoryFormat: string = this.getFormatStringByColumn(axisCategory && axisCategory.source);
@@ -258,11 +258,11 @@ export class DataConverter
 
                     seriesSettings.parseObjects(columnGroup.objects || groupedValue.source.objects);
 
-                    if (!seriesSettings.line.fillColor
+                    if (!seriesSettings.line.fillColor.value.value
                         && colorPalette
                         && colorPalette.getColor
                     ) {
-                        seriesSettings.line.fillColor = colorPalette.getColor(`${seriesColorIndex}`).value;
+                        seriesSettings.line.fillColor.value.value = colorPalette.getColor(`${seriesColorIndex}`).value;
 
                         seriesColorIndex++;
                     }
@@ -300,8 +300,8 @@ export class DataConverter
                         .withMeasure(groupedValue.source.queryName)
                         .createSelectionId();
 
-                    if (isNaN(maxThickness) || seriesSettings.line.thickness > maxThickness) {
-                        maxThickness = seriesSettings.line.thickness;
+                    if (isNaN(maxThickness) || seriesSettings.line.thickness.value > maxThickness) {
+                        maxThickness = seriesSettings.line.thickness.value;
                     }
 
                     const name: string = isGrouped && columnGroup.name
@@ -454,7 +454,7 @@ export class DataConverter
         } {
         const gradientPoints: IDataRepresentationPointGradientColor[] = [];
 
-        const dataPointEndsKpiColorSegment: boolean = !seriesSettings.line.dataPointStartsKpiColorSegment;
+        const dataPointEndsKpiColorSegment: boolean = !seriesSettings.line.dataPointStartsKpiColorSegment.value;
 
         const copiedAxisValues: DataRepresentationAxisValueType[] = dataPointEndsKpiColorSegment
             ? axisValues.slice().reverse()
@@ -475,9 +475,9 @@ export class DataConverter
 
                 const kpiIndex: number = this.getKPIIndex(kpiIndexes[categoryIndex]);
 
-                let color: string = seriesSettings.line.fillColor;
+                let color: string = seriesSettings.line.fillColor.value.value;
 
-                if (seriesSettings.line.shouldMatchKpiColor) {
+                if (seriesSettings.line.shouldMatchKpiColor.value) {
                     const currentKPI: IKPIIndicatorSettings = settings
                         .kpiIndicator
                         .getCurrentKPI(kpiIndex);

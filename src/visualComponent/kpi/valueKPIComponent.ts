@@ -105,15 +105,14 @@ export class ValueKPIComponent
             && !isNaN(series[0].current.kpiIndex);
 
         let currentAlign: AlignEnum = AlignEnum.alignCenter;
-debugger
-        if (!settings.dateLabelKPI.showElement() && !settings.dateValueKPI.showElement()) {
+        if (!settings.dateLabelKPI.isElementShown() && !settings.dateValueKPI.isElementShown()) {
             currentAlign = AlignEnum.alignLeft;
-        } else if (((!settings.kpiIndicatorValue.showElement() || isNaN(variance[0]))
+        } else if (((!settings.kpiIndicatorValue.isElementShown() || isNaN(variance[0]))
             && (!settings.kpiIndicatorLabel.isShown()
                 || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex))
             )
-            && (!isVarianceKPIAvailable || !settings.kpiIndicator.showElement()))
-            && (!settings.secondKPIIndicatorValue.showElement() && !settings.secondKPIIndicatorLabel.isShown()
+            && (!isVarianceKPIAvailable || !settings.kpiIndicator.isElementShown()))
+            && (!settings.secondKPIIndicatorValue.isElementShown() && !settings.secondKPIIndicatorLabel.isShown()
                 || isNaN(variance[1]))
         ) {
             currentAlign = AlignEnum.alignRight;

@@ -24,9 +24,11 @@
  *  THE SOFTWARE.
  */
 
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import {
     BaseDescriptor,
     IDescriptor,
+    IDescriptorParserOptions,
 } from "./descriptor";
 
 export enum LineInterpolation {
@@ -56,48 +58,199 @@ export enum LineType {
 }
 
 export interface ILineDescriptorBase {
-    fillColor: string;
-    shouldMatchKpiColor: boolean;
-    dataPointStartsKpiColorSegment: boolean;
-    lineStyle: LineStyle;
-    thickness: number;
-    interpolation: LineInterpolation;
+    fillColor: formattingSettings.ColorPicker;
+    shouldMatchKpiColor: formattingSettings.ToggleSwitch;
+    dataPointStartsKpiColorSegment: formattingSettings.ToggleSwitch;
+    lineType: formattingSettings.ItemDropdown;
+    lineStyle: formattingSettings.ItemDropdown;
+    thickness: formattingSettings.Slider;
+    interpolation: formattingSettings.ItemDropdown;
 }
+
+export const lineStyleOptions: powerbi.IEnumMember[] = [
+    {
+        value: LineStyle.solidLine,
+        displayName: "Solid"
+    },
+    {
+        value: LineStyle.dottedLine,
+        displayName: "Dotted"
+    },
+    {
+        value: LineStyle.dashedLine,
+        displayName: "Dashed"
+    },
+    {
+        value: LineStyle.dotDashedLine,
+        displayName: "Dot-dashed"
+    }
+]
+
+const lineTypeOptions: powerbi.IEnumMember[] = [
+    {
+        value: LineType.line,
+        displayName: "Line"
+    },
+    {
+        value: LineType.area,
+        displayName: "Area"
+    }
+]
+
+const interpolationOptions: powerbi.IEnumMember[] = [
+    {
+        value: LineInterpolation.linear,
+        displayName: "Linear"
+    },
+    {
+        value: LineInterpolation.stepBefore,
+        displayName: "Step-before"
+    },
+    {
+        value: LineInterpolation.stepAfter,
+        displayName: "Step-after"
+    },
+    {
+        value: LineInterpolation.basis,
+        displayName: "Basis"
+    },
+    {
+        value: LineInterpolation.basisOpen,
+        displayName: "Basis-open"
+    },
+    {
+        value: LineInterpolation.basisClosed,
+        displayName: "Basis-closed"
+    },
+    {
+        value: LineInterpolation.cardinal,
+        displayName: "Cardinal"
+    },
+    {
+        value: LineInterpolation.cardinalOpen,
+        displayName: "Cardinal-open"
+    },
+    {
+        value: LineInterpolation.cardinalClosed,
+        displayName: "Cardinal-closed"
+    },
+    {
+        value: LineInterpolation.monotone,
+        displayName: "Monotone"
+    }
+]
 
 export class LineDescriptor
     extends BaseDescriptor
-    implements IDescriptor, ILineDescriptorBase {
+    implements ILineDescriptorBase, IDescriptor {
 
     public get opacity(): number {
-        return this.convertOpacityToCssFormat(this.rawOpacity);
+        return this.convertOpacityToCssFormat(this.rawOpacity.value);
     }
 
     public get areaOpacity(): number {
-        return this.convertOpacityToCssFormat(this.rawAreaOpacity);
+        return this.convertOpacityToCssFormat(this.rawAreaOpacity.value);
     }
 
-    public fillColor: string = undefined;
-    public shouldMatchKpiColor: boolean = false;
-    public dataPointStartsKpiColorSegment: boolean = true;
-    public lineType: LineType = LineType.line;
-    public thickness: number = 2;
-    public rawOpacity: number = 100;
-    public rawAreaOpacity: number = 50;
-    public lineStyle: LineStyle = LineStyle.solidLine;
-    public interpolation: LineInterpolation = LineInterpolation.linear;
-    public interpolationWithColorizedLine: LineInterpolation = LineInterpolation.linear;
+    public fillColor = new formattingSettings.ColorPicker({
+        name: "fillColor",
+        displayName: "Color",
+        value: { value: null }
+    });
+
+    public shouldMatchKpiColor = new formattingSettings.ToggleSwitch({
+        name: "shouldMatchKpiColor",
+        displayName: "Match KPI Color",
+        value: false
+    });
+
+    public dataPointStartsKpiColorSegment = new formattingSettings.ToggleSwitch({
+        name: "dataPointStartsKpiColorSegment",
+        displayName: "Data Point Starts KPI Color Segment",
+        value: true
+    });
+
+    public lineType = new formattingSettings.ItemDropdown({
+        name: "lineType",
+        displayName: "Type",
+        items: lineTypeOptions,
+        value: lineTypeOptions[0]
+    });
 
     private minThickness: number = 0.25;
     private maxThickness: number = 10;
+    public thickness = new formattingSettings.Slider({
+        name: "thickness",
+        displayName: "Thickness",
+        value: 2,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: this.minThickness,
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: this.maxThickness,
+            }
+        }
+    });
 
     private minOpacity: number = 15;
     private maxOpacity: number = 100;
+    public rawOpacity = new formattingSettings.NumUpDown({
+        name: "rawOpacity",
+        displayName: "Opacity",
+        value: 100,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: this.minOpacity,
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: this.maxOpacity,
+            }
+        }
+    });
+
+    public rawAreaOpacity = new formattingSettings.NumUpDown({
+        name: "areaOpacity",
+        displayName: "Area Opacity",
+        value: 50,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: this.minOpacity,
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: this.maxOpacity,
+            }
+        }
+    });
+
+    public lineStyle = new formattingSettings.ItemDropdown({
+        name: "lineStyle",
+        displayName: "Style",
+        items: lineStyleOptions,
+        value: lineStyleOptions[0]
+    });
+
+    public interpolation = new formattingSettings.ItemDropdown({
+        name: "interpolation",
+        displayName: "Interpolation",
+        items: interpolationOptions,
+        value: interpolationOptions[0]
+    });
+    public interpolationWithColorizedLine: LineInterpolation = LineInterpolation.linear;
 
     constructor() {
         super()
 
         this.name = "line"
         this.displayName = "Line"
+        this.slices = [this.fillColor, this.shouldMatchKpiColor]
+        this.parse()
     }
 
     public convertOpacityToCssFormat(opacity: number): number {
@@ -105,51 +258,17 @@ export class LineDescriptor
     }
 
     public getInterpolation(): LineInterpolation {
-        return this.shouldMatchKpiColor
+        return this.shouldMatchKpiColor.value
             ? this.interpolationWithColorizedLine
-            : this.interpolation;
+            : this.interpolation.value.value as LineInterpolation;
     }
 
-    public parse(): void {
-        this.thickness = Math.min(
-            Math.max(
-                this.minThickness,
-                this.thickness,
-            ),
-            this.maxThickness,
-        );
+    public parse(options?: IDescriptorParserOptions): void {
+        this.slices = [this.fillColor, this.shouldMatchKpiColor]
+        if(this.shouldMatchKpiColor.value) this.slices.push(this.dataPointStartsKpiColorSegment)
 
-        this.rawOpacity = this.getOpacity(this.rawOpacity);
-        this.rawAreaOpacity = this.getOpacity(this.rawAreaOpacity);
-    }
-
-    public shouldKeyBeEnumerated?(key: string): boolean {
-        if (key === "interpolation" && this.shouldMatchKpiColor) {
-            return false;
-        }
-
-        if (key === "interpolationWithColorizedLine" && !this.shouldMatchKpiColor) {
-            return false;
-        }
-
-        if (key === "rawAreaOpacity" && this.lineType !== LineType.area) {
-            return false;
-        }
-
-        if (key === "dataPointStartsKpiColorSegment" && !this.shouldMatchKpiColor) {
-            return false;
-        }
-
-        return this.hasOwnProperty(key);
-    }
-
-    private getOpacity(opacity: number): number {
-        return Math.min(
-            this.maxOpacity,
-            Math.max(
-                this.minOpacity,
-                opacity,
-            ),
-        );
+        this.slices.push(this.lineType, this.thickness, this.rawOpacity)
+        if(this.lineType.value.value === LineType.area) this.slices.push(this.rawAreaOpacity)
+        this.slices.push(this.lineStyle, this.interpolation)
     }
 }

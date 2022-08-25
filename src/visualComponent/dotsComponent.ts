@@ -91,7 +91,7 @@ export class DotsComponent extends BaseContainerComponent<
                         point,
                         radiusFactor: dots.radiusFactor,
                         series: currentSeries,
-                        thickness: currentSeries.settings.line.thickness,
+                        thickness: currentSeries.settings.line.thickness.value,
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,

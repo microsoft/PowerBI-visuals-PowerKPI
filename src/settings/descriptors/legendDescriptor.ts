@@ -25,6 +25,8 @@
  */
 
 import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
+import { LegendPosition } from "powerbi-visuals-utils-chartutils/lib/legend/legendInterfaces";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
 import { LineStyle } from "./lineDescriptor";
@@ -36,22 +38,104 @@ export enum LegendStyle {
     styledLine = "styledLine",
 }
 
+const styleOptions = [
+    {
+        value: LegendStyle.circle,
+        displayName: "Circle"
+    },
+    {
+        value: LegendStyle.box,
+        displayName: "Box"
+    },
+    {
+        value: LegendStyle.line,
+        displayName: "Line"
+    },
+    {
+        value: LegendStyle.styledLine,
+        displayName: "Styled Line"
+    }
+]
+
+const positionOptions = [
+    {
+        value: LegendPosition.Top,
+        displayName: "Top"
+    },
+    {
+        value: LegendPosition.Bottom,
+        displayName: "Bottom"
+    },
+    {
+        value: LegendPosition.Left,
+        displayName: "Left"
+    },
+    {
+        value: LegendPosition.Right,
+        displayName: "Right"
+    },
+    {
+        value: LegendPosition.TopCenter,
+        displayName: "Top Center"
+    },
+    {
+        value: LegendPosition.BottomCenter,
+        displayName: "Bottom Center"
+    },
+    {
+        value: LegendPosition.LeftCenter,
+        displayName: "Left Center"
+    },
+    {
+        value: LegendPosition.RightCenter,
+        displayName: "Right Center"
+    }
+]
 export class LegendDescriptor extends FontSizeDescriptor {
-    public position: string = "BottomCenter";
-    public showTitle: boolean = true;
-    public titleText: string = "";
-    public labelColor: string = "rgb(102, 102, 102)";
-    public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
-    public style: LegendStyle = LegendStyle.circle;
+    public position = new formattingSettings.ItemDropdown({
+        name: "position",
+        displayName: "Position",
+        items: positionOptions,
+        value: positionOptions[5]
+    });
+
+    public showTitle = new formattingSettings.ToggleSwitch({
+        name: "showTitle",
+        displayName: "Title",
+        value: true,
+    });
+
+    public titleText = new formattingSettings.TextInput({
+        name: "titleText",
+        displayName: "Legend Name",
+        value: null,
+        placeholder: ""
+    });
+
+    public labelColor = new formattingSettings.ColorPicker({
+        name: "labelColor",
+        displayName: "Color",
+        value: { value: "rgb(102, 102, 102)" }
+    });
+
+    public style = new formattingSettings.ItemDropdown({
+        name: "style",
+        displayName: "Style",
+        items: styleOptions,
+        value: styleOptions[0]
+    });;
 
     constructor(viewport: powerbi.IViewport) {
         super(viewport)
 
         this.name = "legend"
         this.displayName = "Legend"
+        this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif"
+        this.slices.push(this.font, this.position, this.showTitle, this.titleText, this.labelColor, this.style)
     }
+
     public getLegendMarkerShape(): legendInterfaces.MarkerShape {
-        switch (this.style) {
+        switch (this.style.value.value) {
             case LegendStyle.box: {
                 return legendInterfaces.MarkerShape.square;
             }
@@ -67,7 +151,7 @@ export class LegendDescriptor extends FontSizeDescriptor {
     }
 
     public getLegendLineStyle(lineStyle: LineStyle): legendInterfaces.LineStyle {
-        switch (this.style) {
+        switch (this.style.value.value) {
             case LegendStyle.styledLine: {
                 switch (lineStyle) {
                     case LineStyle.dottedLine: {

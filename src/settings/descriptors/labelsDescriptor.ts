@@ -36,18 +36,6 @@ export class LabelsDescriptor extends NumberDescriptorBase {
         value: { value: "rgb(119, 119, 119)" }
     });
 
-    public density = new formattingSettings.Slider({
-        name: "percentile",
-        displayName: "Label Density",
-        value: 100,
-        options: {
-            maxValue: {
-                type: powerbi.visuals.ValidatorType.Max,
-                value: 100,
-            }
-        }
-    });
-
     constructor(viewport: powerbi.IViewport) {
         super(viewport);
 
