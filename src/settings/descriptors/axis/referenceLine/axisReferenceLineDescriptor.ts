@@ -24,32 +24,50 @@
  *  THE SOFTWARE.
  */
 
-import {
-    BaseDescriptor,
-    IDescriptor,
-} from "../../descriptor";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+import { BaseDescriptor } from "../../descriptor";
 
 export class AxisReferenceLineDescriptor
-    extends BaseDescriptor
-    implements IDescriptor {
+    extends BaseDescriptor {
 
-    public show: boolean;
-    public color: string = "#e9e9e9";
-    public thickness: number = 1;
+    public show = new formattingSettings.ToggleSwitch({
+        name: "show",
+        displayName: "Show",
+        value: true,
+        topLevelToggle: true
+    });
+
+    public color = new formattingSettings.ColorPicker({
+        name: "color",
+        displayName: "Color",
+        value: { value: "#e9e9e9" }
+    });
 
     private _minThickness: number = 0.2;
     private _maxThickness: number = 5;
+    public thickness = new formattingSettings.Slider({
+        name: "thickness",
+        displayName: "Thickness",
+        value: 1,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: this._minThickness,
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: this._maxThickness,
+            }
+        }
+    });
 
-    constructor(isShown: boolean = true) {
+    constructor(name: string, displayName: string, isShown: boolean = true) {
         super();
 
-        this.show = isShown;
-    }
-
-    public parse(): void {
-        this.thickness = Math.min(
-            Math.max(this._minThickness, this.thickness),
-            this._maxThickness);
+        this.name = name;
+        this.displayName = displayName;
+        this.slices = [this.show, this.color, this.thickness]
+        this.show.value = isShown;
     }
 
 }

@@ -29,8 +29,8 @@ import powerbi from "powerbi-visuals-api";
 import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
 
 export class KPIIndicatorDateDescriptor extends KPIIndicatorDescriptor {
-    constructor(viewport?: powerbi.IViewport, shouldPropertiesBeHiddenByType: boolean = false) {
-        super(viewport, shouldPropertiesBeHiddenByType);
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport);
 
         this.name = "dateValueKPI";
         this.displayName = "KPI Date Value";

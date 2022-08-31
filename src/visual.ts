@@ -57,8 +57,10 @@ import {
 } from "./behavior/behavior";
 import { Settings } from "./settings/settings";
 import { DataRepresentationTypeEnum } from "./dataRepresentation/dataRepresentationType";
-import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
+import { formattingSettings, FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 
+import FormattingSettingsSlice = formattingSettings.Slice;
+import { LineType } from "./settings/descriptors/lineDescriptor";
 export interface IPowerKPIConstructorOptions extends powerbi.extensibility.visual.VisualConstructorOptions {
     rootElement?: HTMLElement;
 }
@@ -163,6 +165,36 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
+        this.filterFormattingProperties()
         return this.formattingSettingsService.buildFormattingModel(this.settings);
+    }
+
+    private filterFormattingProperties() {
+        this.filterLineProperties()
+    }
+
+    private filterLineProperties(){
+        const line = this.settings.line
+        let newSlices: Array<FormattingSettingsSlice> = [
+            line.fillColor, 
+            line.shouldMatchKpiColor, 
+            line.dataPointStartsKpiColorSegment, 
+            line.lineType, 
+            line.thickness, 
+            line.rawOpacity, 
+            line.rawAreaOpacity, 
+            line.lineStyle, 
+            line.interpolation
+        ]
+        if(!line.shouldMatchKpiColor.value) this.removeSlice(newSlices, line.dataPointStartsKpiColorSegment)
+        if(line.lineType.value.value !== LineType.area) this.removeSlice(newSlices, line.rawAreaOpacity)
+        line.slices = newSlices
+    }
+
+    private removeSlice(slices: Array<FormattingSettingsSlice>, item: FormattingSettingsSlice) {
+        const index = slices.indexOf(item);
+        if(index > -1) {
+            slices.splice(index, 1)
+        }
     }
 }

@@ -49,6 +49,6 @@ export class KPIIndicatorValueSignDescriptor
 
         this.name = "kpiIndicatorValue";
         this.displayName = "KPI Indicator Value";
-        this.slices.push(this.matchKPIColor)
+        this.slices.push(this.show, this.matchKPIColor)
     }
 }

@@ -57,9 +57,8 @@ export class AxisDescriptor
     constructor(
         viewportToBeHidden: powerbi.IViewport,
         viewportToIncreaseDensity: powerbi.IViewport,
-        shouldPropertiesBeHiddenByType: boolean = false,
     ) {
-        super(viewportToBeHidden, shouldPropertiesBeHiddenByType);
+        super(viewportToBeHidden);
 
         this.viewportToIncreaseDensity = viewportToIncreaseDensity;
         this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif"

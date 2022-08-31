@@ -1301,6 +1301,188 @@
     "line": {
       "displayName": "Line",
       "properties": {
+        "customLine": {
+          "displayName": "Custom Line",
+          "type": {
+            "enumeration": [
+              {
+                "value": "all",
+                "displayName": "All"
+              },
+              {
+                "value": "0",
+                "displayName": "0"
+              },
+              {
+                "value": "1",
+                "displayName": "1"
+              },
+              {
+                "value": "2",
+                "displayName": "2"
+              },
+              {
+                "value": "3",
+                "displayName": "3"
+              },
+              {
+                "value": "4",
+                "displayName": "4"
+              },
+              {
+                "value": "5",
+                "displayName": "5"
+              },
+              {
+                "value": "6",
+                "displayName": "6"
+              },
+              {
+                "value": "7",
+                "displayName": "7"
+              },
+              {
+                "value": "8",
+                "displayName": "8"
+              },
+              {
+                "value": "9",
+                "displayName": "9"
+              },
+              {
+                "value": "10",
+                "displayName": "10"
+              },
+              {
+                "value": "11",
+                "displayName": "11"
+              },
+              {
+                "value": "12",
+                "displayName": "12"
+              },
+              {
+                "value": "13",
+                "displayName": "13"
+              },
+              {
+                "value": "14",
+                "displayName": "14"
+              },
+              {
+                "value": "15",
+                "displayName": "15"
+              },
+              {
+                "value": "16",
+                "displayName": "16"
+              },
+              {
+                "value": "17",
+                "displayName": "17"
+              },
+              {
+                "value": "18",
+                "displayName": "18"
+              },
+              {
+                "value": "19",
+                "displayName": "19"
+              }
+            ]
+          }
+        },
+        "fakeCustomLine": {
+          "displayName": "Custom Line",
+          "type": {
+            "enumeration": [
+              {
+                "value": "all",
+                "displayName": "All"
+              },
+              {
+                "value": "0",
+                "displayName": "0"
+              },
+              {
+                "value": "1",
+                "displayName": "1"
+              },
+              {
+                "value": "2",
+                "displayName": "2"
+              },
+              {
+                "value": "3",
+                "displayName": "3"
+              },
+              {
+                "value": "4",
+                "displayName": "4"
+              },
+              {
+                "value": "5",
+                "displayName": "5"
+              },
+              {
+                "value": "6",
+                "displayName": "6"
+              },
+              {
+                "value": "7",
+                "displayName": "7"
+              },
+              {
+                "value": "8",
+                "displayName": "8"
+              },
+              {
+                "value": "9",
+                "displayName": "9"
+              },
+              {
+                "value": "10",
+                "displayName": "10"
+              },
+              {
+                "value": "11",
+                "displayName": "11"
+              },
+              {
+                "value": "12",
+                "displayName": "12"
+              },
+              {
+                "value": "13",
+                "displayName": "13"
+              },
+              {
+                "value": "14",
+                "displayName": "14"
+              },
+              {
+                "value": "15",
+                "displayName": "15"
+              },
+              {
+                "value": "16",
+                "displayName": "16"
+              },
+              {
+                "value": "17",
+                "displayName": "17"
+              },
+              {
+                "value": "18",
+                "displayName": "18"
+              },
+              {
+                "value": "19",
+                "displayName": "19"
+              }
+            ]
+          }
+        },
         "fillColor": {
           "displayName": "Color",
           "type": {
@@ -1756,6 +1938,7 @@
           "type": {
             "numeric": true
           },
+          "placeHolderText": "Auto",
           "suppressFormatPainterCopy": true
         },
         "max": {
@@ -1763,6 +1946,7 @@
           "type": {
             "numeric": true
           },
+          "placeHolderText": "Auto",
           "suppressFormatPainterCopy": true
         }
       }
@@ -1833,6 +2017,7 @@
           "type": {
             "numeric": true
           },
+          "placeHolderText": "Auto",
           "suppressFormatPainterCopy": true
         },
         "max": {
@@ -1840,6 +2025,7 @@
           "type": {
             "numeric": true
           },
+          "placeHolderText": "Auto",
           "suppressFormatPainterCopy": true
         }
       }

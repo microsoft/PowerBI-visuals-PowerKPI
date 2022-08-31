@@ -42,14 +42,14 @@ export class SeriesSettings extends SettingsBase {
         if (objects) {
             const lineObject: ILineDescriptorBase = (objects.line as any || {}) as ILineDescriptorBase;
 
-            if (!lineObject.fillColor.value.value
+            if (lineObject.fillColor && !lineObject.fillColor.value.value
                 && objects.series
                 && objects.series.fillColor
             ) {
                 lineObject.fillColor.value.value = objects.series.fillColor as string;
             }
 
-            if (!lineObject.lineStyle.value.value
+            if (lineObject.lineStyle && !lineObject.lineStyle.value.value
                 && objects.lineStyle
                 && objects.lineStyle.lineStyle !== undefined
                 && objects.lineStyle.lineStyle !== null
@@ -57,7 +57,7 @@ export class SeriesSettings extends SettingsBase {
                 lineObject.lineStyle.value = lineStyleOptions.filter(el => el.value === objects.lineStyle.lineStyle)[0]
             }
 
-            if (!lineObject.thickness.value
+            if (lineObject.thickness && !lineObject.thickness.value
                 && objects.lineThickness
                 && objects.lineThickness.thickness !== undefined
                 && objects.lineThickness.thickness !== null

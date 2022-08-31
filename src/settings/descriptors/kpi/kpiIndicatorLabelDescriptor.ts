@@ -37,7 +37,7 @@ export class KPIIndicatorLabelDescriptor extends KPIIndicatorDescriptor {
         if(name && displayName){
             this.name = name
             this.displayName = displayName
-            this.slices.push(this.font, this.fontColor)
+            this.slices.push(this.show, this.font, this.fontColor)
         }
     }
 }

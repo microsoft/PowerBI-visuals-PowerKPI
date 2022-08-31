@@ -24,25 +24,21 @@
  *  THE SOFTWARE.
  */
 
-import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+import { NumberDescriptorBase } from "../numberDescriptorBase";
 
-import { NumberDescriptorBase } from "./numberDescriptorBase";
+export class TooltipVarianceDescriptor extends NumberDescriptorBase {
+    public label = new formattingSettings.TextInput({
+        name: "label",
+        displayName: "Label",
+        value: "",
+        placeholder: "Variance"
+    });;
 
-export class LabelsDescriptor extends NumberDescriptorBase {
-    color = new formattingSettings.ColorPicker({
-        name: "color",
-        displayName: "Color",
-        value: { value: "rgb(119, 119, 119)" }
-    });
-
-    constructor(viewport: powerbi.IViewport) {
-        super(viewport);
-
-        this.name = "labels"
-        this.displayName = "Data Labels"
-        this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif";
-        this.show.value = false;
-        this.slices.push(this.show, this.color, this.precision, this.font, this.density)
+    constructor(name: string, displayName: string) {
+        super()
+        this.name = name;
+        this.displayName = displayName;
+        this.slices.push(this.show, this.format, this.displayUnits, this.precision, this.label)
     }
 }

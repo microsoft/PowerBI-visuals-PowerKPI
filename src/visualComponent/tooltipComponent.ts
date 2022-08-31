@@ -34,7 +34,7 @@ import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresenta
 import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
 import { LineStyle } from "../settings/descriptors/lineDescriptor";
-import { TooltipLabelDescriptor } from "../settings/descriptors/tooltip/tooltipLabelDescriptor";
+import { TooltipVarianceDescriptor } from "../settings/descriptors/tooltip/tooltipVarianceDescriptor";
 import { SeriesSettings } from "../settings/seriesSettings";
 import { IVisualComponent } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
@@ -170,7 +170,7 @@ export class TooltipComponent
             series.forEach((dataSeries: IDataRepresentationSeries) => {
                 const valueFormatterInstance: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
                     dataSeries.format || this.numberFormat,
-                    tooltipValues.displayUnits,
+                    Number(tooltipValues.displayUnits.value.value),
                     tooltipValues.precision.value,
                 );
 
@@ -208,7 +208,7 @@ export class TooltipComponent
             const formatter: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
                 tooltipLabel.getFormat(),
                 x.axisType === DataRepresentationTypeEnum.NumberType
-                    ? tooltipLabel.displayUnits
+                    ? Number(tooltipLabel.displayUnits.value.value)
                     : undefined,
                 x.axisType === DataRepresentationTypeEnum.NumberType
                     ? tooltipLabel.precision.value
@@ -268,7 +268,7 @@ export class TooltipComponent
     private getVarianceTooltip(
         firstPoint: IDataRepresentationPoint,
         secondPoint: IDataRepresentationPoint,
-        settings: TooltipLabelDescriptor,
+        settings: TooltipVarianceDescriptor,
         displayName: string,
         commonKPISettings: IKPIIndicatorSettings = {},
         kpiIndicatorVariance: number,
@@ -289,7 +289,7 @@ export class TooltipComponent
 
         const varianceFormatter: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
             settings.getFormat(),
-            settings.displayUnits,
+            Number(settings.displayUnits.value.value),
             settings.precision.value,
         );
 
@@ -309,7 +309,7 @@ export class TooltipComponent
 
         return {
             color,
-            displayName: `${settings.label}` || `${displayName}`,
+            displayName: `${settings.label.value}` || `${displayName}`,
             lineColor,
             lineStyle,
             markerShape,

@@ -148,10 +148,10 @@ export class DataConverter
         const axisCategoryType: powerbi.ValueTypeDescriptor = axisCategory.source.type;
 
         if (axisCategoryType.text) {
-            settings.xAxis.type = AxisType.categorical;
+            settings.xAxis.type.value.value = AxisType.categorical;
         }
 
-        if (axisCategoryType.text || settings.xAxis.type === AxisType.categorical) {
+        if (axisCategoryType.text || settings.xAxis.type.value.value === AxisType.categorical) {
             axisType = DataRepresentationTypeEnum.StringType;
         } else if (axisCategoryType.dateTime) {
             axisType = DataRepresentationTypeEnum.DateType;
@@ -245,7 +245,7 @@ export class DataConverter
                         y: NaN,
                     };
 
-                    const seriesSettings: SeriesSettings = (SeriesSettings.getDefault() as SeriesSettings);
+                    const seriesSettings: SeriesSettings = new SeriesSettings;
 
                     for (const propertyName in seriesSettings) {
                         const descriptor: BaseDescriptor = seriesSettings[propertyName];
@@ -255,7 +255,6 @@ export class DataConverter
                             descriptor.applyDefault(defaultDescriptor);
                         }
                     }
-
                     seriesSettings.parseObjects(columnGroup.objects || groupedValue.source.objects);
 
                     if (!seriesSettings.line.fillColor.value.value
@@ -328,6 +327,17 @@ export class DataConverter
                     });
                 }
             });
+            seriesColorIndex = 0
+            dataRepresentation.series.forEach(el => {
+                if (
+                    colorPalette
+                    && colorPalette.getColor
+                ) {
+                    el.settings.line.fillColor.value.value = colorPalette.getColor(`${seriesColorIndex}`).value;
+
+                    seriesColorIndex++;
+                }
+            })
         });
 
         dataRepresentation.x.values = axisCategory.values as DataRepresentationAxisValueType[];
@@ -399,12 +409,12 @@ export class DataConverter
                     : settings.secondaryYAxis;
 
                 const yMin: number = this.getNotNaNValue(
-                    yAxisSettings.min,
+                    yAxisSettings.min.value,
                     seriesGroup.y.min as number,
                 );
 
                 const yMax: number = this.getNotNaNValue(
-                    yAxisSettings.max,
+                    yAxisSettings.max.value,
                     seriesGroup.y.max as number,
                 );
 

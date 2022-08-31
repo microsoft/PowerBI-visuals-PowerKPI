@@ -54,9 +54,10 @@ import { XAxisDescriptor } from "./descriptors/axis/xAxisDescriptor";
 import { YAxisDescriptor } from "./descriptors/axis/yAxisDescriptor";
 
 import { AxisReferenceLineDescriptor } from "./descriptors/axis/referenceLine/axisReferenceLineDescriptor";
+import { TooltipVarianceDescriptor } from "./descriptors/tooltip/tooltipVarianceDescriptor";
 import { TooltipLabelDescriptor } from "./descriptors/tooltip/tooltipLabelDescriptor";
+import { TooltipValueDescriptor } from "./descriptors/tooltip/tooltipValueDescriptor";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
-import { NumberDescriptorBase } from "./descriptors/numberDescriptorBase";
 
 const kpiCaptionViewport: powerbi.IViewport = {
     height: 90,
@@ -96,51 +97,47 @@ const axisViewportToIncreaseDensity: powerbi.IViewport = {
 export class Settings extends formattingSettings.Model {
     public layout: LayoutDescriptor = new LayoutDescriptor();
     public title: FakeTitleDescriptor = new FakeTitleDescriptor();
-    public subtitle: SubtitleDescriptor = new SubtitleDescriptor();
+    public subtitle: SubtitleDescriptor = new SubtitleDescriptor(subtitleViewport);
     public kpiIndicator: KPIIndicatorsListDescriptor = new KPIIndicatorsListDescriptor(kpiCaptionViewport);
     public kpiIndicatorValue: KPIIndicatorValueSignDescriptor = new KPIIndicatorValueSignDescriptor(kpiCaptionViewport);
     public kpiIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
-        kpiLabelViewport,
         "KPIIndicatorLabel",
-        "KPI Indicator Label"
+        "KPI Indicator Label",
+        kpiLabelViewport,
     );
     public secondKPIIndicatorValue: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(
         kpiCaptionViewport, 
-        false, 
         "secondKPIIndicatorValue", 
         "Second KPI Indicator Value"
     );
     public secondKPIIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
-        kpiLabelViewport,
         "secondKPIIndicatorLabel",
-        "Second KPI Indicator Label"
+        "Second KPI Indicator Label",
+        kpiLabelViewport,
     );
-    public actualValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport, false, "actualValueKPI", "KPI Actual Value");
+    public actualValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport, "actualValueKPI", "KPI Actual Value");
     public actualLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport, "actualLabelKPI", "KPI Actual Label");
-    public dateValueKPI: KPIIndicatorDateDescriptor = new KPIIndicatorDateDescriptor(kpiCaptionViewport, true);
+    public dateValueKPI: KPIIndicatorDateDescriptor = new KPIIndicatorDateDescriptor(kpiCaptionViewport);
     public dateLabelKPI: KPIIndicatorDateLabelDescriptor = new KPIIndicatorDateLabelDescriptor(kpiLabelViewport);
     public labels: LabelsDescriptor = new LabelsDescriptor(LabelsViewport);
     public line: LineDescriptor = new LineDescriptor();
     public dots: DotsDescriptor = new DotsDescriptor();
     public legend: LegendDescriptor = new LegendDescriptor(legendViewport);
-    public xAxis: XAxisDescriptor = new XAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, true);
-    public yAxis: YAxisDescriptor = new YAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, false);
-    public secondaryYAxis: YAxisDescriptor = new YAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, false);
-    public referenceLineOfXAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(false);
-    public referenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor();
-    public secondaryReferenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(false);
-    public tooltipLabel: NumberDescriptorBase = new NumberDescriptorBase(undefined, true);
-    public tooltipVariance: TooltipLabelDescriptor = new TooltipLabelDescriptor();
-    public secondTooltipVariance: TooltipLabelDescriptor = new TooltipLabelDescriptor();
-    public tooltipValues: NumberDescriptorBase = new NumberDescriptorBase();
+    public xAxis: XAxisDescriptor = new XAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity);
+    public yAxis: YAxisDescriptor = new YAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, "yAxis", "Y Axis");
+    public secondaryYAxis: YAxisDescriptor = new YAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, "secondaryYAxis", "Secondary Y Axis");
+    public referenceLineOfXAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor("referenceLineOfXAxis", "X Axis Reference Lines", false);
+    public referenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor("referenceLineOfYAxis", "Y Axis Reference Lines");
+    public secondaryReferenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor("secondaryReferenceLineOfYAxis", "Secondary Y Axis Reference Lines", false);
+    public tooltipLabel: TooltipLabelDescriptor = new TooltipLabelDescriptor("tooltipLabel", "Tooltip Label");
+    public tooltipVariance: TooltipVarianceDescriptor = new TooltipVarianceDescriptor("tooltipVariance", "Tooltip KPI Indicator Value");
+    public secondTooltipVariance: TooltipVarianceDescriptor = new TooltipVarianceDescriptor("secondTooltipVariance", "Second Tooltip KPI Indicator Value");
+    public tooltipValues: TooltipValueDescriptor = new TooltipValueDescriptor("tooltipValues", "Tooltip Values");
     cards = [
-        this.layout, this.title, this.subtitle,
+        this.layout, this.title, this.subtitle, /* this.kpiIndicator, this.kpiIndicatorValue,*/
+        this.kpiIndicatorLabel, /* this.secondKPIIndicatorValue, */ this.secondKPIIndicatorLabel, 
         this.actualValueKPI, this.actualLabelKPI, this.dateValueKPI, this.dateLabelKPI,
-        this.labels,
-        // this.kpiIndicator, this.kpiIndicatorLabel, this.secondKPIIndicatorLabel, this.kpiIndicatorValue,
-        
-        // this.secondKPIIndicatorValue, this.dots,
-        
+        this.labels, //  this.dots,
         this.line, this.legend, this.xAxis,
         this.yAxis, this.secondaryYAxis, this.referenceLineOfXAxis, this.referenceLineOfYAxis,
         this.secondaryReferenceLineOfYAxis, this.tooltipLabel, this.tooltipVariance, 

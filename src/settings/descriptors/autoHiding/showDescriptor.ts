@@ -38,7 +38,7 @@ export class ShowDescriptor
     extends ViewportDescriptor
     implements IDescriptor {
 
-    show = new formattingSettings.ToggleSwitch({
+    public show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayName: "Show",
         value: true,
@@ -49,8 +49,6 @@ export class ShowDescriptor
 
     constructor(viewport: powerbi.IViewport = { width: 0, height: 0 }) {
         super(viewport);
-
-        this.slices.push(this.show)
     }
 
     public parse(options: IDescriptorParserOptions): void {

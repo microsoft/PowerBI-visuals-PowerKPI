@@ -68,10 +68,11 @@ export class DateKPIComponent
         let formattedValue: string = "";
 
         if (axisValue) {
+            debugger
             const formatter: valueFormatter.IValueFormatter = this.getValueFormatter(
                 x.axisType,
                 settings.dateValueKPI.getFormat(),
-                settings.dateValueKPI.displayUnits || x.max,
+                Number(settings.dateValueKPI.displayUnits.value.value) || x.max,
                 settings.dateValueKPI.precision.value);
 
             if (formatter) {

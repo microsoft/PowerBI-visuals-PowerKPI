@@ -36,17 +36,14 @@ export class KPIIndicatorCustomizableLabelDescriptor extends KPIIndicatorLabelDe
         value: "",
         placeholder: ""
     });
-;
 
-    constructor(viewport?: powerbi.IViewport, name?: string, displayName?: string) {
+    constructor(name: string, displayName: string, viewport?: powerbi.IViewport) {
         super(viewport);
 
+        this.name = name;
+        this.displayName = displayName;
+        this.slices.push(this.show, this.font, this.fontColor, this.label)
         this.show.value = false;
-        this.slices.push(this.label)
-        if(name && displayName){
-            this.name = name;
-            this.displayName = displayName;
-        }
     }
 
     public isShown(): boolean {

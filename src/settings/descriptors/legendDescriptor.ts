@@ -131,7 +131,15 @@ export class LegendDescriptor extends FontSizeDescriptor {
         this.name = "legend"
         this.displayName = "Legend"
         this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif"
-        this.slices.push(this.font, this.position, this.showTitle, this.titleText, this.labelColor, this.style)
+        this.slices.push(
+            this.show,
+            this.font,
+            this.position,
+            this.showTitle,
+            this.titleText,
+            this.labelColor,
+            this.style
+        )
     }
 
     public getLegendMarkerShape(): legendInterfaces.MarkerShape {

@@ -24,22 +24,38 @@
  *  THE SOFTWARE.
  */
 
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import {
     AxisDescriptor,
     AxisType,
 } from "./axisDescriptor";
 
+const typeOptions = [
+    {
+        value: AxisType.continuous,
+        displayName: "Continuous"
+    },
+    {
+        value: AxisType.categorical,
+        displayName: "Categorical"
+    }
+]
+
 export class XAxisDescriptor extends AxisDescriptor {
-    public type: AxisType = AxisType.continuous;
+    public type = new formattingSettings.ItemDropdown({
+        name: "layout",
+        displayName: "Layout",
+        items: typeOptions,
+        value: typeOptions[0]
+    });
 
     constructor(viewportToBeHidden: powerbi.IViewport, 
-        viewportToIncreaseDensity: powerbi.IViewport, 
-        shouldPropertiesBeHiddenByType: boolean = false
+        viewportToIncreaseDensity: powerbi.IViewport
     ) {
-        super(viewportToBeHidden, viewportToIncreaseDensity, shouldPropertiesBeHiddenByType)
+        super(viewportToBeHidden, viewportToIncreaseDensity)
 
         this.name = "xAxis";
         this.displayName = "X Axis";
-        this.slices.push(this.font, this.fontColor, this.density)
+        this.slices.push(this.show, this.font, this.fontColor, this.displayUnits, this.density, this.type)
     }
 }

@@ -25,11 +25,42 @@
  *  THE SOFTWARE.
  */
 
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import {
     AxisDescriptor,
 } from "./axisDescriptor";
 
 export class YAxisDescriptor extends AxisDescriptor {
-    public min: number = NaN;
-    public max: number = NaN;
+    public min = new formattingSettings.NumUpDown({
+        name: "min",
+        displayName: "Min",
+        value: NaN,
+    });
+    public max = new formattingSettings.NumUpDown({
+        name: "max",
+        displayName: "Max",
+        value: NaN,
+    });
+
+    constructor(
+        viewportToBeHidden: powerbi.IViewport,
+        viewportToIncreaseDensity: powerbi.IViewport,
+        name: string, 
+        displayName: string,
+    ) {
+        super(viewportToBeHidden, viewportToIncreaseDensity)
+
+        this.name = name;
+        this.displayName = displayName;
+        this.slices.push(
+            this.show,
+            this.font,
+            this.displayUnits,
+            this.precision,
+            this.fontColor,
+            this.density,
+            this.min,
+            this.max
+        )
+    }
 }

@@ -142,7 +142,7 @@ const interpolationOptions: powerbi.IEnumMember[] = [
 
 export class LineDescriptor
     extends BaseDescriptor
-    implements ILineDescriptorBase, IDescriptor {
+    implements ILineDescriptorBase {
 
     public get opacity(): number {
         return this.convertOpacityToCssFormat(this.rawOpacity.value);
@@ -249,8 +249,17 @@ export class LineDescriptor
 
         this.name = "line"
         this.displayName = "Line"
-        this.slices = [this.fillColor, this.shouldMatchKpiColor]
-        this.parse()
+        this.slices = [
+            this.fillColor, 
+            this.shouldMatchKpiColor, 
+            this.dataPointStartsKpiColorSegment, 
+            this.lineType, 
+            this.thickness, 
+            this.rawOpacity, 
+            this.rawAreaOpacity, 
+            this.lineStyle, 
+            this.interpolation
+        ]
     }
 
     public convertOpacityToCssFormat(opacity: number): number {
@@ -261,14 +270,5 @@ export class LineDescriptor
         return this.shouldMatchKpiColor.value
             ? this.interpolationWithColorizedLine
             : this.interpolation.value.value as LineInterpolation;
-    }
-
-    public parse(options?: IDescriptorParserOptions): void {
-        this.slices = [this.fillColor, this.shouldMatchKpiColor]
-        if(this.shouldMatchKpiColor.value) this.slices.push(this.dataPointStartsKpiColorSegment)
-
-        this.slices.push(this.lineType, this.thickness, this.rawOpacity)
-        if(this.lineType.value.value === LineType.area) this.slices.push(this.rawAreaOpacity)
-        this.slices.push(this.lineStyle, this.interpolation)
     }
 }

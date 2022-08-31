@@ -38,8 +38,41 @@ import {
     DataRepresentationTypeEnum,
 } from "../../dataRepresentation/dataRepresentationType";
 
-import FormattingSettingsSlice = formattingSettings.Slice;
+export enum DisplayUnitsType {
+    Auto,
+    None,
+    Thousands,
+    Millions,
+    Billions,
+    Trillions
+}
 
+export const displayUnitsOptions = [
+    {
+        value: DisplayUnitsType.Auto,
+        displayName: "Auto"
+    },
+    {
+        value: DisplayUnitsType.None,
+        displayName: "None"
+    },
+    {
+        value: DisplayUnitsType.Thousands,
+        displayName: "Thousands"
+    },
+    {
+        value: DisplayUnitsType.Millions,
+        displayName: "Millions"
+    },
+    {
+        value: DisplayUnitsType.Billions,
+        displayName: "Billions"
+    },
+    {
+        value: DisplayUnitsType.Trillions,
+        displayName: "Trillions"
+    }
+]
 export class NumberDescriptorBase
     extends FontSizeDescriptor
     implements IDescriptor {
@@ -47,7 +80,12 @@ export class NumberDescriptorBase
     public defaultFormat: string = null;
     public columnFormat: string = null;
 
-    public displayUnits: number = 0;
+    public displayUnits = new formattingSettings.ItemDropdown({
+        name: "displayUnits",
+        displayName: "Display Units",
+        items: displayUnitsOptions,
+        value: displayUnitsOptions[0]
+    });
 
     public density = new formattingSettings.Slider({
         name: "percentile",
@@ -61,7 +99,7 @@ export class NumberDescriptorBase
         }
     });
 
-    format = new formattingSettings.TextInput({
+    public format = new formattingSettings.TextInput({
         name: "format",
         displayName: "Format",
         value: null,
@@ -70,7 +108,7 @@ export class NumberDescriptorBase
 
     protected minPrecision: number = 0;
     protected maxPrecision: number = 17;
-    precision = new formattingSettings.NumUpDown({
+    public precision = new formattingSettings.NumUpDown({
         name: "precision",
         displayName: "Decimal Places",
         value: 0,
@@ -85,23 +123,6 @@ export class NumberDescriptorBase
             },
         }
     });
-
-    private shouldNumericPropertiesBeHiddenByType: boolean;
-
-    constructor(
-        viewport?: powerbi.IViewport, 
-        shouldPropertiesBeHiddenByType: boolean = false
-    ) {
-        super(viewport);
-
-        this.shouldNumericPropertiesBeHiddenByType = shouldPropertiesBeHiddenByType;
-    }
-
-    public parse(options: IDescriptorParserOptions) {
-        super.parse(options);
-
-        this.hidePropertiesByType(options.type);
-    }
 
     public getFormat(): string {
         return this.format.value || this.columnFormat || this.defaultFormat;
@@ -123,32 +144,7 @@ export class NumberDescriptorBase
         return this[key];
     }
 
-    /**
-     * Hides properties at the formatting panel
-     */
-    protected hideNumberProperties(): void {
-        Object.defineProperties(this, {
-            displayUnits: {
-                configurable: true,
-                enumerable: false,
-            },
-            precision: {
-                configurable: true,
-                enumerable: false,
-            },
-        });
-    }
-
-    protected hideFormatProperty(): void {
-        Object.defineProperty(
-            this,
-            "format", {
-                configurable: true,
-                enumerable: false,
-            },
-        );
-    }
-
+    
     protected applyDefaultFormatByType(type: DataRepresentationTypeEnum): void {
         if (this.defaultFormat) {
             return;
@@ -172,22 +168,6 @@ export class NumberDescriptorBase
             default: {
                 this.defaultFormat = undefined;
             }
-        }
-    }
-
-    private hidePropertiesByType(type: DataRepresentationTypeEnum = DataRepresentationTypeEnum.NumberType): void {
-        this.applyDefaultFormatByType(type);
-
-        if (this.shouldNumericPropertiesBeHiddenByType
-            && type !== DataRepresentationTypeEnum.NumberType
-        ) {
-            this.hideNumberProperties();
-        }
-
-        if (!(type === DataRepresentationTypeEnum.NumberType
-            || type === DataRepresentationTypeEnum.DateType)
-        ) {
-            this.hideFormatProperty();
         }
     }
 }

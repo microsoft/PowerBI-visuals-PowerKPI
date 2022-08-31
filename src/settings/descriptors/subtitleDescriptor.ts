@@ -55,11 +55,11 @@ export class SubtitleDescriptor extends FontSizeDescriptor {
 
     // public alignment: SubtitleAlignment = SubtitleAlignment.left;
 
-    constructor() {
-        super()
+    constructor(viewport: powerbi.IViewport) {
+        super(viewport)
 
         this.name = "subtitle";
         this.displayName = "Subtitle";
-        this.slices.push(this.titleText, this.fontColor, this.background);
+        this.slices.push(this.show, this.titleText, this.fontColor, this.background);
     }
 }

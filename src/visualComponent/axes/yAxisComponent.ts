@@ -104,7 +104,7 @@ export class YAxisComponent
         const fontSize: number = settings.fontSizeInPx;
 
         this.formatter = labelMeasurementService.getValueFormatter(
-            settings.displayUnits || axis.max,
+            Number(settings.displayUnits.value.value) || axis.max,
             undefined,
             undefined,
             undefined,

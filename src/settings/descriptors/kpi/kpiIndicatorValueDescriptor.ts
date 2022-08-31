@@ -30,13 +30,13 @@ import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
 
 export class KPIIndicatorValueDescriptor extends KPIIndicatorDescriptor {
-    constructor(viewport?: powerbi.IViewport, shouldPropertiesBeHiddenByType: boolean = false, name?: string, displayName?: string) {
-        super(viewport, shouldPropertiesBeHiddenByType);
+    constructor(viewport?: powerbi.IViewport, name?: string, displayName?: string) {
+        super(viewport);
 
         if(name && displayName){
             this.name = name;
             this.displayName = displayName;
-            this.slices.push(this.font, this.precision, this.fontColor)
+            this.slices.push(this.show, this.font, this.precision, this.fontColor)
         }
     }
 }

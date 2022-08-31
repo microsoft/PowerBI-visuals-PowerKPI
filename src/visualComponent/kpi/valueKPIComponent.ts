@@ -72,7 +72,7 @@ export class ValueKPIComponent
                 displayUnitSystemType: displayUnitSystemType.DisplayUnitSystemType.WholeUnits,
                 format: options.data.series[0].format || this.valueFormat,
                 precision: settings.actualValueKPI.precision.value,
-                value: settings.actualValueKPI.displayUnits || series[0].domain.max,
+                value: Number(settings.actualValueKPI.displayUnits.value.value) || series[0].domain.max,
             });
 
             const value: number = options.data.series[0].current.y;
