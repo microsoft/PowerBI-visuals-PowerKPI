@@ -183,7 +183,8 @@ export class DataConverter
         // Applies series formats
         dataRepresentation.x.format = dataRepresentation.settings.dateValueKPI.getFormat();
 
-        dataView.categorical.values.grouped().forEach((columnGroup: powerbi.DataViewValueColumnGroup) => {
+        const grouped = dataView.categorical.values.grouped()
+        grouped.forEach((columnGroup: powerbi.DataViewValueColumnGroup) => {
             const groupedValues: powerbi.DataViewValueColumn[] = columnGroup.values;
 
             const currentKPIColumn: powerbi.DataViewValueColumn[] = groupedValues
@@ -492,7 +493,7 @@ export class DataConverter
                         .kpiIndicator
                         .getCurrentKPI(kpiIndex);
 
-                    color = currentKPI && currentKPI.color || color;
+                    color = currentKPI.color && currentKPI.color.value.value || color;
                 }
 
                 if (this.isValueFinite(value)

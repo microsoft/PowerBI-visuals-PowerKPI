@@ -39,12 +39,12 @@ import {
 } from "../../dataRepresentation/dataRepresentationType";
 
 export enum DisplayUnitsType {
-    Auto,
-    None,
-    Thousands,
-    Millions,
-    Billions,
-    Trillions
+    Auto = 0,
+    None = 1,
+    Thousands = 1000,
+    Millions = 1000000,
+    Billions = 1000000000,
+    Trillions = 1000000000000
 }
 
 export const displayUnitsOptions = [
@@ -88,7 +88,7 @@ export class NumberDescriptorBase
     });
 
     public density = new formattingSettings.Slider({
-        name: "percentile",
+        name: "density",
         displayName: "Label Density",
         value: 100,
         options: {
@@ -111,7 +111,7 @@ export class NumberDescriptorBase
     public precision = new formattingSettings.NumUpDown({
         name: "precision",
         displayName: "Decimal Places",
-        value: 0,
+        value: null,
         options: {
             maxValue: {
                 type: powerbi.visuals.ValidatorType.Max,
@@ -123,6 +123,12 @@ export class NumberDescriptorBase
             },
         }
     });
+
+    public parse(options: IDescriptorParserOptions) {
+        super.parse(options);
+
+        this.applyDefaultFormatByType(options.type)
+    }
 
     public getFormat(): string {
         return this.format.value || this.columnFormat || this.defaultFormat;
@@ -147,6 +153,9 @@ export class NumberDescriptorBase
     
     protected applyDefaultFormatByType(type: DataRepresentationTypeEnum): void {
         if (this.defaultFormat) {
+            if (this.format.value == null) {
+                this.format.value = this.defaultFormat;
+            }
             return;
         }
 

@@ -134,8 +134,8 @@ export class Settings extends formattingSettings.Model {
     public secondTooltipVariance: TooltipVarianceDescriptor = new TooltipVarianceDescriptor("secondTooltipVariance", "Second Tooltip KPI Indicator Value");
     public tooltipValues: TooltipValueDescriptor = new TooltipValueDescriptor("tooltipValues", "Tooltip Values");
     cards = [
-        this.layout, this.title, this.subtitle, /* this.kpiIndicator, this.kpiIndicatorValue,*/
-        this.kpiIndicatorLabel, /* this.secondKPIIndicatorValue, */ this.secondKPIIndicatorLabel, 
+        this.layout, this.title, this.subtitle, this.kpiIndicator, this.kpiIndicatorValue,
+        this.kpiIndicatorLabel, this.secondKPIIndicatorValue, this.secondKPIIndicatorLabel, 
         this.actualValueKPI, this.actualLabelKPI, this.dateValueKPI, this.dateLabelKPI,
         this.labels, //  this.dots,
         this.line, this.legend, this.xAxis,

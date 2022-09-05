@@ -39,19 +39,19 @@ import FormattingSettingsSlice = formattingSettings.Slice;
 
 const layoutOptions = [
     {
-        value: LayoutEnum[LayoutEnum.Top],
+        value: LayoutEnum.Top,
         displayName: "Top"
     },
     {
-        value: LayoutEnum[LayoutEnum.Right],
+        value: LayoutEnum.Right,
         displayName: "Right"
     },
     {
-        value: LayoutEnum[LayoutEnum.Bottom],
+        value: LayoutEnum.Bottom,
         displayName: "Bottom"
     },
     {
-        value: LayoutEnum[LayoutEnum.Left],
+        value: LayoutEnum.Left,
         displayName: "Left"
     }
 ]

@@ -42,8 +42,8 @@ export class KPIIndicatorCustomizableLabelDescriptor extends KPIIndicatorLabelDe
 
         this.name = name;
         this.displayName = displayName;
-        this.slices.push(this.show, this.font, this.fontColor, this.label)
         this.show.value = false;
+        this.slices.push(this.show, this.font, this.fontColor, this.label)
     }
 
     public isShown(): boolean {

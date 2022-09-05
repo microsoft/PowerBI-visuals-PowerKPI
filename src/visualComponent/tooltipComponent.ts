@@ -170,7 +170,7 @@ export class TooltipComponent
             series.forEach((dataSeries: IDataRepresentationSeries) => {
                 const valueFormatterInstance: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
                     dataSeries.format || this.numberFormat,
-                    Number(tooltipValues.displayUnits.value.value),
+                    tooltipValues.displayUnits.value.value as number,
                     tooltipValues.precision.value,
                 );
 
@@ -208,7 +208,7 @@ export class TooltipComponent
             const formatter: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
                 tooltipLabel.getFormat(),
                 x.axisType === DataRepresentationTypeEnum.NumberType
-                    ? Number(tooltipLabel.displayUnits.value.value)
+                    ? tooltipLabel.displayUnits.value.value as number
                     : undefined,
                 x.axisType === DataRepresentationTypeEnum.NumberType
                     ? tooltipLabel.precision.value
@@ -289,7 +289,7 @@ export class TooltipComponent
 
         const varianceFormatter: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
             settings.getFormat(),
-            Number(settings.displayUnits.value.value),
+            settings.displayUnits.value.value as number,
             settings.precision.value,
         );
 
@@ -301,7 +301,7 @@ export class TooltipComponent
             ? legendDescriptor.getLegendMarkerShape()
             : this.getTooltipMarkerShape(TooltipMarkerShapeEnum.circle);
 
-        const color: string = commonKPISettings.color || this.transparentColor;
+        const color: string = (commonKPISettings.color && commonKPISettings.color.value.value) || this.transparentColor;
 
         const lineColor: string = seriesSetting
             ? color

@@ -143,6 +143,7 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
         containerSelector: CssConstants.ClassAndSelector,
         selector: CssConstants.ClassAndSelector,
     ): void {
+        
         const containerSelection: Selection<any, ICaptionKPIComponentOptionsValueSettings[], any, any> = element
             .selectAll(containerSelector.selectorName)
             .data(captions);

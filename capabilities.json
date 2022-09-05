@@ -1289,7 +1289,7 @@
             "bool": true
           }
         },
-        "percentile": {
+        "density": {
           "displayName": "Label Density",
           "type": {
             "numeric": true
@@ -1839,7 +1839,7 @@
             }
           }
         },
-        "percentile": {
+        "density": {
           "displayName": "Ticks Density",
           "type": {
             "numeric": true
@@ -1917,7 +1917,7 @@
             }
           }
         },
-        "percentile": {
+        "density": {
           "displayName": "Ticks Density",
           "type": {
             "numeric": true
@@ -1996,7 +1996,7 @@
             }
           }
         },
-        "percentile": {
+        "density": {
           "displayName": "Ticks Density",
           "type": {
             "numeric": true

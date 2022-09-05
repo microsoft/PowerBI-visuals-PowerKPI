@@ -72,7 +72,7 @@ export class ValueKPIComponent
                 displayUnitSystemType: displayUnitSystemType.DisplayUnitSystemType.WholeUnits,
                 format: options.data.series[0].format || this.valueFormat,
                 precision: settings.actualValueKPI.precision.value,
-                value: Number(settings.actualValueKPI.displayUnits.value.value) || series[0].domain.max,
+                value: settings.actualValueKPI.displayUnits.value.value || series[0].domain.max,
             });
 
             const value: number = options.data.series[0].current.y;
@@ -81,7 +81,6 @@ export class ValueKPIComponent
             caption = formatter.format(value);
             details = options.data.series[0].name;
         }
-
         const valueCaption: ICaptionKPIComponentOptionsValueSettings = {
             settings: settings.actualValueKPI,
             title: details || title,
@@ -107,14 +106,15 @@ export class ValueKPIComponent
         let currentAlign: AlignEnum = AlignEnum.alignCenter;
         if (!settings.dateLabelKPI.isElementShown() && !settings.dateValueKPI.isElementShown()) {
             currentAlign = AlignEnum.alignLeft;
-        } else if (((!settings.kpiIndicatorValue.isElementShown() || isNaN(variance[0]))
-            && (!settings.kpiIndicatorLabel.isShown()
-                || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex))
-            )
-            && (!isVarianceKPIAvailable || !settings.kpiIndicator.isElementShown()))
-            && (!settings.secondKPIIndicatorValue.isElementShown() && !settings.secondKPIIndicatorLabel.isShown()
-                || isNaN(variance[1]))
-        ) {
+        } else if ((
+            (!settings.kpiIndicatorValue.isElementShown() || isNaN(variance[0])) && 
+            (!settings.kpiIndicatorLabel.isShown() || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex))) && 
+            (!isVarianceKPIAvailable || !settings.kpiIndicator.isElementShown())
+        ) && (
+            !settings.secondKPIIndicatorValue.isElementShown() && 
+            !settings.secondKPIIndicatorLabel.isShown() ||
+            isNaN(variance[1])
+        )) {
             currentAlign = AlignEnum.alignRight;
         }
 

@@ -96,6 +96,7 @@ export class KPIComponent extends BaseContainerComponent<
         this.applyStyleBasedOnLayout(layout, legend, viewport);
 
         let howManyComponentsWasRendered: number = 0;
+
         this.components.forEach((component: IKPIVisualComponent<IVisualComponentRenderOptions>) => {
 
             component.render(options);

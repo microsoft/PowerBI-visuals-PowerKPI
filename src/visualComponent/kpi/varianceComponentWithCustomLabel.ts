@@ -98,7 +98,7 @@ export class VarianceComponentWithCustomLabel
         }
 
         const formatter: valueFormatter.IValueFormatter = this.getValueFormatter(
-            Number(varianceSettings.displayUnits.value.value),
+            varianceSettings.displayUnits.value.value as number,
             varianceSettings.precision.value,
             secondKPIIndicatorValue.getFormat(),
         );

@@ -73,7 +73,7 @@ export class VarianceComponentWithIndicator
             },
             variance,
         } = options.data;
-
+        
         const { current } = series && series.length > 0 && series[0];
         let kpiIndex: number = NaN;
 
@@ -91,8 +91,8 @@ export class VarianceComponentWithIndicator
         if(varianceSettings.fontColor){
             varianceSettings.fontColor.value.value = kpiIndicatorValue.matchKPIColor.value
                 && kpiIndicatorSettings
-                && kpiIndicatorSettings.color
-                ? kpiIndicatorSettings.color
+                && kpiIndicatorSettings.color.value.value
+                ? kpiIndicatorSettings.color.value.value
                 : kpiIndicatorValue.fontColor.value.value;
         } else {
             varianceSettings.fontColor = kpiIndicatorValue.fontColor;
@@ -104,7 +104,7 @@ export class VarianceComponentWithIndicator
 
         const indicatorSettings: KPIIndicatorDescriptor = new KPIIndicatorDescriptor();
 
-        indicatorSettings.fontColor.value.value = kpiIndicatorSettings.color;
+        indicatorSettings.fontColor.value.value = kpiIndicatorSettings.color.value.value;
         indicatorSettings.show.value = kpiIndicator.isElementShown();
         indicatorSettings.font.bold.value = false; // This options doesn't make any sense for symbol
         indicatorSettings.font.fontSize.value = kpiIndicator.font.fontSize.value;
@@ -165,7 +165,7 @@ export class VarianceComponentWithIndicator
         };
 
         const formatter: valueFormatter.IValueFormatter = this.getValueFormatter(
-            Number(varianceSettings.displayUnits.value.value),
+            varianceSettings.displayUnits.value.value as number,
             varianceSettings.precision.value,
             kpiIndicatorValue.getFormat(),
         );

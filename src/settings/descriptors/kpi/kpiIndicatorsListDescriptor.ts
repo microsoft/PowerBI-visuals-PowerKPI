@@ -25,37 +25,56 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { HorizontalLayoutEnum } from "../../../layout/horizontalLayoutEnum";
 
 import { FontSizeDescriptor } from "../autoHiding/fontSizeDescriptor";
+import { IDescriptor } from "../descriptor";
 
-interface IPropertyConfiguration {
-    name: string;
-    defaultValue: any | ((index: number) => any);
-    displayName: (text: string) => string;
+enum PropertyType {
+    ColorPicker,
+    DropDown,
+    NumUpDown
 }
 
-interface IEnumPropertyConfiguration {
+interface IPropertyConfiguration {
+    type: PropertyType;
     name: string;
-    displayName: string;
+    defaultValue: (index: number) => any;
+    items?: powerbi.IEnumMember[];
 }
 
 export interface IKPIIndicatorSettings { // This should be synchronized with _properties
-    color?: string;
-    shape?: string;
+    color?: formattingSettings.ColorPicker;
+    shape?: formattingSettings.ItemDropdown;
 }
 
-export class KPIIndicatorsListDescriptor extends FontSizeDescriptor {
+export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements IDescriptor {
     public position: string = HorizontalLayoutEnum[HorizontalLayoutEnum.Left];
-    public shouldBackgroundColorMatchKpiColor: boolean = false;
 
+    public shouldBackgroundColorMatchKpiColor = new formattingSettings.ToggleSwitch({
+        name: "shouldBackgroundColorMatchKpiColor",
+        displayName: "Background Match KPI Color",
+        value: false
+    });
+
+    private defaultSlices = [this.show, this.font, this.shouldBackgroundColorMatchKpiColor]
     private _maxAmountOfKPIs: number = 5;
 
-    private _default: IKPIIndicatorSettings = Object.freeze({
-        color: null,
-        shape: null,
-    });
+    private _default: IKPIIndicatorSettings = {
+        color: {
+            name: "default",
+            displayName: "default",
+            value : {value: null}
+        },
+        shape: {
+            name: "default",
+            displayName: "default",
+            items: [],
+            value: null
+        },
+    };
 
     private kpiIndexPropertyName: string = "kpiIndex";
 
@@ -67,54 +86,55 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor {
         "#374649",
     ];
 
-    private _shapes: IEnumPropertyConfiguration[] = [
-        { name: "circle-full", displayName: "Circle" },
-        { name: "triangle", displayName: "Triangle" },
-        { name: "rhombus", displayName: "Diamond" },
-        { name: "square", displayName: "Square" },
-        { name: "flag", displayName: "Flag" },
-        { name: "exclamation", displayName: "Exclamation" },
-        { name: "checkmark", displayName: "Checkmark" },
-        { name: "arrow-up", displayName: "Arrow Up" },
-        { name: "arrow-right-up", displayName: "Arrow Right Up" },
-        { name: "arrow-right-down", displayName: "Arrow Right Down" },
-        { name: "arrow-down", displayName: "Arrow Down" },
-        { name: "caret-up", displayName: "Caret Up" },
-        { name: "caret-down", displayName: "Caret Down" },
-        { name: "circle-empty", displayName: "Circle Empty" },
-        { name: "circle-x", displayName: "Circle X" },
-        { name: "circle-exclamation", displayName: "Circle Exclamation" },
-        { name: "circle-checkmark", displayName: "Circle Checkmark" },
-        { name: "x", displayName: "X" },
-        { name: "star-empty", displayName: "Star Empty" },
-        { name: "star-full", displayName: "Star Full" },
+    private _shapes: powerbi.IEnumMember[] = [
+        { value: "circle-full", displayName: "Circle" },
+        { value: "triangle", displayName: "Triangle" },
+        { value: "rhombus", displayName: "Diamond" },
+        { value: "square", displayName: "Square" },
+        { value: "flag", displayName: "Flag" },
+        { value: "exclamation", displayName: "Exclamation" },
+        { value: "checkmark", displayName: "Checkmark" },
+        { value: "arrow-up", displayName: "Arrow Up" },
+        { value: "arrow-right-up", displayName: "Arrow Right Up" },
+        { value: "arrow-right-down", displayName: "Arrow Right Down" },
+        { value: "arrow-down", displayName: "Arrow Down" },
+        { value: "caret-up", displayName: "Caret Up" },
+        { value: "caret-down", displayName: "Caret Down" },
+        { value: "circle-empty", displayName: "Circle Empty" },
+        { value: "circle-x", displayName: "Circle X" },
+        { value: "circle-exclamation", displayName: "Circle Exclamation" },
+        { value: "circle-checkmark", displayName: "Circle Checkmark" },
+        { value: "x", displayName: "X" },
+        { value: "star-empty", displayName: "Star Empty" },
+        { value: "star-full", displayName: "Star Full" },
     ];
 
     private _properties: IPropertyConfiguration[] = [
         {
+            type: PropertyType.ColorPicker,
             defaultValue: (index: number) => {
                 const color: string = this.getElementByIndex<string>(this._colors, index);
 
-                return color || this._colors[0];
+                return {
+                    value :color || this._colors[0]
+                }
             },
-            displayName: (text: string) => text,
             name: "color",
         },
         {
+            type: PropertyType.DropDown,
             defaultValue: (index: number) => {
-                const shape: IEnumPropertyConfiguration =
-                    this.getElementByIndex<IEnumPropertyConfiguration>(this._shapes, index);
+                const shape: powerbi.IEnumMember =
+                    this.getElementByIndex<powerbi.IEnumMember>(this._shapes, index);
 
-                return shape
-                    ? shape.name
-                    : this._shapes[0].name;
+                return shape ? shape : this._shapes[0];
             },
-            displayName: () => "    Indicator",
             name: "shape",
+            items: this._shapes
         },
         {
+            type: PropertyType.NumUpDown,
             defaultValue: (index: number) => index + 1,
-            displayName: () => "    Value",
             name: this.kpiIndexPropertyName,
         },
     ];
@@ -130,7 +150,7 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor {
         this.font.fontSize.value = 12;
     }
 
-    public getElementByIndex<Type>(setOfValues: Type[], index: number): Type {
+    public getElementByIndex<T>(setOfValues: T[], index: number): T {
         const amountOfValues: number = setOfValues.length;
 
         const currentIndex: number = index < amountOfValues
@@ -141,37 +161,61 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor {
     }
 
     public getCurrentKPI(kpiIndex: number): IKPIIndicatorSettings {
-        if (!isNaN(kpiIndex) && kpiIndex !== null) {
-            for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
-                const currentKPIIndex: number = this[this.getPropertyName(this.kpiIndexPropertyName, index)];
-
-                if (currentKPIIndex === kpiIndex) {
-                    return this._properties.reduce((
-                        current: IKPIIndicatorSettings,
-                        property: IPropertyConfiguration,
-                    ) => {
-                        const indexedName: string = this.getPropertyName(property.name, index);
-
-                        current[property.name] = this[indexedName];
-
-                        return current;
-                    }, {});
-                }
-            }
+        if (isNaN(kpiIndex) || kpiIndex === null) {
+            return this._default;
         }
 
-        return this._default;
+        for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
+            const currentKPIIndex: number = this[this.getPropertyName(this.kpiIndexPropertyName, index)];
+
+            if (currentKPIIndex === kpiIndex) {
+                return this._properties.reduce((
+                    current: IKPIIndicatorSettings,
+                    property: IPropertyConfiguration,
+                ) => {
+                    const indexedName: string = this.getPropertyName(property.name, index);
+                    current[property.name] = this[indexedName];
+
+                    return current;
+                }, {});
+            }
+        }
     }
 
     private applySettingToContext(): void {
+        this.slices = this.defaultSlices
         for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
             this._properties.forEach((property: IPropertyConfiguration) => {
                 const indexedName: string = this.getPropertyName(property.name, index);
 
-                this[indexedName] = typeof property.defaultValue === "function"
-                    ? property.defaultValue(index)
-                    : property.defaultValue;
+                this[indexedName] = this.getProperty(property, indexedName, index)
+                this.slices.push(this[indexedName])
             });
+        }
+    }
+
+    private getProperty(currentProperty: IPropertyConfiguration, indexedName: string, index: number){
+        switch(currentProperty.type){ 
+            case PropertyType.ColorPicker: {
+                return new formattingSettings.ColorPicker({
+                    name: indexedName,
+                    displayName: `KPI ${index + 1}`,
+                    value: currentProperty.defaultValue(index)
+                });
+            } case PropertyType.DropDown: {
+                return new formattingSettings.ItemDropdown({
+                    name: indexedName,
+                    displayName: "    Indicator",
+                    value: currentProperty.defaultValue(index),
+                    items: currentProperty.items
+                });
+            } case PropertyType.NumUpDown: {
+                return new formattingSettings.NumUpDown({
+                    name: indexedName,
+                    displayName: "    Value",
+                    value: currentProperty.defaultValue(index)
+                });
+            }
         }
     }
 

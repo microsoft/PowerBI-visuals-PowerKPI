@@ -171,6 +171,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
 
     private filterFormattingProperties() {
         this.filterLineProperties()
+        this.filterKPIIndicatorValueProperties()
     }
 
     private filterLineProperties(){
@@ -189,6 +190,21 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
         if(!line.shouldMatchKpiColor.value) this.removeSlice(newSlices, line.dataPointStartsKpiColorSegment)
         if(line.lineType.value.value !== LineType.area) this.removeSlice(newSlices, line.rawAreaOpacity)
         line.slices = newSlices
+    }
+
+    private filterKPIIndicatorValueProperties(){
+        const kpiIndicatorValue = this.settings.kpiIndicatorValue
+        let newSlices: Array<FormattingSettingsSlice> = [
+            kpiIndicatorValue.show,
+            kpiIndicatorValue.font,
+            kpiIndicatorValue.format,
+            kpiIndicatorValue.displayUnits,
+            kpiIndicatorValue.precision,
+            kpiIndicatorValue.matchKPIColor,
+            kpiIndicatorValue.fontColor,
+        ]
+        if(kpiIndicatorValue.matchKPIColor.value) this.removeSlice(newSlices, kpiIndicatorValue.fontColor)
+        kpiIndicatorValue.slices = newSlices
     }
 
     private removeSlice(slices: Array<FormattingSettingsSlice>, item: FormattingSettingsSlice) {
