@@ -33,9 +33,8 @@ import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentat
 import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
 import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
-import { LineStyle } from "../settings/descriptors/lineDescriptor";
+import { ILineDescriptor, LineStyle } from "../settings/descriptors/lineDescriptor";
 import { TooltipVarianceDescriptor } from "../settings/descriptors/tooltip/tooltipVarianceDescriptor";
-import { SeriesSettings } from "../settings/seriesSettings";
 import { IVisualComponent } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
 import { IEventPositionVisualComponentOptions } from "./eventPositionVisualComponentOptions";
@@ -62,7 +61,7 @@ export class TooltipComponent
     private varianceDisplayName: string = "Variance";
     private secondVarianceDisplayName: string = `${this.varianceDisplayName} 2`;
 
-    private numberFormat: string = valueFormatter.valueFormatter.DefaultNumericFormat;
+    private numberFormat: string = valueFormatter.DefaultNumericFormat;
 
     private transparentColor: string = "rgba(0,0,0,0)";
 
@@ -111,6 +110,7 @@ export class TooltipComponent
                     secondTooltipVariance,
                     tooltipValues,
                     legend,
+                    line
                 },
                 variances,
             },
@@ -139,7 +139,7 @@ export class TooltipComponent
                 && series[0].points[0].kpiIndex),
             (variances[0] || [])[0],
             legend,
-            series[0] && series[0].settings,
+            series[0] && line[series[0].name]
         );
 
         if (firstVariance) {
@@ -183,11 +183,15 @@ export class TooltipComponent
                     && dataSeriesPoint.y !== undefined
                     && !isNaN(dataSeriesPoint.y)
                 ) {
+                    const lineSettings: ILineDescriptor = line[dataSeries.name]
+                    if(!lineSettings){
+                        return
+                    }
                     dataItems.push({
-                        color: dataSeries.settings.line.fillColor.value.value,
+                        color: lineSettings.fillColor.value.value,
                         displayName: `${dataSeries.name}`,
-                        lineColor: dataSeries.settings.line.fillColor.value.value,
-                        lineStyle: legend.getLegendLineStyle(dataSeries.settings.line.lineStyle.value.value as LineStyle),
+                        lineColor: lineSettings.fillColor.value.value,
+                        lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle.value.value as LineStyle),
                         markerShape: legend.getLegendMarkerShape(),
                         value: valueFormatterInstance.format(dataSeriesPoint.y),
                     });
@@ -273,7 +277,7 @@ export class TooltipComponent
         commonKPISettings: IKPIIndicatorSettings = {},
         kpiIndicatorVariance: number,
         legendDescriptor?: LegendDescriptor,
-        seriesSetting?: SeriesSettings,
+        lineSettings?: ILineDescriptor,
     ): IVisualTooltipDataItem {
         if (!settings.isElementShown()) {
             return null;
@@ -293,8 +297,8 @@ export class TooltipComponent
             settings.precision.value,
         );
 
-        const lineStyle: string = legendDescriptor && seriesSetting
-            ? legendDescriptor.getLegendLineStyle(seriesSetting.line.lineStyle.value.value as LineStyle)
+        const lineStyle: string = legendDescriptor && lineSettings
+            ? legendDescriptor.getLegendLineStyle(lineSettings.lineStyle.value.value as LineStyle)
             : undefined;
 
         const markerShape: string = legendDescriptor
@@ -303,7 +307,7 @@ export class TooltipComponent
 
         const color: string = (commonKPISettings.color && commonKPISettings.color.value.value) || this.transparentColor;
 
-        const lineColor: string = seriesSetting
+        const lineColor: string = lineSettings
             ? color
             : undefined;
 
@@ -322,7 +326,7 @@ export class TooltipComponent
         displayUnits?: number,
         precision?: number,
     ): valueFormatter.IValueFormatter {
-        return valueFormatter.valueFormatter.create({
+        return valueFormatter.create({
             format,
             precision,
             value: displayUnits,

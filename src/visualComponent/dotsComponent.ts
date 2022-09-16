@@ -26,6 +26,7 @@
 
 import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
+import { ILineDescriptor } from "../settings/descriptors/lineDescriptor";
 import { BaseContainerComponent } from "./base/baseContainerComponent";
 import { IVisualComponent } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
@@ -63,7 +64,7 @@ export class DotsComponent extends BaseContainerComponent<
             x,
             series,
             viewport,
-            settings: { dots },
+            settings: { dots, line },
         } = options.data;
 
         this.initComponents(
@@ -87,11 +88,15 @@ export class DotsComponent extends BaseContainerComponent<
                 if (point) {
                     component.show();
 
+                    const lineSettings: ILineDescriptor = line[currentSeries.name]
+                    if(!lineSettings){
+                        return
+                    }
                     component.render({
                         point,
                         radiusFactor: dots.radiusFactor,
                         series: currentSeries,
-                        thickness: currentSeries.settings.line.thickness.value,
+                        thickness: lineSettings.thickness.value,
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,

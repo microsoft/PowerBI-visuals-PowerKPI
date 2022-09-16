@@ -38,15 +38,12 @@ import {
     IDataRepresentationAxisBase,
 } from "./dataRepresentationAxis";
 
-import { SeriesSettings } from "../settings/seriesSettings";
-
 export interface IDataRepresentationSeries extends interactivitySelectionService.SelectableDataPoint {
     points: IDataRepresentationPoint[];
     gradientPoints: IDataRepresentationPointGradientColor[];
     name: string;
     current: IDataRepresentationPointIndexed; // The current value represents the latest non-null value
     format: string;
-    settings: SeriesSettings;
     domain: IDataRepresentationAxisBase;
     y: IDataRepresentationAxis;
     hasSelection: boolean;

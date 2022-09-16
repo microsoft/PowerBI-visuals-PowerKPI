@@ -50,8 +50,23 @@ export interface IKPIIndicatorSettings { // This should be synchronized with _pr
     shape?: formattingSettings.ItemDropdown;
 }
 
+const positionOptions = [
+    {
+        value: HorizontalLayoutEnum.Left,
+        displayName: "Left"
+      },
+      {
+        value: HorizontalLayoutEnum.Right,
+        displayName: "Right"
+      }
+]
 export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements IDescriptor {
-    public position: string = HorizontalLayoutEnum[HorizontalLayoutEnum.Left];
+    public position = new formattingSettings.ItemDropdown({
+        name: "position",
+        displayName: "Position",
+        value: positionOptions[0],
+        items: positionOptions
+    });
 
     public shouldBackgroundColorMatchKpiColor = new formattingSettings.ToggleSwitch({
         name: "shouldBackgroundColorMatchKpiColor",
@@ -59,7 +74,7 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
         value: false
     });
 
-    private defaultSlices = [this.show, this.font, this.shouldBackgroundColorMatchKpiColor]
+    private defaultSlices = [this.show, this.font, this.position, this.shouldBackgroundColorMatchKpiColor]
     private _maxAmountOfKPIs: number = 5;
 
     private _default: IKPIIndicatorSettings = {
@@ -142,12 +157,12 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
     constructor(viewport?: powerbi.IViewport) {
         super(viewport);
 
-        this.applySettingToContext();
 
         this.name = "kpiIndicator"
         this.displayName = "KPI Indicator"
         this.show.value = true;
         this.font.fontSize.value = 12;
+        this.slices = this.getContextProperties();
     }
 
     public getElementByIndex<T>(setOfValues: T[], index: number): T {
@@ -182,16 +197,17 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
         }
     }
 
-    private applySettingToContext(): void {
-        this.slices = this.defaultSlices
+    public getContextProperties() {
+        let newSlices = this.defaultSlices
         for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
             this._properties.forEach((property: IPropertyConfiguration) => {
                 const indexedName: string = this.getPropertyName(property.name, index);
 
                 this[indexedName] = this.getProperty(property, indexedName, index)
-                this.slices.push(this[indexedName])
+                newSlices.push(this[indexedName])
             });
         }
+        return newSlices
     }
 
     private getProperty(currentProperty: IPropertyConfiguration, indexedName: string, index: number){

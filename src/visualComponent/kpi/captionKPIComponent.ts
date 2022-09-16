@@ -219,7 +219,7 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
                 if (caption.settings.isElementShown()) {
                     const text: string = caption.value || "M";
 
-                    const rect: SVGRect = textMeasurementService.textMeasurementService.measureSvgTextRect({
+                    const rect: SVGRect = textMeasurementService.measureSvgTextRect({
                         fontFamily: caption.settings.font.fontFamily.value,
                         fontSize: pixelConverter.toString(pixelConverter.fromPointToPixel(caption.settings.font.fontSize.value)),
                         text,

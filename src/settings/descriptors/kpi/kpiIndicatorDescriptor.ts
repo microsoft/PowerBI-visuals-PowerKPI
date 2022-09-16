@@ -31,13 +31,13 @@ import { DisplayUnit } from "powerbi-visuals-utils-formattingutils/lib/src/displ
 import { displayUnitsOptions, NumberDescriptorBase } from "../numberDescriptorBase";
 
 export class KPIIndicatorDescriptor extends NumberDescriptorBase {
-    fontColor = new formattingSettings.ColorPicker({
+    public fontColor = new formattingSettings.ColorPicker({
         name: "fontColor",
         displayName: "Font Color",
         value: { value: "#333333" }
     });
 
-    constructor(viewport?: powerbi.IViewport) {
+     constructor(viewport?: powerbi.IViewport) {
         super(viewport);
 
         this.displayUnits.value = displayUnitsOptions[1];

@@ -34,6 +34,7 @@ import { label as NewLabelUtils } from "powerbi-visuals-utils-chartutils";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 import {
+    interfaces,
     textMeasurementService,
     valueFormatter,
 } from "powerbi-visuals-utils-formattingutils";
@@ -102,7 +103,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
         text: string,
         fontSize: number,
         fontFamily: string,
-    ): textMeasurementService.TextProperties {
+    ): interfaces.TextProperties {
         return {
             fontFamily,
             fontSize: pixelConverter.toString(fontSize),
@@ -173,13 +174,13 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
 
                     const formattedValue: string = valueFormatters[seriesIndex].format(point.y);
 
-                    const textProperties: textMeasurementService.TextProperties = this.getTextProperties(
+                    const textProperties: interfaces.TextProperties = this.getTextProperties(
                         formattedValue,
                         fontSizeInPx,
                         labels.font.fontFamily.value);
 
-                    const textWidth: number = textMeasurementService.textMeasurementService.measureSvgTextWidth(textProperties);
-                    const textHeight: number = textMeasurementService.textMeasurementService.estimateSvgTextHeight(textProperties);
+                    const textWidth: number = textMeasurementService.measureSvgTextWidth(textProperties);
+                    const textHeight: number = textMeasurementService.estimateSvgTextHeight(textProperties);
 
                     const parentShape: NewLabelUtils.labelLayout.LabelParentPoint = {
                         point: {
@@ -230,7 +231,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
         precision: number,
         format: string,
     ): valueFormatter.IValueFormatter {
-        return valueFormatter.valueFormatter.create({
+        return valueFormatter.create({
             format,
             precision,
             value: displayUnits,

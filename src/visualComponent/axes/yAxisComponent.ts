@@ -71,7 +71,7 @@ export class YAxisComponent
     private maxLabelWidth: number = 0;
     private maxLabelHeight: number = 0;
 
-    private valueFormat: string = valueFormatter.valueFormatter.DefaultNumericFormat;
+    private valueFormat: string = valueFormatter.DefaultNumericFormat;
 
     constructor(options: IVisualComponentConstructorOptions) {
         super();
@@ -185,7 +185,7 @@ export class YAxisComponent
             const formattedLabel: string = this.formatter.format(item);
 
             if (shouldLabelsBeTruncated) {
-                return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
+                return textMeasurementService.getTailoredTextOrDefault(
                     labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.font.fontFamily.value),
                     availableWidth,
                 );

@@ -43,9 +43,7 @@ import { DataRepresentationScale } from "../dataRepresentation/dataRepresentatio
 import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
 import { AxisType } from "../settings/descriptors/axis/axisDescriptor";
 import { YAxisDescriptor } from "../settings/descriptors/axis/yAxisDescriptor";
-import { BaseDescriptor } from "../settings/descriptors/descriptor";
 import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
-import { SeriesSettings } from "../settings/seriesSettings";
 import { Settings } from "../settings/settings";
 import { IConverter } from "./converter";
 import { IConverterOptions } from "./converterOptions";
@@ -246,23 +244,27 @@ export class DataConverter
                         y: NaN,
                     };
 
-                    const seriesSettings: SeriesSettings = new SeriesSettings;
+                    const isGrouped: boolean = columnGroup && !!columnGroup.identity;
 
-                    for (const propertyName in seriesSettings) {
-                        const descriptor: BaseDescriptor = seriesSettings[propertyName];
-                        const defaultDescriptor: BaseDescriptor = settings[propertyName];
-
-                        if (descriptor && descriptor.applyDefault && defaultDescriptor) {
-                            descriptor.applyDefault(defaultDescriptor);
-                        }
+                    if (isGrouped) {
+                        dataRepresentation.isGrouped = isGrouped;
                     }
-                    seriesSettings.parseObjects(columnGroup.objects || groupedValue.source.objects);
 
-                    if (!seriesSettings.line.fillColor.value.value
+                    const name: string = isGrouped && columnGroup.name
+                        ? `${columnGroup.name} - ${groupedValue.source.displayName}`
+                        : groupedValue.source.displayName;
+
+                    const groupName: string = isGrouped && columnGroup.name
+                        ? `${columnGroup.name}`
+                        : undefined;
+
+                    settings.line.addContainerItem(name)
+
+                    if (!settings.line[name].fillColor.value.value
                         && colorPalette
                         && colorPalette.getColor
                     ) {
-                        seriesSettings.line.fillColor.value.value = colorPalette.getColor(`${seriesColorIndex}`).value;
+                        settings.line[name].fillColor.value.value = colorPalette.getColor(`${seriesColorIndex}`).value;
 
                         seriesColorIndex++;
                     }
@@ -279,16 +281,11 @@ export class DataConverter
                         groupedValue,
                         seriesY,
                         kpiIndexes,
-                        seriesSettings,
+                        name,
                         settings,
                         currentPoint,
                     );
 
-                    const isGrouped: boolean = columnGroup && !!columnGroup.identity;
-
-                    if (isGrouped) {
-                        dataRepresentation.isGrouped = isGrouped;
-                    }
 
                     const identity: powerbi.extensibility.ISelectionId = createSelectionIdBuilder()
                         .withSeries(
@@ -300,17 +297,9 @@ export class DataConverter
                         .withMeasure(groupedValue.source.queryName)
                         .createSelectionId();
 
-                    if (isNaN(maxThickness) || seriesSettings.line.thickness.value > maxThickness) {
-                        maxThickness = seriesSettings.line.thickness.value;
+                    if (isNaN(maxThickness) || settings.line[name].thickness.value > maxThickness) {
+                        maxThickness = settings.line[name].thickness.value;
                     }
-
-                    const name: string = isGrouped && columnGroup.name
-                        ? `${columnGroup.name} - ${groupedValue.source.displayName}`
-                        : groupedValue.source.displayName;
-
-                    const groupName: string = isGrouped && columnGroup.name
-                        ? `${columnGroup.name}`
-                        : undefined;
 
                     seriesGroup.series.push({
                         current: currentPoint,
@@ -323,24 +312,22 @@ export class DataConverter
                         name,
                         points,
                         selected: false,
-                        settings: seriesSettings,
                         y: seriesGroup.y,
                     });
                 }
             });
             seriesColorIndex = 0
-            dataRepresentation.series.forEach(el => {
+            settings.line.container.containerItems.forEach(container => {
                 if (
                     colorPalette
                     && colorPalette.getColor
                 ) {
-                    el.settings.line.fillColor.value.value = colorPalette.getColor(`${seriesColorIndex}`).value;
-
+                    settings.line[container.displayName].fillColor.value.value = colorPalette.getColor(`${seriesColorIndex}`).value;
+    
                     seriesColorIndex++;
                 }
             })
         });
-
         dataRepresentation.x.values = axisCategory.values as DataRepresentationAxisValueType[];
 
         this.getXAxisScale(
@@ -456,7 +443,7 @@ export class DataConverter
         groupedValue: powerbi.DataViewValueColumn,
         seriesY: IDataRepresentationAxisBase,
         kpiIndexes: number[],
-        seriesSettings: SeriesSettings,
+        name: string,
         settings: Settings,
         currentPoint: IDataRepresentationPointIndexed,
     ): {
@@ -465,7 +452,7 @@ export class DataConverter
         } {
         const gradientPoints: IDataRepresentationPointGradientColor[] = [];
 
-        const dataPointEndsKpiColorSegment: boolean = !seriesSettings.line.dataPointStartsKpiColorSegment.value;
+        const dataPointEndsKpiColorSegment: boolean = !settings.line[name].dataPointStartsKpiColorSegment.value;
 
         const copiedAxisValues: DataRepresentationAxisValueType[] = dataPointEndsKpiColorSegment
             ? axisValues.slice().reverse()
@@ -486,9 +473,9 @@ export class DataConverter
 
                 const kpiIndex: number = this.getKPIIndex(kpiIndexes[categoryIndex]);
 
-                let color: string = seriesSettings.line.fillColor.value.value;
+                let color: string = settings.line[name].fillColor.value.value;
 
-                if (seriesSettings.line.shouldMatchKpiColor.value) {
+                if (settings.line[name].shouldMatchKpiColor.value) {
                     const currentKPI: IKPIIndicatorSettings = settings
                         .kpiIndicator
                         .getCurrentKPI(kpiIndex);
@@ -616,7 +603,7 @@ export class DataConverter
         }
 
         if (value instanceof Date) {
-            return valueFormatter.valueFormatter.format(value, format || "dddd, MMMM dd, yyyy");
+            return valueFormatter.format(value, format || "dddd, MMMM dd, yyyy");
         }
 
         return `${value}`;

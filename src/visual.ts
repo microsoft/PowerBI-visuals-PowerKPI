@@ -56,7 +56,6 @@ import {
     IBehaviorOptions,
 } from "./behavior/behavior";
 import { Settings } from "./settings/settings";
-import { DataRepresentationTypeEnum } from "./dataRepresentation/dataRepresentationType";
 import { formattingSettings, FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 
 import FormattingSettingsSlice = formattingSettings.Slice;
@@ -170,30 +169,98 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     }
 
     private filterFormattingProperties() {
+        this.filterSettingsCards()
+        this.filterLayoutProperties()
         this.filterLineProperties()
+        this.filterKPIIndicatorProperties()
         this.filterKPIIndicatorValueProperties()
     }
 
-    private filterLineProperties(){
-        const line = this.settings.line
-        let newSlices: Array<FormattingSettingsSlice> = [
-            line.fillColor, 
-            line.shouldMatchKpiColor, 
-            line.dataPointStartsKpiColorSegment, 
-            line.lineType, 
-            line.thickness, 
-            line.rawOpacity, 
-            line.rawAreaOpacity, 
-            line.lineStyle, 
-            line.interpolation
-        ]
-        if(!line.shouldMatchKpiColor.value) this.removeSlice(newSlices, line.dataPointStartsKpiColorSegment)
-        if(line.lineType.value.value !== LineType.area) this.removeSlice(newSlices, line.rawAreaOpacity)
-        line.slices = newSlices
+    private filterSettingsCards() {
+        let newCards = this.settings.defaultCards
+        this.settings.defaultCards.forEach(card => {
+            if(this.shouldDeleteSettingsCard(card.name)){
+                this.removeArrayItem(newCards, card)
+            }
+        })
+        this.settings.cards = newCards
     }
 
-    private filterKPIIndicatorValueProperties(){
-        const kpiIndicatorValue = this.settings.kpiIndicatorValue
+    public shouldDeleteSettingsCard (
+        cardName: string,
+    ): boolean {
+        switch (cardName) {
+            case "kpiIndicatorValue": {
+                return isNaN(this.dataRepresentation?.variance?.[0])
+            }
+            case "kpiIndicatorLabel": {
+                return isNaN(this.dataRepresentation?.variance?.[0]) && isNaN(this.dataRepresentation?.series?.[0]?.current?.kpiIndex)
+            }
+            case "secondKPIIndicatorValue":
+            case "secondKPIIndicatorLabel":
+            case "secondTooltipVariance": {
+                return !this.dataRepresentation?.series || !this.dataRepresentation?.variance || isNaN(this.dataRepresentation.variance[1])
+            }
+            case "secondaryYAxis":
+            case "secondaryReferenceLineOfYAxis": {
+                return !this.dataRepresentation?.groups?.[1]
+            }
+            default: {
+                return false
+            }
+        }
+    }
+
+    private filterLayoutProperties() {
+        const { layout } = this.settings
+        let newSlices: Array<FormattingSettingsSlice> = [layout.autoHideVisualComponents, layout.auto, layout.layout];
+        if(layout.auto.value) this.removeArrayItem(newSlices, layout.layout)
+        layout.slices = newSlices
+    }
+
+    private filterLineProperties(){
+        const { line } = this.settings
+        line.container.containerItems.forEach(containerItem => {
+            const containerName = containerItem.displayName
+            let newSlices: Array<FormattingSettingsSlice> = [
+                "fillColor", 
+                "shouldMatchKpiColor", 
+                "dataPointStartsKpiColorSegment", 
+                "lineType", 
+                "thickness", 
+                "rawOpacity", 
+                "areaOpacity", 
+                "lineStyle", 
+                "interpolation",
+                "interpolationWithColorizedLine"
+            ].map(name => line[containerName]?.[name])
+
+            if(!line[containerName]) return
+
+            if(line[containerName].shouldMatchKpiColor.value) { 
+                this.removeArrayItem(newSlices, line[containerName].interpolation)
+            } else {
+                this.removeArrayItem(newSlices, line[containerName].dataPointStartsKpiColorSegment)
+                this.removeArrayItem(newSlices, line[containerName].interpolationWithColorizedLine)
+            }
+
+            if(line[containerName].lineType.value.value !== LineType.area) this.removeArrayItem(newSlices, line[containerName].areaOpacity)
+            containerItem.slices = newSlices
+        })
+    }
+
+    private filterKPIIndicatorProperties() {
+        const { kpiIndicator } = this.settings
+        let newSlices: Array<FormattingSettingsSlice> = kpiIndicator.getContextProperties()
+
+        if(!this.dataRepresentation?.settings.kpiIndicatorValue.show.value || isNaN(this.dataRepresentation.variance?.[0])) {
+            this.removeArrayItem(newSlices, kpiIndicator.position)
+        }
+        kpiIndicator.slices = newSlices
+    }
+
+    private filterKPIIndicatorValueProperties() {
+        const { kpiIndicatorValue } = this.settings
         let newSlices: Array<FormattingSettingsSlice> = [
             kpiIndicatorValue.show,
             kpiIndicatorValue.font,
@@ -203,14 +270,14 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
             kpiIndicatorValue.matchKPIColor,
             kpiIndicatorValue.fontColor,
         ]
-        if(kpiIndicatorValue.matchKPIColor.value) this.removeSlice(newSlices, kpiIndicatorValue.fontColor)
+        if(kpiIndicatorValue.matchKPIColor.value) this.removeArrayItem(newSlices, kpiIndicatorValue.fontColor)
         kpiIndicatorValue.slices = newSlices
     }
 
-    private removeSlice(slices: Array<FormattingSettingsSlice>, item: FormattingSettingsSlice) {
-        const index = slices.indexOf(item);
+    private removeArrayItem<T>(array: Array<T>, item: T) {
+        const index = array.indexOf(item);
         if(index > -1) {
-            slices.splice(index, 1)
+            array.splice(index, 1)
         }
     }
 }

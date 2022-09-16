@@ -277,7 +277,7 @@ export function createFormatter(
             }
 
             // this will ignore the formatString and create one based on the smallest non-zero portion of the values supplied.
-            formatter = valueFormatter.valueFormatter.create({
+            formatter = valueFormatter.create({
                 format: formatString,
                 tickCount: bestTickCount,
                 value,
@@ -286,7 +286,7 @@ export function createFormatter(
         }
         else {
             // Use the model formatString for ordinal datetime
-            formatter = valueFormatter.valueFormatter.createDefaultFormatter(formatString, true);
+            formatter = valueFormatter.createDefaultFormatter(formatString, true);
         }
     }
     else {
@@ -313,12 +313,12 @@ export function createFormatter(
                 );
             }
 
-            formatter = valueFormatter.valueFormatter.create(options);
+            formatter = valueFormatter.create(options);
         }
         else {
             // do not use display units, just the basic value formatter
             // datetime is handled above, so we are ordinal and either boolean, numeric, or text.
-            formatter = valueFormatter.valueFormatter.createDefaultFormatter(formatString, true);
+            formatter = valueFormatter.createDefaultFormatter(formatString, true);
         }
     }
 
@@ -513,7 +513,7 @@ function getRecommendedTickValuesForADateTimeRange(maxTicks: number, dataDomain:
         return [];
     }
 
-    const dateTimeTickLabels: Date[] = dateTimeSequence.DateTimeSequence.calculate(
+    const dateTimeTickLabels: Date[] = dateTimeSequence.DateTimeSequence.CALCULATE(
         new Date(dataDomain[0]),
         new Date(dataDomain[1]), maxTicks).sequence;
 

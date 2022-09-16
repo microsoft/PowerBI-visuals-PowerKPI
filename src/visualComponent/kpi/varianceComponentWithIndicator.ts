@@ -83,8 +83,8 @@ export class VarianceComponentWithIndicator
 
         const kpiIndicatorSettings: IKPIIndicatorSettings = kpiIndicator.getCurrentKPI(kpiIndex);
 
-        const varianceSettings: KPIIndicatorDescriptor = this.cloneClass<KPIIndicatorDescriptor>(kpiIndicatorValue);
-        const kpiLabelSettings: KPIIndicatorDescriptor = this.cloneClass<KPIIndicatorDescriptor>(kpiIndicatorLabel);
+        const varianceSettings: KPIIndicatorDescriptor = this.cloneClass(kpiIndicatorValue);
+        const kpiLabelSettings: KPIIndicatorDescriptor = this.cloneClass(kpiIndicatorLabel);
 
         kpiLabelSettings.show.value = kpiIndicatorLabel.isShown();
 
@@ -184,7 +184,7 @@ export class VarianceComponentWithIndicator
 
         const captions: ICaptionKPIComponentOptionsValueSettings[][] = [];
 
-        switch (HorizontalLayoutEnum[kpiIndicator.position]) {
+        switch (kpiIndicator.position.value.value) {
             case HorizontalLayoutEnum.Right: {
                 captions.push(
                     [valueCaption, indicatorCaption],

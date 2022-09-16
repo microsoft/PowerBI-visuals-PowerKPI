@@ -33,33 +33,53 @@ export enum SubtitleAlignment {
     right = "right",
 }
 
+const alignmentOptions = [
+    {
+        value: SubtitleAlignment.left,
+        displayName: "Left"
+    },
+    {
+        value: SubtitleAlignment.center,
+        displayName: "Center"
+    },
+    {
+        value: SubtitleAlignment.right,
+        displayName: "Right"
+    },
+]
+
 export class SubtitleDescriptor extends FontSizeDescriptor {
-    titleText = new formattingSettings.TextInput({
+    public titleText = new formattingSettings.TextInput({
         name: "titleText",
         displayName: "Title text",
         value: "",
         placeholder: ""
     });
 
-    fontColor = new formattingSettings.ColorPicker({
+    public fontColor = new formattingSettings.ColorPicker({
         name: "fontColor",
         displayName: "Font Color",
         value: { value: "#A6A6A6" }
     });
 
-    background = new formattingSettings.ColorPicker({
+    public background = new formattingSettings.ColorPicker({
         name: "background",
         displayName: "Background Color",
         value: { value: "#A6A6A6" }
     });
 
-    // public alignment: SubtitleAlignment = SubtitleAlignment.left;
+    public alignment = new formattingSettings.ItemDropdown({
+        name: "alignment",
+        displayName: "Alignment",
+        items: alignmentOptions,
+        value: alignmentOptions[0]
+    });;
 
     constructor(viewport: powerbi.IViewport) {
         super(viewport)
 
         this.name = "subtitle";
         this.displayName = "Subtitle";
-        this.slices.push(this.show, this.titleText, this.fontColor, this.background);
+        this.slices.push(this.show, this.font, this.titleText, this.fontColor, this.background, this.alignment);
     }
 }

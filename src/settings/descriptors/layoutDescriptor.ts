@@ -43,42 +43,40 @@ const layoutOptions = [
         displayName: "Top"
     },
     {
-        value: LayoutEnum.Right,
-        displayName: "Right"
+        value: LayoutEnum.Left,
+        displayName: "Left"
     },
     {
         value: LayoutEnum.Bottom,
         displayName: "Bottom"
     },
     {
-        value: LayoutEnum.Left,
-        displayName: "Left"
+        value: LayoutEnum.Right,
+        displayName: "Right"
     }
 ]
 
 export class LayoutDescriptor
     extends BaseDescriptor {
 
-    autoHideVisualComponents = new formattingSettings.ToggleSwitch({
+    public autoHideVisualComponents = new formattingSettings.ToggleSwitch({
         name: "autoHideVisualComponents",
         displayName: "Auto Scale",
         value: true
     });
 
-    auto = new formattingSettings.ToggleSwitch({
+    public auto = new formattingSettings.ToggleSwitch({
         name: "auto",
         displayName: "Auto",
         value: true,
     });
 
-    layout = new formattingSettings.ItemDropdown({
+    public layout = new formattingSettings.ItemDropdown({
         name: "layout",
         displayName: "Layout",
         items: layoutOptions,
         value: layoutOptions[0]
     });
-
-    private _layout: string;
 
     private _minSupportedHeight: number = 250;
 
@@ -102,7 +100,7 @@ export class LayoutDescriptor
         }
     }
 
-    public getLayout(): string {
-        return this._layout;
+    public getLayout(): LayoutEnum {
+        return this.layout.value.value as LayoutEnum;
     }
 }

@@ -208,7 +208,7 @@ export class XAxisComponent
                 }
 
                 if (!isNaN(availableWidth)) {
-                    return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
+                    return textMeasurementService.getTailoredTextOrDefault(
                         labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.font.fontFamily.value),
                         availableWidth,
                     );

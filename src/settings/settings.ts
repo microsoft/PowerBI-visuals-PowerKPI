@@ -101,7 +101,7 @@ export class Settings extends formattingSettings.Model {
     public kpiIndicator: KPIIndicatorsListDescriptor = new KPIIndicatorsListDescriptor(kpiCaptionViewport);
     public kpiIndicatorValue: KPIIndicatorValueSignDescriptor = new KPIIndicatorValueSignDescriptor(kpiCaptionViewport);
     public kpiIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
-        "KPIIndicatorLabel",
+        "kpiIndicatorLabel",
         "KPI Indicator Label",
         kpiLabelViewport,
     );
@@ -109,7 +109,7 @@ export class Settings extends formattingSettings.Model {
         kpiCaptionViewport, 
         "secondKPIIndicatorValue", 
         "Second KPI Indicator Value"
-    );
+    ); /// Add fields
     public secondKPIIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
         "secondKPIIndicatorLabel",
         "Second KPI Indicator Label",
@@ -133,16 +133,17 @@ export class Settings extends formattingSettings.Model {
     public tooltipVariance: TooltipVarianceDescriptor = new TooltipVarianceDescriptor("tooltipVariance", "Tooltip KPI Indicator Value");
     public secondTooltipVariance: TooltipVarianceDescriptor = new TooltipVarianceDescriptor("secondTooltipVariance", "Second Tooltip KPI Indicator Value");
     public tooltipValues: TooltipValueDescriptor = new TooltipValueDescriptor("tooltipValues", "Tooltip Values");
-    cards = [
+    public defaultCards = [
         this.layout, this.title, this.subtitle, this.kpiIndicator, this.kpiIndicatorValue,
         this.kpiIndicatorLabel, this.secondKPIIndicatorValue, this.secondKPIIndicatorLabel, 
         this.actualValueKPI, this.actualLabelKPI, this.dateValueKPI, this.dateLabelKPI,
-        this.labels, //  this.dots,
+        this.labels, // this.dots,
         this.line, this.legend, this.xAxis,
         this.yAxis, this.secondaryYAxis, this.referenceLineOfXAxis, this.referenceLineOfYAxis,
         this.secondaryReferenceLineOfYAxis, this.tooltipLabel, this.tooltipVariance, 
         this.secondTooltipVariance, this.tooltipValues
     ]
+    public cards = this.defaultCards
     
     constructor() {
         super();

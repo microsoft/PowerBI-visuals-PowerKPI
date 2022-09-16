@@ -69,7 +69,7 @@ export class LayoutComponent extends BaseContainerComponent<
     public render(options: IVisualComponentRenderOptions): void {
         const { data: { viewport, settings: { layout } } } = options;
 
-        const selectedLayout: LayoutToStyleEnum = this.getLayout(layout.getLayout());
+        const selectedLayout: LayoutToStyleEnum = this.getLayoutStyle(layout.layout.value.value as LayoutEnum);
 
         const widthInPx: string = pixelConverter.toString(viewport.width);
         const heightInPx: string = pixelConverter.toString(viewport.height);
@@ -98,8 +98,8 @@ export class LayoutComponent extends BaseContainerComponent<
         );
     }
 
-    private getLayout(layout: string): LayoutToStyleEnum {
-        switch (LayoutEnum[layout]) {
+    private getLayoutStyle(layout: LayoutEnum): LayoutToStyleEnum {
+        switch (layout) {
             case LayoutEnum.Left: {
                 return LayoutToStyleEnum.rowLayout;
             }

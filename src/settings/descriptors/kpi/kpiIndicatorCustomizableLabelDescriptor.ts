@@ -30,7 +30,7 @@ import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import { KPIIndicatorLabelDescriptor } from "./kpiIndicatorLabelDescriptor";
 
 export class KPIIndicatorCustomizableLabelDescriptor extends KPIIndicatorLabelDescriptor {
-    label = new formattingSettings.TextInput({
+    public label = new formattingSettings.TextInput({
         name: "label",
         displayName: "Label",
         value: "",

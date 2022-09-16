@@ -66,9 +66,9 @@ export class VarianceComponentWithCustomLabel
             },
         } = options.data;
 
-        const varianceSettings: KPIIndicatorDescriptor = this.cloneClass<KPIIndicatorDescriptor>(secondKPIIndicatorValue);
+        const varianceSettings: KPIIndicatorDescriptor = this.cloneClass(secondKPIIndicatorValue);
 
-        const labelSettings: KPIIndicatorDescriptor = this.cloneClass<KPIIndicatorDescriptor>(secondKPIIndicatorLabel);
+        const labelSettings: KPIIndicatorDescriptor = this.cloneClass(secondKPIIndicatorLabel);
 
         labelSettings.show.value = secondKPIIndicatorLabel.isShown();
 

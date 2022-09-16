@@ -111,30 +111,34 @@ export class ChartComponent extends BaseContainerComponent<
             this.components,
             (component: IVisualComponent<IDotComponentRenderOptions | IComboComponentRenderOptions>, componentIndex: number) => {
                 const currentSeries: IDataRepresentationSeries = sortedSeries[componentIndex];
+                const lineSettings = settings.line[currentSeries.name]
+                if(!lineSettings){
+                    return
+                }
 
                 if (this.shouldRenderFallbackComponents) {
                     const point: IDataRepresentationPoint = currentSeries.points[0];
 
                     component.render({
-                        opacity: currentSeries.settings.line.opacity,
+                        opacity: settings.line.getOpacity(currentSeries.name),
                         point,
                         radiusFactor: settings.dots.radiusFactor,
                         series: currentSeries,
-                        thickness: currentSeries.settings.line.thickness.value,
+                        thickness: lineSettings.thickness.value,
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,
                     });
                 } else {
                     component.render({
-                        areaOpacity: currentSeries.settings.line.areaOpacity,
+                        areaOpacity: settings.line.getAreaOpacity(currentSeries.name),
                         gradientPoints: currentSeries.gradientPoints,
-                        interpolation: currentSeries.settings.line.getInterpolation(),
-                        lineStyle: currentSeries.settings.line.lineStyle.value.value as LineStyle,
-                        lineType: currentSeries.settings.line.lineType.value.value as LineType,
-                        opacity: currentSeries.settings.line.opacity,
+                        interpolation: settings.line.getInterpolation(currentSeries.name),
+                        lineStyle: lineSettings.lineStyle.value.value as LineStyle,
+                        lineType: lineSettings.lineType.value.value as LineType,
+                        opacity: settings.line.getOpacity(currentSeries.name),
                         series: currentSeries,
-                        thickness: currentSeries.settings.line.thickness.value,
+                        thickness: lineSettings.thickness.value,
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,

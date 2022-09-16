@@ -90,8 +90,7 @@ export class KPIComponent extends BaseContainerComponent<
         const { viewport: { width, height }, settings: { layout, legend } } = options.data;
 
         const viewport: powerbi.IViewport = { width, height };
-
-        this.layout = LayoutEnum[layout.getLayout()];
+        this.layout = layout.layout.value.value as LayoutEnum;
 
         this.applyStyleBasedOnLayout(layout, legend, viewport);
 
@@ -171,7 +170,7 @@ export class KPIComponent extends BaseContainerComponent<
         let kpiLayout: KPIComponentLayoutEnum;
         let maxWidth: string;
 
-        switch (LayoutEnum[layoutSettings.getLayout()]) {
+        switch (layoutSettings.layout.value.value) {
             case LayoutEnum.Left:
             case LayoutEnum.Right: {
                 kpiLayout = KPIComponentLayoutEnum.kpiComponentColumn;

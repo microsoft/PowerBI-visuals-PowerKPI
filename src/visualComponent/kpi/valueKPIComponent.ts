@@ -52,7 +52,7 @@ export class ValueKPIComponent
 
         this.element.classed(this.extraClassName, true);
 
-        this.valueFormat = valueFormatter.valueFormatter.DefaultNumericFormat;
+        this.valueFormat = valueFormatter.DefaultNumericFormat;
     }
 
     public render(options: IVisualComponentRenderOptions): void {
@@ -68,7 +68,7 @@ export class ValueKPIComponent
             && options.data.series[0].current
             && !isNaN(options.data.series[0].current.y)
         ) {
-            const formatter: valueFormatter.IValueFormatter = valueFormatter.valueFormatter.create({
+            const formatter: valueFormatter.IValueFormatter = valueFormatter.create({
                 displayUnitSystemType: displayUnitSystemType.DisplayUnitSystemType.WholeUnits,
                 format: options.data.series[0].format || this.valueFormat,
                 precision: settings.actualValueKPI.precision.value,

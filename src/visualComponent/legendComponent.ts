@@ -35,7 +35,7 @@ import { interactivityBaseService } from "powerbi-visuals-utils-interactivityuti
 import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
-import { LineStyle } from "../settings/descriptors/lineDescriptor";
+import { LineDescriptor, LineStyle } from "../settings/descriptors/lineDescriptor";
 import { BaseComponent } from "./base/baseComponent";
 import { IVisualComponentViewport } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
@@ -63,7 +63,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
     }
 
     public render(options: IVisualComponentRenderOptions): void {
-        const { data: { settings: { legend } } } = options;
+        const { data: { settings: { legend, line } } } = options;
 
         if (!this.legend || !legend.isElementShown()) {
             this.hide();
@@ -72,7 +72,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
         }
 
         try {
-            const legendData: legendInterfaces.LegendData = this.createLegendData(options.data, legend);
+            const legendData: legendInterfaces.LegendData = this.createLegendData(options.data, legend, line);
 
             this.legend.changeOrientation(legend.position.value.value as LegendPosition);
 
@@ -117,31 +117,36 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
         }
     }
 
-    private createLegendData(data: IDataRepresentation, settings: LegendDescriptor): legendInterfaces.LegendData {
+    private createLegendData(data: IDataRepresentation, legend: LegendDescriptor, line: LineDescriptor): legendInterfaces.LegendData {
+        
         const dataPoints: legendInterfaces.LegendDataPoint[] = data.series
             .map((series: IDataRepresentationSeries) => {
+                const lineSettings = line[series.name]
+                if(!lineSettings){
+                    return
+                }
                 const dataPoint: legendInterfaces.LegendDataPoint = {
-                    color: series.settings.line.fillColor.value.value,
+                    color: series.current.color,
                     identity: series.identity,
                     label: series.name,
-                    lineStyle: settings.getLegendLineStyle(series.settings.line.lineStyle.value.value as LineStyle),
-                    markerShape: settings.getLegendMarkerShape(),
+                    lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle.value.value as LineStyle),
+                    markerShape: legend.getLegendMarkerShape(),
                     selected: series.selected,
                 };
 
                 return dataPoint;
             });
 
-        const title: string = !!(settings.titleText.value && settings.showTitle.value)
-            ? settings.titleText.value
+        const title: string = !!(legend.titleText.value && legend.showTitle.value)
+            ? legend.titleText.value
             : undefined;
 
         return {
             dataPoints,
-            fontFamily: settings.font.fontFamily.value,
-            fontSize: settings.font.fontSize.value,
+            fontFamily: legend.font.fontFamily.value,
+            fontSize: legend.font.fontSize.value,
             grouped: false,
-            labelColor: settings.labelColor.value.value,
+            labelColor: legend.labelColor.value.value,
             title,
         };
     }

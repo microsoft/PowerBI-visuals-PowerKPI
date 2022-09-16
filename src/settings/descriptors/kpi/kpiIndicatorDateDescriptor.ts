@@ -34,7 +34,7 @@ export class KPIIndicatorDateDescriptor extends KPIIndicatorDescriptor {
 
         this.name = "dateValueKPI";
         this.displayName = "KPI Date Value";
-        this.slices.push(this.font, this.format, this.fontColor)
+        this.slices.push(this.show, this.font, this.format, this.fontColor)
     }
 }
  

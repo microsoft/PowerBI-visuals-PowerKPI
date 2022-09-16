@@ -76,7 +76,7 @@ export const displayUnitsOptions = [
 export class NumberDescriptorBase
     extends FontSizeDescriptor
     implements IDescriptor {
-;
+
     public defaultFormat: string = null;
     public columnFormat: string = null;
 

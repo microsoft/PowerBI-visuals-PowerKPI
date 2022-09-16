@@ -123,7 +123,7 @@ export class DateKPIComponent
         value: DataRepresentationAxisValueType,
         precision: number,
     ): valueFormatter.IValueFormatter {
-        return valueFormatter.valueFormatter.create({
+        return valueFormatter.create({
             format,
             precision,
             value,

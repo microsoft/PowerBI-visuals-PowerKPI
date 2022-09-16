@@ -66,7 +66,7 @@ export class SubtitleComponent extends BaseComponent<IVisualComponentConstructor
             .merge(subtitleSelection)
             .text((settings: SubtitleDescriptor) => settings.titleText.value)
             .style("color", (settings: SubtitleDescriptor) => settings.fontColor.value.value)
-            // .style("text-align", (settings: SubtitleDescriptor) => settings.alignment)
+            .style("text-align", (settings: SubtitleDescriptor) => settings.alignment.value.value)
             .style("font-size", (settings: SubtitleDescriptor) => {
                 const fontSizeInPx: number = pixelConverter.fromPointToPixel(settings.font.fontSize.value);
 
