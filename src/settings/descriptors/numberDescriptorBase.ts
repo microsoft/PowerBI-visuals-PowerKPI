@@ -88,7 +88,7 @@ export class NumberDescriptorBase
     });
 
     public density = new formattingSettings.Slider({
-        name: "density",
+        name: "percentile",
         displayName: "Label Density",
         value: 100,
         options: {

@@ -229,7 +229,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
                 "lineType", 
                 "thickness", 
                 "rawOpacity", 
-                "areaOpacity", 
+                "rawAreaOpacity", 
                 "lineStyle", 
                 "interpolation",
                 "interpolationWithColorizedLine"
@@ -244,7 +244,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
                 this.removeArrayItem(newSlices, line[containerName].interpolationWithColorizedLine)
             }
 
-            if(line[containerName].lineType.value.value !== LineType.area) this.removeArrayItem(newSlices, line[containerName].areaOpacity)
+            if(line[containerName].lineType.value.value !== LineType.area) this.removeArrayItem(newSlices, line[containerName].rawAreaOpacity)
             containerItem.slices = newSlices
         })
     }

@@ -69,7 +69,7 @@ export interface ILineDescriptorBase {
 export interface ILineDescriptor extends ILineDescriptorBase {
     lineType: formattingSettings.ItemDropdown;
     rawOpacity: formattingSettings.NumUpDown;
-    areaOpacity: formattingSettings.NumUpDown;
+    rawAreaOpacity: formattingSettings.NumUpDown;
     interpolationWithColorizedLine: formattingSettings.ItemDropdown;
 }
 
@@ -186,7 +186,7 @@ export class LineDescriptor
     }
 
     public getAreaOpacity(containerName: string): number {
-        return this.convertOpacityToCssFormat(this[containerName].areaOpacity.value);
+        return this.convertOpacityToCssFormat(this[containerName].rawAreaOpacity.value);
     }
 
     private minThickness: number = 0.25;
@@ -254,7 +254,7 @@ export class LineDescriptor
             }
         },
         {
-            name: `areaOpacity`,
+            name: `rawAreaOpacity`,
             displayName: "Area Opacity",
             type: PropertyType.NumUpDown,
             defaultValue: 50,

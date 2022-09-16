@@ -68,11 +68,11 @@ export class FontSizeDescriptor
             }
         }),
         bold: new formattingSettings.ToggleSwitch({
-            name: "fontBold",
+            name: "isBold",
             value: false
         }),
         italic:  new formattingSettings.ToggleSwitch({
-            name: "fontItalic",
+            name: "isItalic",
             value: false
         })
     });
