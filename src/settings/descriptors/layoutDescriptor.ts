@@ -34,9 +34,6 @@ import { LayoutEnum } from "../../layout/layoutEnum";
 
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import FormattingSettingsCard = formattingSettings.Card;
-import FormattingSettingsSlice = formattingSettings.Slice;
-
 const layoutOptions = [
     {
         value: LayoutEnum.Top,
@@ -91,16 +88,16 @@ export class LayoutDescriptor
     public parse(options: IDescriptorParserOptions): void {
         if (this.auto.value) {
             if (options.viewport.height < this._minSupportedHeight) {
-                this.layout.value = layoutOptions[3];
+                this.setNewLayoutPropertyValue(LayoutEnum.Left);
             } else {
-                this.layout.value = layoutOptions[0];
+                this.setNewLayoutPropertyValue(LayoutEnum.Top);
             }
 
             return;
         }
     }
 
-    public getLayout(): LayoutEnum {
-        return this.layout.value.value as LayoutEnum;
+    public setNewLayoutPropertyValue(newValue: LayoutEnum){
+        this.layout.value = layoutOptions.filter(el => el.value === newValue)[0] || layoutOptions[0]
     }
 }

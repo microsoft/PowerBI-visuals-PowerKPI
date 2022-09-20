@@ -65,14 +65,14 @@ export class SubtitleComponent extends BaseComponent<IVisualComponentConstructor
             .classed(this.subTitleSelector.className, true)
             .merge(subtitleSelection)
             .text((settings: SubtitleDescriptor) => settings.titleText.value)
-            .style("color", (settings: SubtitleDescriptor) => settings.fontColor.value.value)
-            .style("text-align", (settings: SubtitleDescriptor) => settings.alignment.value.value)
+            .style("color", (settings: SubtitleDescriptor) => settings.fontColor.value?.value)
+            .style("text-align", (settings: SubtitleDescriptor) => settings.alignment.value)
             .style("font-size", (settings: SubtitleDescriptor) => {
                 const fontSizeInPx: number = pixelConverter.fromPointToPixel(settings.font.fontSize.value);
 
                 return pixelConverter.toString(fontSizeInPx);
             })
-            .style("background-color", (settings: SubtitleDescriptor) => settings.background.value.value)
+            .style("background-color", (settings: SubtitleDescriptor) => settings.background.value?.value)
             .style("font-family", (settings: SubtitleDescriptor) => settings.font.fontFamily.value)
             .classed(this.boldClassName, subtitle.font.bold.value)
             .classed(this.italicClassName, subtitle.font.italic.value);

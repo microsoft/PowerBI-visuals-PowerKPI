@@ -43,6 +43,6 @@ export class LabelsDescriptor extends NumberDescriptorBase {
         this.displayName = "Data Labels"
         this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif";
         this.show.value = false;
-        this.slices.push(this.show, this.color, this.precision, this.font, this.density)
+        this.slices.push(this.show, this.font, this.displayUnits, this.color, this.precision, this.density)
     }
 }

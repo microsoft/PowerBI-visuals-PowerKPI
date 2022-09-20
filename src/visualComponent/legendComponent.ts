@@ -74,7 +74,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
         try {
             const legendData: legendInterfaces.LegendData = this.createLegendData(options.data, legend, line);
 
-            this.legend.changeOrientation(legend.position.value.value as LegendPosition);
+            this.legend.changeOrientation(this.getLegendPosition(legend.position.value.value));
 
             this.legend.drawLegend(legendData, options.data.viewport);
 
@@ -126,10 +126,10 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
                     return
                 }
                 const dataPoint: legendInterfaces.LegendDataPoint = {
-                    color: series.current.color,
+                    color: lineSettings.fillColor.value?.value,
                     identity: series.identity,
                     label: series.name,
-                    lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle.value.value as LineStyle),
+                    lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle.value?.value as LineStyle),
                     markerShape: legend.getLegendMarkerShape(),
                     selected: series.selected,
                 };
@@ -146,8 +146,16 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
             fontFamily: legend.font.fontFamily.value,
             fontSize: legend.font.fontSize.value,
             grouped: false,
-            labelColor: legend.labelColor.value.value,
+            labelColor: legend.labelColor.value?.value,
             title,
         };
+    }
+    
+    private getLegendPosition(position: powerbi.EnumMemberValue): number {
+        const positionIndex: number = legendInterfaces.LegendPosition[position];
+
+        return positionIndex === undefined
+            ? legendInterfaces.LegendPosition.BottomCenter
+            : positionIndex;
     }
 }

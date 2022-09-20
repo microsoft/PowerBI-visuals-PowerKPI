@@ -110,6 +110,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
 
     public update(options: powerbi.extensibility.visual.VisualUpdateOptions): void {
         this.settings = this.formattingSettingsService.populateFormattingSettingsModel(Settings, options.dataViews);
+        debugger
 
         const dataView: powerbi.DataView = options && options.dataViews && options.dataViews[0];
 
@@ -164,7 +165,9 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
+        debugger
         this.filterFormattingProperties()
+        console.log(this.settings.tooltipValues.precision.value)
         return this.formattingSettingsService.buildFormattingModel(this.settings);
     }
 
@@ -177,7 +180,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     }
 
     private filterSettingsCards() {
-        let newCards = this.settings.defaultCards
+        let newCards = [...this.settings.defaultCards]
         this.settings.defaultCards.forEach(card => {
             if(this.shouldDeleteSettingsCard(card.name)){
                 this.removeArrayItem(newCards, card)
@@ -244,7 +247,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
                 this.removeArrayItem(newSlices, line[containerName].interpolationWithColorizedLine)
             }
 
-            if(line[containerName].lineType.value.value !== LineType.area) this.removeArrayItem(newSlices, line[containerName].rawAreaOpacity)
+            if(line[containerName].lineType.value?.value !== LineType.area) this.removeArrayItem(newSlices, line[containerName].rawAreaOpacity)
             containerItem.slices = newSlices
         })
     }

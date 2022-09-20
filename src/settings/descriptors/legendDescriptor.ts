@@ -25,7 +25,6 @@
  */
 
 import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
-import { LegendPosition } from "powerbi-visuals-utils-chartutils/lib/legend/legendInterfaces";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
@@ -56,7 +55,16 @@ const styleOptions = [
         displayName: "Styled Line"
     }
 ]
-
+export enum LegendPosition {
+    Top = "Top",
+    Bottom = "Bottom",
+    Right = "Right",
+    Left = "Left",
+    TopCenter = "TopCenter",
+    BottomCenter = "BottomCenter",
+    RightCenter = "RightCenter",
+    LeftCenter = "LeftCenter"
+}
 const positionOptions = [
     {
         value: LegendPosition.Top,
@@ -96,7 +104,7 @@ export class LegendDescriptor extends FontSizeDescriptor {
         name: "position",
         displayName: "Position",
         items: positionOptions,
-        value: positionOptions[5]
+        value: positionOptions.filter(el => el.value === LegendPosition.BottomCenter)[0]
     });
 
     public showTitle = new formattingSettings.ToggleSwitch({
@@ -122,7 +130,7 @@ export class LegendDescriptor extends FontSizeDescriptor {
         name: "style",
         displayName: "Style",
         items: styleOptions,
-        value: styleOptions[0]
+        value: styleOptions.filter(el => el.value === LegendStyle.circle)[0]
     });;
 
     constructor(viewport: powerbi.IViewport) {

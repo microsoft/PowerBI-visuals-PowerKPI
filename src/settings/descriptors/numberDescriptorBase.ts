@@ -122,7 +122,7 @@ export class NumberDescriptorBase
                 value: this.minPrecision,
             },
         }
-    });
+    }); // precision = -21 in tooltips
 
     public parse(options: IDescriptorParserOptions) {
         super.parse(options);

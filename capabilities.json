@@ -781,6 +781,7 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
+          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -917,6 +918,7 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
+          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1041,6 +1043,7 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
+          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1165,6 +1168,7 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
+          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1255,6 +1259,7 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
+          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1644,6 +1649,7 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
+          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1801,6 +1807,7 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
+          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1954,6 +1961,7 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
+          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -1996,6 +2004,7 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
+          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -2038,6 +2047,7 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
+          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },
@@ -2080,6 +2090,7 @@
         "precision": {
           "displayName": "Decimal Places",
           "description": "Select the number of decimal places to display",
+          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },

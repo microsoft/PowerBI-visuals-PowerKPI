@@ -179,11 +179,10 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
         if (isNaN(kpiIndex) || kpiIndex === null) {
             return this._default;
         }
-
         for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
-            const currentKPIIndex: number = this[this.getPropertyName(this.kpiIndexPropertyName, index)];
+            const currentKPI: formattingSettings.NumUpDown  = this[this.getPropertyName(this.kpiIndexPropertyName, index)];
 
-            if (currentKPIIndex === kpiIndex) {
+            if (currentKPI.value === kpiIndex) {
                 return this._properties.reduce((
                     current: IKPIIndicatorSettings,
                     property: IPropertyConfiguration,
@@ -198,7 +197,7 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
     }
 
     public getContextProperties() {
-        let newSlices = this.defaultSlices
+        let newSlices = [...this.defaultSlices]
         for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
             this._properties.forEach((property: IPropertyConfiguration) => {
                 const indexedName: string = this.getPropertyName(property.name, index);
@@ -210,7 +209,7 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
         return newSlices
     }
 
-    private getProperty(currentProperty: IPropertyConfiguration, indexedName: string, index: number){
+    private getProperty(currentProperty: IPropertyConfiguration, indexedName: string, index: number) {
         switch(currentProperty.type){ 
             case PropertyType.ColorPicker: {
                 return new formattingSettings.ColorPicker({

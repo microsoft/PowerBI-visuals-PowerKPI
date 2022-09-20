@@ -43,8 +43,8 @@ const typeOptions = [
 
 export class XAxisDescriptor extends AxisDescriptor {
     public type = new formattingSettings.ItemDropdown({
-        name: "layout",
-        displayName: "Layout",
+        name: "type",
+        displayName: "Type",
         items: typeOptions,
         value: typeOptions[0]
     });
@@ -56,6 +56,6 @@ export class XAxisDescriptor extends AxisDescriptor {
 
         this.name = "xAxis";
         this.displayName = "X Axis";
-        this.slices.push(this.show, this.font, this.fontColor, this.displayUnits, this.density, this.type)
+        this.slices.push(this.show, this.font, this.fontColor, this.density, this.type)
     }
 }

@@ -36,7 +36,7 @@ export class KPIIndicatorValueDescriptor extends KPIIndicatorDescriptor {
         if(name && displayName){
             this.name = name;
             this.displayName = displayName;
-            this.slices.push(this.show, this.font, this.precision, this.fontColor)
+            this.slices.push(this.show, this.font, this.displayUnits, this.precision, this.fontColor)
         }
     }
 }

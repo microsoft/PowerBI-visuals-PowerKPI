@@ -45,18 +45,6 @@ export interface IDescriptor {
 }
 
 export abstract class BaseDescriptor extends FormattingSettingsCard {
-    public applyDefault(defaultSettings: BaseDescriptor) {
-        if (!defaultSettings) {
-            return;
-        }
-
-        Object
-            .keys(defaultSettings)
-            .forEach((propertyName: string) => {
-                this[propertyName] = defaultSettings[propertyName];
-            });
-    }
-
     name: string = "";
     displayName: string = "";
     slices: Array<FormattingSettingsSlice> = [];

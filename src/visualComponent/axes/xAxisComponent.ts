@@ -221,8 +221,8 @@ export class XAxisComponent
             .call(this.axisProperties.axis)
             .attr("font-family", settings.font.fontFamily.value)
             .attr("font-size", settings.fontSizeInPx)
-            .attr("fill", settings.fontColor.value.value)
-            .attr("color", settings.fontColor.value.value);
+            .attr("fill", settings.fontColor.value?.value)
+            .attr("color", settings.fontColor.value?.value);
     }
 
     public getViewport(): IVisualComponentViewport {
@@ -298,7 +298,7 @@ export class XAxisComponent
         let precision: number;
 
         if (x.axisType === DataRepresentationTypeEnum.NumberType) {
-            minValue = xAxis.displayUnits.value.value || x.max;
+            minValue = xAxis.displayUnits.value?.value || x.max;
             precision = xAxis.precision.value;
         } else {
             minValue = x.min;

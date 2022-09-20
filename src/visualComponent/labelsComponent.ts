@@ -151,7 +151,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
         return series.map((currentSeries: IDataRepresentationSeries, seriesIndex: number) => {
             const labelDataPoints: NewLabelUtils.labelLayout.LabelDataPoint[] = [];
 
-            const labelDisplayUnits: number = (labels.displayUnits.value.value|| currentSeries.domain.max) as number;
+            const labelDisplayUnits: number = (labels.displayUnits.value?.value|| currentSeries.domain.max) as number;
 
             const valueFormatters: valueFormatter.IValueFormatter[] = series.map((seriesGroup: IDataRepresentationSeries) => {
                 return this.getValueFormatter(
@@ -198,14 +198,14 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
 
                     const labelDataPoint: NewLabelUtils.labelLayout.LabelDataPoint = {
                         fontProperties: {
-                            color: labels.color.value.value,
+                            color: labels.color.value?.value,
                             family: labels.font.fontFamily.value,
                             size: NewLabelUtils.units.FontSize.createFromPt(labels.font.fontSize.value),
                         },
                         identity: null,
-                        insideFill: labels.color.value.value,
+                        insideFill: labels.color.value?.value,
                         isPreferred: pointIndex === 0 || pointIndex === lastPointIndex,
-                        outsideFill: labels.color.value.value,
+                        outsideFill: labels.color.value?.value,
                         parentShape,
                         parentType: NewLabelUtils.labelLayout.LabelDataPointParentType.Point,
                         text: formattedValue,

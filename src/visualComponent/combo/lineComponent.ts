@@ -103,7 +103,6 @@ export class LineComponent extends BaseComponent<IVisualComponentConstructorOpti
             lineStyle,
             series,
         } = options;
-
         this.renderOptions = options;
 
         const xScale: DataRepresentationScale = x

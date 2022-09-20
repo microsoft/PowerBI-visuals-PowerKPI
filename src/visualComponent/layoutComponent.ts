@@ -69,7 +69,7 @@ export class LayoutComponent extends BaseContainerComponent<
     public render(options: IVisualComponentRenderOptions): void {
         const { data: { viewport, settings: { layout } } } = options;
 
-        const selectedLayout: LayoutToStyleEnum = this.getLayoutStyle(layout.layout.value.value as LayoutEnum);
+        const selectedLayout: LayoutToStyleEnum = this.getLayoutStyle(layout.layout.value?.value as LayoutEnum);
 
         const widthInPx: string = pixelConverter.toString(viewport.width);
         const heightInPx: string = pixelConverter.toString(viewport.height);

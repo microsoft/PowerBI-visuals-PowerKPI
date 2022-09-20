@@ -149,7 +149,7 @@ export class DataConverter
             settings.xAxis.type.value.value = AxisType.categorical;
         }
 
-        if (axisCategoryType.text || settings.xAxis.type.value.value === AxisType.categorical) {
+        if (axisCategoryType.text || settings.xAxis.type.value?.value === AxisType.categorical) {
             axisType = DataRepresentationTypeEnum.StringType;
         } else if (axisCategoryType.dateTime) {
             axisType = DataRepresentationTypeEnum.DateType;
@@ -260,7 +260,7 @@ export class DataConverter
 
                     settings.line.addContainerItem(name)
 
-                    if (!settings.line[name].fillColor.value.value
+                    if (!settings.line[name].fillColor.value?.value
                         && colorPalette
                         && colorPalette.getColor
                     ) {
@@ -473,14 +473,14 @@ export class DataConverter
 
                 const kpiIndex: number = this.getKPIIndex(kpiIndexes[categoryIndex]);
 
-                let color: string = settings.line[name].fillColor.value.value;
+                let color: string = settings.line[name].fillColor.value?.value;
 
                 if (settings.line[name].shouldMatchKpiColor.value) {
                     const currentKPI: IKPIIndicatorSettings = settings
                         .kpiIndicator
                         .getCurrentKPI(kpiIndex);
 
-                    color = currentKPI.color && currentKPI.color.value.value || color;
+                    color = currentKPI.color.value?.value || color;
                 }
 
                 if (this.isValueFinite(value)

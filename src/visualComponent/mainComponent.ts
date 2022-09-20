@@ -92,8 +92,8 @@ export class MainComponent extends BaseContainerComponent<
         ) {
             const kpiIndicatorSettings: IKPIIndicatorSettings = kpiIndicator.getCurrentKPI(series[0].current.kpiIndex);
 
-            if (kpiIndicatorSettings && kpiIndicatorSettings.color.value.value) {
-                backgroundColor = kpiIndicatorSettings.color.value.value;
+            if (kpiIndicatorSettings && kpiIndicatorSettings.color.value?.value) {
+                backgroundColor = kpiIndicatorSettings.color.value?.value;
             }
         }
 
