@@ -104,7 +104,7 @@ export class YAxisComponent
         const fontSize: number = settings.fontSizeInPx;
 
         this.formatter = labelMeasurementService.getValueFormatter(
-            settings.displayUnits.value?.value || axis.max,
+            settings.displayUnits.value.value || axis.max,
             undefined,
             undefined,
             undefined,
@@ -141,8 +141,8 @@ export class YAxisComponent
         this.axisProperties = this.getAxisProperties(
             height,
             [axis.min, axis.max],
-            settings.density.value,
-            settings.density.value === settings.maxDensity,
+            settings.percentile.value,
+            settings.percentile.value === settings.maxDensity,
         );
 
         if (!this.isShown) {
@@ -198,8 +198,8 @@ export class YAxisComponent
             .call(this.axisProperties.axis)
             .attr("font-family", settings.font.fontFamily.value)
             .attr("font-size", settings.fontSizeInPx)
-            .attr("fill", settings.fontColor.value?.value)
-            .attr("color", settings.fontColor.value?.value);
+            .attr("fill", settings.fontColor.value.value)
+            .attr("color", settings.fontColor.value.value);
     }
 
     public getViewport(): IVisualComponentViewport {

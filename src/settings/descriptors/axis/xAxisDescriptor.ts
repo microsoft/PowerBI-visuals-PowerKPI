@@ -24,6 +24,7 @@
  *  THE SOFTWARE.
  */
 
+import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import {
     AxisDescriptor,
@@ -54,8 +55,8 @@ export class XAxisDescriptor extends AxisDescriptor {
     ) {
         super(viewportToBeHidden, viewportToIncreaseDensity)
 
+        this.slices = [this.show, this.font, this.fontColor, this.percentile, this.type]
         this.name = "xAxis";
         this.displayName = "X Axis";
-        this.slices.push(this.show, this.font, this.fontColor, this.density, this.type)
     }
 }

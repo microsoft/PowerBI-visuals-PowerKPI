@@ -38,6 +38,37 @@ enum PropertyType {
     NumUpDown
 }
 
+enum ShapeType {
+    CircleFull = "circle-full",
+    Triangle = "triangle",
+    Rhombus = "rhombus",
+    Square = "square",
+    Flag = "flag",
+    Exclamation = "exclamation",
+    Checkmark = "checkmark",
+    ArrowUp = "arrow-up",
+    ArrowRightUp = "arrow-right-up",
+    ArrowRightDown = "arrow-right-down",
+    ArrowDown = "arrow-down",
+    CaretUp = "caret-up",
+    CaretDown = "caret-down",
+    CircleEmpty = "circle-empty",
+    CircleX = "circle-x",
+    CircleExclamation = "circle-exclamation",
+    CircleCheckmark = "circle-checkmark",
+    X = "x",
+    StarEmpty = "star-empty",
+    StarFull = "star-full"
+}
+
+enum DefaultColor {
+    Green = "#01b7a8",
+    Yellow = "#f2c80f",
+    Red = "#fd625e",
+    Purple = "#a66999",
+    Black = "#374649",
+}
+
 interface IPropertyConfiguration {
     type: PropertyType;
     name: string;
@@ -54,11 +85,11 @@ const positionOptions = [
     {
         value: HorizontalLayoutEnum.Left,
         displayName: "Left"
-      },
-      {
+    },
+    {
         value: HorizontalLayoutEnum.Right,
         displayName: "Right"
-      }
+    }
 ]
 export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements IDescriptor {
     public position = new formattingSettings.ItemDropdown({
@@ -93,45 +124,45 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
 
     private kpiIndexPropertyName: string = "kpiIndex";
 
-    private _colors: string[] = [
-        "#01b7a8",
-        "#f2c80f",
-        "#fd625e",
-        "#a66999",
-        "#374649",
+    private _colors: DefaultColor[] = [
+        DefaultColor.Green,
+        DefaultColor.Yellow,
+        DefaultColor.Red,
+        DefaultColor.Purple,
+        DefaultColor.Black,
     ];
 
     private _shapes: powerbi.IEnumMember[] = [
-        { value: "circle-full", displayName: "Circle" },
-        { value: "triangle", displayName: "Triangle" },
-        { value: "rhombus", displayName: "Diamond" },
-        { value: "square", displayName: "Square" },
-        { value: "flag", displayName: "Flag" },
-        { value: "exclamation", displayName: "Exclamation" },
-        { value: "checkmark", displayName: "Checkmark" },
-        { value: "arrow-up", displayName: "Arrow Up" },
-        { value: "arrow-right-up", displayName: "Arrow Right Up" },
-        { value: "arrow-right-down", displayName: "Arrow Right Down" },
-        { value: "arrow-down", displayName: "Arrow Down" },
-        { value: "caret-up", displayName: "Caret Up" },
-        { value: "caret-down", displayName: "Caret Down" },
-        { value: "circle-empty", displayName: "Circle Empty" },
-        { value: "circle-x", displayName: "Circle X" },
-        { value: "circle-exclamation", displayName: "Circle Exclamation" },
-        { value: "circle-checkmark", displayName: "Circle Checkmark" },
-        { value: "x", displayName: "X" },
-        { value: "star-empty", displayName: "Star Empty" },
-        { value: "star-full", displayName: "Star Full" },
+        { value: ShapeType.CircleFull, displayName: "Circle" },
+        { value: ShapeType.Triangle, displayName: "Triangle" },
+        { value: ShapeType.Rhombus, displayName: "Diamond" },
+        { value: ShapeType.Square, displayName: "Square" },
+        { value: ShapeType.Flag, displayName: "Flag" },
+        { value: ShapeType.Exclamation, displayName: "Exclamation" },
+        { value: ShapeType.Checkmark, displayName: "Checkmark" },
+        { value: ShapeType.ArrowUp, displayName: "Arrow Up" },
+        { value: ShapeType.ArrowRightUp, displayName: "Arrow Right Up" },
+        { value: ShapeType.ArrowRightDown, displayName: "Arrow Right Down" },
+        { value: ShapeType.ArrowDown, displayName: "Arrow Down" },
+        { value: ShapeType.CaretUp, displayName: "Caret Up" },
+        { value: ShapeType.CaretDown, displayName: "Caret Down" },
+        { value: ShapeType.CircleEmpty, displayName: "Circle Empty" },
+        { value: ShapeType.CircleX, displayName: "Circle X" },
+        { value: ShapeType.CircleExclamation, displayName: "Circle Exclamation" },
+        { value: ShapeType.CircleCheckmark, displayName: "Circle Checkmark" },
+        { value: ShapeType.X, displayName: "X" },
+        { value: ShapeType.StarEmpty, displayName: "Star Empty" },
+        { value: ShapeType.StarFull, displayName: "Star Full" },
     ];
 
     private _properties: IPropertyConfiguration[] = [
         {
             type: PropertyType.ColorPicker,
             defaultValue: (index: number) => {
-                const color: string = this.getElementByIndex<string>(this._colors, index);
+                const color: DefaultColor = this.getElementByIndex<DefaultColor>(this._colors, index);
 
                 return {
-                    value :color || this._colors[0]
+                    value: color || this._colors[0]
                 }
             },
             name: "color",
@@ -142,7 +173,7 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
                 const shape: powerbi.IEnumMember =
                     this.getElementByIndex<powerbi.IEnumMember>(this._shapes, index);
 
-                return shape ? shape : this._shapes[0];
+                return shape ? shape : this._shapes.filter(el => el.value === ShapeType.CircleFull)[0];
             },
             name: "shape",
             items: this._shapes
@@ -158,11 +189,12 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
         super(viewport);
 
 
-        this.name = "kpiIndicator"
-        this.displayName = "KPI Indicator"
         this.show.value = true;
         this.font.fontSize.value = 12;
+
         this.slices = this.getContextProperties();
+        this.name = "kpiIndicator"
+        this.displayName = "KPI Indicator"
     }
 
     public getElementByIndex<T>(setOfValues: T[], index: number): T {

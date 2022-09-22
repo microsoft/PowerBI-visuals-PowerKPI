@@ -149,7 +149,7 @@ export class DataConverter
             settings.xAxis.type.value.value = AxisType.categorical;
         }
 
-        if (axisCategoryType.text || settings.xAxis.type.value?.value === AxisType.categorical) {
+        if (axisCategoryType.text || settings.xAxis.type.value.value === AxisType.categorical) {
             axisType = DataRepresentationTypeEnum.StringType;
         } else if (axisCategoryType.dateTime) {
             axisType = DataRepresentationTypeEnum.DateType;
@@ -181,8 +181,7 @@ export class DataConverter
         // Applies series formats
         dataRepresentation.x.format = dataRepresentation.settings.dateValueKPI.getFormat();
 
-        const grouped = dataView.categorical.values.grouped()
-        grouped.forEach((columnGroup: powerbi.DataViewValueColumnGroup) => {
+        dataView.categorical.values.grouped().forEach((columnGroup: powerbi.DataViewValueColumnGroup) => {
             const groupedValues: powerbi.DataViewValueColumn[] = columnGroup.values;
 
             const currentKPIColumn: powerbi.DataViewValueColumn[] = groupedValues
@@ -260,7 +259,7 @@ export class DataConverter
 
                     settings.line.addContainerItem(name)
 
-                    if (!settings.line[name].fillColor.value?.value
+                    if (!settings.line[name].fillColor.value.value
                         && colorPalette
                         && colorPalette.getColor
                     ) {
@@ -316,18 +315,8 @@ export class DataConverter
                     });
                 }
             });
-            seriesColorIndex = 0
-            settings.line.container.containerItems.forEach(container => {
-                if (
-                    colorPalette
-                    && colorPalette.getColor
-                ) {
-                    settings.line[container.displayName].fillColor.value.value = colorPalette.getColor(`${seriesColorIndex}`).value;
-    
-                    seriesColorIndex++;
-                }
-            })
         });
+
         dataRepresentation.x.values = axisCategory.values as DataRepresentationAxisValueType[];
 
         this.getXAxisScale(
@@ -473,14 +462,14 @@ export class DataConverter
 
                 const kpiIndex: number = this.getKPIIndex(kpiIndexes[categoryIndex]);
 
-                let color: string = settings.line[name].fillColor.value?.value;
+                let color: string = settings.line[name].fillColor.value.value;
 
                 if (settings.line[name].shouldMatchKpiColor.value) {
                     const currentKPI: IKPIIndicatorSettings = settings
                         .kpiIndicator
                         .getCurrentKPI(kpiIndex);
 
-                    color = currentKPI.color.value?.value || color;
+                    color = currentKPI.color.value.value || color;
                 }
 
                 if (this.isValueFinite(value)

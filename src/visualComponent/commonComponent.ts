@@ -82,7 +82,7 @@ export class CommonComponent extends BaseContainerComponent<
         );
 
         const { data: { settings: { legend } } } = options;
-        const layout: LayoutToStyleEnum = this.getLayout(legend.position.value?.value as LegendPosition);
+        const layout: LayoutToStyleEnum = this.getLayout(legend.position.value.value as LegendPosition);
 
         this.element.attr(
             "class",

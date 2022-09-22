@@ -170,7 +170,7 @@ export class TooltipComponent
                 // debugger
                 const valueFormatterInstance: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
                     dataSeries.format || this.numberFormat,
-                    tooltipValues.displayUnits.value?.value as number,
+                    tooltipValues.displayUnits.value.value as number,
                     tooltipValues.precision.value,
                 );
 
@@ -188,9 +188,9 @@ export class TooltipComponent
                         return
                     }
                     dataItems.push({
-                        color: lineSettings.fillColor.value?.value,
+                        color: lineSettings.fillColor.value.value,
                         displayName: `${dataSeries.name}`,
-                        lineColor: lineSettings.fillColor.value?.value,
+                        lineColor: lineSettings.fillColor.value.value,
                         lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle.value.value as LineStyle),
                         markerShape: legend.getLegendMarkerShape(),
                         value: valueFormatterInstance.format(dataSeriesPoint.y),
@@ -212,7 +212,7 @@ export class TooltipComponent
             const formatter: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
                 tooltipLabel.getFormat(),
                 x.axisType === DataRepresentationTypeEnum.NumberType
-                    ? tooltipLabel.displayUnits.value?.value as number
+                    ? tooltipLabel.displayUnits.value.value as number
                     : undefined,
                 x.axisType === DataRepresentationTypeEnum.NumberType
                     ? tooltipLabel.precision.value
@@ -293,12 +293,12 @@ export class TooltipComponent
 
         const varianceFormatter: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
             settings.getFormat(),
-            settings.displayUnits.value?.value as number,
+            settings.displayUnits.value.value as number,
             settings.precision.value,
         );
 
         const lineStyle: string = legendDescriptor && lineSettings
-            ? legendDescriptor.getLegendLineStyle(lineSettings.lineStyle.value?.value as LineStyle)
+            ? legendDescriptor.getLegendLineStyle(lineSettings.lineStyle.value.value as LineStyle)
             : undefined;
 
         const markerShape: string = legendDescriptor

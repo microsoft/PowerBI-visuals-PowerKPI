@@ -87,7 +87,7 @@ export class KPIComponent extends BaseContainerComponent<
         const { viewport: { width, height }, settings: { layout, legend } } = options.data;
 
         const viewport: powerbi.IViewport = { width, height };
-        this.layout = layout.layout.value?.value as LayoutEnum;
+        this.layout = layout.layout.value.value as LayoutEnum;
 
         this.applyStyleBasedOnLayout(layout, legend, viewport);
 
@@ -166,7 +166,7 @@ export class KPIComponent extends BaseContainerComponent<
         let currentLayout: LayoutToStyleEnum;
         let kpiLayout: KPIComponentLayoutEnum;
         let maxWidth: string;
-        switch (layoutSettings.layout.value?.value) {
+        switch (layoutSettings.layout.value.value) {
             case LayoutEnum.Left:
             case LayoutEnum.Right: {
                 kpiLayout = KPIComponentLayoutEnum.kpiComponentColumn;
@@ -174,8 +174,8 @@ export class KPIComponent extends BaseContainerComponent<
 
                 if (
                     !legend.isElementShown() || 
-                    legend.position.value?.value === LegendPosition.Bottom || 
-                    legend.position.value?.value === LegendPosition.BottomCenter
+                    legend.position.value.value === LegendPosition.Bottom || 
+                    legend.position.value.value === LegendPosition.BottomCenter
                 ) {
                     currentLayout = LayoutToStyleEnum.columnReversedLayout;
                 } else {

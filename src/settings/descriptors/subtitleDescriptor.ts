@@ -24,6 +24,7 @@
  *  THE SOFTWARE.
  */
 
+import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
 
@@ -63,8 +64,8 @@ export class SubtitleDescriptor extends FontSizeDescriptor {
     constructor(viewport: powerbi.IViewport) {
         super(viewport)
 
+        this.slices = [this.show, this.titleText, this.font, this.fontColor, this.background, this.alignment];
         this.name = "subtitle";
         this.displayName = "Subtitle";
-        this.slices.push(this.show, this.font, this.titleText, this.fontColor, this.background, this.alignment);
     }
 }

@@ -25,6 +25,7 @@
  *  THE SOFTWARE.
  */
 
+import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import {
     AxisDescriptor,
@@ -43,24 +44,24 @@ export class YAxisDescriptor extends AxisDescriptor {
     });
 
     constructor(
-        viewportToBeHidden: powerbi.IViewport,
-        viewportToIncreaseDensity: powerbi.IViewport,
         name: string, 
         displayName: string,
+        viewportToBeHidden: powerbi.IViewport,
+        viewportToIncreaseDensity: powerbi.IViewport,
     ) {
         super(viewportToBeHidden, viewportToIncreaseDensity)
 
-        this.name = name;
-        this.displayName = displayName;
-        this.slices.push(
+        this.slices = [
             this.show,
             this.font,
             this.displayUnits,
             this.precision,
             this.fontColor,
-            this.density,
+            this.percentile,
             this.min,
             this.max
-        )
+        ]
+        this.name = name;
+        this.displayName = displayName;
     }
 }

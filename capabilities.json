@@ -151,8 +151,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         }
@@ -757,8 +756,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         },
@@ -838,8 +836,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         },
@@ -894,8 +891,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         },
@@ -969,8 +965,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         },
@@ -1025,8 +1020,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         },
@@ -1094,8 +1088,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         }
@@ -1144,8 +1137,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         },
@@ -1219,8 +1211,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         }
@@ -1277,8 +1268,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         },
@@ -1579,8 +1569,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         },
@@ -1674,8 +1663,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         },
@@ -1752,8 +1740,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         },
@@ -1832,8 +1819,7 @@
           "displayName": "Font Family",
           "type": {
             "formatting": {
-              "fontFamily": true,
-              "labelDisplayUnits": false
+              "fontFamily": true
             }
           }
         },

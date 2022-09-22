@@ -80,9 +80,9 @@ export class LayoutDescriptor
     constructor() {
         super()
         
+        this.slices = [this.autoHideVisualComponents, this.auto, this.layout];
         this.name = "layout";
         this.displayName = "Layout";
-        this.slices.push(this.autoHideVisualComponents, this.auto, this.layout);
     }
 
     public parse(options: IDescriptorParserOptions): void {

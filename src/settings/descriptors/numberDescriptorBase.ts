@@ -84,10 +84,10 @@ export class NumberDescriptorBase
         name: "displayUnits",
         displayName: "Display Units",
         items: displayUnitsOptions,
-        value: displayUnitsOptions[0]
+        value: null
     });
 
-    public density = new formattingSettings.Slider({
+    public percentile = new formattingSettings.Slider({
         name: "percentile",
         displayName: "Label Density",
         value: 100,
@@ -113,13 +113,13 @@ export class NumberDescriptorBase
         displayName: "Decimal Places",
         value: null,
         options: {
-            maxValue: {
-                type: powerbi.visuals.ValidatorType.Max,
-                value: this.maxPrecision,
-            },
             minValue: {
                 type: powerbi.visuals.ValidatorType.Min,
                 value: this.minPrecision,
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: this.maxPrecision,
             },
         }
     }); // precision = -21 in tooltips
@@ -127,6 +127,7 @@ export class NumberDescriptorBase
     public parse(options: IDescriptorParserOptions) {
         super.parse(options);
 
+        this.setDisplayUnits(DisplayUnitsType.Auto)
         this.applyDefaultFormatByType(options.type)
     }
 
@@ -178,5 +179,10 @@ export class NumberDescriptorBase
                 this.defaultFormat = undefined;
             }
         }
+    }
+
+    public setDisplayUnits(value: DisplayUnitsType) {
+        const newValue = displayUnitsOptions.filter(el => el.value === value)[0]
+        this.displayUnits.value = newValue
     }
 }

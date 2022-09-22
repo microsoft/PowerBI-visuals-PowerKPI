@@ -70,7 +70,7 @@ export class DateKPIComponent
             const formatter: valueFormatter.IValueFormatter = this.getValueFormatter(
                 x.axisType,
                 settings.dateValueKPI.getFormat(),
-                settings.dateValueKPI.displayUnits.value?.value || x.max,
+                settings.dateValueKPI.displayUnits.value.value || x.max,
                 settings.dateValueKPI.precision.value);
 
             if (formatter) {

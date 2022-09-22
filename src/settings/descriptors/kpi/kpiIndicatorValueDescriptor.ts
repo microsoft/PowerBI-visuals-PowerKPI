@@ -25,7 +25,6 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
 
@@ -34,9 +33,9 @@ export class KPIIndicatorValueDescriptor extends KPIIndicatorDescriptor {
         super(viewport);
 
         if(name && displayName){
+            this.slices = [this.show, this.font, this.format, this.displayUnits, this.precision, this.fontColor]
             this.name = name;
             this.displayName = displayName;
-            this.slices.push(this.show, this.font, this.displayUnits, this.precision, this.fontColor)
         }
     }
 }

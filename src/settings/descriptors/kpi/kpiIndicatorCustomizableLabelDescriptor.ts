@@ -40,10 +40,11 @@ export class KPIIndicatorCustomizableLabelDescriptor extends KPIIndicatorLabelDe
     constructor(name: string, displayName: string, viewport?: powerbi.IViewport) {
         super(viewport);
 
+        this.show.value = false;
+
+        this.slices = [this.show, this.font, this.fontColor, this.label]
         this.name = name;
         this.displayName = displayName;
-        this.show.value = false;
-        this.slices.push(this.show, this.font, this.fontColor, this.label)
     }
 
     public isShown(): boolean {

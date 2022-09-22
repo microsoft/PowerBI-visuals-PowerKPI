@@ -30,7 +30,7 @@ import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import { NumberDescriptorBase } from "./numberDescriptorBase";
 
 export class LabelsDescriptor extends NumberDescriptorBase {
-    color = new formattingSettings.ColorPicker({
+    public color = new formattingSettings.ColorPicker({
         name: "color",
         displayName: "Color",
         value: { value: "rgb(119, 119, 119)" }
@@ -39,10 +39,11 @@ export class LabelsDescriptor extends NumberDescriptorBase {
     constructor(viewport: powerbi.IViewport) {
         super(viewport);
 
-        this.name = "labels"
-        this.displayName = "Data Labels"
         this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif";
         this.show.value = false;
-        this.slices.push(this.show, this.font, this.displayUnits, this.color, this.precision, this.density)
+    
+        this.slices = [this.show, this.font, this.displayUnits, this.color, this.precision, this.percentile]
+        this.name = "labels"
+        this.displayName = "Data Labels"
     }
 }

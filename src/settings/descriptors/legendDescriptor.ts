@@ -24,6 +24,7 @@
  *  THE SOFTWARE.
  */
 
+import powerbi from "powerbi-visuals-api";
 import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
@@ -139,7 +140,7 @@ export class LegendDescriptor extends FontSizeDescriptor {
         this.name = "legend"
         this.displayName = "Legend"
         this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif"
-        this.slices.push(
+        this.slices = [
             this.show,
             this.font,
             this.position,
@@ -147,7 +148,8 @@ export class LegendDescriptor extends FontSizeDescriptor {
             this.titleText,
             this.labelColor,
             this.style
-        )
+        ]
+        // add isBold, isItalic
     }
 
     public getLegendMarkerShape(): legendInterfaces.MarkerShape {

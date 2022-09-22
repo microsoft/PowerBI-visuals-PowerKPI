@@ -109,7 +109,7 @@ export class Settings extends formattingSettings.Model {
         kpiCaptionViewport, 
         "secondKPIIndicatorValue", 
         "Second KPI Indicator Value"
-    ); /// Add fields
+    );
     public secondKPIIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
         "secondKPIIndicatorLabel",
         "Second KPI Indicator Label",
@@ -124,8 +124,8 @@ export class Settings extends formattingSettings.Model {
     public dots: DotsDescriptor = new DotsDescriptor();
     public legend: LegendDescriptor = new LegendDescriptor(legendViewport);
     public xAxis: XAxisDescriptor = new XAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity);
-    public yAxis: YAxisDescriptor = new YAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, "yAxis", "Y Axis");
-    public secondaryYAxis: YAxisDescriptor = new YAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, "secondaryYAxis", "Secondary Y Axis");
+    public yAxis: YAxisDescriptor = new YAxisDescriptor("yAxis", "Y Axis", axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity);
+    public secondaryYAxis: YAxisDescriptor = new YAxisDescriptor("secondaryYAxis", "Secondary Y Axis", axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity);
     public referenceLineOfXAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor("referenceLineOfXAxis", "X Axis Reference Lines", false);
     public referenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor("referenceLineOfYAxis", "Y Axis Reference Lines");
     public secondaryReferenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor("secondaryReferenceLineOfYAxis", "Secondary Y Axis Reference Lines", false);

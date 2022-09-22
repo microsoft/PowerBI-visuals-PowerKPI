@@ -62,14 +62,14 @@ export class AxisDescriptor
 
         this.viewportToIncreaseDensity = viewportToIncreaseDensity;
         this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif"
-        this.density.options.maxValue.value = this.maxDensity
+        this.percentile.options.maxValue.value = this.maxDensity
     }
 
     public parse(options: IDescriptorParserOptions) {
         super.parse(options);
 
         if (this.shouldDensityBeAtMax) {
-            this.density.value = this.maxDensity;
+            this.percentile.value = this.maxDensity;
         }
 
         this.shouldDensityBeAtMax = options.isAutoHideBehaviorEnabled

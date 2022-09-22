@@ -27,15 +27,15 @@
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import { ViewportDescriptor } from "./viewportDescriptor";
 
 import {
+    BaseDescriptor,
     IDescriptor,
     IDescriptorParserOptions,
 } from "../descriptor";
 
 export class ShowDescriptor
-    extends ViewportDescriptor
+    extends BaseDescriptor
     implements IDescriptor {
 
     public show = new formattingSettings.ToggleSwitch({
@@ -47,8 +47,11 @@ export class ShowDescriptor
 
     private isAbleToBeShown: boolean = true;
 
+    private _viewport: powerbi.IViewport;
+    
     constructor(viewport: powerbi.IViewport = { width: 0, height: 0 }) {
-        super(viewport);
+        super()
+        this._viewport = viewport;
     }
 
     public parse(options: IDescriptorParserOptions): void {

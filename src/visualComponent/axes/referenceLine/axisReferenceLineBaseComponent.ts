@@ -100,7 +100,7 @@ export abstract class AxisReferenceLineBaseComponent
             .attr("d", (value: DataRepresentationAxisValueType) => {
                 return line(getPoints(value));
             })
-            .style("stroke", settings.color.value?.value)
+            .style("stroke", settings.color.value.value)
             .style("stroke-width", settings.thickness.value);
 
         lineSelection

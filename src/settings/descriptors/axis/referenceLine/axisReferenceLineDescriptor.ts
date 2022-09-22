@@ -24,6 +24,7 @@
  *  THE SOFTWARE.
  */
 
+import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import { BaseDescriptor } from "../../descriptor";
 
@@ -64,10 +65,11 @@ export class AxisReferenceLineDescriptor
     constructor(name: string, displayName: string, isShown: boolean = true) {
         super();
 
+        this.show.value = isShown;
+
+        this.slices = [this.show, this.color, this.thickness]
         this.name = name;
         this.displayName = displayName;
-        this.slices = [this.show, this.color, this.thickness]
-        this.show.value = isShown;
     }
 
 }

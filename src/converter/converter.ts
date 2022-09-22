@@ -28,8 +28,6 @@ import { IConverterOptions } from "./converterOptions";
 
 import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
 
-import IVisual = powerbi.extensibility.IVisual;
-
-export interface IConverter extends IVisual{
+export interface IConverter {
     convert(options: IConverterOptions): IDataRepresentation;
 }

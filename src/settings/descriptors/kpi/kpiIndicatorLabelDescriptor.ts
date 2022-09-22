@@ -35,10 +35,11 @@ export class KPIIndicatorLabelDescriptor extends KPIIndicatorDescriptor {
         this.fontColor.value.value = "#acacac";
         this.font.fontSize.value = 9;
         this.font.bold.value = false
+
         if(name && displayName){
+            this.slices = [this.show, this.font, this.fontColor]
             this.name = name
             this.displayName = displayName
-            this.slices.push(this.show, this.font, this.fontColor)
         }
     }
 }

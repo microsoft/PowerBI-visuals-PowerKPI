@@ -90,9 +90,9 @@ export class VarianceComponentWithIndicator
         if(varianceSettings.fontColor){
             varianceSettings.fontColor.value.value = kpiIndicatorValue.matchKPIColor.value
                 && kpiIndicatorSettings
-                && kpiIndicatorSettings.color.value?.value
-                ? kpiIndicatorSettings.color.value?.value
-                : kpiIndicatorValue.fontColor.value?.value;
+                && kpiIndicatorSettings.color.value.value
+                ? kpiIndicatorSettings.color.value.value
+                : kpiIndicatorValue.fontColor.value.value;
         } else {
             varianceSettings.fontColor = kpiIndicatorValue.fontColor;
         }
@@ -103,7 +103,7 @@ export class VarianceComponentWithIndicator
 
         const indicatorSettings: KPIIndicatorDescriptor = new KPIIndicatorDescriptor();
 
-        indicatorSettings.fontColor.value.value = kpiIndicatorSettings.color.value?.value;
+        indicatorSettings.fontColor.value.value = kpiIndicatorSettings.color.value.value;
         indicatorSettings.show.value = kpiIndicator.isElementShown();
         indicatorSettings.font.bold.value = false; // This options doesn't make any sense for symbol
         indicatorSettings.font.fontSize.value = kpiIndicator.font.fontSize.value;
@@ -128,8 +128,8 @@ export class VarianceComponentWithIndicator
             currentAlign = AlignEnum.alignCenter;
         }
 
-        const className: string = kpiIndicatorSettings.shape.value?.value
-            ? `${this.indicatorClassName} ${this.glyphClassName} ${kpiIndicatorSettings.shape.value?.value}`
+        const className: string = kpiIndicatorSettings.shape.value.value
+            ? `${this.indicatorClassName} ${this.glyphClassName} ${kpiIndicatorSettings.shape.value.value}`
             : undefined;
 
         const title: string = kpiIndicatorLabel.label.value || `${variance[0]}`;
@@ -144,7 +144,7 @@ export class VarianceComponentWithIndicator
         const fakedIndicatorSettings: KPIIndicatorDescriptor = new KPIIndicatorDescriptor();
 
         // We should implement a copy method for settings
-        fakedIndicatorSettings.fontColor.value.value = indicatorSettings.fontColor.value?.value;
+        fakedIndicatorSettings.fontColor.value.value = indicatorSettings.fontColor.value.value;
         fakedIndicatorSettings.show.value = indicatorSettings.isElementShown();
         fakedIndicatorSettings.font.bold.value = indicatorSettings.font.bold.value;
         fakedIndicatorSettings.font.fontSize.value = indicatorSettings.font.fontSize.value;
@@ -164,7 +164,7 @@ export class VarianceComponentWithIndicator
         };
 
         const formatter: valueFormatter.IValueFormatter = this.getValueFormatter(
-            varianceSettings.displayUnits.value?.value as number,
+            varianceSettings.displayUnits.value.value as number,
             varianceSettings.precision.value,
             kpiIndicatorValue.getFormat(),
         );
@@ -183,7 +183,7 @@ export class VarianceComponentWithIndicator
 
         const captions: ICaptionKPIComponentOptionsValueSettings[][] = [];
 
-        switch (kpiIndicator.position.value?.value) {
+        switch (kpiIndicator.position.value.value) {
             case HorizontalLayoutEnum.Right: {
                 captions.push(
                     [valueCaption, indicatorCaption],

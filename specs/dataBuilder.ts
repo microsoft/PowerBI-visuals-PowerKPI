@@ -48,6 +48,7 @@ export class DataBuilder extends testDataViewBuilder.TestDataViewBuilder {
             new Date(2016, 0, 10),
             1000 * 24 * 3600,
         );
+
         for (let i: number = 0; i < this.amountOfSeries; i++) {
             this.seriesValues.push(getRandomNumbers(
                 this.dates.length,

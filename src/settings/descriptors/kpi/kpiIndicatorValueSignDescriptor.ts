@@ -38,7 +38,7 @@ export class KPIIndicatorValueSignDescriptor
     extends KPIIndicatorDescriptor
     implements IDescriptor {
 
-    matchKPIColor = new formattingSettings.ToggleSwitch({
+    public matchKPIColor = new formattingSettings.ToggleSwitch({
         name: "matchKPIColor",
         displayName: "Match KPI Indicator Color",
         value: true
@@ -47,8 +47,8 @@ export class KPIIndicatorValueSignDescriptor
     constructor(viewport?: powerbi.IViewport) {
         super(viewport);
 
+        this.slices = [this.show, this.font, this.format, this.displayUnits, this.precision, this.matchKPIColor, this.fontColor]
         this.name = "kpiIndicatorValue";
         this.displayName = "KPI Indicator Value";
-        this.slices.push(this.show, this.font, this.format, this.displayUnits, this.precision, this.matchKPIColor, this.fontColor)
     }
 }

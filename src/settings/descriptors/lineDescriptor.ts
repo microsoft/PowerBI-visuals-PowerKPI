@@ -24,6 +24,7 @@
  *  THE SOFTWARE.
  */
 
+import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import {
     BaseDescriptor,
@@ -302,9 +303,9 @@ export class LineDescriptor
     constructor() {
         super()
 
+        this.slices = undefined
         this.name = "line"
         this.displayName = "Line"
-        this.slices = undefined
     }
 
     public convertOpacityToCssFormat(opacity: number): number {
@@ -319,8 +320,8 @@ export class LineDescriptor
         } = this[containerName] as ILineDescriptor
 
         return (shouldMatchKpiColor.value 
-            ? interpolationWithColorizedLine.value?.value 
-            : interpolation.value?.value) as LineInterpolation;
+            ? interpolationWithColorizedLine.value.value 
+            : interpolation.value.value) as LineInterpolation;
     }
 
     public addContainerItem(displayName: string){

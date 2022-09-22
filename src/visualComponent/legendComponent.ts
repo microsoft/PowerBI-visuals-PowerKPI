@@ -24,6 +24,7 @@
  *  THE SOFTWARE.
  */
 
+import powerbi from "powerbi-visuals-api";
 import {
     legend as legendModule,
     legendInterfaces,
@@ -126,10 +127,10 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
                     return
                 }
                 const dataPoint: legendInterfaces.LegendDataPoint = {
-                    color: lineSettings.fillColor.value?.value,
+                    color: lineSettings.fillColor.value.value,
                     identity: series.identity,
                     label: series.name,
-                    lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle.value?.value as LineStyle),
+                    lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle.value.value as LineStyle),
                     markerShape: legend.getLegendMarkerShape(),
                     selected: series.selected,
                 };
@@ -146,7 +147,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
             fontFamily: legend.font.fontFamily.value,
             fontSize: legend.font.fontSize.value,
             grouped: false,
-            labelColor: legend.labelColor.value?.value,
+            labelColor: legend.labelColor.value.value,
             title,
         };
     }

@@ -94,7 +94,7 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
         this.size = size;
 
         isShown = layout.autoHideVisualComponents.value
-            ? isShown && this.canComponentBeRenderedAtViewport(viewport, layout.layout.value?.value as LayoutEnum)
+            ? isShown && this.canComponentBeRenderedAtViewport(viewport, layout.layout.value.value as LayoutEnum)
             : isShown;
 
         this.isComponentRendered = isShown;
@@ -185,7 +185,7 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
 
                 return className;
             })
-            .style("color", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.fontColor.value?.value)
+            .style("color", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.fontColor.value.value)
             .style("font-size", (options: ICaptionKPIComponentOptionsValueSettings) => {
                 return pixelConverter.toString(pixelConverter.fromPointToPixel(options.settings.font.fontSize.value));
             })
