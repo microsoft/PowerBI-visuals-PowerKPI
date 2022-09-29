@@ -66,13 +66,13 @@
     "webpack": "^4.28.4"
   },
   "dependencies": {
-    "d3": "^5.7.0",
-    "powerbi-visuals-utils-chartutils": "^2.3.1",
+    "d3": "^7.6.1",
+    "powerbi-visuals-utils-chartutils": "^2.6.0",
     "powerbi-visuals-utils-colorutils": "^2.1.0",
     "powerbi-visuals-utils-dataviewutils": "^2.1.0",
     "powerbi-visuals-utils-formattingutils": "^4.1.2",
-    "powerbi-visuals-utils-interactivityutils": "^5.4.0",
-    "powerbi-visuals-utils-svgutils": "^2.1.0",
+    "powerbi-visuals-utils-interactivityutils": "^5.7.1",
+    "powerbi-visuals-utils-svgutils": "^2.3.2",
     "powerbi-visuals-utils-typeutils": "^2.1.0"
   }
 }
