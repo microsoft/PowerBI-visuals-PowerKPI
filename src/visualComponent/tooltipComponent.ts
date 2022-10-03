@@ -167,7 +167,6 @@ export class TooltipComponent
 
         if (tooltipValues.isElementShown()) {
             series.forEach((dataSeries: IDataRepresentationSeries) => {
-                // debugger
                 const valueFormatterInstance: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
                     dataSeries.format || this.numberFormat,
                     tooltipValues.displayUnits.value.value as number,

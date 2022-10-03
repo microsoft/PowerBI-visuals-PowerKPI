@@ -118,7 +118,10 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
             name: "default",
             displayName: "default",
             items: [],
-            value: null
+            value: {
+                value: null,
+                displayName: "default"
+            }
         },
     };
 

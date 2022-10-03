@@ -84,7 +84,7 @@ export class NumberDescriptorBase
         name: "displayUnits",
         displayName: "Display Units",
         items: displayUnitsOptions,
-        value: null
+        value: this.getNewDisplayUnitsValue(DisplayUnitsType.Auto)
     });
 
     public percentile = new formattingSettings.Slider({
@@ -127,7 +127,6 @@ export class NumberDescriptorBase
     public parse(options: IDescriptorParserOptions) {
         super.parse(options);
 
-        this.setDisplayUnits(DisplayUnitsType.Auto)
         this.applyDefaultFormatByType(options.type)
     }
 
@@ -181,8 +180,7 @@ export class NumberDescriptorBase
         }
     }
 
-    public setDisplayUnits(value: DisplayUnitsType) {
-        const newValue = displayUnitsOptions.filter(el => el.value === value)[0]
-        this.displayUnits.value = newValue
+    public getNewDisplayUnitsValue(value: DisplayUnitsType) {
+        return displayUnitsOptions.filter(el => el.value === value)[0]
     }
 }

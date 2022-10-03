@@ -110,7 +110,6 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
 
     public update(options: powerbi.extensibility.visual.VisualUpdateOptions): void {
         this.settings = this.formattingSettingsService.populateFormattingSettingsModel(Settings, options.dataViews);
-        debugger
 
         const dataView: powerbi.DataView = options && options.dataViews && options.dataViews[0];
 
@@ -165,9 +164,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
-        debugger
         this.filterFormattingProperties()
-        console.log(this.settings.tooltipValues.precision.value)
         return this.formattingSettingsService.buildFormattingModel(this.settings);
     }
 

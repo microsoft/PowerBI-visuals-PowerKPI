@@ -26,8 +26,6 @@
 
 import powerbi from "powerbi-visuals-api";
 
-import { SettingsBase } from "./settingBase";
-
 import {
     IDescriptor,
     IDescriptorParserOptions,
@@ -106,16 +104,17 @@ export class Settings extends formattingSettings.Model {
         kpiLabelViewport,
     );
     public secondKPIIndicatorValue: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(
-        kpiCaptionViewport, 
         "secondKPIIndicatorValue", 
-        "Second KPI Indicator Value"
+        "Second KPI Indicator Value",
+        kpiCaptionViewport, 
+        true,
     );
     public secondKPIIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
         "secondKPIIndicatorLabel",
         "Second KPI Indicator Label",
         kpiLabelViewport,
     );
-    public actualValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport, "actualValueKPI", "KPI Actual Value");
+    public actualValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor("actualValueKPI", "KPI Actual Value", kpiCaptionViewport);
     public actualLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport, "actualLabelKPI", "KPI Actual Label");
     public dateValueKPI: KPIIndicatorDateDescriptor = new KPIIndicatorDateDescriptor(kpiCaptionViewport);
     public dateLabelKPI: KPIIndicatorDateLabelDescriptor = new KPIIndicatorDateLabelDescriptor(kpiLabelViewport);
@@ -137,8 +136,7 @@ export class Settings extends formattingSettings.Model {
         this.layout, this.title, this.subtitle, this.kpiIndicator, this.kpiIndicatorValue,
         this.kpiIndicatorLabel, this.secondKPIIndicatorValue, this.secondKPIIndicatorLabel, 
         this.actualValueKPI, this.actualLabelKPI, this.dateValueKPI, this.dateLabelKPI,
-        this.labels, // this.dots,
-        this.line, this.legend, this.xAxis,
+        this.labels, this.line, this.legend, this.xAxis,
         this.yAxis, this.secondaryYAxis, this.referenceLineOfXAxis, this.referenceLineOfYAxis,
         this.secondaryReferenceLineOfYAxis, this.tooltipLabel, this.tooltipVariance, 
         this.secondTooltipVariance, this.tooltipValues
