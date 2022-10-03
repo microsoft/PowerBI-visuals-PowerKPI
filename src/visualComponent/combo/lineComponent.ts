@@ -38,9 +38,8 @@ import {
     curveStepBefore,
     line,
     Line,
-    Selection,
-} from "d3";
-
+} from "d3-shape";
+import { Selection } from "d3-selection";
 import powerbi from "powerbi-visuals-api";
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
@@ -124,7 +123,7 @@ export class LineComponent extends BaseComponent<IVisualComponentConstructorOpti
         this.lineSelection = lineSelection.enter()
             .append("svg:path")
             .classed(this.lineSelector.className, true)
-            .on("click", this.clickHandler.bind(this))
+            .on("click", (event) => this.clickHandler.bind(this, event))
             .merge(lineSelection)
             .attr("d", (gradientGroup: IDataRepresentationPointGradientColor) => {
                 return this.getLine(

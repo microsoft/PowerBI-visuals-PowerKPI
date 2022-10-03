@@ -26,6 +26,7 @@
 
 import powerbi from "powerbi-visuals-api";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
+import { selection } from "d3-selection";
 
 import { IMargin } from "powerbi-visuals-utils-svgutils";
 
@@ -199,13 +200,13 @@ export class SvgComponent extends BaseContainerComponent<
     }
 
     private bindEvents(): void {
-        this.element.on("mousemove", () => this.pointerMoveEvent(this.renderOptions));
-        this.element.on("touchmove", () => this.pointerMoveEvent(this.renderOptions));
+        this.element.on("mousemove", (event) => this.pointerMoveEvent(this.renderOptions, event));
+        this.element.on("touchmove", (event) => this.pointerMoveEvent(this.renderOptions, event));
 
         this.element.on("mouseleave", () => this.pointerLeaveHandler());
         this.element.on("touchend", () => this.pointerLeaveHandler());
 
-        this.element.on("click", (this.clickHandler.bind(this)));
+        this.element.on("click", (event) => this.clickHandler.bind(this, event));
     }
 
     private updateMargin(margin: IMargin, additionalMargin: IMargin): void {
@@ -230,7 +231,7 @@ export class SvgComponent extends BaseContainerComponent<
         });
     }
 
-    private pointerMoveEvent(options: ISvgComponentRenderOptions): void {
+    private pointerMoveEvent(options: ISvgComponentRenderOptions, event: MouseEvent | TouchEvent): void {
         const { data: { settings, variance } } = options;
 
         const isSecondTooltipShown: boolean = variance
@@ -246,8 +247,6 @@ export class SvgComponent extends BaseContainerComponent<
 
             return;
         }
-
-        const event: MouseEvent | TouchEvent = require("d3-selection").event;
 
         event.preventDefault();
         event.stopPropagation();

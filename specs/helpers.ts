@@ -24,10 +24,10 @@
 *  THE SOFTWARE.
 */
 
-import { range as d3Range } from "d3-array";
+import { range } from "d3-array";
 
 export function getDateRange(start: Date, stop: Date, step: number): Date[] {
-    return d3Range(
+    return range(
         start.getTime(),
         stop.getTime(),
         step,

@@ -24,11 +24,11 @@
  *  THE SOFTWARE.
  */
 
+import { range as d3Range } from "d3-array";
 import {
-    range as d3Range,
     ScaleQuantize,
     scaleQuantize,
-} from "d3";
+} from "d3-scale";
 
 import { label as NewLabelUtils } from "powerbi-visuals-utils-chartutils";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";

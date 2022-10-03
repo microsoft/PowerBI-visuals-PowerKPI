@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/Microsoft/PowerBI-visuals-PowerKPI#readme",
   "devDependencies": {
-    "@types/d3": "^5.7.0",
+    "@types/d3": "^7.4.0",
     "@types/jasmine": "^3.3.5",
     "@types/jasmine-jquery": "^1.5.33",
     "@types/jquery": "^3.3.29",
@@ -65,7 +65,11 @@
     "webpack": "^4.28.4"
   },
   "dependencies": {
-    "d3": "^5.7.0",
+    "d3-array": "^3.2.0",
+    "d3-dispatch": "^3.0.1",
+    "d3-scale": "^4.0.2",
+    "d3-selection": "^3.0.0",
+    "d3-shape": "^3.1.0",
     "powerbi-visuals-utils-chartutils": "^2.6.0",
     "powerbi-visuals-utils-colorutils": "^2.3.1",
     "powerbi-visuals-utils-dataviewutils": "^2.4.1",

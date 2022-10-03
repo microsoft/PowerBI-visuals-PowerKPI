@@ -28,13 +28,14 @@ import {
     Axis,
     axisBottom,
     axisLeft,
-    range as d3Range,
+} from "d3-axis";
+import {
     ScaleLinear,
     scaleLinear,
     ScalePoint,
     scalePoint,
-} from "d3";
-
+} from "d3-scale";
+import { range as d3Range } from "d3-array";
 import powerbi from "powerbi-visuals-api";
 
 import {

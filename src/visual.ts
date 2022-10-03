@@ -25,11 +25,10 @@
  */
 import "../styles/styles.less";
 import {
-    dispatch,
-    Dispatch,
     select as d3Select,
     Selection,
-} from "d3";
+} from "d3-selection";
+import { dispatch, Dispatch } from "d3-dispatch";
 
 import powerbi from "powerbi-visuals-api";
 

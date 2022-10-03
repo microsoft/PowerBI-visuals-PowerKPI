@@ -24,10 +24,8 @@
  *  THE SOFTWARE.
  */
 
-import {
-    Dispatch,
-    Selection,
-} from "d3";
+import { Selection } from "d3-selection";
+import { Dispatch } from "d3-dispatch";
 
 import powerbi from "powerbi-visuals-api";
 import { interactivityBaseService } from "powerbi-visuals-utils-interactivityutils";

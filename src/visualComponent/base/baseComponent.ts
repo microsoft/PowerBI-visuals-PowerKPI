@@ -24,26 +24,13 @@
  *  THE SOFTWARE.
  */
 
-import {
-    Selection,
-} from "d3";
-
+import { Selection } from "d3-selection";
 import powerbi from "powerbi-visuals-api";
+import { CssConstants } from "powerbi-visuals-utils-svgutils";
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 import { EventName } from "../../event/eventName";
-
-import {
-    CssConstants,
-} from "powerbi-visuals-utils-svgutils";
-
-import {
-    pixelConverter,
-} from "powerbi-visuals-utils-typeutils";
-
-import {
-    IVisualComponentConstructorOptions,
-} from "./visualComponentConstructorOptions";
-
+import { IVisualComponentConstructorOptions } from "./visualComponentConstructorOptions";
 import {
     IVisualComponent,
     IVisualComponentViewport,
@@ -264,7 +251,7 @@ export abstract class BaseComponent<ConstructorOptionsType
         element.style("opacity", shouldBeSelected ? opacity : opacity / 3);
     }
 
-    protected clickHandler(): void {
+    protected clickHandler(event: any): void {
         if (!this.constructorOptions
             || !this.constructorOptions.eventDispatcher
         ) {
@@ -275,7 +262,7 @@ export abstract class BaseComponent<ConstructorOptionsType
             EventName.onClick,
             undefined,
             this,
-            require("d3-selection").event,
+            event,
         );
     }
 }

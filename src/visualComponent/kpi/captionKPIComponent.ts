@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-import { Selection } from "d3";
+import { Selection } from "d3-selection";
 
 import powerbi from "powerbi-visuals-api";
 import { textMeasurementService } from "powerbi-visuals-utils-formattingutils";
