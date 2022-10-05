@@ -32,7 +32,6 @@ import { dispatch, Dispatch } from "d3-dispatch";
 
 import powerbi from "powerbi-visuals-api";
 
-
 import {
     interactivityBaseService,
     interactivitySelectionService,
@@ -56,10 +55,13 @@ import {
 } from "./behavior/behavior";
 import { Settings } from "./settings/settings";
 import { formattingSettings, FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
+import { ILineDescriptor, LineType } from "./settings/descriptors/lineDescriptor";
 
 import FormattingSettingsSlice = formattingSettings.Slice;
-import { LineType } from "./settings/descriptors/lineDescriptor";
-export interface IPowerKPIConstructorOptions extends powerbi.extensibility.visual.VisualConstructorOptions {
+import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
+
+export interface IPowerKPIConstructorOptions extends VisualConstructorOptions {
     rootElement?: HTMLElement;
 }
 
@@ -67,15 +69,13 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     private static ViewportReducer: number = 3;
 
     private eventDispatcher: Dispatch<any> = dispatch(...Object.keys(EventName));
-
     private element: Selection<any, any, any, any>;
     private converter: IConverter;
     private component: IVisualComponent<IVisualComponentRenderOptions>;
-
     private dataRepresentation: IDataRepresentation;
-
     private behavior: Behavior;
     private interactivityService: interactivityBaseService.IInteractivityService<IDataRepresentationSeries>;
+    
     private settings: Settings;
     private formattingSettingsService: FormattingSettingsService;
 
@@ -107,7 +107,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
         });
     }
 
-    public update(options: powerbi.extensibility.visual.VisualUpdateOptions): void {
+    public update(options: VisualUpdateOptions): void {
         this.settings = this.formattingSettingsService.populateFormattingSettingsModel(Settings, options.dataViews);
 
         const dataView: powerbi.DataView = options && options.dataViews && options.dataViews[0];
@@ -218,32 +218,21 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     }
 
     private filterLineProperties(){
+        // TODO: Optional properties in containers
         const { line } = this.settings
         line.container.containerItems.forEach(containerItem => {
             const containerName = containerItem.displayName
-            let newSlices: Array<FormattingSettingsSlice> = [
-                "fillColor", 
-                "shouldMatchKpiColor", 
-                "dataPointStartsKpiColorSegment", 
-                "lineType", 
-                "thickness", 
-                "rawOpacity", 
-                "rawAreaOpacity", 
-                "lineStyle", 
-                "interpolation",
-                "interpolationWithColorizedLine"
-            ].map(name => line[containerName]?.[name])
+            const currentSettings = line.getCurrentSettings(containerName);
+            let newSlices: Array<FormattingSettingsSlice> = [...containerItem.slices]
 
-            if(!line[containerName]) return
-
-            if(line[containerName].shouldMatchKpiColor.value) { 
-                this.removeArrayItem(newSlices, line[containerName].interpolation)
+            if(currentSettings.shouldMatchKpiColor) { 
+                this.removeArrayItem(newSlices, newSlices.filter(el => el.name === "interpolation")[0])
             } else {
-                this.removeArrayItem(newSlices, line[containerName].dataPointStartsKpiColorSegment)
-                this.removeArrayItem(newSlices, line[containerName].interpolationWithColorizedLine)
+                this.removeArrayItem(newSlices, newSlices.filter(el => el.name === "dataPointStartsKpiColorSegment")[0])
+                this.removeArrayItem(newSlices, newSlices.filter(el => el.name === "interpolationWithColorizedLine")[0])
             }
 
-            if(line[containerName].lineType.value.value !== LineType.area) this.removeArrayItem(newSlices, line[containerName].rawAreaOpacity)
+            if(currentSettings.lineType !== LineType.area) this.removeArrayItem(newSlices, newSlices.filter(el => el.name === "rawAreaOpacity")[0])
             containerItem.slices = newSlices
         })
     }

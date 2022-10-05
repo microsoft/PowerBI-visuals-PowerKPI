@@ -26,7 +26,6 @@
 
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
-import { DisplayUnit } from "powerbi-visuals-utils-formattingutils/lib/src/displayUnitSystem/displayUnitSystem";
 
 import { displayUnitsOptions, NumberDescriptorBase } from "../numberDescriptorBase";
 

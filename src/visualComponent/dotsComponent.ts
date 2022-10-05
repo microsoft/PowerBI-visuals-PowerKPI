@@ -88,7 +88,7 @@ export class DotsComponent extends BaseContainerComponent<
                 if (point) {
                     component.show();
 
-                    const lineSettings: ILineDescriptor = line[currentSeries.name]
+                    const lineSettings = line.getCurrentSettings(currentSeries.name)
                     if(!lineSettings){
                         return
                     }
@@ -96,7 +96,7 @@ export class DotsComponent extends BaseContainerComponent<
                         point,
                         radiusFactor: dots.radiusFactor,
                         series: currentSeries,
-                        thickness: lineSettings.thickness.value,
+                        thickness: lineSettings.thickness,
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,

@@ -25,11 +25,12 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+import { SimpleSlice } from "powerbi-visuals-utils-formattingmodel/lib/FormattingSettingsComponents";
+import { LineDataPoint } from "../../converter/dataConverter";
 import {
-    BaseDescriptor,
-    IDescriptor,
-    IDescriptorParserOptions,
+    BaseDescriptor
 } from "./descriptor";
 
 export enum LineInterpolation {
@@ -74,6 +75,19 @@ export interface ILineDescriptor extends ILineDescriptorBase {
     interpolationWithColorizedLine: formattingSettings.ItemDropdown;
 }
 
+export interface SimpleLineSetting {
+    fillColor: string;
+    shouldMatchKpiColor: boolean;
+    dataPointStartsKpiColorSegment: boolean;
+    lineStyle: LineStyle;
+    thickness: number;
+    interpolation: LineInterpolation;
+    lineType: LineType;
+    rawOpacity: number;
+    rawAreaOpacity: number;
+    interpolationWithColorizedLine: LineInterpolation;
+}
+
 export const lineStyleOptions: powerbi.IEnumMember[] = [
     {
         value: LineStyle.solidLine,
@@ -107,23 +121,6 @@ const interpolationWithColorizedLineOptions = [
       displayName: "Step-after"
     }
 ]
-
-enum PropertyType {
-    ColorPicker,
-    ToggleSwitch,
-    DropDown,
-    NumUpDown,
-    Slider
-}
-
-interface IPropertyConfiguration {
-    type: PropertyType;
-    name: string;
-    displayName: string;
-    defaultValue: any;
-    items?: powerbi.IEnumMember[];
-    options?: powerbi.visuals.NumUpDownFormat;
-}
 
 const lineTypeOptions: powerbi.IEnumMember[] = [
     {
@@ -183,120 +180,126 @@ export class LineDescriptor
     extends BaseDescriptor {
 
     public getOpacity(containerName: string): number {
-        return this.convertOpacityToCssFormat(this[containerName].rawOpacity.value);
+        return this.convertOpacityToCssFormat(this.getCurrentSettings(containerName).rawOpacity);
     }
 
     public getAreaOpacity(containerName: string): number {
-        return this.convertOpacityToCssFormat(this[containerName].rawAreaOpacity.value);
+        return this.convertOpacityToCssFormat(this.getCurrentSettings(containerName).rawAreaOpacity);
     }
+
+    public fillColor = new formattingSettings.ColorPicker({
+        name: "fillColor",
+        displayName: "Color",
+        value: { value: null }
+    });
+
+    public shouldMatchKpiColor = new formattingSettings.ToggleSwitch({
+        name: "shouldMatchKpiColor",
+        displayName: "Match KPI Color",
+        value: false
+    });
+
+    public dataPointStartsKpiColorSegment = new formattingSettings.ToggleSwitch({
+        name: "dataPointStartsKpiColorSegment",
+        displayName: "Data Point Starts KPI Color Segment",
+        value: true
+    });
+
+    public lineType = new formattingSettings.ItemDropdown({
+        name: "lineType",
+        displayName: "Type",
+        items: lineTypeOptions,
+        value: lineTypeOptions[0]
+    });
 
     private minThickness: number = 0.25;
     private maxThickness: number = 10;
+    public thickness = new formattingSettings.Slider({
+        name: "thickness",
+        displayName: "Thickness",
+        value: 2,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: this.minThickness,
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: this.maxThickness,
+            }
+        }
+    });
 
     private minOpacity: number = 15;
     private maxOpacity: number = 100;
+    public rawOpacity = new formattingSettings.NumUpDown({
+        name: "rawOpacity",
+        displayName: "Opacity",
+        value: 100,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: this.minOpacity,
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: this.maxOpacity,
+            }
+        }
+    });
 
-    private defaultSlices: IPropertyConfiguration[] = [
-        {
-            name: `fillColor`,
-            displayName: "Color",
-            type: PropertyType.ColorPicker,
-            defaultValue: { value: null }
-        },
-        {
-            name: `shouldMatchKpiColor`,
-            displayName: "Match KPI Color",
-            type: PropertyType.ToggleSwitch,
-            defaultValue: false
-        },
-        {
-            name: `dataPointStartsKpiColorSegment`,
-            displayName: "Data Point Starts KPI Color Segment",
-            type: PropertyType.ToggleSwitch,
-            defaultValue: true
-        },
-        {
-            name: `lineType`,
-            displayName: "Type",
-            type: PropertyType.DropDown,
-            defaultValue: lineTypeOptions[0],
-            items: lineTypeOptions
-        },
-        {
-            name: `thickness`,
-            displayName: "Thickness",
-            type: PropertyType.Slider,
-            defaultValue: 2,
-            options: {
-                minValue: {
-                    type: powerbi.visuals.ValidatorType.Min,
-                    value: this.minThickness,
-                },
-                maxValue: {
-                    type: powerbi.visuals.ValidatorType.Max,
-                    value: this.maxThickness,
-                }
+    public rawAreaOpacity = new formattingSettings.NumUpDown({
+        name: "areaOpacity",
+        displayName: "Area Opacity",
+        value: 50,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: this.minOpacity,
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: this.maxOpacity,
             }
-        },
-        {
-            name: `rawOpacity`,
-            displayName: "Opacity",
-            type: PropertyType.NumUpDown,
-            defaultValue: 100,
-            options: {
-                minValue: {
-                    type: powerbi.visuals.ValidatorType.Min,
-                    value: this.minOpacity,
-                },
-                maxValue: {
-                    type: powerbi.visuals.ValidatorType.Max,
-                    value: this.maxOpacity,
-                }
-            }
-        },
-        {
-            name: `rawAreaOpacity`,
-            displayName: "Area Opacity",
-            type: PropertyType.NumUpDown,
-            defaultValue: 50,
-            options: {
-                minValue: {
-                    type: powerbi.visuals.ValidatorType.Min,
-                    value: this.minOpacity,
-                },
-                maxValue: {
-                    type: powerbi.visuals.ValidatorType.Max,
-                    value: this.maxOpacity,
-                }
-            }
-        },
-        {
-            name: `lineStyle`,
-            displayName: "Style",
-            type: PropertyType.DropDown,
-            defaultValue: lineStyleOptions[0],
-            items: lineStyleOptions
-        },
-        {
-            name: `interpolation`,
-            displayName: "Interpolation",
-            type: PropertyType.DropDown,
-            defaultValue: interpolationOptions[0],
-            items: interpolationOptions
-        },
-        {
-            name: `interpolationWithColorizedLine`,
-            displayName: "Interpolation",
-            type: PropertyType.DropDown,
-            defaultValue: interpolationWithColorizedLineOptions[0],
-            items: interpolationWithColorizedLineOptions
-        },
-    ]
+        }
+    });
+
+    public lineStyle = new formattingSettings.ItemDropdown({
+        name: "lineStyle",
+        displayName: "Style",
+        items: lineStyleOptions,
+        value: lineStyleOptions[0]
+    });
+
+    public interpolation = new formattingSettings.ItemDropdown({
+        name: "interpolation",
+        displayName: "Interpolation",
+        items: interpolationOptions,
+        value: interpolationOptions[0]
+    });
+
+    public interpolationWithColorizedLine = new formattingSettings.ItemDropdown({
+        name: `interpolationWithColorizedLine`,
+        displayName: "Interpolation",
+        items: interpolationWithColorizedLineOptions,
+        value: interpolationWithColorizedLineOptions[0]
+    });
 
     public container: formattingSettings.Container = {
         containerItems: [{
             displayName: "[ALL]",
-            slices: this.generateProperties("[ALL]")
+            slices: [
+                this.fillColor, 
+                this.shouldMatchKpiColor, 
+                this.dataPointStartsKpiColorSegment, 
+                this.lineType, 
+                this.thickness, 
+                this.rawOpacity, 
+                this.rawAreaOpacity, 
+                this.lineStyle, 
+                this.interpolation,
+                this.interpolationWithColorizedLine
+            ]
         }]
     };
 
@@ -317,73 +320,42 @@ export class LineDescriptor
             shouldMatchKpiColor, 
             interpolationWithColorizedLine, 
             interpolation
-        } = this[containerName] as ILineDescriptor
+        } = this.getCurrentSettings(containerName)
 
-        return (shouldMatchKpiColor.value 
-            ? interpolationWithColorizedLine.value.value 
-            : interpolation.value.value) as LineInterpolation;
+        return (shouldMatchKpiColor 
+            ? interpolationWithColorizedLine 
+            : interpolation) as LineInterpolation;
     }
 
-    public addContainerItem(displayName: string){
-        this.container.containerItems.push({
-            displayName,
-            slices: this.generateProperties(displayName)
-        })
-    }
-
-    private generateProperties(containerName: string) {
-        const globalThis = this
-
-        if(this[containerName] == undefined){
-            this[containerName] = {}
+    public populateContainer(dataPoint: LineDataPoint) {
+        let defaultContainerSlices = this.container.containerItems[0].slices;
+        let containerItem: formattingSettings.ContainerItem = {
+            displayName: dataPoint.displayName,
+            slices: []
         }
-        return this.defaultSlices.map(slice => {
-            const { displayName, defaultValue: value, items, options, name } = slice
 
-            let newProperty;
-            switch(slice.type){ 
-                case PropertyType.ColorPicker: {
-                    newProperty = new formattingSettings.ColorPicker({
-                        name,
-                        displayName,
-                        value
-                    });
-                    break;
-                } case PropertyType.ToggleSwitch: {
-                    newProperty = new formattingSettings.ToggleSwitch({
-                        name,
-                        displayName,
-                        value,
-                    });
-                    break;
-                } case PropertyType.DropDown: {
-                    newProperty = new formattingSettings.ItemDropdown({
-                        name,
-                        displayName,
-                        value,
-                        items
-                    });
-                    break;
-                } case PropertyType.NumUpDown: {
-                    newProperty = new formattingSettings.NumUpDown({
-                        name,
-                        displayName,
-                        value,
-                        options
-                    });
-                    break;
-                } case PropertyType.Slider: {
-                    newProperty = new formattingSettings.Slider({
-                        name,
-                        displayName,
-                        value,
-                        options
-                    });
-                    break;
-                }
-            }
-            globalThis[containerName][name] = newProperty
-            return newProperty
-        })
+        defaultContainerSlices.forEach(slice => {
+            let clonedSlice: formattingSettings.SimpleSlice = Object.create(slice);
+            // debugger
+            clonedSlice.value = dataPoint[slice.name] ? dataPoint[slice.name] : clonedSlice.value;
+            clonedSlice.selector = dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals);
+            clonedSlice.altConstantSelector = dataPoint.selectionId.getSelector();
+            clonedSlice.instanceKind = powerbi.VisualEnumerationInstanceKinds.ConstantOrRule
+            containerItem.slices.push(clonedSlice);
+        });
+
+        this.container.containerItems.push(containerItem);
+        return this.getCurrentSettings(dataPoint.displayName)
+    }
+
+    public getCurrentSettings(containerName: string): SimpleLineSetting {
+        let currentLineSettings = {}
+        const currentContainer = this.container.containerItems.filter(el => el.displayName === containerName)[0];
+        currentContainer.slices.forEach(slice => currentLineSettings[slice.name] = this.getSliceValue(slice as SimpleSlice))
+        return currentLineSettings as SimpleLineSetting
+    }
+
+    private getSliceValue(slice: SimpleSlice) {
+        return slice?.value?.value != undefined ? slice.value.value : slice.value
     }
 }

@@ -62,9 +62,21 @@ import {
 import { IDataRepresentationAxisBase } from "../dataRepresentation/dataRepresentationAxis";
 import { DataRepresentationAxisValueType } from "../dataRepresentation/dataRepresentationAxisValueType";
 
+import PrimitiveValue = powerbi.PrimitiveValue;
+import ISelectionId = powerbi.visuals.ISelectionId;
+import IColorPalette = powerbi.extensibility.IColorPalette;
+import ISelectionIdBuilder = powerbi.visuals.ISelectionIdBuilder;
+
 export interface IDataConverterConstructorOptions {
-    colorPalette: powerbi.extensibility.IColorPalette;
-    createSelectionIdBuilder: () => powerbi.visuals.ISelectionIdBuilder;
+    colorPalette: IColorPalette;
+    createSelectionIdBuilder: () => ISelectionIdBuilder;
+}
+
+export interface LineDataPoint {
+    displayName: string;
+    selectionId: ISelectionId;
+    fillColor: string;
+    value: PrimitiveValue;
 }
 
 export class DataConverter
@@ -163,7 +175,7 @@ export class DataConverter
 
         let maxThickness: number = NaN;
 
-        let seriesColorIndex: number = 0;
+        let seriesIndex: number = 0;
 
         if (dataView.categorical.values
             && dataView.categorical.values.source
@@ -257,17 +269,26 @@ export class DataConverter
                         ? `${columnGroup.name}`
                         : undefined;
 
-                    settings.line.addContainerItem(name)
 
-                    if (!settings.line[name].fillColor.value.value
-                        && colorPalette
-                        && colorPalette.getColor
-                    ) {
-                        settings.line[name].fillColor.value.value = colorPalette.getColor(`${seriesColorIndex}`).value;
+                    const identity: ISelectionId = createSelectionIdBuilder()
+                        .withSeries(
+                            dataView.categorical.values,
+                            isGrouped
+                                ? columnGroup
+                                : groupedValue,
+                        )
+                        .withMeasure(groupedValue.source.queryName)
+                        .createSelectionId();
 
-                        seriesColorIndex++;
+                    const dataPoint: LineDataPoint = {
+                        displayName: name,
+                        selectionId: identity,
+                        fillColor: colorPalette.getColor(`${seriesIndex}`).value,
+                        value: groupedValue.values[seriesIndex],
                     }
+                    seriesIndex++
 
+                    const currentSettings = settings.line.populateContainer(dataPoint)
                     const seriesY: IDataRepresentationAxisBase = {
                         max: undefined,
                         min: undefined,
@@ -285,19 +306,8 @@ export class DataConverter
                         currentPoint,
                     );
 
-
-                    const identity: powerbi.extensibility.ISelectionId = createSelectionIdBuilder()
-                        .withSeries(
-                            dataView.categorical.values,
-                            isGrouped
-                                ? columnGroup
-                                : groupedValue,
-                        )
-                        .withMeasure(groupedValue.source.queryName)
-                        .createSelectionId();
-
-                    if (isNaN(maxThickness) || settings.line[name].thickness.value > maxThickness) {
-                        maxThickness = settings.line[name].thickness.value;
+                    if (isNaN(maxThickness) || currentSettings.thickness > maxThickness) {
+                        maxThickness = currentSettings.thickness;
                     }
 
                     seriesGroup.series.push({
@@ -441,7 +451,8 @@ export class DataConverter
         } {
         const gradientPoints: IDataRepresentationPointGradientColor[] = [];
 
-        const dataPointEndsKpiColorSegment: boolean = !settings.line[name].dataPointStartsKpiColorSegment.value;
+        const currentLineSettings = settings.line.getCurrentSettings(name)
+        const dataPointEndsKpiColorSegment: boolean = currentLineSettings.dataPointStartsKpiColorSegment;
 
         const copiedAxisValues: DataRepresentationAxisValueType[] = dataPointEndsKpiColorSegment
             ? axisValues.slice().reverse()
@@ -462,9 +473,9 @@ export class DataConverter
 
                 const kpiIndex: number = this.getKPIIndex(kpiIndexes[categoryIndex]);
 
-                let color: string = settings.line[name].fillColor.value.value;
+                let color: string = currentLineSettings.fillColor;
 
-                if (settings.line[name].shouldMatchKpiColor.value) {
+                if (currentLineSettings.shouldMatchKpiColor) {
                     const currentKPI: IKPIIndicatorSettings = settings
                         .kpiIndicator
                         .getCurrentKPI(kpiIndex);

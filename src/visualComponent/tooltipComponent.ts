@@ -33,7 +33,7 @@ import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentat
 import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
 import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
-import { ILineDescriptor, LineStyle } from "../settings/descriptors/lineDescriptor";
+import { ILineDescriptor, LineStyle, SimpleLineSetting } from "../settings/descriptors/lineDescriptor";
 import { TooltipVarianceDescriptor } from "../settings/descriptors/tooltip/tooltipVarianceDescriptor";
 import { IVisualComponent } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
@@ -138,7 +138,7 @@ export class TooltipComponent
                 && series[0].points[0].kpiIndex),
             (variances[0] || [])[0],
             legend,
-            series[0] && line[series[0].name]
+            series[0] && line.getCurrentSettings(series[0].name)
         );
 
         if (firstVariance) {
@@ -182,15 +182,15 @@ export class TooltipComponent
                     && dataSeriesPoint.y !== undefined
                     && !isNaN(dataSeriesPoint.y)
                 ) {
-                    const lineSettings: ILineDescriptor = line[dataSeries.name]
+                    const lineSettings = line.getCurrentSettings(dataSeries.name)
                     if(!lineSettings){
                         return
                     }
                     dataItems.push({
-                        color: lineSettings.fillColor.value.value,
+                        color: lineSettings.fillColor,
                         displayName: `${dataSeries.name}`,
-                        lineColor: lineSettings.fillColor.value.value,
-                        lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle.value.value as LineStyle),
+                        lineColor: lineSettings.fillColor,
+                        lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle),
                         markerShape: legend.getLegendMarkerShape(),
                         value: valueFormatterInstance.format(dataSeriesPoint.y),
                     });
@@ -276,7 +276,7 @@ export class TooltipComponent
         commonKPISettings: IKPIIndicatorSettings = {},
         kpiIndicatorVariance: number,
         legendDescriptor?: LegendDescriptor,
-        lineSettings?: ILineDescriptor,
+        lineSettings?: SimpleLineSetting,
     ): IVisualTooltipDataItem {
         if (!settings.isElementShown()) {
             return null;
@@ -297,7 +297,7 @@ export class TooltipComponent
         );
 
         const lineStyle: string = legendDescriptor && lineSettings
-            ? legendDescriptor.getLegendLineStyle(lineSettings.lineStyle.value.value as LineStyle)
+            ? legendDescriptor.getLegendLineStyle(lineSettings.lineStyle as LineStyle)
             : undefined;
 
         const markerShape: string = legendDescriptor

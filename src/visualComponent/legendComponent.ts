@@ -122,15 +122,15 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
         
         const dataPoints: legendInterfaces.LegendDataPoint[] = data.series
             .map((series: IDataRepresentationSeries) => {
-                const lineSettings = line[series.name]
+                const lineSettings = line.getCurrentSettings(series.name)
                 if(!lineSettings){
                     return
                 }
                 const dataPoint: legendInterfaces.LegendDataPoint = {
-                    color: lineSettings.fillColor.value.value,
+                    color: lineSettings.fillColor,
                     identity: series.identity,
                     label: series.name,
-                    lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle.value.value as LineStyle),
+                    lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle),
                     markerShape: legend.getLegendMarkerShape(),
                     selected: series.selected,
                 };
