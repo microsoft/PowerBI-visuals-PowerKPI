@@ -64,6 +64,7 @@ export class SubtitleDescriptor extends FontSizeDescriptor {
     constructor(viewport: powerbi.IViewport) {
         super(viewport)
 
+        this.useExtendedFontPicker()
         this.slices = [this.show, this.titleText, this.font, this.fontColor, this.background, this.alignment];
         this.name = "subtitle";
         this.displayName = "Subtitle";

@@ -149,7 +149,6 @@ export class LegendDescriptor extends FontSizeDescriptor {
             this.labelColor,
             this.style
         ]
-        // add isBold, isItalic
     }
 
     public getLegendMarkerShape(): legendInterfaces.MarkerShape {

@@ -32,6 +32,7 @@ export class KPIIndicatorDateLabelDescriptor extends KPIIndicatorLabelDescriptor
     constructor(viewport?: powerbi.IViewport) {
         super(viewport);
 
+        this.useExtendedFontPicker()
         this.slices = [this.show, this.font, 
             // this.precision,
             this.fontColor]

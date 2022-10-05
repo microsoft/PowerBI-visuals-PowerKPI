@@ -85,8 +85,6 @@ export class VarianceComponentWithIndicator
         const varianceSettings: KPIIndicatorDescriptor = this.cloneClass(kpiIndicatorValue);
         const kpiLabelSettings: KPIIndicatorDescriptor = this.cloneClass(kpiIndicatorLabel);
 
-        kpiLabelSettings.show.value = kpiIndicatorLabel.isShown();
-
         if(varianceSettings.fontColor){
             varianceSettings.fontColor.value.value = kpiIndicatorValue.matchKPIColor.value
                 && kpiIndicatorSettings

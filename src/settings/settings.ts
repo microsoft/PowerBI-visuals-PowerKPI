@@ -115,7 +115,7 @@ export class Settings extends formattingSettings.Model {
         kpiLabelViewport,
     );
     public actualValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor("actualValueKPI", "KPI Actual Value", kpiCaptionViewport);
-    public actualLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport, "actualLabelKPI", "KPI Actual Label");
+    public actualLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport);
     public dateValueKPI: KPIIndicatorDateDescriptor = new KPIIndicatorDateDescriptor(kpiCaptionViewport);
     public dateLabelKPI: KPIIndicatorDateLabelDescriptor = new KPIIndicatorDateLabelDescriptor(kpiLabelViewport);
     public labels: LabelsDescriptor = new LabelsDescriptor(LabelsViewport);

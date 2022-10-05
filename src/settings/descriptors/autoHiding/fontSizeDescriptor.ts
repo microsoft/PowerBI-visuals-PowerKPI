@@ -66,14 +66,6 @@ export class FontSizeDescriptor
                     value: this.minFontSize,
                 }
             }
-        }),
-        bold: new formattingSettings.ToggleSwitch({
-            name: "isBold",
-            value: false
-        }),
-        italic:  new formattingSettings.ToggleSwitch({
-            name: "isItalic",
-            value: false
         })
     });
 
@@ -98,6 +90,17 @@ export class FontSizeDescriptor
         if (this.isMinFontSizeApplied) {
             this.font.fontSize.value = this.minFontSize;
         }
+    }
+
+    public useExtendedFontPicker(bold?: boolean, italic?: boolean){
+        this.font.bold = new formattingSettings.ToggleSwitch({
+            name: "isBold",
+            value: bold || false
+        })
+        this.font.italic = new formattingSettings.ToggleSwitch({
+            name: "isItalic",
+            value: italic || false
+        });
     }
 }
  

@@ -40,6 +40,7 @@ export class KPIIndicatorCustomizableLabelDescriptor extends KPIIndicatorLabelDe
     constructor(name: string, displayName: string, viewport?: powerbi.IViewport) {
         super(viewport);
 
+        this.useExtendedFontPicker()
         this.show.value = false;
 
         this.slices = [this.show, this.font, this.fontColor, this.label]

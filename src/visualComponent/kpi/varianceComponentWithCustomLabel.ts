@@ -70,8 +70,6 @@ export class VarianceComponentWithCustomLabel
 
         const labelSettings: KPIIndicatorDescriptor = this.cloneClass(secondKPIIndicatorLabel);
 
-        labelSettings.show.value = secondKPIIndicatorLabel.isShown();
-
         if (isNaN(variance[1])) {
             varianceSettings.show.value = false;
             labelSettings.show.value = false;
