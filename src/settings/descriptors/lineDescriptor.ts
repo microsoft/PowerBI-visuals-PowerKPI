@@ -301,6 +301,10 @@ export class LineDescriptor
         }]
     };
 
+    private containerItemName = {
+        "default": "[ALL]"
+    }
+
     constructor() {
         super()
 
@@ -326,29 +330,43 @@ export class LineDescriptor
     }
 
     public populateContainer(dataPoint: LineDataPoint) {
+        const { containerName, containerGroupName } = dataPoint
+        let existingContainer = this.getCurrentSettings(containerGroupName) 
+
+        if(Object.keys(existingContainer).length) {
+            if(this.containerItemName[containerName] === undefined) {
+                this.containerItemName[containerName] = containerGroupName
+            }
+            return existingContainer
+        }
+
         let defaultContainerSlices = this.container.containerItems[0].slices;
+        if(containerGroupName !== undefined){
+            this.containerItemName[containerName] = containerGroupName
+        }
         let containerItem: formattingSettings.ContainerItem = {
-            displayName: dataPoint.displayName,
+            displayName: containerGroupName ?? containerName,
             slices: []
         }
 
         defaultContainerSlices.forEach(slice => {
             let clonedSlice: formattingSettings.SimpleSlice = Object.create(slice);
             clonedSlice.value = dataPoint[slice.name] ? dataPoint[slice.name] : clonedSlice.value;
-            clonedSlice.selector = dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals);
-            clonedSlice.altConstantSelector = dataPoint.selectionId.getSelector();
-            clonedSlice.instanceKind = powerbi.VisualEnumerationInstanceKinds.ConstantOrRule
             containerItem.slices.push(clonedSlice);
         });
 
         this.container.containerItems.push(containerItem);
-        return this.getCurrentSettings(dataPoint.displayName)
+        return this.getCurrentSettings(containerName)
     }
 
     public getCurrentSettings(containerName: string): SimpleLineSetting {
+        const currentContainerName = this.containerItemName[containerName] ?? containerName
+        const currentContainer = this.container.containerItems.filter(el => el.displayName === currentContainerName)[0];
+
         let currentLineSettings = {}
-        const currentContainer = this.container.containerItems.filter(el => el.displayName === containerName)[0];
-        currentContainer.slices.forEach(slice => currentLineSettings[slice.name] = this.getSliceValue(slice as SimpleSlice))
+        if(currentContainer){
+            currentContainer.slices.forEach(slice => currentLineSettings[slice.name] = this.getSliceValue(slice as SimpleSlice))
+        }
         return currentLineSettings as SimpleLineSetting
     }
 

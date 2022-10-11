@@ -72,7 +72,8 @@ export interface IDataConverterConstructorOptions {
 }
 
 export interface LineDataPoint {
-    displayName: string;
+    containerName: string;
+    containerGroupName: string;
     selectionId: ISelectionId;
     fillColor: string;
     value: PrimitiveValue;
@@ -130,7 +131,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
             dataView,
             viewport,
             hasSelection,
-            // settings
+            settings
         } = options;
 
         const {
@@ -138,7 +139,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
             createSelectionIdBuilder,
         } = this.constructorOptions;
 
-        const settings = new Settings()
+        const fakeSettings = new Settings()
         let axisType: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
 
         const dataRepresentation: IDataRepresentation = {
@@ -151,7 +152,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
                 top: 0,
             },
             series: [],
-            settings,
+            settings: fakeSettings,
             sortedSeries: [],
             variance: [],
             variances: [],
@@ -188,10 +189,10 @@ export class DataConverter extends VarianceConverter implements IConverter {
         const axisCategoryType: powerbi.ValueTypeDescriptor = axisCategory.source.type;
 
         if (axisCategoryType.text) {
-            settings.xAxis.type.value = settings.xAxis.getNewType(AxisType.categorical);
+            fakeSettings.xAxis.type.value = fakeSettings.xAxis.getNewType(AxisType.categorical);
         }
 
-        settings.parseSettings(viewport);
+        fakeSettings.parseSettings(viewport);
 
         let maxThickness: number = NaN;
 
@@ -200,9 +201,9 @@ export class DataConverter extends VarianceConverter implements IConverter {
         if (dataView.categorical.values
             && dataView.categorical.values.source
             && dataView.categorical.values.source.displayName
-            && settings.legend.titleText.value === undefined
+            && fakeSettings.legend.titleText.value === undefined
         ) {
-            settings.legend.titleText.value = dataView.categorical.values.source.displayName;
+            fakeSettings.legend.titleText.value = dataView.categorical.values.source.displayName;
         }
 
         const axisCategoryFormat: string = this.getFormatStringByColumn(axisCategory && axisCategory.source);
@@ -232,15 +233,15 @@ export class DataConverter extends VarianceConverter implements IConverter {
                 if (groupedValue.source.roles[kpiIndicatorValueColumn.name]) {
                     dataRepresentation.variances[0] = groupedValue.values as number[];
 
-                    settings.kpiIndicatorValue.setColumnFormat(format);
-                    settings.tooltipVariance.setColumnFormat(format);
+                    fakeSettings.kpiIndicatorValue.setColumnFormat(format);
+                    fakeSettings.tooltipVariance.setColumnFormat(format);
                 }
 
                 if (groupedValue.source.roles[secondKPIIndicatorValueColumn.name]) {
                     dataRepresentation.variances[1] = groupedValue.values as number[];
 
-                    settings.secondKPIIndicatorValue.setColumnFormat(format);
-                    settings.secondTooltipVariance.setColumnFormat(format);
+                    fakeSettings.secondKPIIndicatorValue.setColumnFormat(format);
+                    fakeSettings.secondTooltipVariance.setColumnFormat(format);
                 }
 
                 let groupIndex: number = -1;
@@ -301,7 +302,8 @@ export class DataConverter extends VarianceConverter implements IConverter {
                         .createSelectionId();
 
                     const dataPoint: LineDataPoint = {
-                        displayName: name,
+                        containerName: name,
+                        containerGroupName: groupName,
                         selectionId: identity,
                         fillColor: colorPalette.getColor(`${seriesIndex}`).value,
                         value: groupedValue.values[seriesIndex],
@@ -309,6 +311,8 @@ export class DataConverter extends VarianceConverter implements IConverter {
                     seriesIndex++
 
                     const currentSettings = settings.line.populateContainer(dataPoint)
+                    fakeSettings.line.populateContainer(dataPoint)
+
                     const seriesY: IDataRepresentationAxisBase = {
                         max: undefined,
                         min: undefined,
@@ -322,7 +326,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
                         seriesY,
                         kpiIndexes,
                         name,
-                        settings,
+                        fakeSettings,
                         currentPoint,
                     );
 
@@ -357,7 +361,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
             axisCategory.values,
         );
 
-        dataRepresentation.margin = settings.dots.getMarginByThickness(
+        dataRepresentation.margin = fakeSettings.dots.getMarginByThickness(
             maxThickness,
             dataRepresentation.margin,
         );

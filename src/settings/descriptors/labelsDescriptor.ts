@@ -40,7 +40,7 @@ export class LabelsDescriptor extends NumberDescriptorBase {
         super(viewport);
 
         this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif";
-        this.show.value = false;
+        this.show.value = true; // TODO: false
         this.useExtendedFontPicker()
     
         this.slices = [this.show, this.font, this.displayUnits, this.color, this.precision, this.percentile]
