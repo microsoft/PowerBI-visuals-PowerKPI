@@ -26,7 +26,7 @@
 
 import { IMargin } from "powerbi-visuals-utils-svgutils";
 
-import { BaseDescriptor } from "../descriptors/descriptor";
+import { BaseDescriptor } from "../descriptors/baseDescriptor";
 
 export class DotsDescriptor extends BaseDescriptor {
     public radiusFactor: number = 1.4;

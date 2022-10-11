@@ -32,7 +32,7 @@ import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 import {
     IDescriptor,
     IDescriptorParserOptions,
-} from "../descriptor";
+} from "../baseDescriptor";
 
 import { ShowDescriptor } from "./showDescriptor";
 

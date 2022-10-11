@@ -30,7 +30,7 @@ import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import { HorizontalLayoutEnum } from "../../../layout/horizontalLayoutEnum";
 
 import { FontSizeDescriptor } from "../autoHiding/fontSizeDescriptor";
-import { IDescriptor } from "../descriptor";
+import { IDescriptor } from "../baseDescriptor";
 
 enum PropertyType {
     ColorPicker,

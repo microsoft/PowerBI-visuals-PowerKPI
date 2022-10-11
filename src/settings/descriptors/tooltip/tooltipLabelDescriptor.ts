@@ -27,12 +27,12 @@
 import { NumberDescriptorBase } from "../numberDescriptorBase";
 
 export class TooltipLabelDescriptor extends NumberDescriptorBase {
-    constructor(name: string, displayName: string) {
-        super()
+    constructor() {
+        super(undefined, true)
 
-        this.slices = [this.show, this.format, this.displayUnits, this.precision]
-        this.name = name;
-        this.displayName = displayName;
+        this.slices = [this.show, this.displayUnits, this.precision]
+        this.name = "tooltipLabel";
+        this.displayName = "Tooltip Label";
     }
 }
  

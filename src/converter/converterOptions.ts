@@ -27,10 +27,16 @@
 import powerbi from "powerbi-visuals-api";
 
 import { Settings } from "../settings/settings";
+import { AxisType } from "../settings/descriptors/axis/axisDescriptor";
  
-export interface IConverterOptions {
+export interface ConverterOptions {
     dataView: powerbi.DataView;
     viewport: powerbi.IViewport;
     hasSelection: boolean;
     settings: Settings;
+}
+
+export interface AxisOptions {
+    dataView: powerbi.DataView; 
+    xAxisType: AxisType;
 }

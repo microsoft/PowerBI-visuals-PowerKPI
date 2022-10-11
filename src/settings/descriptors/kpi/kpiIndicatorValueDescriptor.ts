@@ -29,13 +29,10 @@ import powerbi from "powerbi-visuals-api";
 import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
 
 export class KPIIndicatorValueDescriptor extends KPIIndicatorDescriptor {
-    constructor(name: string, displayName: string, viewport?: powerbi.IViewport, displayFormatProperty: boolean = false) {
+    constructor(name: string, displayName: string, viewport?: powerbi.IViewport) {
         super(viewport);
 
-        this.slices = [this.show, this.font, this.displayUnits, this.precision, this.fontColor]
-        if(displayFormatProperty){
-            this.slices.push(this.format)
-        }
+        this.slices = [this.show, this.font, this.displayUnits, this.precision, this.fontColor] 
         this.name = name;
         this.displayName = displayName;
     }

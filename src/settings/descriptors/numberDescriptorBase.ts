@@ -27,10 +27,7 @@
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import {
-    IDescriptor,
-    IDescriptorParserOptions,
-} from "./descriptor";
+import { IDescriptor } from "./baseDescriptor";
 
 import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
 
@@ -102,7 +99,7 @@ export class NumberDescriptorBase
     public format = new formattingSettings.TextInput({
         name: "format",
         displayName: "Format",
-        value: null,
+        value: this.defaultFormat,
         placeholder: ""
     });
 
@@ -124,10 +121,12 @@ export class NumberDescriptorBase
         }
     }); // precision = -21 in tooltips
 
-    public parse(options: IDescriptorParserOptions) {
-        super.parse(options);
+    public shouldNumericPropertiesBeHiddenByType: boolean;
 
-        this.applyDefaultFormatByType(options.type)
+    constructor(viewport?: powerbi.IViewport, shouldPropertiesBeHiddenByType: boolean = false) {
+        super(viewport);
+
+        this.shouldNumericPropertiesBeHiddenByType = shouldPropertiesBeHiddenByType;
     }
 
     public getFormat(): string {
@@ -138,20 +137,10 @@ export class NumberDescriptorBase
         if (!format) {
             return;
         }
-
         this.columnFormat = format;
     }
-
-    public getValueByKey(key: string): string {
-        if (key === "format") {
-            return this.getFormat();
-        }
-
-        return this[key];
-    }
-
     
-    protected applyDefaultFormatByType(type: DataRepresentationTypeEnum): void {
+    public applyDefaultFormatByType(type: DataRepresentationTypeEnum): void {
         if (this.defaultFormat) {
             if (this.format.value == null) {
                 this.format.value = this.defaultFormat;

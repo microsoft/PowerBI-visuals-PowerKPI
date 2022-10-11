@@ -36,6 +36,7 @@ import {
     interactivityBaseService,
     interactivitySelectionService,
 } from "powerbi-visuals-utils-interactivityutils";
+import { formattingSettings, FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 
 import { IConverter } from "./converter/converter";
 import { DataConverter } from "./converter/dataConverter";
@@ -54,8 +55,10 @@ import {
     IBehaviorOptions,
 } from "./behavior/behavior";
 import { Settings } from "./settings/settings";
-import { formattingSettings, FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
-import { ILineDescriptor, LineType } from "./settings/descriptors/lineDescriptor";
+import { LineType } from "./settings/descriptors/lineDescriptor";
+import { DataRepresentationTypeEnum } from "./dataRepresentation/dataRepresentationType";
+import { AxisType } from "./settings/descriptors/axis/axisDescriptor";
+import { NumberDescriptorBase } from "./settings/descriptors/numberDescriptorBase";
 
 import FormattingSettingsSlice = formattingSettings.Slice;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
@@ -68,6 +71,7 @@ export interface IPowerKPIConstructorOptions extends VisualConstructorOptions {
 export class PowerKPI implements powerbi.extensibility.visual.IVisual {
     private static ViewportReducer: number = 3;
 
+    private axisType: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
     private eventDispatcher: Dispatch<any> = dispatch(...Object.keys(EventName));
     private element: Selection<any, any, any, any>;
     private converter: IConverter;
@@ -120,6 +124,12 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
             }
             || { height: 0, width: 0 };
 
+        this.axisType = this.converter.getAxisType({
+            dataView,
+            xAxisType: this.settings.xAxis.type.value.value as AxisType
+        });
+        this.updateFormatPropertyValue();
+
         const dataRepresentation: IDataRepresentation = this.converter.convert({
             dataView,
             hasSelection: this.interactivityService && this.interactivityService.hasSelection(),
@@ -162,17 +172,63 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
         this.settings = null;
     }
 
+    public updateFormatPropertyValue(){
+        this.settings.cards.forEach(card => {
+            if(card instanceof NumberDescriptorBase){
+                card.applyDefaultFormatByType(this.axisType)
+            }
+        })
+    }
+
     public getFormattingModel(): powerbi.visuals.FormattingModel {
         this.filterFormattingProperties()
         return this.formattingSettingsService.buildFormattingModel(this.settings);
     }
 
     private filterFormattingProperties() {
-        this.filterSettingsCards()
-        this.filterLayoutProperties()
-        this.filterLineProperties()
-        this.filterKPIIndicatorProperties()
-        this.filterKPIIndicatorValueProperties()
+        this.filterSettingsCards();
+        this.filterLayoutProperties();
+        this.filterLineProperties();
+        this.filterKPIIndicatorProperties();
+        this.filterKPIIndicatorValueProperties();
+        this.filterSettingsPropertiesByAxisType(); //Should be called last
+    }
+
+    private filterSettingsPropertiesByAxisType() {
+        const { 
+            kpiIndicatorValue,
+            secondKPIIndicatorValue,
+            dateValueKPI,
+            tooltipLabel,
+            tooltipVariance,
+            secondTooltipVariance
+        } = this.settings
+
+        const settingsToFilterByAxis = [
+            kpiIndicatorValue,
+            secondKPIIndicatorValue,
+            dateValueKPI,
+            tooltipLabel,
+            tooltipVariance,
+            secondTooltipVariance
+        ]
+        settingsToFilterByAxis.forEach(card => {
+            let newSlices = [...card.slices]
+            this.addArrayItems(newSlices, [card.displayUnits, card.precision, card.format])
+            if (card.shouldNumericPropertiesBeHiddenByType
+                && this.axisType !== DataRepresentationTypeEnum.NumberType
+            ) {
+                this.removeArrayItem(newSlices, card.displayUnits)
+                this.removeArrayItem(newSlices, card.precision)
+            }
+    
+            if (this.axisType !== DataRepresentationTypeEnum.NumberType
+                && this.axisType !== DataRepresentationTypeEnum.DateType
+            ) {
+                this.removeArrayItem(newSlices, card.format)
+            }
+            card.slices = newSlices
+        })
     }
 
     private filterSettingsCards() {
@@ -212,7 +268,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
 
     private filterLayoutProperties() {
         const { layout } = this.settings
-        let newSlices: Array<FormattingSettingsSlice> = [layout.autoHideVisualComponents, layout.auto, layout.layout];
+        let newSlices: Array<FormattingSettingsSlice> = [...layout.slices];
         if(layout.auto.value) this.removeArrayItem(newSlices, layout.layout)
         layout.slices = newSlices
     }
@@ -249,23 +305,26 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
 
     private filterKPIIndicatorValueProperties() {
         const { kpiIndicatorValue } = this.settings
-        let newSlices: Array<FormattingSettingsSlice> = [
-            kpiIndicatorValue.show,
-            kpiIndicatorValue.font,
-            kpiIndicatorValue.format,
-            kpiIndicatorValue.displayUnits,
-            kpiIndicatorValue.precision,
-            kpiIndicatorValue.matchKPIColor,
-            kpiIndicatorValue.fontColor,
-        ]
+        let newSlices: Array<FormattingSettingsSlice> = [...kpiIndicatorValue.slices]
         if(kpiIndicatorValue.matchKPIColor.value) this.removeArrayItem(newSlices, kpiIndicatorValue.fontColor)
         kpiIndicatorValue.slices = newSlices
     }
 
-    private removeArrayItem<T>(array: Array<T>, item: T) {
+    private removeArrayItem<T>(array: T[], item: T) {
         const index = array.indexOf(item);
         if(index > -1) {
             array.splice(index, 1)
         }
+    }
+
+    private addArrayItem<T>(array: T[], item: T) {
+        const index = array.indexOf(item);
+        if(index === -1) {
+            array.push(item)
+        }
+    }
+
+    private addArrayItems<T>(array: T[], items: T[]) {
+        items.forEach(item => this.addArrayItem(array, item))
     }
 }

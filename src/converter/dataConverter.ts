@@ -25,7 +25,6 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-
 import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
 import {
@@ -46,7 +45,7 @@ import { YAxisDescriptor } from "../settings/descriptors/axis/yAxisDescriptor";
 import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 import { Settings } from "../settings/settings";
 import { IConverter } from "./converter";
-import { IConverterOptions } from "./converterOptions";
+import { AxisOptions, ConverterOptions } from "./converterOptions";
 import { VarianceConverter } from "./varianceConverter";
 
 import {
@@ -79,15 +78,21 @@ export interface LineDataPoint {
     value: PrimitiveValue;
 }
 
-export class DataConverter
-    extends VarianceConverter
-    implements IConverter {
+export interface AxisInfo {
+    axisType: DataRepresentationTypeEnum;
+    metadata: powerbi.DataViewMetadataColumn;
+    name: string;
+}
+
+export class DataConverter extends VarianceConverter implements IConverter {
+
+    private axisInfo: AxisInfo;
 
     constructor(private constructorOptions: IDataConverterConstructorOptions) {
         super();
     }
 
-    public convert(options: IConverterOptions): IDataRepresentation {
+    public convert(options: ConverterOptions): IDataRepresentation {
         const dataRepresentation: IDataRepresentation = this.process(options);
 
         this.postProcess(dataRepresentation);
@@ -95,12 +100,37 @@ export class DataConverter
         return dataRepresentation;
     }
 
-    public process(options: IConverterOptions): IDataRepresentation {
+    public getAxisType(options: AxisOptions) {
+        const { dataView, xAxisType } = options
+        let axisType: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
+
+        const axisCategory: powerbi.DataViewCategoryColumn = dataView.categorical.categories[0];
+
+        const axisCategoryType: powerbi.ValueTypeDescriptor = axisCategory.source.type;
+
+        if (axisCategoryType.text || xAxisType === AxisType.categorical) {
+            axisType = DataRepresentationTypeEnum.StringType;
+        } else if (axisCategoryType.dateTime) {
+            axisType = DataRepresentationTypeEnum.DateType;
+        } else if (axisCategoryType.integer || axisCategoryType.numeric) {
+            axisType = DataRepresentationTypeEnum.NumberType;
+        }
+
+        this.axisInfo = {
+            axisType,
+            metadata: axisCategory.source,
+            name: axisCategory.source.displayName
+        }
+
+        return axisType
+    }
+
+    public process(options: ConverterOptions): IDataRepresentation {
         const {
             dataView,
             viewport,
             hasSelection,
-            settings
+            // settings
         } = options;
 
         const {
@@ -108,6 +138,7 @@ export class DataConverter
             createSelectionIdBuilder,
         } = this.constructorOptions;
 
+        const settings = new Settings()
         let axisType: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
 
         const dataRepresentation: IDataRepresentation = {
@@ -150,28 +181,17 @@ export class DataConverter
 
         const axisCategory: powerbi.DataViewCategoryColumn = dataView.categorical.categories[0];
 
-        dataRepresentation.x.metadata = axisCategory.source;
-        dataRepresentation.x.name = axisCategory.source.displayName;
-
-        // settings.populateFrom(dataView);
+        dataRepresentation.x.metadata = this.axisInfo.metadata;
+        dataRepresentation.x.name = this.axisInfo.name;
+        dataRepresentation.x.axisType = this.axisInfo.axisType;
 
         const axisCategoryType: powerbi.ValueTypeDescriptor = axisCategory.source.type;
 
         if (axisCategoryType.text) {
-            settings.xAxis.type.value.value = AxisType.categorical;
+            settings.xAxis.type.value = settings.xAxis.getNewType(AxisType.categorical);
         }
 
-        if (axisCategoryType.text || settings.xAxis.type.value.value === AxisType.categorical) {
-            axisType = DataRepresentationTypeEnum.StringType;
-        } else if (axisCategoryType.dateTime) {
-            axisType = DataRepresentationTypeEnum.DateType;
-        } else if (axisCategoryType.integer || axisCategoryType.numeric) {
-            axisType = DataRepresentationTypeEnum.NumberType;
-        }
-
-        settings.parseSettings(viewport, axisType);
-
-        dataRepresentation.x.axisType = axisType;
+        settings.parseSettings(viewport);
 
         let maxThickness: number = NaN;
 

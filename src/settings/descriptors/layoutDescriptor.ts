@@ -26,9 +26,8 @@
 
 import {
     BaseDescriptor,
-    IDescriptor,
     IDescriptorParserOptions,
-} from "./descriptor";
+} from "./baseDescriptor";
 
 import { LayoutEnum } from "../../layout/layoutEnum";
 

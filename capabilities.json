@@ -38,79 +38,56 @@
   ],
   "objects": {
     "layout": {
-      "displayName": "Layout",
       "properties": {
         "autoHideVisualComponents": {
-          "displayName": "Auto Scale",
           "type": {
             "bool": true
           }
         },
         "auto": {
-          "displayName": "Auto",
           "type": {
             "bool": true
           }
         },
         "layout": {
-          "displayName": "Layout",
           "type": {
             "enumeration": [
-              {
-                "value": "Top",
-                "displayName": "Top"
-              },
-              {
-                "value": "Left",
-                "displayName": "Left"
-              },
-              {
-                "value": "Bottom",
-                "displayName": "Bottom"
-              },
-              {
-                "value": "Right",
-                "displayName": "Right"
-              }
+              { "value": "Top" },
+              { "value": "Left" },
+              { "value": "Bottom" },
+              { "value": "Right"  }
             ]
           }
         }
       }
     },
     "title": {
-      "displayName": "Title",
       "properties": {}
     },
     "subtitle": {
-      "displayName": "Subtitle",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "titleText": {
-          "displayName": "Title Text",
           "type": {
             "text": true
           },
           "suppressFormatPainterCopy": true
         },
         "isBold": {
-          "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
         "isItalic": {
-          "displayName": "Italic",
           "type": {
             "bool": true
           }
         },
         "fontColor": {
-          "displayName": "Font Color",
           "type": {
             "fill": {
               "solid": {
@@ -120,7 +97,6 @@
           }
         },
         "background": {
-          "displayName": "Background Color",
           "type": {
             "fill": {
               "solid": {
@@ -132,7 +108,6 @@
           }
         },
         "alignment": {
-          "displayName": "Alignment",
           "type": {
             "formatting": {
               "alignment": true
@@ -140,7 +115,6 @@
           }
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -148,7 +122,6 @@
           }
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -158,11 +131,8 @@
       }
     },
     "kpiIndicator": {
-      "displayName": "KPI Indicator",
-      "description": "KPI Indicator options",
       "properties": {
         "color_0": {
-          "displayName": "KPI 1",
           "type": {
             "fill": {
               "solid": {
@@ -172,100 +142,37 @@
           }
         },
         "shape_0": {
-          "displayName": "    Indicator",
           "type": {
             "enumeration": [
-              {
-                "value": "circle-full",
-                "displayName": "Circle"
-              },
-              {
-                "value": "triangle",
-                "displayName": "Triangle"
-              },
-              {
-                "value": "rhombus",
-                "displayName": "Diamond"
-              },
-              {
-                "value": "square",
-                "displayName": "Square"
-              },
-              {
-                "value": "flag",
-                "displayName": "Flag"
-              },
-              {
-                "value": "exclamation",
-                "displayName": "Exclamation"
-              },
-              {
-                "value": "checkmark",
-                "displayName": "Checkmark"
-              },
-              {
-                "value": "arrow-up",
-                "displayName": "Arrow Up"
-              },
-              {
-                "value": "arrow-right-up",
-                "displayName": "Arrow Right Up"
-              },
-              {
-                "value": "arrow-right-down",
-                "displayName": "Arrow Right Down"
-              },
-              {
-                "value": "arrow-down",
-                "displayName": "Arrow Down"
-              },
-              {
-                "value": "caret-up",
-                "displayName": "Caret Up"
-              },
-              {
-                "value": "caret-down",
-                "displayName": "Caret Down"
-              },
-              {
-                "value": "circle-empty",
-                "displayName": "Circle Empty"
-              },
-              {
-                "value": "circle-x",
-                "displayName": "Circle X"
-              },
-              {
-                "value": "circle-exclamation",
-                "displayName": "Circle Exclamation"
-              },
-              {
-                "value": "circle-checkmark",
-                "displayName": "Circle Checkmark"
-              },
-              {
-                "value": "x",
-                "displayName": "X"
-              },
-              {
-                "value": "star-empty",
-                "displayName": "Star Empty"
-              },
-              {
-                "value": "star-full",
-                "displayName": "Star Full"
-              }
+              { "value": "circle-full" },
+              { "value": "triangle" },
+              { "value": "rhombus" },
+              { "value": "square" },
+              { "value": "flag" },
+              { "value": "exclamation" },
+              { "value": "checkmark" },
+              { "value": "arrow-up" },
+              { "value": "arrow-right-up" },
+              { "value": "arrow-right-down" },
+              { "value": "arrow-down" },
+              { "value": "caret-up" },
+              { "value": "caret-down" },
+              { "value": "circle-empty" },
+              { "value": "circle-x" },
+              { "value": "circle-exclamation" },
+              { "value": "circle-checkmark" },
+              { "value": "x" },
+              { "value": "star-empty" },
+              { "value": "star-full"  }
             ]
           }
         },
         "kpiIndex_0": {
-          "displayName": "    Value",
           "type": {
             "numeric": true
           }
         },
         "color_1": {
-          "displayName": "KPI 2",
           "type": {
             "fill": {
               "solid": {
@@ -275,100 +182,37 @@
           }
         },
         "shape_1": {
-          "displayName": "    Indicator",
           "type": {
             "enumeration": [
-              {
-                "value": "circle-full",
-                "displayName": "Circle"
-              },
-              {
-                "value": "triangle",
-                "displayName": "Triangle"
-              },
-              {
-                "value": "rhombus",
-                "displayName": "Diamond"
-              },
-              {
-                "value": "square",
-                "displayName": "Square"
-              },
-              {
-                "value": "flag",
-                "displayName": "Flag"
-              },
-              {
-                "value": "exclamation",
-                "displayName": "Exclamation"
-              },
-              {
-                "value": "checkmark",
-                "displayName": "Checkmark"
-              },
-              {
-                "value": "arrow-up",
-                "displayName": "Arrow Up"
-              },
-              {
-                "value": "arrow-right-up",
-                "displayName": "Arrow Right Up"
-              },
-              {
-                "value": "arrow-right-down",
-                "displayName": "Arrow Right Down"
-              },
-              {
-                "value": "arrow-down",
-                "displayName": "Arrow Down"
-              },
-              {
-                "value": "caret-up",
-                "displayName": "Caret Up"
-              },
-              {
-                "value": "caret-down",
-                "displayName": "Caret Down"
-              },
-              {
-                "value": "circle-empty",
-                "displayName": "Circle Empty"
-              },
-              {
-                "value": "circle-x",
-                "displayName": "Circle X"
-              },
-              {
-                "value": "circle-exclamation",
-                "displayName": "Circle Exclamation"
-              },
-              {
-                "value": "circle-checkmark",
-                "displayName": "Circle Checkmark"
-              },
-              {
-                "value": "x",
-                "displayName": "X"
-              },
-              {
-                "value": "star-empty",
-                "displayName": "Star Empty"
-              },
-              {
-                "value": "star-full",
-                "displayName": "Star Full"
-              }
+              { "value": "circle-full" },
+              { "value": "triangle" },
+              { "value": "rhombus" },
+              { "value": "square" },
+              { "value": "flag" },
+              { "value": "exclamation" },
+              { "value": "checkmark" },
+              { "value": "arrow-up" },
+              { "value": "arrow-right-up" },
+              { "value": "arrow-right-down" },
+              { "value": "arrow-down" },
+              { "value": "caret-up" },
+              { "value": "caret-down" },
+              { "value": "circle-empty" },
+              { "value": "circle-x" },
+              { "value": "circle-exclamation" },
+              { "value": "circle-checkmark" },
+              { "value": "x" },
+              { "value": "star-empty" },
+              { "value": "star-full"  }
             ]
           }
         },
         "kpiIndex_1": {
-          "displayName": "    Value",
           "type": {
             "numeric": true
           }
         },
         "color_2": {
-          "displayName": "KPI 3",
           "type": {
             "fill": {
               "solid": {
@@ -378,100 +222,37 @@
           }
         },
         "shape_2": {
-          "displayName": "    Indicator",
           "type": {
             "enumeration": [
-              {
-                "value": "circle-full",
-                "displayName": "Circle"
-              },
-              {
-                "value": "triangle",
-                "displayName": "Triangle"
-              },
-              {
-                "value": "rhombus",
-                "displayName": "Diamond"
-              },
-              {
-                "value": "square",
-                "displayName": "Square"
-              },
-              {
-                "value": "flag",
-                "displayName": "Flag"
-              },
-              {
-                "value": "exclamation",
-                "displayName": "Exclamation"
-              },
-              {
-                "value": "checkmark",
-                "displayName": "Checkmark"
-              },
-              {
-                "value": "arrow-up",
-                "displayName": "Arrow Up"
-              },
-              {
-                "value": "arrow-right-up",
-                "displayName": "Arrow Right Up"
-              },
-              {
-                "value": "arrow-right-down",
-                "displayName": "Arrow Right Down"
-              },
-              {
-                "value": "arrow-down",
-                "displayName": "Arrow Down"
-              },
-              {
-                "value": "caret-up",
-                "displayName": "Caret Up"
-              },
-              {
-                "value": "caret-down",
-                "displayName": "Caret Down"
-              },
-              {
-                "value": "circle-empty",
-                "displayName": "Circle Empty"
-              },
-              {
-                "value": "circle-x",
-                "displayName": "Circle X"
-              },
-              {
-                "value": "circle-exclamation",
-                "displayName": "Circle Exclamation"
-              },
-              {
-                "value": "circle-checkmark",
-                "displayName": "Circle Checkmark"
-              },
-              {
-                "value": "x",
-                "displayName": "X"
-              },
-              {
-                "value": "star-empty",
-                "displayName": "Star Empty"
-              },
-              {
-                "value": "star-full",
-                "displayName": "Star Full"
-              }
+              { "value": "circle-full" },
+              { "value": "triangle" },
+              { "value": "rhombus" },
+              { "value": "square" },
+              { "value": "flag" },
+              { "value": "exclamation" },
+              { "value": "checkmark" },
+              { "value": "arrow-up" },
+              { "value": "arrow-right-up" },
+              { "value": "arrow-right-down" },
+              { "value": "arrow-down" },
+              { "value": "caret-up" },
+              { "value": "caret-down" },
+              { "value": "circle-empty" },
+              { "value": "circle-x" },
+              { "value": "circle-exclamation" },
+              { "value": "circle-checkmark" },
+              { "value": "x" },
+              { "value": "star-empty" },
+              { "value": "star-full"  }
             ]
           }
         },
         "kpiIndex_2": {
-          "displayName": "    Value",
           "type": {
             "numeric": true
           }
         },
         "color_3": {
-          "displayName": "KPI 4",
           "type": {
             "fill": {
               "solid": {
@@ -481,100 +262,37 @@
           }
         },
         "shape_3": {
-          "displayName": "    Indicator",
           "type": {
             "enumeration": [
-              {
-                "value": "circle-full",
-                "displayName": "Circle"
-              },
-              {
-                "value": "triangle",
-                "displayName": "Triangle"
-              },
-              {
-                "value": "rhombus",
-                "displayName": "Diamond"
-              },
-              {
-                "value": "square",
-                "displayName": "Square"
-              },
-              {
-                "value": "flag",
-                "displayName": "Flag"
-              },
-              {
-                "value": "exclamation",
-                "displayName": "Exclamation"
-              },
-              {
-                "value": "checkmark",
-                "displayName": "Checkmark"
-              },
-              {
-                "value": "arrow-up",
-                "displayName": "Arrow Up"
-              },
-              {
-                "value": "arrow-right-up",
-                "displayName": "Arrow Right Up"
-              },
-              {
-                "value": "arrow-right-down",
-                "displayName": "Arrow Right Down"
-              },
-              {
-                "value": "arrow-down",
-                "displayName": "Arrow Down"
-              },
-              {
-                "value": "caret-up",
-                "displayName": "Caret Up"
-              },
-              {
-                "value": "caret-down",
-                "displayName": "Caret Down"
-              },
-              {
-                "value": "circle-empty",
-                "displayName": "Circle Empty"
-              },
-              {
-                "value": "circle-x",
-                "displayName": "Circle X"
-              },
-              {
-                "value": "circle-exclamation",
-                "displayName": "Circle Exclamation"
-              },
-              {
-                "value": "circle-checkmark",
-                "displayName": "Circle Checkmark"
-              },
-              {
-                "value": "x",
-                "displayName": "X"
-              },
-              {
-                "value": "star-empty",
-                "displayName": "Star Empty"
-              },
-              {
-                "value": "star-full",
-                "displayName": "Star Full"
-              }
+              { "value": "circle-full" },
+              { "value": "triangle" },
+              { "value": "rhombus" },
+              { "value": "square" },
+              { "value": "flag" },
+              { "value": "exclamation" },
+              { "value": "checkmark" },
+              { "value": "arrow-up" },
+              { "value": "arrow-right-up" },
+              { "value": "arrow-right-down" },
+              { "value": "arrow-down" },
+              { "value": "caret-up" },
+              { "value": "caret-down" },
+              { "value": "circle-empty" },
+              { "value": "circle-x" },
+              { "value": "circle-exclamation" },
+              { "value": "circle-checkmark" },
+              { "value": "x" },
+              { "value": "star-empty" },
+              { "value": "star-full"  }
             ]
           }
         },
         "kpiIndex_3": {
-          "displayName": "    Value",
           "type": {
             "numeric": true
           }
         },
         "color_4": {
-          "displayName": "KPI 5",
           "type": {
             "fill": {
               "solid": {
@@ -584,106 +302,42 @@
           }
         },
         "shape_4": {
-          "displayName": "    Indicator",
           "type": {
             "enumeration": [
-              {
-                "value": "circle-full",
-                "displayName": "Circle"
-              },
-              {
-                "value": "triangle",
-                "displayName": "Triangle"
-              },
-              {
-                "value": "rhombus",
-                "displayName": "Diamond"
-              },
-              {
-                "value": "square",
-                "displayName": "Square"
-              },
-              {
-                "value": "flag",
-                "displayName": "Flag"
-              },
-              {
-                "value": "exclamation",
-                "displayName": "Exclamation"
-              },
-              {
-                "value": "checkmark",
-                "displayName": "Checkmark"
-              },
-              {
-                "value": "arrow-up",
-                "displayName": "Arrow Up"
-              },
-              {
-                "value": "arrow-right-up",
-                "displayName": "Arrow Right Up"
-              },
-              {
-                "value": "arrow-right-down",
-                "displayName": "Arrow Right Down"
-              },
-              {
-                "value": "arrow-down",
-                "displayName": "Arrow Down"
-              },
-              {
-                "value": "caret-up",
-                "displayName": "Caret Up"
-              },
-              {
-                "value": "caret-down",
-                "displayName": "Caret Down"
-              },
-              {
-                "value": "circle-empty",
-                "displayName": "Circle Empty"
-              },
-              {
-                "value": "circle-x",
-                "displayName": "Circle X"
-              },
-              {
-                "value": "circle-exclamation",
-                "displayName": "Circle Exclamation"
-              },
-              {
-                "value": "circle-checkmark",
-                "displayName": "Circle Checkmark"
-              },
-              {
-                "value": "x",
-                "displayName": "X"
-              },
-              {
-                "value": "star-empty",
-                "displayName": "Star Empty"
-              },
-              {
-                "value": "star-full",
-                "displayName": "Star Full"
-              }
+              { "value": "circle-full" },
+              { "value": "triangle" },
+              { "value": "rhombus" },
+              { "value": "square" },
+              { "value": "flag" },
+              { "value": "exclamation" },
+              { "value": "checkmark" },
+              { "value": "arrow-up" },
+              { "value": "arrow-right-up" },
+              { "value": "arrow-right-down" },
+              { "value": "arrow-down" },
+              { "value": "caret-up" },
+              { "value": "caret-down" },
+              { "value": "circle-empty" },
+              { "value": "circle-x" },
+              { "value": "circle-exclamation" },
+              { "value": "circle-checkmark" },
+              { "value": "x" },
+              { "value": "star-empty" },
+              { "value": "star-full"  }
             ]
           }
         },
         "kpiIndex_4": {
-          "displayName": "    Value",
           "type": {
             "numeric": true
           }
         },
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "fontSize": {
-          "displayName": "Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -691,22 +345,14 @@
           }
         },
         "position": {
-          "displayName": "Position",
           "type": {
             "enumeration": [
-              {
-                "value": "Left",
-                "displayName": "Left"
-              },
-              {
-                "value": "Right",
-                "displayName": "Right"
-              }
+              { "value": "Left" },
+              { "value": "Right"  }
             ]
           }
         },
         "shouldBackgroundColorMatchKpiColor": {
-          "displayName": "Background Match KPI Color",
           "type": {
             "bool": true
           }
@@ -714,16 +360,13 @@
       }
     },
     "kpiIndicatorValue": {
-      "displayName": "KPI Indicator Value",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "fontColor": {
-          "displayName": "Font Color",
           "type": {
             "fill": {
               "solid": {
@@ -733,7 +376,6 @@
           }
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -741,19 +383,16 @@
           }
         },
         "isBold": {
-          "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
         "isItalic": {
-          "displayName": "Italic",
           "type": {
             "bool": true
           }
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -761,14 +400,11 @@
           }
         },
         "format": {
-          "displayName": "Format",
           "type": {
             "text": true
           }
         },
         "displayUnits": {
-          "displayName": "Display Units",
-          "description": "Select the units (millions, billions, etc.)",
           "type": {
             "formatting": {
               "labelDisplayUnits": true
@@ -777,8 +413,6 @@
           "suppressFormatPainterCopy": true
         },
         "precision": {
-          "displayName": "Decimal Places",
-          "description": "Select the number of decimal places to display",
           "placeHolderText": "Auto",
           "type": {
             "numeric": true
@@ -786,7 +420,6 @@
           "suppressFormatPainterCopy": true
         },
         "matchKPIColor": {
-          "displayName": "Match KPI Indicator Color",
           "type": {
             "bool": true
           }
@@ -794,16 +427,13 @@
       }
     },
     "kpiIndicatorLabel": {
-      "displayName": "KPI Indicator Label",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "fontColor": {
-          "displayName": "Font Color",
           "type": {
             "fill": {
               "solid": {
@@ -813,7 +443,6 @@
           }
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -821,19 +450,16 @@
           }
         },
         "isBold": {
-          "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
         "isItalic": {
-          "displayName": "Italic",
           "type": {
             "bool": true
           }
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -841,7 +467,6 @@
           }
         },
         "label": {
-          "displayName": "Label",
           "type": {
             "text": true
           }
@@ -849,16 +474,13 @@
       }
     },
     "secondKPIIndicatorValue": {
-      "displayName": "Second KPI Indicator Value",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "fontColor": {
-          "displayName": "Font Color",
           "type": {
             "fill": {
               "solid": {
@@ -868,7 +490,6 @@
           }
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -876,19 +497,16 @@
           }
         },
         "isBold": {
-          "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
         "isItalic": {
-          "displayName": "Italic",
           "type": {
             "bool": true
           }
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -896,14 +514,11 @@
           }
         },
         "format": {
-          "displayName": "Format",
           "type": {
             "text": true
           }
         },
         "displayUnits": {
-          "displayName": "Display Units",
-          "description": "Select the units (millions, billions, etc.)",
           "type": {
             "formatting": {
               "labelDisplayUnits": true
@@ -912,8 +527,6 @@
           "suppressFormatPainterCopy": true
         },
         "precision": {
-          "displayName": "Decimal Places",
-          "description": "Select the number of decimal places to display",
           "placeHolderText": "Auto",
           "type": {
             "numeric": true
@@ -923,16 +536,13 @@
       }
     },
     "secondKPIIndicatorLabel": {
-      "displayName": "Second KPI Indicator Label",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "fontColor": {
-          "displayName": "Font Color",
           "type": {
             "fill": {
               "solid": {
@@ -942,7 +552,6 @@
           }
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -950,19 +559,16 @@
           }
         },
         "isBold": {
-          "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
         "isItalic": {
-          "displayName": "Italic",
           "type": {
             "bool": true
           }
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -970,7 +576,6 @@
           }
         },
         "label": {
-          "displayName": "Label",
           "type": {
             "text": true
           }
@@ -978,16 +583,13 @@
       }
     },
     "actualValueKPI": {
-      "displayName": "KPI Actual Value",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "fontColor": {
-          "displayName": "Font Color",
           "type": {
             "fill": {
               "solid": {
@@ -997,7 +599,6 @@
           }
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -1005,19 +606,16 @@
           }
         },
         "isBold": {
-          "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
         "isItalic": {
-          "displayName": "Italic",
           "type": {
             "bool": true
           }
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -1025,8 +623,6 @@
           }
         },
         "displayUnits": {
-          "displayName": "Display Units",
-          "description": "Select the units (millions, billions, etc.)",
           "type": {
             "formatting": {
               "labelDisplayUnits": true
@@ -1035,8 +631,6 @@
           "suppressFormatPainterCopy": true
         },
         "precision": {
-          "displayName": "Decimal Places",
-          "description": "Select the number of decimal places to display",
           "placeHolderText": "Auto",
           "type": {
             "numeric": true
@@ -1046,16 +640,13 @@
       }
     },
     "actualLabelKPI": {
-      "displayName": "KPI Actual Label",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "fontColor": {
-          "displayName": "Font Color",
           "type": {
             "fill": {
               "solid": {
@@ -1065,7 +656,6 @@
           }
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -1073,19 +663,16 @@
           }
         },
         "isBold": {
-          "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
         "isItalic": {
-          "displayName": "Italic",
           "type": {
             "bool": true
           }
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -1095,16 +682,13 @@
       }
     },
     "dateValueKPI": {
-      "displayName": "KPI Date Value",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "fontColor": {
-          "displayName": "Font Color",
           "type": {
             "fill": {
               "solid": {
@@ -1114,7 +698,6 @@
           }
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -1122,19 +705,16 @@
           }
         },
         "isBold": {
-          "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
         "isItalic": {
-          "displayName": "Italic",
           "type": {
             "bool": true
           }
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -1142,14 +722,11 @@
           }
         },
         "format": {
-          "displayName": "Format",
           "type": {
             "text": true
           }
         },
         "displayUnits": {
-          "displayName": "Display Units",
-          "description": "Select the units (millions, billions, etc.)",
           "type": {
             "formatting": {
               "labelDisplayUnits": true
@@ -1158,8 +735,6 @@
           "suppressFormatPainterCopy": true
         },
         "precision": {
-          "displayName": "Decimal Places",
-          "description": "Select the number of decimal places to display",
           "placeHolderText": "Auto",
           "type": {
             "numeric": true
@@ -1169,16 +744,13 @@
       }
     },
     "dateLabelKPI": {
-      "displayName": "KPI Date Label",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "fontColor": {
-          "displayName": "Font Color",
           "type": {
             "fill": {
               "solid": {
@@ -1188,7 +760,6 @@
           }
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -1196,19 +767,16 @@
           }
         },
         "isBold": {
-          "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
         "isItalic": {
-          "displayName": "Italic",
           "type": {
             "bool": true
           }
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -1218,17 +786,13 @@
       }
     },
     "labels": {
-      "displayName": "Data Labels",
-      "description": "Display data label options",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "color": {
-          "displayName": "Color",
           "type": {
             "fill": {
               "solid": {
@@ -1238,8 +802,6 @@
           }
         },
         "displayUnits": {
-          "displayName": "Display Units",
-          "description": "Select the units (millions, billions, etc.)",
           "type": {
             "formatting": {
               "labelDisplayUnits": true
@@ -1248,8 +810,6 @@
           "suppressFormatPainterCopy": true
         },
         "precision": {
-          "displayName": "Decimal Places",
-          "description": "Select the number of decimal places to display",
           "placeHolderText": "Auto",
           "type": {
             "numeric": true
@@ -1257,7 +817,6 @@
           "suppressFormatPainterCopy": true
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -1265,7 +824,6 @@
           }
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -1273,19 +831,16 @@
           }
         },
         "isBold": {
-          "displayName": "Bold",
           "type": {
             "bool": true
           }
         },
         "isItalic": {
-          "displayName": "Italic",
           "type": {
             "bool": true
           }
         },
         "percentile": {
-          "displayName": "Label Density",
           "type": {
             "numeric": true
           },
@@ -1294,10 +849,8 @@
       }
     },
     "line": {
-      "displayName": "Line",
       "properties": {
         "fillColor": {
-          "displayName": "Color",
           "type": {
             "fill": {
               "solid": {
@@ -1307,146 +860,74 @@
           }
         },
         "shouldMatchKpiColor": {
-          "displayName": "Match KPI Color",
           "type": {
             "bool": true
           }
         },
         "dataPointStartsKpiColorSegment": {
-          "displayName": "Data Point Starts KPI Color Segment",
           "type": {
             "bool": true
           }
         },
         "lineType": {
-          "displayName": "Type",
           "type": {
             "enumeration": [
-              {
-                "value": "line",
-                "displayName": "Line"
-              },
-              {
-                "value": "area",
-                "displayName": "Area"
-              }
-            ]
+              { "value": "line" },
+              { "value": "area"}]
           }
         },
         "thickness": {
-          "displayName": "Thickness",
           "type": {
             "numeric": true
           }
         },
         "rawOpacity": {
-          "displayName": "Opacity",
           "type": {
             "numeric": true
           }
         },
         "rawAreaOpacity": {
-          "displayName": "Area Opacity",
           "type": {
             "numeric": true
           }
         },
         "lineStyle": {
-          "displayName": "Style",
           "type": {
             "enumeration": [
-              {
-                "value": "solidLine",
-                "displayName": "Solid"
-              },
-              {
-                "value": "dottedLine",
-                "displayName": "Dotted"
-              },
-              {
-                "value": "dashedLine",
-                "displayName": "Dashed"
-              },
-              {
-                "value": "dotDashedLine",
-                "displayName": "Dot-dashed"
-              }
-            ]
+              { "value": "solidLine" },
+              { "value": "dottedLine" },
+              { "value": "dashedLine" },
+              { "value": "dotDashedLine"}]
           }
         },
         "interpolation": {
-          "displayName": "Interpolation",
           "type": {
             "enumeration": [
-              {
-                "value": "linear",
-                "displayName": "Linear"
-              },
-              {
-                "value": "step-before",
-                "displayName": "Step-before"
-              },
-              {
-                "value": "step-after",
-                "displayName": "Step-after"
-              },
-              {
-                "value": "basis",
-                "displayName": "Basis"
-              },
-              {
-                "value": "basis-open",
-                "displayName": "Basis-open"
-              },
-              {
-                "value": "basis-closed",
-                "displayName": "Basis-closed"
-              },
-              {
-                "value": "cardinal",
-                "displayName": "Cardinal"
-              },
-              {
-                "value": "cardinal-open",
-                "displayName": "Cardinal-open"
-              },
-              {
-                "value": "cardinal-closed",
-                "displayName": "Cardinal-closed"
-              },
-              {
-                "value": "monotone",
-                "displayName": "Monotone"
-              }
-            ]
+              { "value": "linear" },
+              { "value": "step-before" },
+              { "value": "step-after" },
+              { "value": "basis" },
+              { "value": "basis-open" },
+              { "value": "basis-closed" },
+              { "value": "cardinal" },
+              { "value": "cardinal-open" },
+              { "value": "cardinal-closed" },
+              { "value": "monotone"}]
           }
         },
         "interpolationWithColorizedLine": {
-          "displayName": "Interpolation",
           "type": {
             "enumeration": [
-              {
-                "value": "linear",
-                "displayName": "Linear"
-              },
-              {
-                "value": "step-before",
-                "displayName": "Step-before"
-              },
-              {
-                "value": "step-after",
-                "displayName": "Step-after"
-              }
-            ]
+              { "value": "linear" },
+              { "value": "step-before" },
+              { "value": "step-after"}]
           }
         }
       }
     },
     "series": {
-      "displayName": "Data Colors",
       "properties": {
         "fillColor": {
-          "displayName": "Color",
           "type": {
             "fill": {
               "solid": {
@@ -1458,34 +939,19 @@
       }
     },
     "lineStyle": {
-      "displayName": "Line Style",
       "properties": {
         "lineStyle": {
           "type": {
             "enumeration": [
-              {
-                "value": "solidLine",
-                "displayName": "Solid"
-              },
-              {
-                "value": "dottedLine",
-                "displayName": "Dotted"
-              },
-              {
-                "value": "dashedLine",
-                "displayName": "Dashed"
-              },
-              {
-                "value": "dotDashedLine",
-                "displayName": "Dot-dashed"
-              }
-            ]
+              { "value": "solidLine" },
+              { "value": "dottedLine" },
+              { "value": "dashedLine" },
+              { "value": "dotDashedLine"}]
           }
         }
       }
     },
     "lineThickness": {
-      "displayName": "Line Thickness",
       "properties": {
         "thickness": {
           "type": {
@@ -1495,68 +961,37 @@
       }
     },
     "legend": {
-      "displayName": "Legend",
-      "description": "Display legend options",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "position": {
-          "displayName": "Position",
           "type": {
             "enumeration": [
-              {
-                "value": "Top",
-                "displayName": "Top"
-              },
-              {
-                "value": "Bottom",
-                "displayName": "Bottom"
-              },
-              {
-                "value": "Left",
-                "displayName": "Left"
-              },
-              {
-                "value": "Right",
-                "displayName": "Right"
-              },
-              {
-                "value": "TopCenter",
-                "displayName": "Top Center"
-              },
-              {
-                "value": "BottomCenter",
-                "displayName": "Bottom Center"
-              },
-              {
-                "value": "LeftCenter",
-                "displayName": "Left Center"
-              },
-              {
-                "value": "RightCenter",
-                "displayName": "Right Center"
-              }
+              { "value": "Top" },
+              { "value": "Bottom" },
+              { "value": "Left" },
+              { "value": "Right" },
+              { "value": "TopCenter" },
+              { "value": "BottomCenter" },
+              { "value": "LeftCenter" },
+              { "value": "RightCenter"  }
             ]
           }
         },
         "showTitle": {
-          "displayName": "Title",
           "type": {
             "bool": true
           }
         },
         "titleText": {
-          "displayName": "Legend Name",
           "type": {
             "text": true
           }
         },
         "labelColor": {
-          "displayName": "Color",
           "type": {
             "fill": {
               "solid": {
@@ -1566,7 +1001,6 @@
           }
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -1574,7 +1008,6 @@
           }
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -1582,41 +1015,25 @@
           }
         },
         "style": {
-          "displayName": "Style",
           "type": {
             "enumeration": [
-              {
-                "value": "circle",
-                "displayName": "Circle"
-              },
-              {
-                "value": "box",
-                "displayName": "Box"
-              },
-              {
-                "value": "line",
-                "displayName": "Line"
-              },
-              {
-                "value": "styledLine",
-                "displayName": "Styled Line"
-              }
+              { "value": "circle" },
+              { "value": "box" },
+              { "value": "line" },
+              { "value": "styledLine"  }
             ]
           }
         }
       }
     },
     "xAxis": {
-      "displayName": "X Axis",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "fontColor": {
-          "displayName": "Font Color",
           "type": {
             "fill": {
               "solid": {
@@ -1626,8 +1043,6 @@
           }
         },
         "displayUnits": {
-          "displayName": "Display Units",
-          "description": "Select the units (millions, billions, etc.)",
           "type": {
             "formatting": {
               "labelDisplayUnits": true
@@ -1636,8 +1051,6 @@
           "suppressFormatPainterCopy": true
         },
         "precision": {
-          "displayName": "Decimal Places",
-          "description": "Select the number of decimal places to display",
           "placeHolderText": "Auto",
           "type": {
             "numeric": true
@@ -1645,7 +1058,6 @@
           "suppressFormatPainterCopy": true
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -1653,14 +1065,12 @@
           }
         },
         "percentile": {
-          "displayName": "Ticks Density",
           "type": {
             "numeric": true
           },
           "suppressFormatPainterCopy": true
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -1668,33 +1078,23 @@
           }
         },
         "type": {
-          "displayName": "Type",
           "type": {
             "enumeration": [
-              {
-                "value": "0",
-                "displayName": "Continuous"
-              },
-              {
-                "value": "1",
-                "displayName": "Categorical"
-              }
+              { "value": "0" },
+              { "value": "1"  }
             ]
           }
         }
       }
     },
     "yAxis": {
-      "displayName": "Y Axis",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "fontColor": {
-          "displayName": "Font Color",
           "type": {
             "fill": {
               "solid": {
@@ -1704,8 +1104,6 @@
           }
         },
         "displayUnits": {
-          "displayName": "Display Units",
-          "description": "Select the units (millions, billions, etc.)",
           "type": {
             "formatting": {
               "labelDisplayUnits": true
@@ -1714,15 +1112,12 @@
           "suppressFormatPainterCopy": true
         },
         "precision": {
-          "displayName": "Decimal Places",
-          "description": "Select the number of decimal places to display",
           "type": {
             "numeric": true
           },
           "suppressFormatPainterCopy": true
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -1730,14 +1125,12 @@
           }
         },
         "percentile": {
-          "displayName": "Ticks Density",
           "type": {
             "numeric": true
           },
           "suppressFormatPainterCopy": true
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -1745,7 +1138,6 @@
           }
         },
         "min": {
-          "displayName": "Min",
           "type": {
             "numeric": true
           },
@@ -1753,7 +1145,6 @@
           "suppressFormatPainterCopy": true
         },
         "max": {
-          "displayName": "Max",
           "type": {
             "numeric": true
           },
@@ -1763,16 +1154,13 @@
       }
     },
     "secondaryYAxis": {
-      "displayName": "Secondary Y Axis",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "fontColor": {
-          "displayName": "Font Color",
           "type": {
             "fill": {
               "solid": {
@@ -1782,8 +1170,6 @@
           }
         },
         "displayUnits": {
-          "displayName": "Display Units",
-          "description": "Select the units (millions, billions, etc.)",
           "type": {
             "formatting": {
               "labelDisplayUnits": true
@@ -1792,8 +1178,6 @@
           "suppressFormatPainterCopy": true
         },
         "precision": {
-          "displayName": "Decimal Places",
-          "description": "Select the number of decimal places to display",
           "placeHolderText": "Auto",
           "type": {
             "numeric": true
@@ -1801,7 +1185,6 @@
           "suppressFormatPainterCopy": true
         },
         "fontSize": {
-          "displayName": "Text Size",
           "type": {
             "formatting": {
               "fontSize": true
@@ -1809,14 +1192,12 @@
           }
         },
         "percentile": {
-          "displayName": "Ticks Density",
           "type": {
             "numeric": true
           },
           "suppressFormatPainterCopy": true
         },
         "fontFamily": {
-          "displayName": "Font Family",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -1824,7 +1205,6 @@
           }
         },
         "min": {
-          "displayName": "Min",
           "type": {
             "numeric": true
           },
@@ -1832,7 +1212,6 @@
           "suppressFormatPainterCopy": true
         },
         "max": {
-          "displayName": "Max",
           "type": {
             "numeric": true
           },
@@ -1842,16 +1221,13 @@
       }
     },
     "referenceLineOfXAxis": {
-      "displayName": "X Axis Reference Lines",
       "properties": {
         "show": {
-          "displayName": "",
           "type": {
             "bool": true
           }
         },
         "color": {
-          "displayName": "Color",
           "type": {
             "fill": {
               "solid": {
@@ -1861,7 +1237,6 @@
           }
         },
         "thickness": {
-          "displayName": "Thickness",
           "type": {
             "numeric": true
           },
@@ -1870,16 +1245,13 @@
       }
     },
     "referenceLineOfYAxis": {
-      "displayName": "Y Axis Reference Lines",
       "properties": {
         "show": {
-          "displayName": "",
           "type": {
             "bool": true
           }
         },
         "color": {
-          "displayName": "Color",
           "type": {
             "fill": {
               "solid": {
@@ -1889,7 +1261,6 @@
           }
         },
         "thickness": {
-          "displayName": "Thickness",
           "type": {
             "numeric": true
           },
@@ -1898,16 +1269,13 @@
       }
     },
     "secondaryReferenceLineOfYAxis": {
-      "displayName": "Secondary Y Axis Reference Lines",
       "properties": {
         "show": {
-          "displayName": "",
           "type": {
             "bool": true
           }
         },
         "color": {
-          "displayName": "Color",
           "type": {
             "fill": {
               "solid": {
@@ -1917,7 +1285,6 @@
           }
         },
         "thickness": {
-          "displayName": "Thickness",
           "type": {
             "numeric": true
           },
@@ -1926,17 +1293,13 @@
       }
     },
     "tooltipLabel": {
-      "displayName": "Tooltip Label",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "displayUnits": {
-          "displayName": "Display Units",
-          "description": "Select the units (millions, billions, etc.)",
           "type": {
             "formatting": {
               "labelDisplayUnits": true
@@ -1945,8 +1308,6 @@
           "suppressFormatPainterCopy": true
         },
         "precision": {
-          "displayName": "Decimal Places",
-          "description": "Select the number of decimal places to display",
           "placeHolderText": "Auto",
           "type": {
             "numeric": true
@@ -1954,14 +1315,12 @@
           "suppressFormatPainterCopy": true
         },
         "label": {
-          "displayName": "Label",
           "placeHolderText": "Variance",
           "type": {
             "text": true
           }
         },
         "format": {
-          "displayName": "Format",
           "type": {
             "text": true
           }
@@ -1969,17 +1328,13 @@
       }
     },
     "tooltipVariance": {
-      "displayName": "Tooltip KPI Indicator Value",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "displayUnits": {
-          "displayName": "Display Units",
-          "description": "Select the units (millions, billions, etc.)",
           "type": {
             "formatting": {
               "labelDisplayUnits": true
@@ -1988,8 +1343,6 @@
           "suppressFormatPainterCopy": true
         },
         "precision": {
-          "displayName": "Decimal Places",
-          "description": "Select the number of decimal places to display",
           "placeHolderText": "Auto",
           "type": {
             "numeric": true
@@ -1997,14 +1350,12 @@
           "suppressFormatPainterCopy": true
         },
         "label": {
-          "displayName": "Label",
           "placeHolderText": "Variance",
           "type": {
             "text": true
           }
         },
         "format": {
-          "displayName": "Format",
           "type": {
             "text": true
           }
@@ -2012,17 +1363,13 @@
       }
     },
     "secondTooltipVariance": {
-      "displayName": "Second Tooltip KPI Indicator Value",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "displayUnits": {
-          "displayName": "Display Units",
-          "description": "Select the units (millions, billions, etc.)",
           "type": {
             "formatting": {
               "labelDisplayUnits": true
@@ -2031,8 +1378,6 @@
           "suppressFormatPainterCopy": true
         },
         "precision": {
-          "displayName": "Decimal Places",
-          "description": "Select the number of decimal places to display",
           "placeHolderText": "Auto",
           "type": {
             "numeric": true
@@ -2040,14 +1385,12 @@
           "suppressFormatPainterCopy": true
         },
         "label": {
-          "displayName": "Label",
           "placeHolderText": "Variance",
           "type": {
             "text": true
           }
         },
         "format": {
-          "displayName": "Format",
           "type": {
             "text": true
           }
@@ -2055,17 +1398,13 @@
       }
     },
     "tooltipValues": {
-      "displayName": "Tooltip Values",
       "properties": {
         "show": {
-          "displayName": "Show",
           "type": {
             "bool": true
           }
         },
         "displayUnits": {
-          "displayName": "Display Units",
-          "description": "Select the units (millions, billions, etc.)",
           "type": {
             "formatting": {
               "labelDisplayUnits": true
@@ -2074,8 +1413,6 @@
           "suppressFormatPainterCopy": true
         },
         "precision": {
-          "displayName": "Decimal Places",
-          "description": "Select the number of decimal places to display",
           "placeHolderText": "Auto",
           "type": {
             "numeric": true
@@ -2083,7 +1420,6 @@
           "suppressFormatPainterCopy": true
         },
         "label": {
-          "displayName": "Label",
           "placeHolderText": "Variance",
           "type": {
             "text": true

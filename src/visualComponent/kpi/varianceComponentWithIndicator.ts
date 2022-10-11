@@ -141,7 +141,6 @@ export class VarianceComponentWithIndicator
 
         const fakedIndicatorSettings: KPIIndicatorDescriptor = new KPIIndicatorDescriptor();
 
-        // We should implement a copy method for settings
         fakedIndicatorSettings.fontColor.value.value = indicatorSettings.fontColor.value.value;
         fakedIndicatorSettings.show.value = indicatorSettings.isElementShown();
         fakedIndicatorSettings.font.bold.value = indicatorSettings.font.bold.value;

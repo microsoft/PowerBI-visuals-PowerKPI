@@ -36,8 +36,8 @@ export class KPIIndicatorDescriptor extends NumberDescriptorBase {
         value: { value: "#333333" }
     });
 
-     constructor(viewport?: powerbi.IViewport) {
-        super(viewport);
+     constructor(viewport?: powerbi.IViewport, shouldPropertiesBeHiddenByType: boolean = false) {
+        super(viewport, shouldPropertiesBeHiddenByType);
 
         this.displayUnits.value = displayUnitsOptions[1];
         this.font.fontSize.value = 12;

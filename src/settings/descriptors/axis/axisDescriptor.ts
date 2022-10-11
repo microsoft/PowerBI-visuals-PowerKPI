@@ -30,7 +30,7 @@ import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import {
     IDescriptor,
     IDescriptorParserOptions,
-} from "../descriptor";
+} from "../baseDescriptor";
 
 import { NumberDescriptorBase } from "../numberDescriptorBase";
 
@@ -57,8 +57,9 @@ export class AxisDescriptor
     constructor(
         viewportToBeHidden: powerbi.IViewport,
         viewportToIncreaseDensity: powerbi.IViewport,
+        shouldPropertiesBeHiddenByType: boolean = false
     ) {
-        super(viewportToBeHidden);
+        super(viewportToBeHidden, shouldPropertiesBeHiddenByType);
 
         this.viewportToIncreaseDensity = viewportToIncreaseDensity;
         this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif"

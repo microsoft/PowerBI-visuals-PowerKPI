@@ -26,15 +26,12 @@
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import { DataRepresentationTypeEnum } from "../../dataRepresentation/dataRepresentationType";
-
 import FormattingSettingsCard = formattingSettings.Card;
 import FormattingSettingsSlice = formattingSettings.Slice;
 
 export interface IDescriptorParserOptions {
     isAutoHideBehaviorEnabled: boolean;
     viewport: powerbi.IViewport;
-    type: DataRepresentationTypeEnum;
 }
 
 export interface IDescriptor {
@@ -45,7 +42,7 @@ export interface IDescriptor {
 }
 
 export abstract class BaseDescriptor extends FormattingSettingsCard {
-    name: string = "";
-    displayName: string = "";
-    slices: Array<FormattingSettingsSlice> = [];
+    public name: string = "";
+    public displayName: string = "";
+    public slices: Array<FormattingSettingsSlice> = [];
 }

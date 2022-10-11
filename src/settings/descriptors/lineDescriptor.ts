@@ -29,9 +29,7 @@ import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import { SimpleSlice } from "powerbi-visuals-utils-formattingmodel/lib/FormattingSettingsComponents";
 import { LineDataPoint } from "../../converter/dataConverter";
-import {
-    BaseDescriptor
-} from "./descriptor";
+import { BaseDescriptor } from "./baseDescriptor";
 
 export enum LineInterpolation {
     linear = "linear",
@@ -249,7 +247,7 @@ export class LineDescriptor
     });
 
     public rawAreaOpacity = new formattingSettings.NumUpDown({
-        name: "areaOpacity",
+        name: "rawAreaOpacity",
         displayName: "Area Opacity",
         value: 50,
         options: {
@@ -336,7 +334,6 @@ export class LineDescriptor
 
         defaultContainerSlices.forEach(slice => {
             let clonedSlice: formattingSettings.SimpleSlice = Object.create(slice);
-            // debugger
             clonedSlice.value = dataPoint[slice.name] ? dataPoint[slice.name] : clonedSlice.value;
             clonedSlice.selector = dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals);
             clonedSlice.altConstantSelector = dataPoint.selectionId.getSelector();

@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-import { BaseDescriptor } from "./descriptor";
+import { BaseDescriptor } from "./baseDescriptor";
 
 /**
  * We use this class to move the Title option up above the Subtitle at the formatting panel

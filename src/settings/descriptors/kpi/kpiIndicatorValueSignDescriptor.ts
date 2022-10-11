@@ -27,10 +27,7 @@
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import {
-    IDescriptor,
-    IDescriptorParserOptions,
-} from "./../descriptor";
+import { IDescriptor } from "../baseDescriptor";
 
 import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
 
@@ -47,7 +44,7 @@ export class KPIIndicatorValueSignDescriptor
     constructor(viewport?: powerbi.IViewport) {
         super(viewport);
 
-        this.slices = [this.show, this.font, this.format, this.displayUnits, this.precision, this.matchKPIColor, this.fontColor]
+        this.slices = [this.show, this.font, this.displayUnits, this.precision, this.matchKPIColor, this.fontColor]
         this.name = "kpiIndicatorValue";
         this.displayName = "KPI Indicator Value";
     }

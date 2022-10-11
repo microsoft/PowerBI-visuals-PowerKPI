@@ -25,13 +25,12 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import {
     IDescriptor,
     IDescriptorParserOptions,
-} from "./descriptors/descriptor";
-
-import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
+} from "./descriptors/baseDescriptor";
 
 import { DotsDescriptor } from "./descriptors/dotsDescriptor";
 import { FakeTitleDescriptor } from "./descriptors/fakeTitleDescriptor";
@@ -55,7 +54,6 @@ import { AxisReferenceLineDescriptor } from "./descriptors/axis/referenceLine/ax
 import { TooltipVarianceDescriptor } from "./descriptors/tooltip/tooltipVarianceDescriptor";
 import { TooltipLabelDescriptor } from "./descriptors/tooltip/tooltipLabelDescriptor";
 import { TooltipValueDescriptor } from "./descriptors/tooltip/tooltipValueDescriptor";
-import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 const kpiCaptionViewport: powerbi.IViewport = {
     height: 90,
@@ -106,13 +104,12 @@ export class Settings extends formattingSettings.Model {
     public secondKPIIndicatorValue: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(
         "secondKPIIndicatorValue", 
         "Second KPI Indicator Value",
-        kpiCaptionViewport, 
-        true,
+        kpiCaptionViewport
     );
     public secondKPIIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
         "secondKPIIndicatorLabel",
         "Second KPI Indicator Label",
-        kpiLabelViewport,
+        kpiLabelViewport
     );
     public actualValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor("actualValueKPI", "KPI Actual Value", kpiCaptionViewport);
     public actualLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport);
@@ -128,10 +125,10 @@ export class Settings extends formattingSettings.Model {
     public referenceLineOfXAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor("referenceLineOfXAxis", "X Axis Reference Lines", false);
     public referenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor("referenceLineOfYAxis", "Y Axis Reference Lines");
     public secondaryReferenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor("secondaryReferenceLineOfYAxis", "Secondary Y Axis Reference Lines", false);
-    public tooltipLabel: TooltipLabelDescriptor = new TooltipLabelDescriptor("tooltipLabel", "Tooltip Label");
+    public tooltipLabel: TooltipLabelDescriptor = new TooltipLabelDescriptor();
     public tooltipVariance: TooltipVarianceDescriptor = new TooltipVarianceDescriptor("tooltipVariance", "Tooltip KPI Indicator Value");
     public secondTooltipVariance: TooltipVarianceDescriptor = new TooltipVarianceDescriptor("secondTooltipVariance", "Second Tooltip KPI Indicator Value");
-    public tooltipValues: TooltipValueDescriptor = new TooltipValueDescriptor("tooltipValues", "Tooltip Values");
+    public tooltipValues: TooltipValueDescriptor = new TooltipValueDescriptor();
     public defaultCards = [
         this.layout, this.title, this.subtitle, this.kpiIndicator, this.kpiIndicatorValue,
         this.kpiIndicatorLabel, this.secondKPIIndicatorValue, this.secondKPIIndicatorLabel, 
@@ -155,10 +152,9 @@ export class Settings extends formattingSettings.Model {
         this.secondTooltipVariance.defaultFormat = percentageFormat;
     }
 
-    public parseSettings(viewport: powerbi.IViewport, type: DataRepresentationTypeEnum): void {
+    public parseSettings(viewport: powerbi.IViewport): void {
         const options: IDescriptorParserOptions = {
             isAutoHideBehaviorEnabled: this.layout.autoHideVisualComponents.value,
-            type,
             viewport,
         };
 

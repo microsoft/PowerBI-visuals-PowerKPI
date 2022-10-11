@@ -50,13 +50,18 @@ export class XAxisDescriptor extends AxisDescriptor {
         value: typeOptions[0]
     });
 
-    constructor(viewportToBeHidden: powerbi.IViewport, 
+    constructor(
+        viewportToBeHidden: powerbi.IViewport, 
         viewportToIncreaseDensity: powerbi.IViewport
     ) {
-        super(viewportToBeHidden, viewportToIncreaseDensity)
+        super(viewportToBeHidden, viewportToIncreaseDensity, true)
 
         this.slices = [this.show, this.font, this.fontColor, this.percentile, this.type]
         this.name = "xAxis";
         this.displayName = "X Axis";
+    }
+
+    public getNewType(newType: AxisType) {
+        return typeOptions.filter(el => el.value === newType)[0]
     }
 }
