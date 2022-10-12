@@ -332,7 +332,7 @@ export class LineDescriptor
     public populateContainer(dataPoint: LineDataPoint) {
         const { containerName, containerGroupName } = dataPoint
         let existingContainer = this.getCurrentSettings(containerGroupName) 
-
+        debugger
         if(Object.keys(existingContainer).length) {
             if(this.containerItemName[containerName] === undefined) {
                 this.containerItemName[containerName] = containerGroupName
@@ -352,6 +352,9 @@ export class LineDescriptor
         defaultContainerSlices.forEach(slice => {
             let clonedSlice: formattingSettings.SimpleSlice = Object.create(slice);
             clonedSlice.value = dataPoint[slice.name] ? dataPoint[slice.name] : clonedSlice.value;
+            clonedSlice.selector = dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals);
+            clonedSlice.altConstantSelector = dataPoint.selectionId.getSelector();
+            clonedSlice.instanceKind = powerbi.VisualEnumerationInstanceKinds.Constant
             containerItem.slices.push(clonedSlice);
         });
 
