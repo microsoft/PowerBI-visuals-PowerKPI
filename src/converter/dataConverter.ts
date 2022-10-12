@@ -26,6 +26,7 @@
 
 import powerbi from "powerbi-visuals-api";
 import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
+import { ColorHelper } from "powerbi-visuals-utils-colorutils";
 
 import {
     kpiColumn,
@@ -65,6 +66,7 @@ import PrimitiveValue = powerbi.PrimitiveValue;
 import ISelectionId = powerbi.visuals.ISelectionId;
 import IColorPalette = powerbi.extensibility.IColorPalette;
 import ISelectionIdBuilder = powerbi.visuals.ISelectionIdBuilder;
+import Selector = powerbi.data.Selector;
 
 export interface IDataConverterConstructorOptions {
     colorPalette: IColorPalette;
@@ -74,7 +76,7 @@ export interface IDataConverterConstructorOptions {
 export interface LineDataPoint {
     containerName: string;
     containerGroupName: string;
-    selectionId: ISelectionId;
+    selectionId: Selector;
     fillColor: string;
     value: PrimitiveValue;
 }
@@ -304,7 +306,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
                     const dataPoint: LineDataPoint = {
                         containerName: name,
                         containerGroupName: groupName,
-                        selectionId: identity,
+                        selectionId: ColorHelper.normalizeSelector(identity),
                         fillColor: colorPalette.getColor(`${seriesIndex}`).value,
                         value: groupedValue.values[seriesIndex],
                     }
