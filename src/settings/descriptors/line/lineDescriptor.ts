@@ -290,8 +290,7 @@ export class LineDescriptor extends BaseDescriptor {
         const lineObject = objects?.line as any || {};
         const { lineStyle, thickness, fillColor } = this.getCurrentSettings("[ALL]")
 
-        debugger
-        const newFillColor: string = objects?.series?.fillColor as string || defaultColor
+        const newFillColor: string = this.getColorFromOldAPI(objects?.series?.fillColor) || defaultColor
         const userColor: string | undefined = lineObject.fillColor?.solid?.color
         lineObject.fillColor = userColor || (fillColor ? fillColor : newFillColor);
 
@@ -343,5 +342,9 @@ export class LineDescriptor extends BaseDescriptor {
 
     private getConvertedOpacity(opacity: number): number {
         return opacity / 100;
+    }
+
+    private getColorFromOldAPI(fillColor) {
+        return ((fillColor as any)?.solid?.color || fillColor) as string
     }
 }

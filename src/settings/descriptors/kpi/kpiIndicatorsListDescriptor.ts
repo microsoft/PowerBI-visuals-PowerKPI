@@ -237,33 +237,35 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
             this._properties.forEach((property: IPropertyConfiguration) => {
                 const indexedName: string = this.getPropertyName(property.name, index);
 
-                this[indexedName] = this.getProperty(property, indexedName, index)
-                newSlices.push(this[indexedName])
+                if(this[indexedName] === undefined){
+                    this[indexedName] = this.getProperty(property, indexedName, index, property.defaultValue(index));
+                }
+                newSlices.push(this[indexedName]);
             });
         }
         return newSlices
     }
 
-    private getProperty(currentProperty: IPropertyConfiguration, indexedName: string, index: number) {
+    private getProperty(currentProperty: IPropertyConfiguration, name: string, index: number, value: any) {
         switch(currentProperty.type){ 
             case PropertyType.ColorPicker: {
                 return new formattingSettings.ColorPicker({
-                    name: indexedName,
+                    name,
                     displayName: `KPI ${index + 1}`,
-                    value: currentProperty.defaultValue(index)
+                    value
                 });
             } case PropertyType.DropDown: {
                 return new formattingSettings.ItemDropdown({
-                    name: indexedName,
+                    name,
                     displayName: "    Indicator",
-                    value: currentProperty.defaultValue(index),
+                    value,
                     items: currentProperty.items
                 });
             } case PropertyType.NumUpDown: {
                 return new formattingSettings.NumUpDown({
-                    name: indexedName,
+                    name,
                     displayName: "    Value",
-                    value: currentProperty.defaultValue(index)
+                    value
                 });
             }
         }

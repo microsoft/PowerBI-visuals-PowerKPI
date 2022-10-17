@@ -272,7 +272,6 @@ export class PowerKPI implements IVisual {
     }
 
     private filterLineProperties(){
-        // TODO: Optional properties in containers
         const { line } = this.settings
         line.container.containerItems.forEach(containerItem => {
             const containerName = containerItem.displayName
