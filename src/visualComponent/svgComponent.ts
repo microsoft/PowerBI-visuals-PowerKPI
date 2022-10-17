@@ -26,8 +26,6 @@
 
 import powerbi from "powerbi-visuals-api";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
-import { selection } from "d3-selection";
-
 import { IMargin } from "powerbi-visuals-utils-svgutils";
 
 import { BaseContainerComponent } from "./base/baseContainerComponent";
@@ -206,7 +204,7 @@ export class SvgComponent extends BaseContainerComponent<
         this.element.on("mouseleave", () => this.pointerLeaveHandler());
         this.element.on("touchend", () => this.pointerLeaveHandler());
 
-        this.element.on("click", (event) => this.clickHandler.bind(this, event));
+        this.element.on("click", (event) => this.clickHandler(event));
     }
 
     private updateMargin(margin: IMargin, additionalMargin: IMargin): void {
@@ -302,7 +300,6 @@ export class SvgComponent extends BaseContainerComponent<
             data: {
                 series,
                 margin,
-                settings: { yAxis },
             },
             additionalMargin,
         } = baseOptions;
