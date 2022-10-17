@@ -64,9 +64,7 @@ export abstract class BaseComponent<ConstructorOptionsType
 
     public abstract render(options: RenderOptionsType): void;
 
-    public highlight(hasSelection: boolean): void {
-        return;
-    }
+    public highlight(hasSelection: boolean): void {}
 
     public initElement(
         baseElement: Selection<any, RenderOptionsType, any, any>,

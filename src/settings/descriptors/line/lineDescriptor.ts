@@ -286,38 +286,14 @@ export class LineDescriptor extends BaseDescriptor {
         return this.getCurrentSettings(containerName)
     }
 
-    public getCurrentSettings(containerName: string): SimpleLineSetting {
-        const currentContainer = this.container.containerItems.filter(el => el.displayName === containerName)[0];
-
-        let interpolationWithColorizedLine;
-        let currentLineSettings: SimpleLineSetting = {} as SimpleLineSetting
-        if(currentContainer){
-            currentContainer.slices.forEach(slice => {
-                switch (slice.name) {
-                    case "rawOpacity":
-                    case "rawAreaOpacity":
-                        currentLineSettings[slice.name] = this.getConvertedOpacity(this.getSliceValue(slice as SimpleSlice))
-                        break;
-                    case "interpolationWithColorizedLine":
-                        interpolationWithColorizedLine = this.getSliceValue(slice as SimpleSlice)
-                    default:
-                        currentLineSettings[slice.name] = this.getSliceValue(slice as SimpleSlice)
-                        break;
-                }
-            })
-            if(currentLineSettings.shouldMatchKpiColor){
-                currentLineSettings.interpolation = interpolationWithColorizedLine
-            }
-        }
-        return currentLineSettings as SimpleLineSetting
-    }
-
     public parseContainer(objects: DataViewObjects, defaultColor: string) {
         const lineObject = objects?.line as any || {};
-        const { lineStyle, thickness } = this.getCurrentSettings("[ALL]")
+        const { lineStyle, thickness, fillColor } = this.getCurrentSettings("[ALL]")
 
+        debugger
         const newFillColor: string = objects?.series?.fillColor as string || defaultColor
-        lineObject.fillColor = lineObject.fillColor?.solid?.color || newFillColor;
+        const userColor: string | undefined = lineObject.fillColor?.solid?.color
+        lineObject.fillColor = userColor || (fillColor ? fillColor : newFillColor);
 
         const newLineStyle: string = objects?.lineStyle?.lineStyle as string || lineStyle
         if (!lineObject.lineStyle) {
@@ -330,6 +306,35 @@ export class LineDescriptor extends BaseDescriptor {
         }
 
         return lineObject
+    }
+
+    public getCurrentSettings(containerName: string): SimpleLineSetting {
+        const currentContainer = this.container.containerItems.filter(el => el.displayName === containerName)[0];
+
+        let interpolationWithColorizedLine;
+        let currentLineSettings: SimpleLineSetting = {} as SimpleLineSetting
+        if(currentContainer){
+            currentContainer.slices.forEach(slice => {
+                switch (slice.name) {
+                    case "rawOpacity":
+                        currentLineSettings.opacity = this.getConvertedOpacity(this.getSliceValue(slice as SimpleSlice))
+                        break;
+                    case "rawAreaOpacity":
+                        currentLineSettings.areaOpacity = this.getConvertedOpacity(this.getSliceValue(slice as SimpleSlice))
+                        break;
+                    case "interpolationWithColorizedLine":
+                        interpolationWithColorizedLine = this.getSliceValue(slice as SimpleSlice)
+                        break;
+                    default:
+                        currentLineSettings[slice.name] = this.getSliceValue(slice as SimpleSlice)
+                        break;
+                }
+            })
+            if(currentLineSettings.shouldMatchKpiColor){
+                currentLineSettings.interpolation = interpolationWithColorizedLine
+            }
+        }
+        return currentLineSettings as SimpleLineSetting
     }
 
     private getSliceValue(slice: SimpleSlice) {
