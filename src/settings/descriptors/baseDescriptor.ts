@@ -38,11 +38,14 @@ export interface IDescriptor {
     parse?(options?: IDescriptorParserOptions): void;
     setDefault?(): void;
     getValueByKey?(key: string): string | number | boolean;
-    shouldKeyBeEnumerated?(key: string): boolean;
 }
 
 export abstract class BaseDescriptor extends FormattingSettingsCard {
     public name: string = "";
     public displayName: string = "";
     public slices: Array<FormattingSettingsSlice> = [];
+
+    public getNewComplexValue(newValue: any, options?: any[]) {
+        return options ? options.filter(el => el.value === newValue)[0] : { value: newValue }
+    }
 }

@@ -108,7 +108,7 @@ export interface ICreateAxisOptions extends axisInterfaces.CreateAxisOptions {
 export function createAxis(options: ICreateAxisOptions): axisInterfaces.IAxisProperties {
     const pixelSpan: number = options.pixelSpan;
     const dataDomain: number[] = options.dataDomain;
-    const metaDataColumn: powerbi.DataViewMetadataColumn = options.metaDataColumn as powerbi.DataViewMetadataColumn;
+    const metaDataColumn = options.metaDataColumn;
     const formatString: string = options.formatString;
     const outerPadding: number = options.outerPadding || DefaultOuterPadding;
     const isCategoryAxis: boolean = !!options.isCategoryAxis;
@@ -564,7 +564,7 @@ export function createScale(options: ICreateAxisOptions): ICreateScaleResult {
     const outerPadding: number = options.outerPadding || DefaultOuterPadding;
     const minOrdinalRectThickness: number = options.minOrdinalRectThickness || MinOrdinalRectThickness;
 
-    const dataType: powerbi.ValueTypeDescriptor = getCategoryValueType(metaDataColumn as powerbi.DataViewMetadataColumn, isScalar);
+    const dataType: powerbi.ValueTypeDescriptor = getCategoryValueType(metaDataColumn, isScalar);
 
     let maxTicks: number = isVertical
         ? getRecommendedNumberOfTicksForYAxis(pixelSpan)
@@ -616,7 +616,7 @@ export function createScale(options: ICreateAxisOptions): ICreateScaleResult {
                 : getBestNumberOfTicks(
                     dataDomain[0],
                     dataDomain[dataDomain.length - 1],
-                    [metaDataColumn as powerbi.DataViewMetadataColumn],
+                    [metaDataColumn],
                     maxTicks,
                     dataType.dateTime);
 

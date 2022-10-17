@@ -170,6 +170,6 @@ export class NumberDescriptorBase
     }
 
     public getNewDisplayUnitsValue(value: DisplayUnitsType) {
-        return displayUnitsOptions.filter(el => el.value === value)[0]
+        return this.getNewComplexValue(value, displayUnitsOptions)
     }
 }

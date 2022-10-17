@@ -25,68 +25,24 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
+import IColorPalette = powerbi.extensibility.IColorPalette;
+import DataViewObjects = powerbi.DataViewObjects
+
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
-import { SimpleSlice } from "powerbi-visuals-utils-formattingmodel/lib/FormattingSettingsComponents";
-import { LineDataPoint } from "../../converter/dataConverter";
-import { BaseDescriptor } from "./baseDescriptor";
+import ContainerItem = formattingSettings.ContainerItem;
+import Container = formattingSettings.Container;
+import SimpleSlice = formattingSettings.SimpleSlice;
+import ToggleSwitch = formattingSettings.ToggleSwitch;
+import ColorPicker = formattingSettings.ColorPicker;
+import ItemDropdown = formattingSettings.ItemDropdown;
+import Slider = formattingSettings.Slider;
+import NumUpDown = formattingSettings.NumUpDown;
 
-export enum LineInterpolation {
-    linear = "linear",
-    stepBefore = "step-before",
-    stepAfter = "step-after",
-    basis = "basis",
-    basisOpen = "basis-open",
-    basisClosed = "basis-closed",
-    cardinal = "cardinal",
-    cardinalOpen = "cardinal-open",
-    cardinalClosed = "cardinal-closed",
-    monotone = "monotone",
-}
+import { LineDataPoint } from "../../../converter/dataConverter";
+import { BaseDescriptor } from "../baseDescriptor";
+import { LineStyle, LineType, LineInterpolation, SimpleLineSetting } from "./lineTypes"
 
-export enum LineStyle {
-    solidLine = "solidLine",
-    dottedLine = "dottedLine",
-    dashedLine = "dashedLine",
-    dotDashedLine = "dotDashedLine",
-}
-
-export enum LineType {
-    line = "line",
-    area = "area",
-    column = "column",
-}
-
-export interface ILineDescriptorBase {
-    fillColor: formattingSettings.ColorPicker;
-    shouldMatchKpiColor: formattingSettings.ToggleSwitch;
-    dataPointStartsKpiColorSegment: formattingSettings.ToggleSwitch;
-    lineStyle: formattingSettings.ItemDropdown;
-    thickness: formattingSettings.Slider;
-    interpolation: formattingSettings.ItemDropdown;
-}
-
-export interface ILineDescriptor extends ILineDescriptorBase {
-    lineType: formattingSettings.ItemDropdown;
-    rawOpacity: formattingSettings.NumUpDown;
-    rawAreaOpacity: formattingSettings.NumUpDown;
-    interpolationWithColorizedLine: formattingSettings.ItemDropdown;
-}
-
-export interface SimpleLineSetting {
-    fillColor: string;
-    shouldMatchKpiColor: boolean;
-    dataPointStartsKpiColorSegment: boolean;
-    lineStyle: LineStyle;
-    thickness: number;
-    interpolation: LineInterpolation;
-    lineType: LineType;
-    rawOpacity: number;
-    rawAreaOpacity: number;
-    interpolationWithColorizedLine: LineInterpolation;
-}
-
-export const lineStyleOptions: powerbi.IEnumMember[] = [
+const lineStyleOptions: powerbi.IEnumMember[] = [
     {
         value: LineStyle.solidLine,
         displayName: "Solid"
@@ -105,7 +61,7 @@ export const lineStyleOptions: powerbi.IEnumMember[] = [
     }
 ]
 
-const interpolationWithColorizedLineOptions = [
+const interpolationWithColorizedLineOptions: powerbi.IEnumMember[] = [
     {
       value: LineInterpolation.linear,
       displayName: "Linear"
@@ -174,36 +130,27 @@ const interpolationOptions: powerbi.IEnumMember[] = [
     }
 ]
 
-export class LineDescriptor
-    extends BaseDescriptor {
+export class LineDescriptor extends BaseDescriptor {
 
-    public getOpacity(containerName: string): number {
-        return this.convertOpacityToCssFormat(this.getCurrentSettings(containerName).rawOpacity);
-    }
-
-    public getAreaOpacity(containerName: string): number {
-        return this.convertOpacityToCssFormat(this.getCurrentSettings(containerName).rawAreaOpacity);
-    }
-
-    public fillColor = new formattingSettings.ColorPicker({
+    public fillColor = new ColorPicker({
         name: "fillColor",
         displayName: "Color",
         value: { value: null }
     });
 
-    public shouldMatchKpiColor = new formattingSettings.ToggleSwitch({
+    public shouldMatchKpiColor = new ToggleSwitch({
         name: "shouldMatchKpiColor",
         displayName: "Match KPI Color",
         value: false
     });
 
-    public dataPointStartsKpiColorSegment = new formattingSettings.ToggleSwitch({
+    public dataPointStartsKpiColorSegment = new ToggleSwitch({
         name: "dataPointStartsKpiColorSegment",
         displayName: "Data Point Starts KPI Color Segment",
         value: true
     });
 
-    public lineType = new formattingSettings.ItemDropdown({
+    public lineType = new ItemDropdown({
         name: "lineType",
         displayName: "Type",
         items: lineTypeOptions,
@@ -212,7 +159,7 @@ export class LineDescriptor
 
     private minThickness: number = 0.25;
     private maxThickness: number = 10;
-    public thickness = new formattingSettings.Slider({
+    public thickness = new Slider({
         name: "thickness",
         displayName: "Thickness",
         value: 2,
@@ -230,7 +177,7 @@ export class LineDescriptor
 
     private minOpacity: number = 15;
     private maxOpacity: number = 100;
-    public rawOpacity = new formattingSettings.NumUpDown({
+    public rawOpacity = new NumUpDown({
         name: "rawOpacity",
         displayName: "Opacity",
         value: 100,
@@ -246,7 +193,7 @@ export class LineDescriptor
         }
     });
 
-    public rawAreaOpacity = new formattingSettings.NumUpDown({
+    public rawAreaOpacity = new NumUpDown({
         name: "rawAreaOpacity",
         displayName: "Area Opacity",
         value: 50,
@@ -262,48 +209,46 @@ export class LineDescriptor
         }
     });
 
-    public lineStyle = new formattingSettings.ItemDropdown({
+    public lineStyle = new ItemDropdown({
         name: "lineStyle",
         displayName: "Style",
         items: lineStyleOptions,
         value: lineStyleOptions[0]
     });
 
-    public interpolation = new formattingSettings.ItemDropdown({
+    public interpolation = new ItemDropdown({
         name: "interpolation",
         displayName: "Interpolation",
         items: interpolationOptions,
         value: interpolationOptions[0]
     });
 
-    public interpolationWithColorizedLine = new formattingSettings.ItemDropdown({
+    public interpolationWithColorizedLine = new ItemDropdown({
         name: `interpolationWithColorizedLine`,
         displayName: "Interpolation",
         items: interpolationWithColorizedLineOptions,
         value: interpolationWithColorizedLineOptions[0]
     });
 
-    public container: formattingSettings.Container = {
+    public defaultSlices = [
+        this.fillColor, 
+        this.shouldMatchKpiColor, 
+        this.dataPointStartsKpiColorSegment, 
+        this.lineType, 
+        this.thickness, 
+        this.rawOpacity, 
+        this.rawAreaOpacity, 
+        this.lineStyle, 
+        this.interpolation,
+        this.interpolationWithColorizedLine
+    ]
+
+    public container: Container = {
         containerItems: [{
             displayName: "[ALL]",
-            slices: [
-                this.fillColor, 
-                this.shouldMatchKpiColor, 
-                this.dataPointStartsKpiColorSegment, 
-                this.lineType, 
-                this.thickness, 
-                this.rawOpacity, 
-                this.rawAreaOpacity, 
-                this.lineStyle, 
-                this.interpolation,
-                this.interpolationWithColorizedLine
-            ]
+            slices: [...this.defaultSlices]
         }]
     };
-
-    private containerItemName = {
-        "default": "[ALL]"
-    }
 
     constructor() {
         super()
@@ -313,65 +258,85 @@ export class LineDescriptor
         this.displayName = "Line"
     }
 
-    public convertOpacityToCssFormat(opacity: number): number {
-        return opacity / 100;
-    }
-
-    public getInterpolation(containerName: string): LineInterpolation {
-        const {
-            shouldMatchKpiColor, 
-            interpolationWithColorizedLine, 
-            interpolation
-        } = this.getCurrentSettings(containerName)
-
-        return (shouldMatchKpiColor 
-            ? interpolationWithColorizedLine 
-            : interpolation) as LineInterpolation;
-    }
-
-    public populateContainer(dataPoint: LineDataPoint) {
-        const { containerName, containerGroupName, selectionId } = dataPoint
-        let existingContainer = this.getCurrentSettings(containerGroupName) 
-        debugger
+    public populateContainer(dataPoint: LineDataPoint, colorPalette: IColorPalette) {
+        const { containerName, selectionId, objects } = dataPoint
+        const existingContainer = this.getCurrentSettings(containerName)
         if(Object.keys(existingContainer).length) {
-            if(this.containerItemName[containerName] === undefined) {
-                this.containerItemName[containerName] = containerGroupName
-            }
             return existingContainer
         }
 
-        let defaultContainerSlices = this.container.containerItems[0].slices;
-        if(containerGroupName !== undefined){
-            this.containerItemName[containerName] = containerGroupName
-        }
-        let containerItem: formattingSettings.ContainerItem = {
-            displayName: containerGroupName ?? containerName,
+        const seriesColor = colorPalette.getColor(`${this.container.containerItems.length}`).value
+        const sliceValues = this.parseContainer(objects, seriesColor)
+        const containerItem: ContainerItem = {
+            displayName: containerName,
             slices: []
         }
-
-        defaultContainerSlices.forEach(slice => {
-            let clonedSlice: formattingSettings.SimpleSlice = Object.create(slice);
-            clonedSlice.value = dataPoint[slice.name] ? dataPoint[slice.name] : clonedSlice.value;
+        this.defaultSlices.forEach(slice => {
+            let clonedSlice = Object.create(slice);
+            if(sliceValues[slice.name] !== undefined) {
+                clonedSlice.value = clonedSlice.value.value !== undefined 
+                    ? this.getNewComplexValue(sliceValues[slice.name], clonedSlice.items) 
+                    : sliceValues[slice.name]
+            }
             clonedSlice.selector = selectionId;
             containerItem.slices.push(clonedSlice);
         });
-
         this.container.containerItems.push(containerItem);
+
         return this.getCurrentSettings(containerName)
     }
 
     public getCurrentSettings(containerName: string): SimpleLineSetting {
-        const currentContainerName = this.containerItemName[containerName] ?? containerName
-        const currentContainer = this.container.containerItems.filter(el => el.displayName === currentContainerName)[0];
+        const currentContainer = this.container.containerItems.filter(el => el.displayName === containerName)[0];
 
-        let currentLineSettings = {}
+        let interpolationWithColorizedLine;
+        let currentLineSettings: SimpleLineSetting = {} as SimpleLineSetting
         if(currentContainer){
-            currentContainer.slices.forEach(slice => currentLineSettings[slice.name] = this.getSliceValue(slice as SimpleSlice))
+            currentContainer.slices.forEach(slice => {
+                switch (slice.name) {
+                    case "rawOpacity":
+                    case "rawAreaOpacity":
+                        currentLineSettings[slice.name] = this.getConvertedOpacity(this.getSliceValue(slice as SimpleSlice))
+                        break;
+                    case "interpolationWithColorizedLine":
+                        interpolationWithColorizedLine = this.getSliceValue(slice as SimpleSlice)
+                    default:
+                        currentLineSettings[slice.name] = this.getSliceValue(slice as SimpleSlice)
+                        break;
+                }
+            })
+            if(currentLineSettings.shouldMatchKpiColor){
+                currentLineSettings.interpolation = interpolationWithColorizedLine
+            }
         }
         return currentLineSettings as SimpleLineSetting
     }
 
+    public parseContainer(objects: DataViewObjects, defaultColor: string) {
+        const lineObject = objects?.line as any || {};
+        const { lineStyle, thickness } = this.getCurrentSettings("[ALL]")
+
+        const newFillColor: string = objects?.series?.fillColor as string || defaultColor
+        lineObject.fillColor = lineObject.fillColor?.solid?.color || newFillColor;
+
+        const newLineStyle: string = objects?.lineStyle?.lineStyle as string || lineStyle
+        if (!lineObject.lineStyle) {
+            lineObject.lineStyle = newLineStyle;
+        }
+
+        const newThickness: number = objects?.lineThickness?.thickness as number || thickness
+        if (!lineObject.thickness) {
+            lineObject.thickness = newThickness;
+        }
+
+        return lineObject
+    }
+
     private getSliceValue(slice: SimpleSlice) {
-        return slice?.value?.value != undefined ? slice.value.value : slice.value
+        return slice?.value?.value !== undefined ? slice.value.value : slice.value
+    }
+
+    private getConvertedOpacity(opacity: number): number {
+        return opacity / 100;
     }
 }

@@ -36,7 +36,7 @@ import { interactivityBaseService } from "powerbi-visuals-utils-interactivityuti
 import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
-import { LineDescriptor, LineStyle } from "../settings/descriptors/lineDescriptor";
+import { LineDescriptor } from "../settings/descriptors/line/lineDescriptor";
 import { BaseComponent } from "./base/baseComponent";
 import { IVisualComponentViewport } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
@@ -122,15 +122,12 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
         
         const dataPoints: legendInterfaces.LegendDataPoint[] = data.series
             .map((series: IDataRepresentationSeries) => {
-                const lineSettings = line.getCurrentSettings(series.name)
-                if(!lineSettings){
-                    return
-                }
+                const { lineStyle, fillColor } = line.getCurrentSettings(series.containerName)
                 const dataPoint: legendInterfaces.LegendDataPoint = {
-                    color: lineSettings.fillColor,
+                    color: fillColor,
                     identity: series.identity,
                     label: series.name,
-                    lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle),
+                    lineStyle: legend.getLegendLineStyle(lineStyle),
                     markerShape: legend.getLegendMarkerShape(),
                     selected: series.selected,
                 };

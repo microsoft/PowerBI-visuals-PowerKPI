@@ -42,7 +42,6 @@ import {
 import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { EventName } from "../event/eventName";
-import { LineType, LineStyle } from "../settings/descriptors/lineDescriptor";
 
 export class ChartComponent extends BaseContainerComponent<
     IVisualComponentConstructorOptions,
@@ -111,34 +110,38 @@ export class ChartComponent extends BaseContainerComponent<
             this.components,
             (component: IVisualComponent<IDotComponentRenderOptions | IComboComponentRenderOptions>, componentIndex: number) => {
                 const currentSeries: IDataRepresentationSeries = sortedSeries[componentIndex];
-                const lineSettings = settings.line.getCurrentSettings(currentSeries.name)
-                if(!lineSettings){
-                    return
-                }
+                const {
+                    opacity,
+                    areaOpacity,
+                    thickness,
+                    lineStyle,
+                    lineType,
+                    interpolation
+                } = settings.line.getCurrentSettings(currentSeries.containerName)
 
                 if (this.shouldRenderFallbackComponents) {
                     const point: IDataRepresentationPoint = currentSeries.points[0];
 
                     component.render({
-                        opacity: settings.line.getOpacity(currentSeries.name),
+                        opacity,
                         point,
                         radiusFactor: settings.dots.radiusFactor,
                         series: currentSeries,
-                        thickness: lineSettings.thickness,
+                        thickness,
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,
                     });
                 } else {
                     component.render({
-                        areaOpacity: settings.line.getAreaOpacity(currentSeries.name),
+                        areaOpacity,
                         gradientPoints: currentSeries.gradientPoints,
-                        interpolation: settings.line.getInterpolation(currentSeries.name),
-                        lineStyle: lineSettings.lineStyle,
-                        lineType: lineSettings.lineType,
-                        opacity: settings.line.getOpacity(currentSeries.name),
+                        interpolation,
+                        lineStyle,
+                        lineType,
+                        opacity,
                         series: currentSeries,
-                        thickness: lineSettings.thickness,
+                        thickness,
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,

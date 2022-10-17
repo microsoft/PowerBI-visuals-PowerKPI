@@ -57,7 +57,7 @@ import {
 import {
     LineInterpolation,
     LineStyle,
-} from "../../settings/descriptors/lineDescriptor";
+} from "../../settings/descriptors/line/lineTypes";
 
 export interface ILineComponentRenderOptions extends IVisualComponentRenderOptionsBase {
     thickness: number;

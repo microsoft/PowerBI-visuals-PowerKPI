@@ -33,7 +33,7 @@ import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentat
 import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
 import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
-import { ILineDescriptor, LineStyle, SimpleLineSetting } from "../settings/descriptors/lineDescriptor";
+import { LineStyle, SimpleLineSetting } from "../settings/descriptors/line/lineTypes";
 import { TooltipVarianceDescriptor } from "../settings/descriptors/tooltip/tooltipVarianceDescriptor";
 import { IVisualComponent } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
@@ -138,7 +138,7 @@ export class TooltipComponent
                 && series[0].points[0].kpiIndex),
             (variances[0] || [])[0],
             legend,
-            series[0] && line.getCurrentSettings(series[0].name)
+            series[0] && line.getCurrentSettings(series[0].containerName)
         );
 
         if (firstVariance) {
@@ -182,7 +182,7 @@ export class TooltipComponent
                     && dataSeriesPoint.y !== undefined
                     && !isNaN(dataSeriesPoint.y)
                 ) {
-                    const lineSettings = line.getCurrentSettings(dataSeries.name)
+                    const lineSettings = line.getCurrentSettings(dataSeries.containerName)
                     if(!lineSettings){
                         return
                     }

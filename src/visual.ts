@@ -31,7 +31,6 @@ import {
 import { dispatch, Dispatch } from "d3-dispatch";
 
 import powerbi from "powerbi-visuals-api";
-
 import {
     interactivityBaseService,
     interactivitySelectionService,
@@ -46,16 +45,14 @@ import { IVisualComponent } from "./visualComponent/base/visualComponent";
 import { IVisualComponentRenderOptions } from "./visualComponent/base/visualComponentRenderOptions";
 import { MainComponent } from "./visualComponent/mainComponent";
 
-import {
-    IDataRepresentationSeries,
-} from "./dataRepresentation/dataRepresentationSeries";
+import { IDataRepresentationSeries } from "./dataRepresentation/dataRepresentationSeries";
 
 import {
     Behavior,
     IBehaviorOptions,
 } from "./behavior/behavior";
 import { Settings } from "./settings/settings";
-import { LineType } from "./settings/descriptors/lineDescriptor";
+import { LineType } from "./settings/descriptors/line/lineTypes";
 import { DataRepresentationTypeEnum } from "./dataRepresentation/dataRepresentationType";
 import { AxisType } from "./settings/descriptors/axis/axisDescriptor";
 import { NumberDescriptorBase } from "./settings/descriptors/numberDescriptorBase";
@@ -63,12 +60,13 @@ import { NumberDescriptorBase } from "./settings/descriptors/numberDescriptorBas
 import FormattingSettingsSlice = formattingSettings.Slice;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
+import IVisual = powerbi.extensibility.visual.IVisual;
 
 export interface IPowerKPIConstructorOptions extends VisualConstructorOptions {
     rootElement?: HTMLElement;
 }
 
-export class PowerKPI implements powerbi.extensibility.visual.IVisual {
+export class PowerKPI implements IVisual {
     private static ViewportReducer: number = 3;
 
     private axisType: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;

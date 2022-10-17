@@ -44,7 +44,7 @@ import { KPIIndicatorValueSignDescriptor } from "./descriptors/kpi/kpiIndicatorV
 import { LabelsDescriptor } from "./descriptors/labelsDescriptor";
 import { LayoutDescriptor } from "./descriptors/layoutDescriptor";
 import { LegendDescriptor } from "./descriptors/legendDescriptor";
-import { LineDescriptor } from "./descriptors/lineDescriptor";
+import { LineDescriptor } from "./descriptors/line/lineDescriptor";
 import { SubtitleDescriptor } from "./descriptors/subtitleDescriptor";
 
 import { XAxisDescriptor } from "./descriptors/axis/xAxisDescriptor";

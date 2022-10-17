@@ -40,8 +40,7 @@ import {
     IDataRepresentationPointGradientColor,
 } from "../../dataRepresentation/dataRepresentationPoint";
 
-import { LineInterpolation } from "../../settings/descriptors/lineDescriptor";
-
+import { LineInterpolation } from "../../settings/descriptors/line/lineTypes";
 import {
     ILineComponentRenderOptions,
     LineComponent,

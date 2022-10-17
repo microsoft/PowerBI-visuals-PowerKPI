@@ -61,7 +61,7 @@ export class XAxisDescriptor extends AxisDescriptor {
         this.displayName = "X Axis";
     }
 
-    public getNewType(newType: AxisType) {
-        return typeOptions.filter(el => el.value === newType)[0]
+    public getNewType(value: AxisType) {
+        return this.getNewComplexValue(value, typeOptions)
     }
 }

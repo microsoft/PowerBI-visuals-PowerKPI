@@ -26,7 +26,6 @@
 
 import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
-import { ILineDescriptor } from "../settings/descriptors/lineDescriptor";
 import { BaseContainerComponent } from "./base/baseContainerComponent";
 import { IVisualComponent } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
@@ -88,10 +87,7 @@ export class DotsComponent extends BaseContainerComponent<
                 if (point) {
                     component.show();
 
-                    const lineSettings = line.getCurrentSettings(currentSeries.name)
-                    if(!lineSettings){
-                        return
-                    }
+                    const lineSettings = line.getCurrentSettings(currentSeries.containerName)
                     component.render({
                         point,
                         radiusFactor: dots.radiusFactor,

@@ -29,7 +29,7 @@ import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
-import { LineStyle } from "./lineDescriptor";
+import { LineStyle } from "./line/lineTypes";
 
 export enum LegendStyle {
     circle = "circle",
@@ -56,6 +56,7 @@ const styleOptions = [
         displayName: "Styled Line"
     }
 ]
+
 export enum LegendPosition {
     Top = "Top",
     Bottom = "Bottom",
@@ -66,6 +67,7 @@ export enum LegendPosition {
     RightCenter = "RightCenter",
     LeftCenter = "LeftCenter"
 }
+
 const positionOptions = [
     {
         value: LegendPosition.Top,
