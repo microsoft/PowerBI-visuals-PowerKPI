@@ -29,11 +29,11 @@ import powerbi from "powerbi-visuals-api";
 import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
 
 export class KPIIndicatorValueDescriptor extends KPIIndicatorDescriptor {
-    constructor(name: string, displayName: string, viewport?: powerbi.IViewport) {
+    constructor(viewport?: powerbi.IViewport) {
         super(viewport);
 
-        this.slices = [this.show, this.font, this.displayUnits, this.precision, this.fontColor] 
-        this.name = name;
-        this.displayName = displayName;
+        this.slices = [this.show, this.font, this.format, this.displayUnits, this.precision, this.fontColor] 
+        this.name = "secondKPIIndicatorValue";
+        this.displayName = "Second KPI Indicator Value";
     }
 }

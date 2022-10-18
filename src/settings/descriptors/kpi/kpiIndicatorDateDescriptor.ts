@@ -32,7 +32,7 @@ export class KPIIndicatorDateDescriptor extends KPIIndicatorDescriptor {
     constructor(viewport?: powerbi.IViewport) {
         super(viewport, true);
 
-        this.slices = [this.show, this.font, this.fontColor]
+        this.slices = [this.show, this.format, this.font, this.fontColor]
         this.name = "dateValueKPI";
         this.displayName = "KPI Date Value";
     }

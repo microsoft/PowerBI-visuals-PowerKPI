@@ -30,7 +30,7 @@ export class TooltipLabelDescriptor extends NumberDescriptorBase {
     constructor() {
         super(undefined, true)
 
-        this.slices = [this.show, this.displayUnits, this.precision]
+        this.slices = [this.show, this.format, this.displayUnits, this.precision]
         this.name = "tooltipLabel";
         this.displayName = "Tooltip Label";
     }

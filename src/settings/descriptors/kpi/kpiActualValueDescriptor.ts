@@ -25,27 +25,15 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
-
-import { IDescriptor } from "../baseDescriptor";
 
 import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
 
-export class KPIIndicatorValueSignDescriptor
-    extends KPIIndicatorDescriptor
-    implements IDescriptor {
-
-    public matchKPIColor = new formattingSettings.ToggleSwitch({
-        name: "matchKPIColor",
-        displayName: "Match KPI Indicator Color",
-        value: true
-    });;
-
+export class KPIActualValueDescriptor extends KPIIndicatorDescriptor {
     constructor(viewport?: powerbi.IViewport) {
         super(viewport);
 
-        this.slices = [this.show, this.font, this.format, this.displayUnits, this.precision, this.matchKPIColor, this.fontColor]
-        this.name = "kpiIndicatorValue";
-        this.displayName = "KPI Indicator Value";
+        this.slices = [this.show, this.font, this.displayUnits, this.precision, this.fontColor] 
+        this.name = "actualValueKPI";
+        this.displayName = "KPI Actual Value";
     }
 }

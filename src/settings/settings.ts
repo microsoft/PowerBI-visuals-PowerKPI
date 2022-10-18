@@ -39,6 +39,7 @@ import { KPIIndicatorsListDescriptor } from "./descriptors/kpi/kpiIndicatorsList
 import { KPIIndicatorLabelDescriptor } from "./descriptors/kpi/kpiIndicatorLabelDescriptor";
 import { KPIIndicatorDateLabelDescriptor } from "./descriptors/kpi/kpiIndicatorDateLabelDescriptor";
 import { KPIIndicatorValueDescriptor } from "./descriptors/kpi/kpiIndicatorValueDescriptor";
+import { KPIActualValueDescriptor } from "./descriptors/kpi/kpiActualValueDescriptor";
 import { KPIIndicatorDateDescriptor } from "./descriptors/kpi/kpiIndicatorDateDescriptor";
 import { KPIIndicatorValueSignDescriptor } from "./descriptors/kpi/kpiIndicatorValueSignDescriptor";
 import { LabelsDescriptor } from "./descriptors/labelsDescriptor";
@@ -101,17 +102,13 @@ export class Settings extends formattingSettings.Model {
         "KPI Indicator Label",
         kpiLabelViewport,
     );
-    public secondKPIIndicatorValue: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(
-        "secondKPIIndicatorValue", 
-        "Second KPI Indicator Value",
-        kpiCaptionViewport
-    );
+    public secondKPIIndicatorValue: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport);
     public secondKPIIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
         "secondKPIIndicatorLabel",
         "Second KPI Indicator Label",
         kpiLabelViewport
     );
-    public actualValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor("actualValueKPI", "KPI Actual Value", kpiCaptionViewport);
+    public actualValueKPI: KPIActualValueDescriptor = new KPIActualValueDescriptor(kpiCaptionViewport);
     public actualLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport);
     public dateValueKPI: KPIIndicatorDateDescriptor = new KPIIndicatorDateDescriptor(kpiCaptionViewport);
     public dateLabelKPI: KPIIndicatorDateLabelDescriptor = new KPIIndicatorDateLabelDescriptor(kpiLabelViewport);

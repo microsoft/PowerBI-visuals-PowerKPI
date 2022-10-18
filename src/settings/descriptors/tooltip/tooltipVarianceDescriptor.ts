@@ -38,7 +38,7 @@ export class TooltipVarianceDescriptor extends NumberDescriptorBase {
     constructor(name: string, displayName: string) {
         super()
 
-        this.slices = [this.show, this.displayUnits, this.precision, this.label]
+        this.slices = [this.show, this.format, this.displayUnits, this.precision, this.label]
         this.name = name;
         this.displayName = displayName;
     }
