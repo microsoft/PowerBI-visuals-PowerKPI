@@ -27,16 +27,13 @@
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-
 import {
     BaseDescriptor,
     IDescriptor,
     IDescriptorParserOptions,
 } from "../baseDescriptor";
 
-export class ShowDescriptor
-    extends BaseDescriptor
-    implements IDescriptor {
+export class ShowDescriptor extends BaseDescriptor implements IDescriptor {
 
     public show = new formattingSettings.ToggleSwitch({
         name: "show",

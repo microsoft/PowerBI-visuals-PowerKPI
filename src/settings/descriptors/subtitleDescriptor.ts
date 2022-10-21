@@ -26,6 +26,7 @@
 
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+
 import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
 
 export enum SubtitleAlignment {

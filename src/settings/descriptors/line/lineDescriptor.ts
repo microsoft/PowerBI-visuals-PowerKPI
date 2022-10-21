@@ -27,6 +27,7 @@
 import powerbi from "powerbi-visuals-api";
 import IColorPalette = powerbi.extensibility.IColorPalette;
 import DataViewObjects = powerbi.DataViewObjects
+import IEnumMember = powerbi.IEnumMember
 
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import ContainerItem = formattingSettings.ContainerItem;
@@ -42,7 +43,7 @@ import { LineDataPoint } from "../../../converter/dataConverter";
 import { BaseDescriptor } from "../baseDescriptor";
 import { LineStyle, LineType, LineInterpolation, SimpleLineSetting } from "./lineTypes"
 
-const lineStyleOptions: powerbi.IEnumMember[] = [
+const lineStyleOptions: IEnumMember[] = [
     {
         value: LineStyle.solidLine,
         displayName: "Solid"
@@ -61,7 +62,7 @@ const lineStyleOptions: powerbi.IEnumMember[] = [
     }
 ]
 
-const interpolationWithColorizedLineOptions: powerbi.IEnumMember[] = [
+const interpolationWithColorizedLineOptions: IEnumMember[] = [
     {
       value: LineInterpolation.linear,
       displayName: "Linear"
@@ -76,7 +77,7 @@ const interpolationWithColorizedLineOptions: powerbi.IEnumMember[] = [
     }
 ]
 
-const lineTypeOptions: powerbi.IEnumMember[] = [
+const lineTypeOptions: IEnumMember[] = [
     {
         value: LineType.line,
         displayName: "Line"
@@ -87,7 +88,7 @@ const lineTypeOptions: powerbi.IEnumMember[] = [
     }
 ]
 
-const interpolationOptions: powerbi.IEnumMember[] = [
+const interpolationOptions: IEnumMember[] = [
     {
         value: LineInterpolation.linear,
         displayName: "Linear"

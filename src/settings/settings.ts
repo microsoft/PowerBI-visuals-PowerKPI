@@ -47,10 +47,8 @@ import { LayoutDescriptor } from "./descriptors/layoutDescriptor";
 import { LegendDescriptor } from "./descriptors/legendDescriptor";
 import { LineDescriptor } from "./descriptors/line/lineDescriptor";
 import { SubtitleDescriptor } from "./descriptors/subtitleDescriptor";
-
 import { XAxisDescriptor } from "./descriptors/axis/xAxisDescriptor";
 import { YAxisDescriptor } from "./descriptors/axis/yAxisDescriptor";
-
 import { AxisReferenceLineDescriptor } from "./descriptors/axis/referenceLine/axisReferenceLineDescriptor";
 import { TooltipVarianceDescriptor } from "./descriptors/tooltip/tooltipVarianceDescriptor";
 import { TooltipLabelDescriptor } from "./descriptors/tooltip/tooltipLabelDescriptor";
@@ -162,9 +160,5 @@ export class Settings extends formattingSettings.Model {
                     settingsObj.parse(options);
                 }
             });
-    }
-
-    protected processDescriptor(): void {
-        return;
     }
 }

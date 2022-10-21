@@ -27,9 +27,8 @@
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import { IDescriptor } from "../baseDescriptor";
-
 import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
+import { IDescriptor } from "../baseDescriptor";
 
 export class KPIIndicatorValueSignDescriptor
     extends KPIIndicatorDescriptor

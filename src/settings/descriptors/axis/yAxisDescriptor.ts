@@ -27,9 +27,8 @@
 
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
-import {
-    AxisDescriptor,
-} from "./axisDescriptor";
+
+import { AxisDescriptor } from "./axisDescriptor";
 
 export class YAxisDescriptor extends AxisDescriptor {
     public min = new formattingSettings.NumUpDown({

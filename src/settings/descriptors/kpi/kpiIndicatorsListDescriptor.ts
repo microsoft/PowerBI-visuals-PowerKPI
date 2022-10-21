@@ -28,7 +28,6 @@ import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { HorizontalLayoutEnum } from "../../../layout/horizontalLayoutEnum";
-
 import { FontSizeDescriptor } from "../autoHiding/fontSizeDescriptor";
 import { IDescriptor } from "../baseDescriptor";
 

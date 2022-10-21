@@ -29,7 +29,6 @@ import {
     legend as legendModule,
     legendInterfaces,
 } from "powerbi-visuals-utils-chartutils";
-import { LegendPosition } from "powerbi-visuals-utils-chartutils/lib/legend/legendInterfaces";
 
 import { interactivityBaseService } from "powerbi-visuals-utils-interactivityutils";
 

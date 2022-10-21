@@ -214,7 +214,7 @@ export function createAxis(options: ICreateAxisOptions): axisInterfaces.IAxisPro
     return {
         axis,
         axisLabel: null,
-        axisType: dataType as unknown as valueType.ValueType,
+        axisType: dataType as valueType.ValueType,
         categoryThickness,
         dataDomain,
         formatter,

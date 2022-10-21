@@ -31,7 +31,6 @@ import {
     IDescriptor,
     IDescriptorParserOptions,
 } from "../baseDescriptor";
-
 import { NumberDescriptorBase } from "../numberDescriptorBase";
 
 export enum AxisType {
