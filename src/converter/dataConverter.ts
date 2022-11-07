@@ -178,12 +178,11 @@ export class DataConverter extends VarianceConverter implements IConverter {
             return dataRepresentation;
         }
 
-        const axisCategory: powerbi.DataViewCategoryColumn = dataView.categorical.categories[0];
-
         dataRepresentation.x.metadata = this.axisInfo.metadata;
         dataRepresentation.x.name = this.axisInfo.name;
         dataRepresentation.x.axisType = this.axisInfo.axisType;
 
+        const axisCategory: powerbi.DataViewCategoryColumn = dataView.categorical.categories[0];
         const axisCategoryType: powerbi.ValueTypeDescriptor = axisCategory.source.type;
 
         if (axisCategoryType.text) {
@@ -241,7 +240,6 @@ export class DataConverter extends VarianceConverter implements IConverter {
                 }
 
                 let groupIndex: number = -1;
-
                 if (groupedValue.source.roles[valuesColumn.name]) {
                     groupIndex = 0;
                 } else if (groupedValue.source.roles[secondaryValuesColumn.name]) {
@@ -249,7 +247,6 @@ export class DataConverter extends VarianceConverter implements IConverter {
                 }
 
                 if (groupIndex !== -1) {
-
                     if (!dataRepresentation.groups[groupIndex]) {
                         dataRepresentation.groups[groupIndex] = {
                             series: [],
@@ -273,7 +270,6 @@ export class DataConverter extends VarianceConverter implements IConverter {
                     };
 
                     const isGrouped: boolean = columnGroup && !!columnGroup.identity;
-
                     if (isGrouped) {
                         dataRepresentation.isGrouped = isGrouped;
                     }
@@ -281,11 +277,9 @@ export class DataConverter extends VarianceConverter implements IConverter {
                     const name: string = isGrouped && columnGroup.name
                         ? `${columnGroup.name} - ${groupedValue.source.displayName}`
                         : groupedValue.source.displayName;
-
                     const groupName: string = isGrouped && columnGroup.name
                         ? `${columnGroup.name}`
                         : undefined;
-
                     const containerName = groupName || name
 
                     const identity: ISelectionId = createSelectionIdBuilder()
@@ -306,6 +300,10 @@ export class DataConverter extends VarianceConverter implements IConverter {
 
                     const currentSettings = settings.line.populateContainer(dataPoint, colorPalette)
 
+                    if (isNaN(maxThickness) || currentSettings.thickness > maxThickness) {
+                        maxThickness = currentSettings.thickness;
+                    }
+
                     const seriesY: IDataRepresentationAxisBase = {
                         max: undefined,
                         min: undefined,
@@ -322,10 +320,6 @@ export class DataConverter extends VarianceConverter implements IConverter {
                         settings,
                         currentPoint,
                     );
-
-                    if (isNaN(maxThickness) || currentSettings.thickness > maxThickness) {
-                        maxThickness = currentSettings.thickness;
-                    }
 
                     seriesGroup.series.push({
                         current: currentPoint,

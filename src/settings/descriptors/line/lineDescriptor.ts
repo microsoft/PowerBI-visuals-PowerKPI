@@ -266,12 +266,15 @@ export class LineDescriptor extends BaseDescriptor {
             return existingContainer
         }
 
-        const seriesColor = colorPalette.getColor(`${this.container.containerItems.length}`).value
-        const sliceValues = this.parseContainer(objects, seriesColor)
         const containerItem: ContainerItem = {
             displayName: containerName,
             slices: []
         }
+        // color by index of container
+        const seriesColor = colorPalette.getColor(`${this.container.containerItems.length}`).value
+        const sliceValues = this.parseContainer(objects, seriesColor)
+
+        // cloning all slices
         this.defaultSlices.forEach(slice => {
             let clonedSlice = Object.create(slice);
             if(sliceValues[slice.name] !== undefined) {
@@ -289,18 +292,19 @@ export class LineDescriptor extends BaseDescriptor {
 
     public parseContainer(objects: DataViewObjects, defaultColor: string) {
         const lineObject = objects?.line as any || {};
-        const { lineStyle, thickness, fillColor } = this.getCurrentSettings("[ALL]")
+        // `userGeneralColor` is manually set color for all lines
+        const { lineStyle, thickness, fillColor: userGeneralColor } = this.getCurrentSettings("[ALL]")
 
-        const newFillColor: string = this.getColorFromOldAPI(objects?.series?.fillColor) || defaultColor
-        const userColor: string | undefined = lineObject.fillColor?.solid?.color
-        lineObject.fillColor = userColor || (fillColor ? fillColor : newFillColor);
+        const oldAPIColor: string = this.getColorFromOldAPI(objects?.series?.fillColor)
+        const userColor: string | undefined = lineObject.fillColor?.solid?.color // maunally set color for current line
+        lineObject.fillColor = userColor || oldAPIColor || userGeneralColor || defaultColor;
 
-        const newLineStyle: string = objects?.lineStyle?.lineStyle as string || lineStyle
+        const newLineStyle = objects?.lineStyle?.lineStyle || lineStyle
         if (!lineObject.lineStyle) {
             lineObject.lineStyle = newLineStyle;
         }
 
-        const newThickness: number = objects?.lineThickness?.thickness as number || thickness
+        const newThickness = objects?.lineThickness?.thickness || thickness
         if (!lineObject.thickness) {
             lineObject.thickness = newThickness;
         }
@@ -314,19 +318,19 @@ export class LineDescriptor extends BaseDescriptor {
         let interpolationWithColorizedLine;
         let currentLineSettings: SimpleLineSetting = {} as SimpleLineSetting
         if(currentContainer){
-            currentContainer.slices.forEach(slice => {
+            currentContainer.slices.forEach((slice: SimpleSlice) => {
                 switch (slice.name) {
                     case "rawOpacity":
-                        currentLineSettings.opacity = this.getConvertedOpacity(this.getSliceValue(slice as SimpleSlice))
+                        currentLineSettings.opacity = this.getConvertedOpacity(this.getSliceValue(slice))
                         break;
                     case "rawAreaOpacity":
-                        currentLineSettings.areaOpacity = this.getConvertedOpacity(this.getSliceValue(slice as SimpleSlice))
+                        currentLineSettings.areaOpacity = this.getConvertedOpacity(this.getSliceValue(slice))
                         break;
                     case "interpolationWithColorizedLine":
-                        interpolationWithColorizedLine = this.getSliceValue(slice as SimpleSlice)
+                        interpolationWithColorizedLine = this.getSliceValue(slice)
                         break;
                     default:
-                        currentLineSettings[slice.name] = this.getSliceValue(slice as SimpleSlice)
+                        currentLineSettings[slice.name] = this.getSliceValue(slice)
                         break;
                 }
             })
@@ -334,7 +338,7 @@ export class LineDescriptor extends BaseDescriptor {
                 currentLineSettings.interpolation = interpolationWithColorizedLine
             }
         }
-        return currentLineSettings as SimpleLineSetting
+        return currentLineSettings
     }
 
     private getSliceValue(slice: SimpleSlice) {
