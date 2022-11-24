@@ -45,7 +45,7 @@ export abstract class BaseDescriptor extends FormattingSettingsCard {
     public displayName: string = "";
     public slices: Array<FormattingSettingsSlice> = [];
 
-    public getNewComplexValue(newValue: any, options?: any[]) {
-        return options ? options.filter(el => el.value === newValue)[0] : { value: newValue }
+    public getNewComplexValue(newValue: any, dropdownOptions?: any[]) {
+        return dropdownOptions ? dropdownOptions.filter(el => el.value === newValue)[0] : { value: newValue }
     }
 }

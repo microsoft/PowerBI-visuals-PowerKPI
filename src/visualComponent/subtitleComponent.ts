@@ -90,7 +90,7 @@ export class SubtitleComponent extends BaseComponent<IVisualComponentConstructor
             };
         }
 
-        const height: number = (this.element.node() as Element).clientHeight;
+        const height: number = (this.element.node() as Element)?.clientHeight;
 
         return {
             height,

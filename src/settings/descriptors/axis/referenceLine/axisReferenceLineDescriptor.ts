@@ -26,7 +26,6 @@
 
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
-
 import { BaseDescriptor } from "../../baseDescriptor";
 
 export class AxisReferenceLineDescriptor

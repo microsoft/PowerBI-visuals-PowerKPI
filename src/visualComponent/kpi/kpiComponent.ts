@@ -143,13 +143,13 @@ export class KPIComponent extends BaseContainerComponent<
             switch (this.layout) {
                 case LayoutEnum.Left:
                 case LayoutEnum.Right: {
-                    viewport.width = element.clientWidth;
+                    viewport.width = element?.clientWidth;
                     break;
                 }
                 case LayoutEnum.Top:
                 case LayoutEnum.Bottom:
                 default: {
-                    viewport.height = element.clientHeight;
+                    viewport.height = element?.clientHeight;
                     break;
                 }
             }

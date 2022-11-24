@@ -86,7 +86,7 @@ export interface AxisInfo {
 
 export class DataConverter extends VarianceConverter implements IConverter {
 
-    private axisInfo: AxisInfo;
+    public axisInfo: AxisInfo;
 
     constructor(private constructorOptions: IDataConverterConstructorOptions) {
         super();
@@ -103,25 +103,22 @@ export class DataConverter extends VarianceConverter implements IConverter {
     public getAxisType(options: AxisOptions) {
         const { dataView, xAxisType } = options
         let axisType: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
+        const axisCategory: powerbi.DataViewCategoryColumn = dataView?.categorical?.categories?.[0];
+        const axisCategoryType: powerbi.ValueTypeDescriptor = axisCategory?.source?.type;
 
-        const axisCategory: powerbi.DataViewCategoryColumn = dataView.categorical.categories[0];
-
-        const axisCategoryType: powerbi.ValueTypeDescriptor = axisCategory.source.type;
-
-        if (axisCategoryType.text || xAxisType === AxisType.categorical) {
+        if (axisCategoryType?.text || xAxisType === AxisType.categorical) {
             axisType = DataRepresentationTypeEnum.StringType;
-        } else if (axisCategoryType.dateTime) {
+        } else if (axisCategoryType?.dateTime) {
             axisType = DataRepresentationTypeEnum.DateType;
-        } else if (axisCategoryType.integer || axisCategoryType.numeric) {
+        } else if (axisCategoryType?.integer || axisCategoryType?.numeric) {
             axisType = DataRepresentationTypeEnum.NumberType;
         }
 
         this.axisInfo = {
             axisType,
-            metadata: axisCategory.source,
-            name: axisCategory.source.displayName
+            metadata: axisCategory?.source,
+            name: axisCategory?.source.displayName
         }
-
         return axisType
     }
 
@@ -138,7 +135,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
             createSelectionIdBuilder,
         } = this.constructorOptions;
 
-        let axisType: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
+        let axisType: DataRepresentationTypeEnum = this.axisInfo.axisType ?? DataRepresentationTypeEnum.None;
 
         const dataRepresentation: IDataRepresentation = {
             groups: [],
@@ -150,7 +147,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
                 top: 0,
             },
             series: [],
-            settings: settings,
+            settings,
             sortedSeries: [],
             variance: [],
             variances: [],

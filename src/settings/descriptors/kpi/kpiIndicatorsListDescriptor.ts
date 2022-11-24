@@ -210,24 +210,24 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
     }
 
     public getCurrentKPI(kpiIndex: number): IKPIIndicatorSettings {
-        if (isNaN(kpiIndex) || kpiIndex === null) {
-            return this._default;
-        }
-        for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
-            const currentKPI: formattingSettings.NumUpDown  = this[this.getPropertyName(this.kpiIndexPropertyName, index)];
+        if (!isNaN(kpiIndex) && kpiIndex !== null) {
+            for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
+                const currentKPI: formattingSettings.NumUpDown  = this[this.getPropertyName(this.kpiIndexPropertyName, index)];
 
-            if (currentKPI.value === kpiIndex) {
-                return this._properties.reduce((
-                    current: IKPIIndicatorSettings,
-                    property: IPropertyConfiguration,
-                ) => {
-                    const indexedName: string = this.getPropertyName(property.name, index);
-                    current[property.name] = this[indexedName];
+                if (currentKPI.value === kpiIndex) {
+                    return this._properties.reduce((
+                        current: IKPIIndicatorSettings,
+                        property: IPropertyConfiguration,
+                    ) => {
+                        const indexedName: string = this.getPropertyName(property.name, index);
+                        current[property.name] = this[indexedName];
 
-                    return current;
-                }, {});
+                        return current;
+                    }, {});
+                }
             }
         }
+        return this._default;
     }
 
     public getContextProperties() {

@@ -33,12 +33,10 @@ const path = require("path");
 const webpackConfig = require("./test.webpack.config.js");
 const tsconfig = require("./tsconfig.json");
 
-import { Config, ConfigOptions } from "karma";
-
 const testRecursivePath = "specs/*.spec.ts";
 const coverageFolder = "coverage";
 
-module.exports = (config: Config) => {
+module.exports = (config) => {
     config.set({
         browsers: ["ChromeHeadless"],
         colors: true,
@@ -79,7 +77,6 @@ module.exports = (config: Config) => {
         reporters: [
             "progress",
             "junit",
-            "coverage-istanbul",
         ],
         preprocessors: {
             [testRecursivePath]: ["webpack", "sourcemap"],
@@ -92,5 +89,5 @@ module.exports = (config: Config) => {
         webpackMiddleware: {
             noInfo: true,
         },
-    } as ConfigOptions);
+    });
 };
