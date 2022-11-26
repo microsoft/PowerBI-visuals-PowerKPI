@@ -90,7 +90,7 @@ export class DotsComponent extends BaseContainerComponent<
                     const lineSettings = line.getCurrentSettings(currentSeries.containerName)
                     component.render({
                         point,
-                        radiusFactor: dots.radiusFactor,
+                        radiusFactor: dots.radiusFactor.value,
                         series: currentSeries,
                         thickness: lineSettings.thickness,
                         viewport,

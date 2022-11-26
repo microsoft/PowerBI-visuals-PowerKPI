@@ -125,7 +125,7 @@ export class ChartComponent extends BaseContainerComponent<
                     component.render({
                         opacity,
                         point,
-                        radiusFactor: settings.dots.radiusFactor,
+                        radiusFactor: settings.dots.radiusFactor.value,
                         series: currentSeries,
                         thickness,
                         viewport,

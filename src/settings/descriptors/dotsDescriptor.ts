@@ -24,12 +24,28 @@
  *  THE SOFTWARE.
  */
 
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import { IMargin } from "powerbi-visuals-utils-svgutils";
 
 import { BaseDescriptor } from "../descriptors/baseDescriptor";
 
+import Slider = formattingSettings.Slider;
 export class DotsDescriptor extends BaseDescriptor {
-    public radiusFactor: number = 1.4;
+    public radiusFactor = new Slider({
+        name: "thickness",
+        displayName: "Thickness",
+        value: 1.4,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0,
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 100,
+            }
+        }
+    });
 
     public getMarginByThickness(
         thickness: number,
@@ -39,7 +55,7 @@ export class DotsDescriptor extends BaseDescriptor {
             return defaultMargin;
         }
 
-        const currentThickness: number = thickness * this.radiusFactor;
+        const currentThickness: number = thickness * this.radiusFactor.value;
 
         return {
             bottom: currentThickness,
