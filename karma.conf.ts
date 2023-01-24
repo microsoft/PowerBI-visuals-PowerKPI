@@ -26,7 +26,7 @@
 
 "use strict";
 
-process.env.CHROME_BIN = require("puppeteer").executablePath();
+process.env.CHROME_BIN = require("playwright-chromium").chromium.executablePath();
 
 const path = require("path");
 
