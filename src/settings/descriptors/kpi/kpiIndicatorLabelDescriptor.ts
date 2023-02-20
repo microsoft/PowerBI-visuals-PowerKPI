@@ -38,6 +38,6 @@ export class KPIIndicatorLabelDescriptor extends KPIIndicatorDescriptor {
 
         this.slices = [this.show, this.font, this.fontColor]
         this.name = "actualLabelKPI"
-        this.displayName = "KPI Actual Label"
+        this.displayNameKey = "Visual_KPI_Actual_Label"
     }
 }

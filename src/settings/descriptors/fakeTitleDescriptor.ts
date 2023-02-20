@@ -34,6 +34,6 @@ export class FakeTitleDescriptor extends BaseDescriptor {
         super()
 
         this.name = "title"
-        this.displayName = "Title"
+        this.displayNameKey = "Visual_Title"
     }
 }

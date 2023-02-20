@@ -24,6 +24,9 @@
  *  THE SOFTWARE.
  */
 
+import powerbi from "powerbi-visuals-api";
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+
 import {
     BaseDescriptor,
     IDescriptorParserOptions,
@@ -36,19 +39,19 @@ import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 const layoutOptions = [
     {
         value: LayoutEnum.Top,
-        displayName: "Top"
+        displayName: "Visual_Top"
     },
     {
         value: LayoutEnum.Left,
-        displayName: "Left"
+        displayName: "Visual_Left"
     },
     {
         value: LayoutEnum.Bottom,
-        displayName: "Bottom"
+        displayName: "Visual_Bottom"
     },
     {
         value: LayoutEnum.Right,
-        displayName: "Right"
+        displayName: "Visual_Right"
     }
 ]
 
@@ -57,19 +60,19 @@ export class LayoutDescriptor
 
     public autoHideVisualComponents = new formattingSettings.ToggleSwitch({
         name: "autoHideVisualComponents",
-        displayName: "Auto Scale",
+        displayNameKey: "Visual_Auto_Scale",
         value: true
     });
 
     public auto = new formattingSettings.ToggleSwitch({
         name: "auto",
-        displayName: "Auto",
+        displayNameKey: "Visual_Auto",
         value: true,
     });
 
     public layout = new formattingSettings.ItemDropdown({
         name: "layout",
-        displayName: "Layout",
+        displayNameKey: "Visual_Layout",
         items: layoutOptions,
         value: layoutOptions[0]
     });
@@ -81,7 +84,7 @@ export class LayoutDescriptor
         
         this.slices = [this.autoHideVisualComponents, this.auto, this.layout];
         this.name = "layout";
-        this.displayName = "Layout";
+        this.displayNameKey = "Visual_Layout";
     }
 
     public parse(options: IDescriptorParserOptions): void {
@@ -98,5 +101,12 @@ export class LayoutDescriptor
 
     public setNewLayoutPropertyValue(newValue: LayoutEnum){
         this.layout.value = layoutOptions.filter(el => el.value === newValue)[0] || layoutOptions[0]
+    }
+
+    public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
+        super.setLocalizedDisplayName(localizationManager);
+        layoutOptions.forEach(option => {
+            option.displayName = localizationManager.getDisplayName(option.displayName)
+        })
     }
 }

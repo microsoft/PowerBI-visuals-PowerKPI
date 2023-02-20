@@ -2,36 +2,43 @@
   "dataRoles": [
     {
       "name": "Axis",
+      "displayNameKey": "Visual_Axis",
       "displayName": "Axis",
       "kind": "Grouping"
     },
     {
       "name": "SeriesColumn",
+      "displayNameKey": "Visual_Series",
       "displayName": "Series",
       "kind": "Grouping"
     },
     {
       "name": "Values",
+      "displayNameKey": "Visual_Values",
       "displayName": "Values",
       "kind": "Measure"
     },
     {
       "name": "SecondaryValues",
+      "displayNameKey": "Visual_Secondary_Values",
       "displayName": "Secondary Values",
       "kind": "Measure"
     },
     {
       "name": "KPI",
+      "displayNameKey": "Visual_KPI_Indicator_Index",
       "displayName": "KPI Indicator Index",
       "kind": "Measure"
     },
     {
       "name": "KPIIndicatorValue",
+      "displayNameKey": "Visual_KPI_Indicator_Value",
       "displayName": "KPI Indicator Value",
       "kind": "Measure"
     },
     {
       "name": "SecondKPIIndicatorValue",
+      "displayNameKey": "Visual_Second_KPI_Indicator_Value",
       "displayName": "Second KPI Indicator Value",
       "kind": "Measure"
     }

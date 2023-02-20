@@ -25,6 +25,8 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+
 import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
@@ -41,19 +43,19 @@ export enum LegendStyle {
 const styleOptions = [
     {
         value: LegendStyle.circle,
-        displayName: "Circle"
+        displayName: "Visual_Circle"
     },
     {
         value: LegendStyle.box,
-        displayName: "Box"
+        displayName: "Visual_Box"
     },
     {
         value: LegendStyle.line,
-        displayName: "Line"
+        displayName: "Visual_Line"
     },
     {
         value: LegendStyle.styledLine,
-        displayName: "Styled Line"
+        displayName: "Visual_Styled_Line"
     }
 ]
 
@@ -71,67 +73,67 @@ export enum LegendPosition {
 const positionOptions = [
     {
         value: LegendPosition.Top,
-        displayName: "Top"
+        displayName: "Visual_Top"
     },
     {
         value: LegendPosition.Bottom,
-        displayName: "Bottom"
+        displayName: "Visual_Bottom"
     },
     {
         value: LegendPosition.Left,
-        displayName: "Left"
+        displayName: "Visual_Left"
     },
     {
         value: LegendPosition.Right,
-        displayName: "Right"
+        displayName: "Visual_Right"
     },
     {
         value: LegendPosition.TopCenter,
-        displayName: "Top Center"
+        displayName: "Visual_Top_Center"
     },
     {
         value: LegendPosition.BottomCenter,
-        displayName: "Bottom Center"
+        displayName: "Visual_Bottom_Center"
     },
     {
         value: LegendPosition.LeftCenter,
-        displayName: "Left Center"
+        displayName: "Visual_Left_Center"
     },
     {
         value: LegendPosition.RightCenter,
-        displayName: "Right Center"
+        displayName: "Visual_Right_Center"
     }
 ]
 export class LegendDescriptor extends FontSizeDescriptor {
     public position = new formattingSettings.ItemDropdown({
         name: "position",
-        displayName: "Position",
+        displayNameKey: "Visual_Position",
         items: positionOptions,
         value: positionOptions.filter(el => el.value === LegendPosition.BottomCenter)[0]
     });
 
     public showTitle = new formattingSettings.ToggleSwitch({
         name: "showTitle",
-        displayName: "Title",
+        displayNameKey: "Visual_Title",
         value: true,
     });
 
     public titleText = new formattingSettings.TextInput({
         name: "titleText",
-        displayName: "Legend Name",
+        displayNameKey: "Visual_Legend_Name",
         value: null,
         placeholder: ""
     });
 
     public labelColor = new formattingSettings.ColorPicker({
         name: "labelColor",
-        displayName: "Color",
+        displayNameKey: "Visual_Color",
         value: { value: "rgb(102, 102, 102)" }
     });
 
     public style = new formattingSettings.ItemDropdown({
         name: "style",
-        displayName: "Style",
+        displayNameKey: "Visual_Style",
         items: styleOptions,
         value: styleOptions.filter(el => el.value === LegendStyle.circle)[0]
     });;
@@ -140,7 +142,7 @@ export class LegendDescriptor extends FontSizeDescriptor {
         super(viewport)
 
         this.name = "legend"
-        this.displayName = "Legend"
+        this.displayNameKey = "Visual_Legend"
         this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif"
         this.slices = [
             this.show,
@@ -192,5 +194,15 @@ export class LegendDescriptor extends FontSizeDescriptor {
         }
 
         return undefined;
+    }
+    
+    public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
+        super.setLocalizedDisplayName(localizationManager);
+        styleOptions.forEach(option => {
+            option.displayName = localizationManager.getDisplayName(option.displayName)
+        });
+        positionOptions.forEach(option => {
+            option.displayName = localizationManager.getDisplayName(option.displayName)
+        });
     }
 }

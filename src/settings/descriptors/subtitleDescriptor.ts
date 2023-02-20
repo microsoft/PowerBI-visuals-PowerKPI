@@ -38,26 +38,26 @@ export enum SubtitleAlignment {
 export class SubtitleDescriptor extends FontSizeDescriptor {
     public titleText = new formattingSettings.TextInput({
         name: "titleText",
-        displayName: "Title text",
+        displayNameKey: "Visual_Title_Text",
         value: "",
         placeholder: ""
     });
 
     public fontColor = new formattingSettings.ColorPicker({
         name: "fontColor",
-        displayName: "Font Color",
+        displayNameKey: "Visual_Font_Color",
         value: { value: "#A6A6A6" }
     });
 
     public background = new formattingSettings.ColorPicker({
         name: "background",
-        displayName: "Background Color",
+        displayNameKey: "Visual_Background_Color",
         value: { value: null }
     });
 
     public alignment = new formattingSettings.AlignmentGroup({
         name: "alignment",
-        displayName: "Alignment",
+        displayNameKey: "Visual_Alingment",
         mode: powerbi.visuals.AlignmentGroupMode.Horizonal,
         value: SubtitleAlignment.left
     });;
@@ -68,6 +68,6 @@ export class SubtitleDescriptor extends FontSizeDescriptor {
         this.useExtendedFontPicker()
         this.slices = [this.show, this.titleText, this.font, this.fontColor, this.background, this.alignment];
         this.name = "subtitle";
-        this.displayName = "Subtitle";
+        this.displayNameKey = "Visual_Subtitle";
     }
 }

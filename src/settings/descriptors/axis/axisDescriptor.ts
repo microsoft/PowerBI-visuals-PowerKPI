@@ -46,7 +46,7 @@ export class AxisDescriptor
 
     public fontColor = new formattingSettings.ColorPicker({
         name: "fontColor",
-        displayName: "Font Color",
+        displayNameKey: "Visual_Font_Color",
         value: { value: "rgb(0,0,0)" }
     });
 

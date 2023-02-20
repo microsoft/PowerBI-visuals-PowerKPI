@@ -36,7 +36,7 @@ export class KPIIndicatorValueSignDescriptor
 
     public matchKPIColor = new formattingSettings.ToggleSwitch({
         name: "matchKPIColor",
-        displayName: "Match KPI Indicator Color",
+        displayNameKey: "Visual_Match_KPI_Indicator_Color",
         value: true
     });;
 
@@ -45,6 +45,6 @@ export class KPIIndicatorValueSignDescriptor
 
         this.slices = [this.show, this.font, this.format, this.displayUnits, this.precision, this.matchKPIColor, this.fontColor]
         this.name = "kpiIndicatorValue";
-        this.displayName = "KPI Indicator Value";
+        this.displayNameKey = "Visual_KPI_Indicator_Value";
     }
 }

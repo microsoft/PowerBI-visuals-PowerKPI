@@ -30,7 +30,7 @@ import { NumberDescriptorBase } from "../numberDescriptorBase";
 export class TooltipVarianceDescriptor extends NumberDescriptorBase {
     public label = new formattingSettings.TextInput({
         name: "label",
-        displayName: "Label",
+        displayNameKey: "Visual_Label",
         value: "",
         placeholder: "Variance"
     });;
@@ -40,6 +40,6 @@ export class TooltipVarianceDescriptor extends NumberDescriptorBase {
 
         this.slices = [this.show, this.format, this.displayUnits, this.precision, this.label]
         this.name = name;
-        this.displayName = displayName;
+        this.displayNameKey = displayName;
     }
 }

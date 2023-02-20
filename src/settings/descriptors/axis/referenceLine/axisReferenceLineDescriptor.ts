@@ -33,14 +33,14 @@ export class AxisReferenceLineDescriptor
 
     public show = new formattingSettings.ToggleSwitch({
         name: "show",
-        displayName: "Show",
+        displayNameKey: "Visual_Show",
         value: true,
         topLevelToggle: true
     });
 
     public color = new formattingSettings.ColorPicker({
         name: "color",
-        displayName: "Color",
+        displayNameKey: "Visual_Color",
         value: { value: "#e9e9e9" }
     });
 
@@ -48,7 +48,7 @@ export class AxisReferenceLineDescriptor
     private _maxThickness: number = 5;
     public thickness = new formattingSettings.Slider({
         name: "thickness",
-        displayName: "Thickness",
+        displayNameKey: "Visual_Thickness",
         value: 1,
         options: {
             minValue: {
@@ -62,14 +62,14 @@ export class AxisReferenceLineDescriptor
         }
     });
 
-    constructor(name: string, displayName: string, isShown: boolean = true) {
+    constructor(name: string, displayNameKey: string, isShown: boolean = true) {
         super();
 
         this.show.value = isShown;
 
         this.slices = [this.show, this.color, this.thickness]
         this.name = name;
-        this.displayName = displayName;
+        this.displayNameKey = displayNameKey;
     }
 
 }

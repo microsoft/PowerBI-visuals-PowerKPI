@@ -32,7 +32,7 @@ import { NumberDescriptorBase } from "./numberDescriptorBase";
 export class LabelsDescriptor extends NumberDescriptorBase {
     public color = new formattingSettings.ColorPicker({
         name: "color",
-        displayName: "Color",
+        displayNameKey: "Visual_Color",
         value: { value: "rgb(119, 119, 119)" }
     });
 
@@ -40,11 +40,11 @@ export class LabelsDescriptor extends NumberDescriptorBase {
         super(viewport);
 
         this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif";
-        this.show.value = true;
+        this.show.value = false;
         this.useExtendedFontPicker()
     
         this.slices = [this.show, this.font, this.displayUnits, this.color, this.precision, this.percentile]
         this.name = "labels"
-        this.displayName = "Data Labels"
+        this.displayNameKey = "Visual_Data_Labels"
     }
 }

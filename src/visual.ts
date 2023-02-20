@@ -61,6 +61,7 @@ import FormattingSettingsSlice = formattingSettings.Slice;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
 export interface IPowerKPIConstructorOptions extends VisualConstructorOptions {
     rootElement?: HTMLElement;
@@ -77,17 +78,15 @@ export class PowerKPI implements IVisual {
     private dataRepresentation: IDataRepresentation;
     private behavior: Behavior;
     private interactivityService: interactivityBaseService.IInteractivityService<IDataRepresentationSeries>;
-    
+
+    private localizationManager: ILocalizationManager;
     private settings: Settings;
     private formattingSettingsService: FormattingSettingsService;
 
     constructor(options: IPowerKPIConstructorOptions) {
-        // if (window.location !== window.parent.location) {
-        //     require("core-js/stable");
-        // }
         this.settings = new Settings()
-        const localizationManager = options.host.createLocalizationManager()
-        this.formattingSettingsService = new FormattingSettingsService(localizationManager);
+        this.localizationManager = options.host.createLocalizationManager()
+        this.formattingSettingsService = new FormattingSettingsService(this.localizationManager);
         this.element = d3Select(options.element);
 
         this.converter = new DataConverter({
@@ -110,6 +109,7 @@ export class PowerKPI implements IVisual {
     }
 
     public update(options: VisualUpdateOptions): void {
+        // debugger
         this.settings = this.formattingSettingsService.populateFormattingSettingsModel(Settings, options.dataViews);
 
         const dataView: powerbi.DataView = options && options.dataViews && options.dataViews[0];
@@ -127,7 +127,7 @@ export class PowerKPI implements IVisual {
             xAxisType: this.settings.xAxis.type.value.value as AxisType
         });
         this.updateFormatPropertyValue();
-
+debugger
         const dataRepresentation: IDataRepresentation = this.converter.convert({
             dataView,
             hasSelection: this.interactivityService && this.interactivityService.hasSelection(),
@@ -189,7 +189,9 @@ export class PowerKPI implements IVisual {
         this.filterLineProperties();
         this.filterKPIIndicatorProperties();
         this.filterKPIIndicatorValueProperties();
-        this.filterSettingsPropertiesByAxisType(); //Should be called last
+        this.filterSettingsPropertiesByAxisType();
+        this.setLocalizedDisplayNames();
+
     }
 
     private filterSettingsPropertiesByAxisType() {
@@ -305,6 +307,12 @@ export class PowerKPI implements IVisual {
         let newSlices: Array<FormattingSettingsSlice> = [...kpiIndicatorValue.slices]
         if(kpiIndicatorValue.matchKPIColor.value) this.removeArrayItem(newSlices, kpiIndicatorValue.fontColor)
         kpiIndicatorValue.slices = newSlices
+    }
+
+    private setLocalizedDisplayNames() {
+        this.settings.cards.forEach(card => {
+            card.setLocalizedDisplayName(this.localizationManager)
+        })
     }
 
     private removeArrayItem<T>(array: T[], item: T) {

@@ -25,9 +25,10 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 import IColorPalette = powerbi.extensibility.IColorPalette;
 import DataViewObjects = powerbi.DataViewObjects
-import IEnumMember = powerbi.IEnumMember
+
 
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import ContainerItem = formattingSettings.ContainerItem;
@@ -43,91 +44,91 @@ import { LineDataPoint } from "../../../converter/dataConverter";
 import { BaseDescriptor } from "../baseDescriptor";
 import { LineStyle, LineType, LineInterpolation, SimpleLineSetting } from "./lineTypes"
 
-const lineStyleOptions: IEnumMember[] = [
+const lineStyleOptions = [
     {
         value: LineStyle.solidLine,
-        displayName: "Solid"
+        displayName: "Visual_Solid"
     },
     {
         value: LineStyle.dottedLine,
-        displayName: "Dotted"
+        displayName: "Visual_Dotted"
     },
     {
         value: LineStyle.dashedLine,
-        displayName: "Dashed"
+        displayName: "Visual_Dashed"
     },
     {
         value: LineStyle.dotDashedLine,
-        displayName: "Dot-dashed"
+        displayName: "Visual_Dot-dashed"
     }
 ]
 
-const interpolationWithColorizedLineOptions: IEnumMember[] = [
+const interpolationWithColorizedLineOptions = [
     {
       value: LineInterpolation.linear,
-      displayName: "Linear"
+      displayName: "Visual_Linear"
     },
     {
       value: LineInterpolation.stepBefore,
-      displayName: "Step-before"
+      displayName: "Visual_Step-before"
     },
     {
       value: LineInterpolation.stepAfter,
-      displayName: "Step-after"
+      displayName: "Visual_Step-after"
     }
 ]
 
-const lineTypeOptions: IEnumMember[] = [
+const lineTypeOptions = [
     {
         value: LineType.line,
-        displayName: "Line"
+        displayName: "Visual_Line"
     },
     {
         value: LineType.area,
-        displayName: "Area"
+        displayName: "Visual_Area"
     }
 ]
 
-const interpolationOptions: IEnumMember[] = [
+const interpolationOptions = [
     {
         value: LineInterpolation.linear,
-        displayName: "Linear"
+        displayName: "Visual_Linear"
     },
     {
         value: LineInterpolation.stepBefore,
-        displayName: "Step-before"
+        displayName: "Visual_Step-before"
     },
     {
         value: LineInterpolation.stepAfter,
-        displayName: "Step-after"
+        displayName: "Visual_Step-after"
     },
     {
         value: LineInterpolation.basis,
-        displayName: "Basis"
+        displayName: "Visual_Basis"
     },
     {
         value: LineInterpolation.basisOpen,
-        displayName: "Basis-open"
+        displayName: "Visual_Basis-open"
     },
     {
         value: LineInterpolation.basisClosed,
-        displayName: "Basis-closed"
+        displayName: "Visual_Basis-closed"
     },
     {
         value: LineInterpolation.cardinal,
-        displayName: "Cardinal"
+        displayName: "Visual_Cardinal"
     },
     {
         value: LineInterpolation.cardinalOpen,
-        displayName: "Cardinal-open"
+        displayName: "Visual_Cardinal-open"
     },
     {
         value: LineInterpolation.cardinalClosed,
-        displayName: "Cardinal-closed"
+        displayName: "Visual_Cardinal-closed"
     },
     {
         value: LineInterpolation.monotone,
-        displayName: "Monotone"
+        displayName: "Visual_Monotone"
     }
 ]
 
@@ -135,25 +136,25 @@ export class LineDescriptor extends BaseDescriptor {
 
     public fillColor = new ColorPicker({
         name: "fillColor",
-        displayName: "Color",
+        displayNameKey: "Visual_Color",
         value: { value: null }
     });
 
     public shouldMatchKpiColor = new ToggleSwitch({
         name: "shouldMatchKpiColor",
-        displayName: "Match KPI Color",
+        displayNameKey: "Visual_Match_KPI_Color",
         value: false
     });
 
     public dataPointStartsKpiColorSegment = new ToggleSwitch({
         name: "dataPointStartsKpiColorSegment",
-        displayName: "Data Point Starts KPI Color Segment",
+        displayNameKey: "Visual_KPI_Color_Segment",
         value: true
     });
 
     public lineType = new ItemDropdown({
         name: "lineType",
-        displayName: "Type",
+        displayNameKey: "Visual_Type",
         items: lineTypeOptions,
         value: lineTypeOptions[0]
     });
@@ -162,7 +163,7 @@ export class LineDescriptor extends BaseDescriptor {
     private maxThickness: number = 10;
     public thickness = new Slider({
         name: "thickness",
-        displayName: "Thickness",
+        displayNameKey: "Visual_Thickness",
         value: 2,
         options: {
             minValue: {
@@ -180,7 +181,7 @@ export class LineDescriptor extends BaseDescriptor {
     private maxOpacity: number = 100;
     public rawOpacity = new NumUpDown({
         name: "rawOpacity",
-        displayName: "Opacity",
+        displayNameKey: "Visual_Opacity",
         value: 100,
         options: {
             minValue: {
@@ -196,7 +197,7 @@ export class LineDescriptor extends BaseDescriptor {
 
     public rawAreaOpacity = new NumUpDown({
         name: "rawAreaOpacity",
-        displayName: "Area Opacity",
+        displayNameKey: "Visual_Area_Opacity",
         value: 50,
         options: {
             minValue: {
@@ -212,21 +213,21 @@ export class LineDescriptor extends BaseDescriptor {
 
     public lineStyle = new ItemDropdown({
         name: "lineStyle",
-        displayName: "Style",
+        displayNameKey: "Visual_Style",
         items: lineStyleOptions,
         value: lineStyleOptions[0]
     });
 
     public interpolation = new ItemDropdown({
         name: "interpolation",
-        displayName: "Interpolation",
+        displayNameKey: "Visual_Interpolation",
         items: interpolationOptions,
         value: interpolationOptions[0]
     });
 
     public interpolationWithColorizedLine = new ItemDropdown({
         name: `interpolationWithColorizedLine`,
-        displayName: "Interpolation",
+        displayNameKey: "Visual_Interpolation",
         items: interpolationWithColorizedLineOptions,
         value: interpolationWithColorizedLineOptions[0]
     });
@@ -256,7 +257,7 @@ export class LineDescriptor extends BaseDescriptor {
 
         this.slices = undefined
         this.name = "line"
-        this.displayName = "Line"
+        this.displayNameKey = "Visual_Line"
     }
 
     public populateContainer(dataPoint: LineDataPoint, colorPalette: IColorPalette) {
@@ -351,5 +352,14 @@ export class LineDescriptor extends BaseDescriptor {
 
     private getColorFromOldAPI(fillColor) {
         return ((fillColor as any)?.solid?.color || fillColor) as string
+    }
+
+    public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
+        super.setLocalizedDisplayName(localizationManager);
+        [lineStyleOptions, interpolationWithColorizedLineOptions, lineTypeOptions, interpolationOptions].forEach(list => 
+            list.forEach(option => {
+                option.displayName = localizationManager.getDisplayName(option.displayName)
+            })
+        )
     }
 }

@@ -97,13 +97,13 @@ export class Settings extends formattingSettings.Model {
     public kpiIndicatorValue: KPIIndicatorValueSignDescriptor = new KPIIndicatorValueSignDescriptor(kpiCaptionViewport);
     public kpiIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
         "kpiIndicatorLabel",
-        "KPI Indicator Label",
+        "Visual_KPI_Indicator_Label",
         kpiLabelViewport,
     );
     public secondKPIIndicatorValue: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport);
     public secondKPIIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
         "secondKPIIndicatorLabel",
-        "Second KPI Indicator Label",
+        "Visual_Second_KPI_Indicator_Label",
         kpiLabelViewport
     );
     public actualValueKPI: KPIActualValueDescriptor = new KPIActualValueDescriptor(kpiCaptionViewport);
@@ -115,14 +115,41 @@ export class Settings extends formattingSettings.Model {
     public dots: DotsDescriptor = new DotsDescriptor();
     public legend: LegendDescriptor = new LegendDescriptor(legendViewport);
     public xAxis: XAxisDescriptor = new XAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity);
-    public yAxis: YAxisDescriptor = new YAxisDescriptor("yAxis", "Y Axis", axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity);
-    public secondaryYAxis: YAxisDescriptor = new YAxisDescriptor("secondaryYAxis", "Secondary Y Axis", axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity);
-    public referenceLineOfXAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor("referenceLineOfXAxis", "X Axis Reference Lines", false);
-    public referenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor("referenceLineOfYAxis", "Y Axis Reference Lines");
-    public secondaryReferenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor("secondaryReferenceLineOfYAxis", "Secondary Y Axis Reference Lines", false);
+    public yAxis: YAxisDescriptor = new YAxisDescriptor(
+        "yAxis", 
+        "Visual_Y_Axis", 
+        axisViewportToDecreaseFontSize, 
+        axisViewportToIncreaseDensity
+    );
+    public secondaryYAxis: YAxisDescriptor = new YAxisDescriptor(
+        "secondaryYAxis", 
+        "Visual_Secondary_Y_Axis", 
+        axisViewportToDecreaseFontSize, 
+        axisViewportToIncreaseDensity
+    );
+    public referenceLineOfXAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(
+        "referenceLineOfXAxis", 
+        "Visual_X_Axis_Reference", 
+        false
+    );
+    public referenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(
+        "referenceLineOfYAxis", 
+        "Visual_Y_Axis_Reference"
+    );
+    public secondaryReferenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(
+        "secondaryReferenceLineOfYAxis", 
+        "Visual_Secondary_Y_Axis_Reference", 
+        false
+    );
     public tooltipLabel: TooltipLabelDescriptor = new TooltipLabelDescriptor();
-    public tooltipVariance: TooltipVarianceDescriptor = new TooltipVarianceDescriptor("tooltipVariance", "Tooltip KPI Indicator Value");
-    public secondTooltipVariance: TooltipVarianceDescriptor = new TooltipVarianceDescriptor("secondTooltipVariance", "Second Tooltip KPI Indicator Value");
+    public tooltipVariance: TooltipVarianceDescriptor = new TooltipVarianceDescriptor(
+        "tooltipVariance", 
+        "Visual_Tooltip_KPI_Indicator_Value"
+    );
+    public secondTooltipVariance: TooltipVarianceDescriptor = new TooltipVarianceDescriptor(
+        "secondTooltipVariance", 
+        "Visual_Second_Tooltip_KPI_Indicator_Value"
+    );
     public tooltipValues: TooltipValueDescriptor = new TooltipValueDescriptor();
     public defaultCards = [
         this.layout, this.title, this.subtitle, this.kpiIndicator, this.kpiIndicatorValue,

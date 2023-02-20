@@ -25,6 +25,8 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { HorizontalLayoutEnum } from "../../../layout/horizontalLayoutEnum";
@@ -93,14 +95,14 @@ const positionOptions = [
 export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements IDescriptor {
     public position = new formattingSettings.ItemDropdown({
         name: "position",
-        displayName: "Position",
+        displayNameKey: "Visual_Position",
         value: positionOptions[0],
         items: positionOptions
     });
 
     public shouldBackgroundColorMatchKpiColor = new formattingSettings.ToggleSwitch({
         name: "shouldBackgroundColorMatchKpiColor",
-        displayName: "Background Match KPI Color",
+        displayNameKey: "Visual_KPI_Background_Color",
         value: false
     });
 
@@ -110,12 +112,12 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
     private _default: IKPIIndicatorSettings = {
         color: {
             name: "default",
-            displayName: "default",
+            displayNameKey: "default",
             value : {value: null}
         },
         shape: {
             name: "default",
-            displayName: "default",
+            displayNameKey: "default",
             items: [],
             value: {
                 value: null,
@@ -134,27 +136,27 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
         DefaultColor.Black,
     ];
 
-    private _shapes: powerbi.IEnumMember[] = [
-        { value: ShapeType.CircleFull, displayName: "Circle" },
-        { value: ShapeType.Triangle, displayName: "Triangle" },
-        { value: ShapeType.Rhombus, displayName: "Diamond" },
-        { value: ShapeType.Square, displayName: "Square" },
-        { value: ShapeType.Flag, displayName: "Flag" },
-        { value: ShapeType.Exclamation, displayName: "Exclamation" },
-        { value: ShapeType.Checkmark, displayName: "Checkmark" },
-        { value: ShapeType.ArrowUp, displayName: "Arrow Up" },
-        { value: ShapeType.ArrowRightUp, displayName: "Arrow Right Up" },
-        { value: ShapeType.ArrowRightDown, displayName: "Arrow Right Down" },
-        { value: ShapeType.ArrowDown, displayName: "Arrow Down" },
-        { value: ShapeType.CaretUp, displayName: "Caret Up" },
-        { value: ShapeType.CaretDown, displayName: "Caret Down" },
-        { value: ShapeType.CircleEmpty, displayName: "Circle Empty" },
-        { value: ShapeType.CircleX, displayName: "Circle X" },
-        { value: ShapeType.CircleExclamation, displayName: "Circle Exclamation" },
-        { value: ShapeType.CircleCheckmark, displayName: "Circle Checkmark" },
+    private _shapes = [
+        { value: ShapeType.CircleFull, displayName: "Visual_Circle" },
+        { value: ShapeType.Triangle, displayName: "Visual_Triangle" },
+        { value: ShapeType.Rhombus, displayName: "Visual_Diamond" },
+        { value: ShapeType.Square, displayName: "Visual_Square" },
+        { value: ShapeType.Flag, displayName: "Visual_Flag" },
+        { value: ShapeType.Exclamation, displayName: "Visual_Exclamation" },
+        { value: ShapeType.Checkmark, displayName: "Visual_Checkmark" },
+        { value: ShapeType.ArrowUp, displayName: "Visual_Arrow_Up" },
+        { value: ShapeType.ArrowRightUp, displayName: "Visual_Arrow_Right_Up" },
+        { value: ShapeType.ArrowRightDown, displayName: "Visual_Arrow_Right_Down" },
+        { value: ShapeType.ArrowDown, displayName: "Visual_Arrow_Down" },
+        { value: ShapeType.CaretUp, displayName: "Visual_Caret_Up" },
+        { value: ShapeType.CaretDown, displayName: "Visual_Caret_Down" },
+        { value: ShapeType.CircleEmpty, displayName: "Visual_Circle_Empty" },
+        { value: ShapeType.CircleX, displayName: "Visual_Circle_X" },
+        { value: ShapeType.CircleExclamation, displayName: "Visual_Circle_Exclamation" },
+        { value: ShapeType.CircleCheckmark, displayName: "Visual_Circle_Checkmark" },
         { value: ShapeType.X, displayName: "X" },
-        { value: ShapeType.StarEmpty, displayName: "Star Empty" },
-        { value: ShapeType.StarFull, displayName: "Star Full" },
+        { value: ShapeType.StarEmpty, displayName: "Visual_Star_Empty" },
+        { value: ShapeType.StarFull, displayName: "Visual_StarFull" },
     ];
 
     private _properties: IPropertyConfiguration[] = [
@@ -196,7 +198,7 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
 
         this.slices = this.getContextProperties();
         this.name = "kpiIndicator"
-        this.displayName = "KPI Indicator"
+        this.displayNameKey = "Visual_KPI_Indicator"
     }
 
     public getElementByIndex<T>(setOfValues: T[], index: number): T {
@@ -256,14 +258,14 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
             } case PropertyType.DropDown: {
                 return new formattingSettings.ItemDropdown({
                     name,
-                    displayName: "    Indicator",
+                    displayNameKey: "Visual_KPI_Indexed_Indicator",
                     value,
                     items: currentProperty.items
                 });
             } case PropertyType.NumUpDown: {
                 return new formattingSettings.NumUpDown({
                     name,
-                    displayName: "    Value",
+                    displayNameKey: "Visual_KPI_Indexed_Value",
                     value
                 });
             }
@@ -272,5 +274,14 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
 
     private getPropertyName(name: string, index: number): string {
         return `${name}_${index}`;
+    }
+
+    public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
+        super.setLocalizedDisplayName(localizationManager);
+        [this._shapes, positionOptions].forEach(list => 
+            list.forEach(option => {
+                option.displayName = localizationManager.getDisplayName(option.displayName)
+            })
+        )
     }
 }

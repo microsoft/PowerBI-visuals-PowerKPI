@@ -34,6 +34,6 @@ export class KPIActualValueDescriptor extends KPIIndicatorDescriptor {
 
         this.slices = [this.show, this.font, this.displayUnits, this.precision, this.fontColor] 
         this.name = "actualValueKPI";
-        this.displayName = "KPI Actual Value";
+        this.displayNameKey = "Visual_KPI_Actual_Value";
     }
 }

@@ -32,7 +32,7 @@ export class TooltipLabelDescriptor extends NumberDescriptorBase {
 
         this.slices = [this.show, this.format, this.displayUnits, this.precision]
         this.name = "tooltipLabel";
-        this.displayName = "Tooltip Label";
+        this.displayNameKey = "Visual_Tooltip_Label";
     }
 }
  

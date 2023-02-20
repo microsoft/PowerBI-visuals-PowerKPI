@@ -28,6 +28,7 @@ import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import FormattingSettingsCard = formattingSettings.Card;
 import FormattingSettingsSlice = formattingSettings.Slice;
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
 export interface IDescriptorParserOptions {
     isAutoHideBehaviorEnabled: boolean;
@@ -42,10 +43,12 @@ export interface IDescriptor {
 
 export abstract class BaseDescriptor extends FormattingSettingsCard {
     public name: string = "";
-    public displayName: string = "";
+    public displayNameKey: string = "";
     public slices: Array<FormattingSettingsSlice> = [];
 
     public getNewComplexValue(newValue: any, dropdownOptions?: any[]) {
         return dropdownOptions ? dropdownOptions.filter(el => el.value === newValue)[0] : { value: newValue }
     }
+
+    public setLocalizedDisplayName(localizationManager: ILocalizationManager) {}
 }

@@ -34,7 +34,7 @@ export class KPIIndicatorDateDescriptor extends KPIIndicatorDescriptor {
 
         this.slices = [this.show, this.format, this.font, this.fontColor]
         this.name = "dateValueKPI";
-        this.displayName = "KPI Date Value";
+        this.displayNameKey = "Visual_KPI_Date_Value";
     }
 }
  

@@ -264,3 +264,13 @@ export abstract class BaseComponent<ConstructorOptionsType
         );
     }
 }
+// deep compare two objects and console.log the differences
+export function diff(obj1, obj2) { 
+    for (let i in obj1) {
+        if (typeof obj1[i] === "object") {
+            diff(obj1[i], obj2[i]);
+        } else if (obj1[i] !== obj2[i]){
+            console.log(obj2[i]);
+        }
+    }
+}

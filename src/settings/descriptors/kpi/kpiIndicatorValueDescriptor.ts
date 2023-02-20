@@ -34,6 +34,6 @@ export class KPIIndicatorValueDescriptor extends KPIIndicatorDescriptor {
 
         this.slices = [this.show, this.font, this.format, this.displayUnits, this.precision, this.fontColor] 
         this.name = "secondKPIIndicatorValue";
-        this.displayName = "Second KPI Indicator Value";
+        this.displayNameKey = "Visual_Second_KPI_Indicator_Value";
     }
 }

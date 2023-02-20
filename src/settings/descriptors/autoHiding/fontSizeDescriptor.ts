@@ -49,15 +49,15 @@ export class FontSizeDescriptor
 
     public font = new formattingSettings.FontControl({
         name: "font",
-        displayName: "Font",
+        displayNameKey: "Visual_Font",
         fontFamily: new formattingSettings.FontPicker({
             name: "fontFamily",
-            displayName: "Text Color",
+            displayNameKey: "Visual_Font_Family",
             value: "Segoe UI, wf_segoe-ui_normal, helvetica, arial, sans-serif"
         }),
         fontSize: new formattingSettings.NumUpDown({
             name: "fontSize",
-            displayName: "Text Size",
+            displayNameKey: "Visual_Font_Size",
             value: this.minFontSize, 
             options: {
                 minValue: {

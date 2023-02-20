@@ -35,7 +35,7 @@ export class KPIIndicatorDateLabelDescriptor extends KPIIndicatorLabelDescriptor
         this.useExtendedFontPicker()
         this.slices = [this.show, this.font, this.fontColor]
         this.name = "dateLabelKPI"
-        this.displayName = "KPI Date Label"
+        this.displayNameKey = "Visual_KPI_Date_Label"
     }
 }
  

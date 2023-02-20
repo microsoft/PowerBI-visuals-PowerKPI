@@ -25,6 +25,8 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { IDescriptor } from "./baseDescriptor";
@@ -47,27 +49,27 @@ export enum DisplayUnitsType {
 export const displayUnitsOptions = [
     {
         value: DisplayUnitsType.Auto,
-        displayName: "Auto"
+        displayName: "Visual_Auto"
     },
     {
         value: DisplayUnitsType.None,
-        displayName: "None"
+        displayName: "Visual_None"
     },
     {
         value: DisplayUnitsType.Thousands,
-        displayName: "Thousands"
+        displayName: "Visual_Thousands"
     },
     {
         value: DisplayUnitsType.Millions,
-        displayName: "Millions"
+        displayName: "Visual_Millions"
     },
     {
         value: DisplayUnitsType.Billions,
-        displayName: "Billions"
+        displayName: "Visual_Billions"
     },
     {
         value: DisplayUnitsType.Trillions,
-        displayName: "Trillions"
+        displayName: "Visual_Trillions"
     }
 ]
 export class NumberDescriptorBase
@@ -79,14 +81,14 @@ export class NumberDescriptorBase
 
     public displayUnits = new formattingSettings.ItemDropdown({
         name: "displayUnits",
-        displayName: "Display Units",
+        displayNameKey: "Visual_Display_Units",
         items: displayUnitsOptions,
         value: this.getNewDisplayUnitsValue(DisplayUnitsType.Auto)
     });
 
     public percentile = new formattingSettings.Slider({
         name: "percentile",
-        displayName: "Label Density",
+        displayNameKey: "Visual_Label_Density",
         value: 100,
         options: {
             maxValue: {
@@ -98,7 +100,7 @@ export class NumberDescriptorBase
 
     public format = new formattingSettings.TextInput({
         name: "format",
-        displayName: "Format",
+        displayNameKey: "Visual_Format",
         value: this.defaultFormat,
         placeholder: ""
     });
@@ -107,7 +109,7 @@ export class NumberDescriptorBase
     protected maxPrecision: number = 17;
     public precision = new formattingSettings.NumUpDown({
         name: "precision",
-        displayName: "Decimal Places",
+        displayNameKey: "Visual_Decimal_Places",
         value: null,
         options: {
             minValue: {
@@ -171,5 +173,12 @@ export class NumberDescriptorBase
 
     public getNewDisplayUnitsValue(value: DisplayUnitsType) {
         return this.getNewComplexValue(value, displayUnitsOptions)
+    }
+
+    public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
+        super.setLocalizedDisplayName(localizationManager);
+        displayUnitsOptions.forEach(option => {
+            option.displayName = localizationManager.getDisplayName(option.displayName)
+        })
     }
 }

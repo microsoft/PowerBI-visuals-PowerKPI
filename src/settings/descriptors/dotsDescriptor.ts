@@ -47,6 +47,13 @@ export class DotsDescriptor extends BaseDescriptor {
         }
     });
 
+    constructor() {
+        super()
+
+        this.name = "dots";
+        this.displayNameKey = "Visual_Dots";
+    }
+
     public getMarginByThickness(
         thickness: number,
         defaultMargin: IMargin,

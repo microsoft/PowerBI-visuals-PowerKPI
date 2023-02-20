@@ -32,12 +32,12 @@ import { KPIIndicatorLabelDescriptor } from "./kpiIndicatorLabelDescriptor";
 export class KPIIndicatorCustomizableLabelDescriptor extends KPIIndicatorLabelDescriptor {
     public label = new formattingSettings.TextInput({
         name: "label",
-        displayName: "Label",
+        displayNameKey: "Visual_Label",
         value: "",
         placeholder: ""
     });
 
-    constructor(name: string, displayName: string, viewport?: powerbi.IViewport) {
+    constructor(name: string, displayNameKey: string, viewport?: powerbi.IViewport) {
         super(viewport);
 
         this.useExtendedFontPicker()
@@ -45,7 +45,7 @@ export class KPIIndicatorCustomizableLabelDescriptor extends KPIIndicatorLabelDe
 
         this.slices = [this.show, this.font, this.fontColor, this.label]
         this.name = name;
-        this.displayName = displayName;
+        this.displayNameKey = displayNameKey;
     }
 
     public isShown(): boolean {

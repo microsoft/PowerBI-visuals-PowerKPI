@@ -86,7 +86,7 @@ export interface AxisInfo {
 
 export class DataConverter extends VarianceConverter implements IConverter {
 
-    public axisInfo: AxisInfo;
+    private axisInfo: AxisInfo;
 
     constructor(private constructorOptions: IDataConverterConstructorOptions) {
         super();

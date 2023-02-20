@@ -33,18 +33,18 @@ import { AxisDescriptor } from "./axisDescriptor";
 export class YAxisDescriptor extends AxisDescriptor {
     public min = new formattingSettings.NumUpDown({
         name: "min",
-        displayName: "Min",
+        displayNameKey: "Visual_Min",
         value: NaN,
     });
     public max = new formattingSettings.NumUpDown({
         name: "max",
-        displayName: "Max",
+        displayNameKey: "Visual_Max",
         value: NaN,
     });
 
     constructor(
         name: string, 
-        displayName: string,
+        displayNameKey: string,
         viewportToBeHidden: powerbi.IViewport,
         viewportToIncreaseDensity: powerbi.IViewport,
     ) {
@@ -61,6 +61,6 @@ export class YAxisDescriptor extends AxisDescriptor {
             this.max
         ]
         this.name = name;
-        this.displayName = displayName;
+        this.displayNameKey = displayNameKey;
     }
 }

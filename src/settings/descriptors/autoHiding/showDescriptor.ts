@@ -37,7 +37,7 @@ export class ShowDescriptor extends BaseDescriptor implements IDescriptor {
 
     public show = new formattingSettings.ToggleSwitch({
         name: "show",
-        displayName: "Show",
+        displayNameKey: "Visual_Show",
         value: true,
         topLevelToggle: true
     });
