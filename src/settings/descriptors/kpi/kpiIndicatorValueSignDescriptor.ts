@@ -38,7 +38,7 @@ export class KPIIndicatorValueSignDescriptor
         name: "matchKPIColor",
         displayNameKey: "Visual_Match_KPI_Indicator_Color",
         value: true
-    });;
+    });
 
     constructor(viewport?: powerbi.IViewport) {
         super(viewport);

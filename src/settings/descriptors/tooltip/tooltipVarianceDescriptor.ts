@@ -33,7 +33,7 @@ export class TooltipVarianceDescriptor extends NumberDescriptorBase {
         displayNameKey: "Visual_Label",
         value: "",
         placeholder: "Variance"
-    });;
+    });
 
     constructor(name: string, displayName: string) {
         super()

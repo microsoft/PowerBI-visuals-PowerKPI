@@ -109,7 +109,6 @@ export class PowerKPI implements IVisual {
     }
 
     public update(options: VisualUpdateOptions): void {
-        // debugger
         this.settings = this.formattingSettingsService.populateFormattingSettingsModel(Settings, options.dataViews);
 
         const dataView: powerbi.DataView = options && options.dataViews && options.dataViews[0];
@@ -127,7 +126,7 @@ export class PowerKPI implements IVisual {
             xAxisType: this.settings.xAxis.type.value.value as AxisType
         });
         this.updateFormatPropertyValue();
-debugger
+
         const dataRepresentation: IDataRepresentation = this.converter.convert({
             dataView,
             hasSelection: this.interactivityService && this.interactivityService.hasSelection(),
@@ -180,6 +179,7 @@ debugger
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
         this.filterFormattingProperties()
+
         return this.formattingSettingsService.buildFormattingModel(this.settings);
     }
 
@@ -213,7 +213,7 @@ debugger
             secondTooltipVariance
         ]
         settingsToFilterByAxis.forEach(card => {
-            let newSlices = [...card.slices]
+            const newSlices = [...card.slices]
             this.addArrayItems(newSlices, [card.displayUnits, card.precision, card.format])
             if (card.shouldNumericPropertiesBeHiddenByType
                 && this.axisType !== DataRepresentationTypeEnum.NumberType
@@ -232,7 +232,7 @@ debugger
     }
 
     private filterSettingsCards() {
-        let newCards = [...this.settings.defaultCards]
+        const newCards = [...this.settings.defaultCards]
         this.settings.defaultCards.forEach(card => {
             if(this.shouldDeleteSettingsCard(card.name)){
                 this.removeArrayItem(newCards, card)
@@ -268,7 +268,7 @@ debugger
 
     private filterLayoutProperties() {
         const { layout } = this.settings
-        let newSlices: Array<FormattingSettingsSlice> = [...layout.slices];
+        const newSlices: Array<FormattingSettingsSlice> = [...layout.slices];
         if(layout.auto.value) this.removeArrayItem(newSlices, layout.layout)
         layout.slices = newSlices
     }
@@ -278,7 +278,7 @@ debugger
         line.container.containerItems.forEach(containerItem => {
             const containerName = containerItem.displayName
             const currentSettings = line.getCurrentSettings(containerName);
-            let newSlices: Array<FormattingSettingsSlice> = [...containerItem.slices]
+            const newSlices: Array<FormattingSettingsSlice> = [...containerItem.slices]
 
             if(currentSettings.shouldMatchKpiColor) { 
                 this.removeArrayItem(newSlices, newSlices.filter(el => el.name === "interpolation")[0])
@@ -294,7 +294,7 @@ debugger
 
     private filterKPIIndicatorProperties() {
         const { kpiIndicator } = this.settings
-        let newSlices: Array<FormattingSettingsSlice> = kpiIndicator.getContextProperties()
+        const newSlices: Array<FormattingSettingsSlice> = kpiIndicator.getContextProperties()
 
         if(!this.dataRepresentation?.settings.kpiIndicatorValue.show.value || isNaN(this.dataRepresentation.variance?.[0])) {
             this.removeArrayItem(newSlices, kpiIndicator.position)
@@ -304,7 +304,7 @@ debugger
 
     private filterKPIIndicatorValueProperties() {
         const { kpiIndicatorValue } = this.settings
-        let newSlices: Array<FormattingSettingsSlice> = [...kpiIndicatorValue.slices]
+        const newSlices: Array<FormattingSettingsSlice> = [...kpiIndicatorValue.slices]
         if(kpiIndicatorValue.matchKPIColor.value) this.removeArrayItem(newSlices, kpiIndicatorValue.fontColor)
         kpiIndicatorValue.slices = newSlices
     }

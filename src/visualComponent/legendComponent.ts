@@ -118,7 +118,6 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
     }
 
     private createLegendData(data: IDataRepresentation, legend: LegendDescriptor, line: LineDescriptor): legendInterfaces.LegendData {
-        // debugger
         const dataPoints: legendInterfaces.LegendDataPoint[] = data.series
             .map((series: IDataRepresentationSeries) => {
                 const { lineStyle, fillColor } = line.getCurrentSettings(series.containerName)
@@ -134,7 +133,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
                 return dataPoint;
             });
 
-        const title: string = !!(legend.titleText.value && legend.showTitle.value)
+        const title: string = legend.titleText.value && legend.showTitle.value
             ? legend.titleText.value
             : undefined;
 

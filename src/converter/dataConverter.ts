@@ -122,6 +122,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
         return axisType
     }
 
+    // eslint-disable-next-line max-lines-per-function
     public process(options: ConverterOptions): IDataRepresentation {
         const {
             dataView,
@@ -135,7 +136,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
             createSelectionIdBuilder,
         } = this.constructorOptions;
 
-        let axisType: DataRepresentationTypeEnum = this.axisInfo.axisType ?? DataRepresentationTypeEnum.None;
+        const axisType: DataRepresentationTypeEnum = this.axisInfo.axisType ?? DataRepresentationTypeEnum.None;
 
         const dataRepresentation: IDataRepresentation = {
             groups: [],
@@ -206,6 +207,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
         // Applies series formats
         dataRepresentation.x.format = dataRepresentation.settings.dateValueKPI.getFormat();
 
+        // eslint-disable-next-line max-lines-per-function
         dataView.categorical.values.grouped().forEach((columnGroup: powerbi.DataViewValueColumnGroup) => {
             const groupedValues: powerbi.DataViewValueColumn[] = columnGroup.values;
 
@@ -214,10 +216,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
                     return groupedValue.source.roles[kpiColumn.name];
                 });
 
-            const kpiIndexes: number[] = (currentKPIColumn
-                && currentKPIColumn[0]
-                && currentKPIColumn[0].values as number[]
-            ) || [];
+            const kpiIndexes: number[] = (currentKPIColumn?.[0]?.values as number[]) || [];
 
             groupedValues.forEach((groupedValue: powerbi.DataViewValueColumn) => {
                 const format: string = this.getFormatStringByColumn(groupedValue.source);

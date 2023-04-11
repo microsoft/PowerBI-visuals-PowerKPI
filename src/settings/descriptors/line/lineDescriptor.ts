@@ -277,7 +277,7 @@ export class LineDescriptor extends BaseDescriptor {
 
         // cloning all slices
         this.defaultSlices.forEach(slice => {
-            let clonedSlice = Object.create(slice);
+            const clonedSlice = Object.create(slice);
             if(sliceValues[slice.name] !== undefined) {
                 clonedSlice.value = clonedSlice.value.value !== undefined 
                     ? this.getNewComplexValue(sliceValues[slice.name], clonedSlice.items) 
@@ -315,9 +315,9 @@ export class LineDescriptor extends BaseDescriptor {
 
     public getCurrentSettings(containerName: string): SimpleLineSetting {
         const currentContainer = this.container.containerItems.filter(el => el.displayName === containerName)[0];
-
+        const currentLineSettings: SimpleLineSetting = {} as SimpleLineSetting
         let interpolationWithColorizedLine;
-        let currentLineSettings: SimpleLineSetting = {} as SimpleLineSetting
+
         if(currentContainer){
             currentContainer.slices.forEach((slice: SimpleSlice) => {
                 switch (slice.name) {

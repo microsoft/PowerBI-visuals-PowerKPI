@@ -233,7 +233,7 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
     }
 
     public getContextProperties() {
-        let newSlices = [...this.defaultSlices]
+        const newSlices = [...this.defaultSlices]
         for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
             this._properties.forEach((property: IPropertyConfiguration) => {
                 const indexedName: string = this.getPropertyName(property.name, index);

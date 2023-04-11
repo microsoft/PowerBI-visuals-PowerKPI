@@ -78,7 +78,7 @@ const MinAmountOfTicks: number = 0;
  * Default ranges are for when we have a field chosen for the axis,
  * but no values are returned by the query.
  */
-export let emptyDomain = [0, 0];
+export const emptyDomain = [0, 0];
 
 const TickLabelPadding: number = 2; // between text labels, used by AxisHelper
 const MinOrdinalRectThickness: number = 20;
@@ -106,21 +106,16 @@ export interface ICreateAxisOptions extends axisInterfaces.CreateAxisOptions {
  * @param options The properties used to create the axis.
  */
 export function createAxis(options: ICreateAxisOptions): axisInterfaces.IAxisProperties {
-    const pixelSpan: number = options.pixelSpan;
-    const dataDomain: number[] = options.dataDomain;
-    const metaDataColumn = options.metaDataColumn;
-    const formatString: string = options.formatString;
+    const { pixelSpan, dataDomain, metaDataColumn, formatString, axisDisplayUnits, axisPrecision } = options
     const outerPadding: number = options.outerPadding || DefaultOuterPadding;
     const isCategoryAxis: boolean = !!options.isCategoryAxis;
     const isScalar: boolean = !!options.isScalar;
     const isVertical: boolean = !!options.isVertical;
     const useTickIntervalForDisplayUnits: boolean = !!options.useTickIntervalForDisplayUnits;
     const getValueFn: (index: number, type: powerbi.ValueTypeDescriptor) => any = options.getValueFn;
-    let categoryThickness: number = options.categoryThickness;
-    const axisDisplayUnits: number = options.axisDisplayUnits;
-    const axisPrecision: number = options.axisPrecision;
     const is100Pct: boolean = !!options.is100Pct;
     const tickLabelPadding: number = options.tickLabelPadding || TickLabelPadding;
+    let categoryThickness: number = options.categoryThickness;
 
     const dataType: powerbi.ValueTypeDescriptor = getCategoryValueType(metaDataColumn, isScalar);
 
@@ -153,10 +148,8 @@ export function createAxis(options: ICreateAxisOptions): axisInterfaces.IAxisPro
         minTickInterval,
         options.shouldTheMinValueBeIncluded);
 
-    if (isScalar
-        && bestTickCount === 1
-        && tickValues
-        && tickValues.length > 1
+    if (isScalar && bestTickCount === 1
+        && tickValues && tickValues.length > 1
     ) {
         tickValues = [tickValues[0]];
     }
@@ -201,8 +194,7 @@ export function createAxis(options: ICreateAxisOptions): axisInterfaces.IAxisPro
         xLabelMaxWidth = Math.max(
             DefaultXLabelMaxWidth,
             categoryThickness - tickLabelPadding * DefaultXLabelFactor);
-    }
-    else {
+    } else {
         // When there are 0 or 1 ticks, then xLabelMaxWidth = pixelSpan
         xLabelMaxWidth = tickValues.length > DefaultXLabelMaxWidth
             ? getScalarLabelMaxWidth(scale, tickValues)
@@ -570,46 +562,29 @@ export function createScale(options: ICreateAxisOptions): ICreateScaleResult {
         ? getRecommendedNumberOfTicksForYAxis(pixelSpan)
         : getRecommendedNumberOfTicksForXAxis(pixelSpan, minOrdinalRectThickness);
 
-    if (maxTickCount &&
-        maxTicks > maxTickCount) {
-
+    if (maxTickCount && maxTicks > maxTickCount) {
         maxTicks = maxTickCount;
     }
 
-    let scalarDomain: number[] = dataDomain
-        ? dataDomain.slice()
-        : null;
-
+    let scalarDomain: number[] = dataDomain ? dataDomain.slice() : null;
     let bestTickCount: number = maxTicks;
     let scale: ScaleLinear<number, number> | ScalePoint<string>;
     let usingDefaultDomain: boolean = false;
 
     if (dataDomain == null
         || (dataDomain.length === 2 && dataDomain[0] == null && dataDomain[1] == null)
-        || (dataDomain.length !== 2 && isScalar)) {
-
+        || (dataDomain.length !== 2 && isScalar)
+    ) {
         usingDefaultDomain = true;
+        dataDomain = dataType.dateTime || !isOrdinal(dataType) ? emptyDomain : [];
 
-        if (dataType.dateTime || !isOrdinal(dataType)) {
-            dataDomain = emptyDomain;
-        }
-        else { // ordinal
-            dataDomain = [];
-        }
-
-        if (isOrdinal(dataType)) {
-            scale = createPointScale(pixelSpan, dataDomain);
-        }
-        else {
-            scale = createNumericalScale(
-                pixelSpan,
-                dataDomain,
-                outerPadding,
-                bestTickCount,
-            );
-        }
-    }
-    else {
+        scale = isOrdinal(dataType) ? createPointScale(pixelSpan, dataDomain) : createNumericalScale(
+            pixelSpan,
+            dataDomain,
+            outerPadding,
+            bestTickCount,
+        );
+    } else {
         if (isScalar && dataDomain.length > 0) {
             bestTickCount = forcedTickCount !== undefined
                 ? (maxTicks !== 0 ? forcedTickCount : 0)
@@ -644,11 +619,9 @@ export function createScale(options: ICreateAxisOptions): ICreateScaleResult {
             bestTickCount = maxTicks === 0
                 ? 0
                 : getAmountOfTicksByDensity(Math.floor((pixelSpan - outerPadding) / minOrdinalRectThickness), density);
-        }
-        else if (isScalar && dataType.dateTime) {
+        } else if (isScalar && dataType.dateTime) {
             // Use of a linear scale, instead of a D3.time.scale, is intentional since we want
-            // to control the formatting of the time values, since d3"s implementation isn"t
-            // in accordance to our design.
+            // to control the formatting of the time values, since d3"s implementation isn"t in accordance to our design.
             // scalarDomain: should already be in long-int time (via category.values[0].getTime())
             scale = createLinearScale(pixelSpan, scalarDomain, outerPadding, null, shouldClamp); // DO NOT PASS TICKCOUNT
 
@@ -660,8 +633,7 @@ export function createScale(options: ICreateAxisOptions): ICreateScaleResult {
             bestTickCount = bestTickCount < MinAmountOfTicksForDates
                 ? MinAmountOfTicksForDates
                 : bestTickCount;
-        }
-        else if (dataType.text || dataType.dateTime || dataType.numeric || dataType.bool) {
+        } else if (dataType.text || dataType.dateTime || dataType.numeric || dataType.bool) {
             scale = createPointScale(pixelSpan, scalarDomain);
 
             bestTickCount = maxTicks === 0
@@ -850,7 +822,7 @@ export function getBestNumberOfTicks(
 
     if (min === max) {
         // datetime needs to only show one tick value in this case so formatting works correctly
-        if (!!isDateTimeType) {
+        if (isDateTimeType) {
             return 1;
         }
 

@@ -57,6 +57,7 @@ export class VarianceComponentWithIndicator
         this.element.classed(this.componentClassName, true);
     }
 
+    // eslint-disable-next-line max-lines-per-function
     public render(options: IVisualComponentRenderOptions): void {
         const {
             series,

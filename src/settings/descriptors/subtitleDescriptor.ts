@@ -60,7 +60,7 @@ export class SubtitleDescriptor extends FontSizeDescriptor {
         displayNameKey: "Visual_Alingment",
         mode: powerbi.visuals.AlignmentGroupMode.Horizonal,
         value: SubtitleAlignment.left
-    });;
+    });
 
     constructor(viewport: powerbi.IViewport) {
         super(viewport)

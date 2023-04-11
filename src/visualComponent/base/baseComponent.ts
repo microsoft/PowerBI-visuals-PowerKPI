@@ -64,6 +64,7 @@ export abstract class BaseComponent<ConstructorOptionsType
 
     public abstract render(options: RenderOptionsType): void;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     public highlight(hasSelection: boolean): void {}
 
     public initElement(
@@ -266,7 +267,7 @@ export abstract class BaseComponent<ConstructorOptionsType
 }
 // deep compare two objects and console.log the differences
 export function diff(obj1, obj2) { 
-    for (let i in obj1) {
+    for (const i in obj1) {
         if (typeof obj1[i] === "object") {
             diff(obj1[i], obj2[i]);
         } else if (obj1[i] !== obj2[i]){

@@ -97,6 +97,7 @@ export class TooltipComponent
         this.clear();
     }
 
+    // eslint-disable-next-line max-lines-per-function
     private showTooltip(options: IEventPositionVisualComponentOptions): void {
         const {
             position,
@@ -183,17 +184,16 @@ export class TooltipComponent
                     && !isNaN(dataSeriesPoint.y)
                 ) {
                     const lineSettings = line.getCurrentSettings(dataSeries.containerName)
-                    if(!lineSettings){
-                        return
+                    if(lineSettings){
+                        dataItems.push({
+                            color: lineSettings.fillColor,
+                            displayName: `${dataSeries.name}`,
+                            lineColor: lineSettings.fillColor,
+                            lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle),
+                            markerShape: legend.getLegendMarkerShape(),
+                            value: valueFormatterInstance.format(dataSeriesPoint.y),
+                        });
                     }
-                    dataItems.push({
-                        color: lineSettings.fillColor,
-                        displayName: `${dataSeries.name}`,
-                        lineColor: lineSettings.fillColor,
-                        lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle),
-                        markerShape: legend.getLegendMarkerShape(),
-                        value: valueFormatterInstance.format(dataSeriesPoint.y),
-                    });
                 }
             });
         }

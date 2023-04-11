@@ -50,5 +50,6 @@ export abstract class BaseDescriptor extends FormattingSettingsCard {
         return dropdownOptions ? dropdownOptions.filter(el => el.value === newValue)[0] : { value: newValue }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     public setLocalizedDisplayName(localizationManager: ILocalizationManager) {}
 }

@@ -136,7 +136,7 @@ export class LegendDescriptor extends FontSizeDescriptor {
         displayNameKey: "Visual_Style",
         items: styleOptions,
         value: styleOptions.filter(el => el.value === LegendStyle.circle)[0]
-    });;
+    });
 
     constructor(viewport: powerbi.IViewport) {
         super(viewport)
