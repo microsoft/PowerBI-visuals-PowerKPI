@@ -61,6 +61,7 @@ import FormattingSettingsSlice = formattingSettings.Slice;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
+import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
 export interface IPowerKPIConstructorOptions extends VisualConstructorOptions {
@@ -78,12 +79,14 @@ export class PowerKPI implements IVisual {
     private dataRepresentation: IDataRepresentation;
     private behavior: Behavior;
     private interactivityService: interactivityBaseService.IInteractivityService<IDataRepresentationSeries>;
+    private events: IVisualEventService;
 
     private localizationManager: ILocalizationManager;
     private settings: Settings;
     private formattingSettingsService: FormattingSettingsService;
 
     constructor(options: IPowerKPIConstructorOptions) {
+        this.events = options.host.eventService;
         this.settings = new Settings()
         this.localizationManager = options.host.createLocalizationManager()
         this.formattingSettingsService = new FormattingSettingsService(this.localizationManager);
@@ -109,6 +112,7 @@ export class PowerKPI implements IVisual {
     }
 
     public update(options: VisualUpdateOptions): void {
+        this.events.renderingStarted(options);
         this.settings = this.formattingSettingsService.populateFormattingSettingsModel(Settings, options.dataViews);
 
         const dataView: powerbi.DataView = options && options.dataViews && options.dataViews[0];
@@ -147,6 +151,7 @@ export class PowerKPI implements IVisual {
         }
 
         this.render(dataRepresentation);
+        this.events.renderingFinished(options);
     }
 
     public render(dataRepresentation: IDataRepresentation): void {
