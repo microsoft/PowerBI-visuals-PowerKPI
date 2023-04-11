@@ -121,7 +121,7 @@ export class NumberDescriptorBase
                 value: this.maxPrecision,
             },
         }
-    }); // precision = -21 in tooltips
+    });
 
     public shouldNumericPropertiesBeHiddenByType: boolean;
 
