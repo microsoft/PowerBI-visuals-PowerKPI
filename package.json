@@ -52,7 +52,7 @@
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.5.0",
     "powerbi-visuals-api": "^2.5.0",
-    "powerbi-visuals-tools": "^3.1.2",
+    "powerbi-visuals-tools": "^3.4.3",
     "powerbi-visuals-utils-testutils": "^2.1.4",
     "puppeteer": "^1.17.0",
     "regenerator-runtime": "0.13.2",
