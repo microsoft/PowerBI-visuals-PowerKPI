@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-import { Selection } from "d3";
+import { Selection } from "d3-selection";
 
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
@@ -51,7 +51,7 @@ export class SubtitleComponent extends BaseComponent<IVisualComponentConstructor
     public render(options: IVisualComponentRenderOptions): void {
         const { subtitle } = options.data.settings;
 
-        const data: SubtitleDescriptor[] = subtitle.show
+        const data: SubtitleDescriptor[] = subtitle.isElementShown()
             ? [subtitle]
             : [];
 
@@ -64,16 +64,18 @@ export class SubtitleComponent extends BaseComponent<IVisualComponentConstructor
             .append("div")
             .classed(this.subTitleSelector.className, true)
             .merge(subtitleSelection)
-            .text((settings: SubtitleDescriptor) => settings.titleText)
-            .style("color", (settings: SubtitleDescriptor) => settings.fontColor)
-            .style("text-align", (settings: SubtitleDescriptor) => settings.alignment)
+            .text((settings: SubtitleDescriptor) => settings.titleText.value)
+            .style("color", (settings: SubtitleDescriptor) => settings.fontColor.value.value)
+            .style("text-align", (settings: SubtitleDescriptor) => settings.alignment.value)
             .style("font-size", (settings: SubtitleDescriptor) => {
-                const fontSizeInPx: number = pixelConverter.fromPointToPixel(settings.fontSize);
+                const fontSizeInPx: number = pixelConverter.fromPointToPixel(settings.font.fontSize.value);
 
                 return pixelConverter.toString(fontSizeInPx);
             })
-            .style("background-color", (settings: SubtitleDescriptor) => settings.background)
-            .style("font-family", (settings: SubtitleDescriptor) => settings.fontFamily);
+            .style("background-color", (settings: SubtitleDescriptor) => settings.background.value.value)
+            .style("font-family", (settings: SubtitleDescriptor) => settings.font.fontFamily.value)
+            .classed(this.boldClassName, subtitle.font.bold.value)
+            .classed(this.italicClassName, subtitle.font.italic.value);
 
         subtitleSelection
             .exit()
@@ -88,7 +90,7 @@ export class SubtitleComponent extends BaseComponent<IVisualComponentConstructor
             };
         }
 
-        const height: number = (this.element.node() as Element).clientHeight;
+        const height: number = (this.element.node() as Element)?.clientHeight;
 
         return {
             height,

@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-import { LineType } from "../../settings/descriptors/lineDescriptor";
+import { LineType } from "../../settings/descriptors/line/lineTypes";
 import { BaseContainerComponent } from "../base/baseContainerComponent";
 import { IVisualComponent } from "../base/visualComponent";
 import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";

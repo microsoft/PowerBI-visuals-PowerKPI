@@ -24,14 +24,14 @@
  *  THE SOFTWARE.
  */
 
-import { KPIIndicatorValueDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorValueDescriptor";
+import { KPIIndicatorDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorDescriptor";
 import { IVisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
 import { AlignEnum } from "./alignEnum";
 
 export interface ICaptionKPIComponentOptionsValueSettings {
     value: string;
     title?: string;
-    settings: KPIIndicatorValueDescriptor;
+    settings: KPIIndicatorDescriptor;
     className?: string;
 }
 

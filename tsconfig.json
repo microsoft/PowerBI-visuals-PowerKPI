@@ -3,16 +3,12 @@
     "allowJs": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "module": "es2015",
-    "target": "es2015",
+    "module": "ES2020",
+    "target": "ES2020",
     "sourceMap": true,
     "outDir": "./.tmp/build/",
     "moduleResolution": "node",
-    "declaration": true,
-    "lib": [
-      "es2015",
-      "dom"
-    ]
+    "declaration": true
   },
   "files": [
     "./src/visual.ts"

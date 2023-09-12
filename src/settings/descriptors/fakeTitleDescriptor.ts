@@ -24,11 +24,16 @@
  *  THE SOFTWARE.
  */
 
-import { BaseDescriptor } from "./descriptor";
+import { BaseDescriptor } from "./baseDescriptor";
 
 /**
  * We use this class to move the Title option up above the Subtitle at the formatting panel
  */
 export class FakeTitleDescriptor extends BaseDescriptor {
-    public untrackedProperty: boolean = false;
+    constructor() {
+        super()
+
+        this.name = "title"
+        this.displayNameKey = "Visual_Title"
+    }
 }

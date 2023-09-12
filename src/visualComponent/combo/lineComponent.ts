@@ -38,9 +38,8 @@ import {
     curveStepBefore,
     line,
     Line,
-    Selection,
-} from "d3";
-
+} from "d3-shape";
+import { Selection } from "d3-selection";
 import powerbi from "powerbi-visuals-api";
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
@@ -58,7 +57,7 @@ import {
 import {
     LineInterpolation,
     LineStyle,
-} from "../../settings/descriptors/lineDescriptor";
+} from "../../settings/descriptors/line/lineTypes";
 
 export interface ILineComponentRenderOptions extends IVisualComponentRenderOptionsBase {
     thickness: number;
@@ -103,7 +102,6 @@ export class LineComponent extends BaseComponent<IVisualComponentConstructorOpti
             lineStyle,
             series,
         } = options;
-
         this.renderOptions = options;
 
         const xScale: DataRepresentationScale = x
@@ -125,7 +123,7 @@ export class LineComponent extends BaseComponent<IVisualComponentConstructorOpti
         this.lineSelection = lineSelection.enter()
             .append("svg:path")
             .classed(this.lineSelector.className, true)
-            .on("click", this.clickHandler.bind(this))
+            .on("click", (event) => this.clickHandler(event))
             .merge(lineSelection)
             .attr("d", (gradientGroup: IDataRepresentationPointGradientColor) => {
                 return this.getLine(
@@ -137,7 +135,6 @@ export class LineComponent extends BaseComponent<IVisualComponentConstructorOpti
             .attr("class", `${this.lineSelector.className} ${lineStyle}`)
             .style("stroke", (gradientGroup: IDataRepresentationPointGradientColor) => gradientGroup.color)
             .style("stroke-width", () => pixelConverter.toString(thickness));
-
         this.highlight(series && series.hasSelection);
     }
 

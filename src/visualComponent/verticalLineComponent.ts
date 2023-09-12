@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-import { Selection } from "d3";
+import { Selection } from "d3-selection";
 
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
 

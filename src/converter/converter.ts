@@ -24,10 +24,12 @@
  *  THE SOFTWARE.
  */
 
-import { IConverterOptions } from "./converterOptions";
+import { AxisOptions, ConverterOptions } from "./converterOptions";
 
 import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
+import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
 
 export interface IConverter {
-    convert(options: IConverterOptions): IDataRepresentation;
+    convert(options: ConverterOptions): IDataRepresentation;
+    getAxisType(options: AxisOptions): DataRepresentationTypeEnum
 }

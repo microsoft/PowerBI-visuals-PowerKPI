@@ -25,12 +25,12 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import {
     IDescriptor,
     IDescriptorParserOptions,
-} from "../descriptor";
-
+} from "../baseDescriptor";
 import { NumberDescriptorBase } from "../numberDescriptorBase";
 
 export enum AxisType {
@@ -42,62 +42,35 @@ export class AxisDescriptor
     extends NumberDescriptorBase
     implements IDescriptor {
 
-    /**
-     * This property is an alias of density and it's defined special for Power BI
-     * It's predefined PBI property name in order to create a percentage slider at format panel
-     */
-    public get percentile(): number {
-        if (this.shouldDensityBeAtMax) {
-            return this.maxDensity;
-        }
-
-        return this._percentile;
-    }
-
-    public set percentile(value: number) {
-        this._percentile = value;
-    }
-
-    public get density(): number {
-        return this.percentile;
-    }
-
     public maxDensity: number = 100;
 
-    public fontColor: string = "rgb(0,0,0)";
-
-    public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
+    public fontColor = new formattingSettings.ColorPicker({
+        name: "fontColor",
+        displayNameKey: "Visual_Font_Color",
+        value: { value: "rgb(0,0,0)" }
+    });
 
     private shouldDensityBeAtMax: boolean = false;
     private viewportToIncreaseDensity: powerbi.IViewport;
 
-    private _percentile: number = this.maxDensity;
-
     constructor(
         viewportToBeHidden: powerbi.IViewport,
         viewportToIncreaseDensity: powerbi.IViewport,
-        shouldPropertiesBeHiddenByType: boolean = false,
+        shouldPropertiesBeHiddenByType: boolean = false
     ) {
         super(viewportToBeHidden, shouldPropertiesBeHiddenByType);
 
         this.viewportToIncreaseDensity = viewportToIncreaseDensity;
-
-        Object.defineProperty(
-            this,
-            "percentile",
-            {
-                ...Object.getOwnPropertyDescriptor(
-                    AxisDescriptor.prototype,
-                    "percentile",
-                ),
-                configurable: true,
-                enumerable: true,
-            },
-        );
+        this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif"
+        this.percentile.options.maxValue.value = this.maxDensity
     }
 
     public parse(options: IDescriptorParserOptions) {
         super.parse(options);
+
+        if (this.shouldDensityBeAtMax) {
+            this.percentile.value = this.maxDensity;
+        }
 
         this.shouldDensityBeAtMax = options.isAutoHideBehaviorEnabled
             && this.viewportToIncreaseDensity

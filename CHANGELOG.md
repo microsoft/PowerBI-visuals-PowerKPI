@@ -1,3 +1,9 @@
+## 3.0.0
+* Updated packages
+* API 5.3.0
+* Migrated to format pane
+* Removed `jquerry`
+
 ## 2.0.1
 * Conditional loading of `core-js/stable` only for sandbox mode
 * API 2.5.0

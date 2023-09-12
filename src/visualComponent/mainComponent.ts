@@ -39,7 +39,7 @@ import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptio
 import { CommonComponent } from "./commonComponent";
 import { SubtitleComponent } from "./subtitleComponent";
 
-import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorDescriptor";
+import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 
 export class MainComponent extends BaseContainerComponent<
     IVisualComponentConstructorOptions,
@@ -84,7 +84,7 @@ export class MainComponent extends BaseContainerComponent<
 
         let backgroundColor: string = null;
 
-        if (kpiIndicator.shouldBackgroundColorMatchKpiColor
+        if (kpiIndicator.shouldBackgroundColorMatchKpiColor.value
             && series
             && series.length > 0
             && series[0]
@@ -92,8 +92,8 @@ export class MainComponent extends BaseContainerComponent<
         ) {
             const kpiIndicatorSettings: IKPIIndicatorSettings = kpiIndicator.getCurrentKPI(series[0].current.kpiIndex);
 
-            if (kpiIndicatorSettings && kpiIndicatorSettings.color) {
-                backgroundColor = kpiIndicatorSettings.color;
+            if (kpiIndicatorSettings && kpiIndicatorSettings.color.value.value) {
+                backgroundColor = kpiIndicatorSettings.color.value.value;
             }
         }
 

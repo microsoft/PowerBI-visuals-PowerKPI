@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-import { Dispatch } from "d3";
+import { Dispatch } from "d3-dispatch";
 
 import {
     interactivityBaseService,

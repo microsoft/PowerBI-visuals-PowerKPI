@@ -24,21 +24,22 @@
  *  THE SOFTWARE.
  */
 
-import { Selection } from "d3-selection";
-import { Dispatch } from "d3-dispatch";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+import { NumberDescriptorBase } from "../numberDescriptorBase";
 
-import powerbi from "powerbi-visuals-api";
-import { interactivityBaseService } from "powerbi-visuals-utils-interactivityutils";
+export class TooltipVarianceDescriptor extends NumberDescriptorBase {
+    public label = new formattingSettings.TextInput({
+        name: "label",
+        displayNameKey: "Visual_Label",
+        value: "",
+        placeholder: "Variance"
+    });
 
-import { IDataRepresentationSeries } from "../../dataRepresentation/dataRepresentationSeries";
+    constructor(name: string, displayName: string) {
+        super()
 
-export interface IVisualComponentBaseConstructorOptions {
-    element?: Selection<any, any, any, any>;
-    rootElement?: Selection<any, any, any, any>;
-}
-
-export interface IVisualComponentConstructorOptions extends IVisualComponentBaseConstructorOptions {
-    eventDispatcher?: Dispatch<any>;
-    interactivityService?: interactivityBaseService.IInteractivityService<IDataRepresentationSeries>;
-    tooltipService?: powerbi.extensibility.ITooltipService;
+        this.slices = [this.show, this.format, this.displayUnits, this.precision, this.label]
+        this.name = name;
+        this.displayNameKey = displayName;
+    }
 }

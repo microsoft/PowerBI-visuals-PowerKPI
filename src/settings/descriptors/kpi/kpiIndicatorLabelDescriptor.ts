@@ -26,14 +26,18 @@
 
 import powerbi from "powerbi-visuals-api";
 
-import { KPIIndicatorValueDescriptor } from "./kpiIndicatorValueDescriptor";
+import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
 
-export class KPIIndicatorLabelDescriptor extends KPIIndicatorValueDescriptor {
+export class KPIIndicatorLabelDescriptor extends KPIIndicatorDescriptor {
     constructor(viewport?: powerbi.IViewport) {
         super(viewport);
 
-        this.fontColor = "#acacac";
-        this.fontSize = 9;
-        this.isBold = false;
+        this.fontColor.value.value = "#acacac";
+        this.font.fontSize.value = 9;
+        this.useExtendedFontPicker(false)
+
+        this.slices = [this.show, this.font, this.fontColor]
+        this.name = "actualLabelKPI"
+        this.displayNameKey = "Visual_KPI_Actual_Label"
     }
 }

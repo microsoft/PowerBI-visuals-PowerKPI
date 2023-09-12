@@ -24,6 +24,9 @@
  *  THE SOFTWARE.
  */
 
+import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+
 import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
 
 export enum SubtitleAlignment {
@@ -33,9 +36,38 @@ export enum SubtitleAlignment {
 }
 
 export class SubtitleDescriptor extends FontSizeDescriptor {
-    public titleText: string = "";
-    public fontColor: string = "#A6A6A6";
-    public background: string = "";
-    public alignment: SubtitleAlignment = SubtitleAlignment.left;
-    public fontFamily: string = "'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif";
+    public titleText = new formattingSettings.TextInput({
+        name: "titleText",
+        displayNameKey: "Visual_Title_Text",
+        value: "",
+        placeholder: ""
+    });
+
+    public fontColor = new formattingSettings.ColorPicker({
+        name: "fontColor",
+        displayNameKey: "Visual_Font_Color",
+        value: { value: "#A6A6A6" }
+    });
+
+    public background = new formattingSettings.ColorPicker({
+        name: "background",
+        displayNameKey: "Visual_Background_Color",
+        value: { value: null }
+    });
+
+    public alignment = new formattingSettings.AlignmentGroup({
+        name: "alignment",
+        displayNameKey: "Visual_Alingment",
+        mode: powerbi.visuals.AlignmentGroupMode.Horizonal,
+        value: SubtitleAlignment.left
+    });
+
+    constructor(viewport: powerbi.IViewport) {
+        super(viewport)
+
+        this.useExtendedFontPicker()
+        this.slices = [this.show, this.titleText, this.font, this.fontColor, this.background, this.alignment];
+        this.name = "subtitle";
+        this.displayNameKey = "Visual_Subtitle";
+    }
 }

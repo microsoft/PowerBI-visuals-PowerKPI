@@ -30,10 +30,6 @@ import { DataBuilder } from "./dataBuilder";
 import { VisualBuilder } from "./visualBuilder";
 
 export class TestWrapper {
-    public static create(): TestWrapper {
-        return new TestWrapper();
-    }
-
     public dataView: powerbi.DataView;
     public dataViewBuilder: DataBuilder;
     public visualBuilder: VisualBuilder;
