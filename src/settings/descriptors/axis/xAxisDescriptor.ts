@@ -59,7 +59,7 @@ export class XAxisDescriptor extends AxisDescriptor {
     ) {
         super(viewportToBeHidden, viewportToIncreaseDensity, true)
 
-        this.slices = [this.show, this.font, this.fontColor, this.displayUnits, this.percentile, this.type]
+        this.slices = [this.font, this.fontColor, this.displayUnits, this.percentile, this.type]
         this.name = "xAxis";
         this.displayNameKey = "Visual_X_Axis";
     }

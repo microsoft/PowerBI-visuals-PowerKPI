@@ -34,9 +34,10 @@ export class AxisReferenceLineDescriptor
     public show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
-        value: true,
-        topLevelToggle: true
+        value: true
     });
+
+    public topLevelSlice: formattingSettings.ToggleSwitch = this.show;
 
     public color = new formattingSettings.ColorPicker({
         name: "color",
@@ -67,7 +68,7 @@ export class AxisReferenceLineDescriptor
 
         this.show.value = isShown;
 
-        this.slices = [this.show, this.color, this.thickness]
+        this.slices = [this.color, this.thickness]
         this.name = name;
         this.displayNameKey = displayNameKey;
     }

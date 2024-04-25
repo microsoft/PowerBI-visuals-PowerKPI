@@ -36,7 +36,7 @@ export class KPIIndicatorLabelDescriptor extends KPIIndicatorDescriptor {
         this.font.fontSize.value = 9;
         this.useExtendedFontPicker(false)
 
-        this.slices = [this.show, this.font, this.fontColor]
+        this.slices = [this.font, this.fontColor]
         this.name = "actualLabelKPI"
         this.displayNameKey = "Visual_KPI_Actual_Label"
     }

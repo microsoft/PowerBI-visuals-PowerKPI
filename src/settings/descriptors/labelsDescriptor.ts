@@ -43,7 +43,7 @@ export class LabelsDescriptor extends NumberDescriptorBase {
         this.show.value = false;
         this.useExtendedFontPicker()
     
-        this.slices = [this.show, this.font, this.displayUnits, this.color, this.precision, this.percentile]
+        this.slices = [this.font, this.displayUnits, this.color, this.precision, this.percentile]
         this.name = "labels"
         this.displayNameKey = "Visual_Data_Labels"
     }

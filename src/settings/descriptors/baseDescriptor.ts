@@ -26,7 +26,7 @@
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import FormattingSettingsCard = formattingSettings.Card;
+import FormattingSettingsCard = formattingSettings.SimpleCard;
 import FormattingSettingsSlice = formattingSettings.Slice;
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 

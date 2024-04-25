@@ -43,7 +43,7 @@ export class KPIIndicatorValueSignDescriptor
     constructor(viewport?: powerbi.IViewport) {
         super(viewport);
 
-        this.slices = [this.show, this.font, this.format, this.displayUnits, this.precision, this.matchKPIColor, this.fontColor]
+        this.slices = [this.font, this.format, this.displayUnits, this.precision, this.matchKPIColor, this.fontColor]
         this.name = "kpiIndicatorValue";
         this.displayNameKey = "Visual_KPI_Indicator_Value";
     }

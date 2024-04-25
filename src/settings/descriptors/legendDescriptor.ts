@@ -145,7 +145,6 @@ export class LegendDescriptor extends FontSizeDescriptor {
         this.displayNameKey = "Visual_Legend"
         this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif"
         this.slices = [
-            this.show,
             this.font,
             this.position,
             this.showTitle,

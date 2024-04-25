@@ -113,7 +113,7 @@ export class PowerKPI implements IVisual {
 
     public update(options: VisualUpdateOptions): void {
         this.events.renderingStarted(options);
-        this.settings = this.formattingSettingsService.populateFormattingSettingsModel(Settings, options.dataViews);
+        this.settings = this.formattingSettingsService.populateFormattingSettingsModel(Settings, options.dataViews[0]);
 
         const dataView: powerbi.DataView = options && options.dataViews && options.dataViews[0];
 

@@ -32,7 +32,7 @@ export class KPIIndicatorValueDescriptor extends KPIIndicatorDescriptor {
     constructor(viewport?: powerbi.IViewport) {
         super(viewport);
 
-        this.slices = [this.show, this.font, this.format, this.displayUnits, this.precision, this.fontColor] 
+        this.slices = [this.font, this.format, this.displayUnits, this.precision, this.fontColor] 
         this.name = "secondKPIIndicatorValue";
         this.displayNameKey = "Visual_Second_KPI_Indicator_Value";
     }

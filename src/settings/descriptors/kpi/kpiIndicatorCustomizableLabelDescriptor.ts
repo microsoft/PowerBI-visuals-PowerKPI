@@ -43,7 +43,7 @@ export class KPIIndicatorCustomizableLabelDescriptor extends KPIIndicatorLabelDe
         this.useExtendedFontPicker()
         this.show.value = false;
 
-        this.slices = [this.show, this.font, this.fontColor, this.label]
+        this.slices = [this.font, this.fontColor, this.label]
         this.name = name;
         this.displayNameKey = displayNameKey;
     }

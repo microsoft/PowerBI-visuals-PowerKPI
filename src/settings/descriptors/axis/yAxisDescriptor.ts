@@ -51,7 +51,6 @@ export class YAxisDescriptor extends AxisDescriptor {
         super(viewportToBeHidden, viewportToIncreaseDensity)
 
         this.slices = [
-            this.show,
             this.font,
             this.displayUnits,
             this.precision,

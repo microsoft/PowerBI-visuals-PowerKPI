@@ -66,7 +66,7 @@ export class SubtitleDescriptor extends FontSizeDescriptor {
         super(viewport)
 
         this.useExtendedFontPicker()
-        this.slices = [this.show, this.titleText, this.font, this.fontColor, this.background, this.alignment];
+        this.slices = [this.titleText, this.font, this.fontColor, this.background, this.alignment];
         this.name = "subtitle";
         this.displayNameKey = "Visual_Subtitle";
     }
