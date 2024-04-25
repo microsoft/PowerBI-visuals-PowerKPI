@@ -26,18 +26,14 @@
 
 import powerbi from "powerbi-visuals-api";
 
-import { NumberDescriptorBase } from "../numberDescriptorBase";
+import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
 
-export class KPIIndicatorValueDescriptor extends NumberDescriptorBase {
-    public fontColor: string = "#333333";
-    public isBold: boolean = true;
-    public isItalic: boolean = false;
-    public fontFamily: string = "'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif";
+export class KPIIndicatorValueDescriptor extends KPIIndicatorDescriptor {
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport);
 
-    constructor(viewport?: powerbi.IViewport, shouldPropertiesBeHiddenByType: boolean = false) {
-        super(viewport, shouldPropertiesBeHiddenByType);
-
-        this.fontSize = 12;
-        this.displayUnits = 1;
+        this.slices = [this.show, this.font, this.format, this.displayUnits, this.precision, this.fontColor] 
+        this.name = "secondKPIIndicatorValue";
+        this.displayNameKey = "Visual_Second_KPI_Indicator_Value";
     }
 }

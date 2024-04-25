@@ -33,6 +33,7 @@ import { DataRepresentationAxisValueType } from "../dataRepresentation/dataRepre
 import {
     textMeasurementService,
     valueFormatter,
+    interfaces
 } from "powerbi-visuals-utils-formattingutils";
 
 export class LabelMeasurementService {
@@ -64,9 +65,9 @@ export class LabelMeasurementService {
         fontFamily: string,
     ): number {
         const text: string = formatter.format(value);
-        const textProperties: textMeasurementService.TextProperties = this.getTextProperties(text, fontSize, fontFamily);
+        const textProperties: interfaces.TextProperties = this.getTextProperties(text, fontSize, fontFamily);
 
-        return textMeasurementService.textMeasurementService.measureSvgTextHeight(textProperties, text);
+        return textMeasurementService.measureSvgTextHeight(textProperties, text);
     }
 
     public getTextWidth(
@@ -74,16 +75,16 @@ export class LabelMeasurementService {
         fontSize: number,
         fontFamily: string,
     ): number {
-        const textProperties: textMeasurementService.TextProperties = this.getTextProperties(text, fontSize, fontFamily);
+        const textProperties: interfaces.TextProperties = this.getTextProperties(text, fontSize, fontFamily);
 
-        return textMeasurementService.textMeasurementService.measureSvgTextWidth(textProperties, text);
+        return textMeasurementService.measureSvgTextWidth(textProperties, text);
     }
 
     public getTextProperties(
         text: string,
         fontSize: number,
         fontFamily: string,
-    ): textMeasurementService.TextProperties {
+    ): interfaces.TextProperties {
         return {
             fontFamily,
             fontSize: pixelConverter.toString(fontSize),
@@ -99,7 +100,7 @@ export class LabelMeasurementService {
         precision?: number,
         valueFormat?: string,
     ): valueFormatter.IValueFormatter {
-        return valueFormatter.valueFormatter.create({
+        return valueFormatter.create({
             columnType: metadata && metadata.type,
             format: valueFormat,
             precision,

@@ -23,54 +23,33 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-
 import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import { DataRepresentationTypeEnum } from "../../dataRepresentation/dataRepresentationType";
+import FormattingSettingsCard = formattingSettings.Card;
+import FormattingSettingsSlice = formattingSettings.Slice;
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
 export interface IDescriptorParserOptions {
     isAutoHideBehaviorEnabled: boolean;
     viewport: powerbi.IViewport;
-    type: DataRepresentationTypeEnum;
 }
 
 export interface IDescriptor {
     parse?(options?: IDescriptorParserOptions): void;
     setDefault?(): void;
     getValueByKey?(key: string): string | number | boolean;
-    shouldKeyBeEnumerated?(key: string): boolean;
 }
 
-export abstract class BaseDescriptor {
-    public applyDefault(defaultSettings: BaseDescriptor) {
-        if (!defaultSettings) {
-            return;
-        }
+export abstract class BaseDescriptor extends FormattingSettingsCard {
+    public name: string = "";
+    public displayNameKey: string = "";
+    public slices: Array<FormattingSettingsSlice> = [];
 
-        Object
-            .keys(defaultSettings)
-            .forEach((propertyName: string) => {
-                this[propertyName] = defaultSettings[propertyName];
-            });
+    public getNewComplexValue(newValue: any, dropdownOptions?: any[]) {
+        return dropdownOptions ? dropdownOptions.filter(el => el.value === newValue)[0] : { value: newValue }
     }
 
-    public enumerateProperties(): { [propertyName: string]: powerbi.DataViewPropertyValue; } {
-        const properties: { [propertyName: string]: powerbi.DataViewPropertyValue; } = {};
-
-        for (const key in this) {
-            const shouldKeyBeEnumerated: boolean = (this as IDescriptor).shouldKeyBeEnumerated
-                ? (this as IDescriptor).shouldKeyBeEnumerated(key)
-                : this.hasOwnProperty(key);
-
-            if (shouldKeyBeEnumerated) {
-                if ((this as IDescriptor).getValueByKey) {
-                    properties[key] = (this as IDescriptor).getValueByKey(key);
-                } else {
-                    properties[key] = this[key] as any;
-                }
-            }
-        }
-
-        return properties;
-    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+    public setLocalizedDisplayName(localizationManager: ILocalizationManager) {}
 }

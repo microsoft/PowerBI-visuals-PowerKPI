@@ -25,6 +25,6 @@
  */
 
 export enum HorizontalLayoutEnum {
-    Left,
-    Right,
+    Left = "Left",
+    Right = "Right",
 }

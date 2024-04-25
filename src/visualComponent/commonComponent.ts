@@ -23,11 +23,6 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-
-import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
-
-import LegendPosition = legendInterfaces.LegendPosition;
-
 import { BaseContainerComponent } from "./base/baseContainerComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
 import { IVisualComponentRenderOptions } from "./base/visualComponentRenderOptions";
@@ -40,6 +35,7 @@ import {
 import { LayoutToStyleEnum } from "../layout/layoutToStyleEnum";
 import { LayoutComponent } from "./layoutComponent";
 import { LegendComponent } from "./legendComponent";
+import { LegendPosition } from "../settings/descriptors/legendDescriptor";
 
 export class CommonComponent extends BaseContainerComponent<
     IVisualComponentConstructorOptions,
@@ -86,7 +82,7 @@ export class CommonComponent extends BaseContainerComponent<
         );
 
         const { data: { settings: { legend } } } = options;
-        const layout: LayoutToStyleEnum = this.getLayout(legend.position);
+        const layout: LayoutToStyleEnum = this.getLayout(legend.position.value.value as LegendPosition);
 
         this.element.attr(
             "class",
@@ -94,8 +90,8 @@ export class CommonComponent extends BaseContainerComponent<
         );
     }
 
-    private getLayout(position: string): LayoutToStyleEnum {
-        switch (LegendPosition[position]) {
+    private getLayout(position: LegendPosition): LayoutToStyleEnum {
+        switch (position) {
             case LegendPosition.Left:
             case LegendPosition.LeftCenter: {
                 return LayoutToStyleEnum.rowLayout;

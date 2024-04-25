@@ -23,20 +23,11 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-
-import "jasmine-jquery";
-
-import * as $ from "jquery";
-
-import {
-    select as d3Select,
-} from "d3-selection";
+import { select as d3Select } from "d3-selection";
 
 import powerbi from "powerbi-visuals-api";
 
-import {
-    legendInterfaces,
-} from "powerbi-visuals-utils-chartutils";
+import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
 
 import {
     createColorPalette,
@@ -45,6 +36,8 @@ import {
     renderTimeout,
     testDom,
 } from "powerbi-visuals-utils-testutils";
+
+import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
 import { IVisualComponent } from "../src/visualComponent/base/visualComponent";
 import { IVisualComponentConstructorOptions } from "../src/visualComponent/base/visualComponentConstructorOptions";
@@ -59,7 +52,6 @@ import { IDataRepresentationX } from "../src/dataRepresentation/dataRepresentati
 import { DataRepresentationPointFilter } from "../src/dataRepresentation/dataRepresentationPointFilter";
 import { IDataRepresentationSeries } from "../src/dataRepresentation/dataRepresentationSeries";
 import { DataRepresentationTypeEnum } from "../src/dataRepresentation/dataRepresentationType";
-import { SeriesSettings } from "../src/settings/seriesSettings";
 import { Settings } from "../src/settings/settings";
 import { IEventPositionVisualComponentOptions } from "../src/visualComponent/eventPositionVisualComponentOptions";
 import { TooltipComponent } from "../src/visualComponent/tooltipComponent";
@@ -83,9 +75,10 @@ import {
     LineInterpolation,
     LineStyle,
     LineType,
-} from "../src/settings/descriptors/lineDescriptor";
+} from "../src/settings/descriptors/line/lineTypes";
 
 import { DataConverter } from "../src/converter/dataConverter";
+import { AxisOptions } from "../src/converter/converterOptions";
 import { DataRepresentationScale } from "../src/dataRepresentation/dataRepresentationScale";
 import { AxisType } from "../src/settings/descriptors/axis/axisDescriptor";
 
@@ -96,8 +89,8 @@ import {
 
 import {
     IKPIIndicatorSettings,
-    KPIIndicatorDescriptor,
-} from "../src/settings/descriptors/kpi/kpiIndicatorDescriptor";
+    KPIIndicatorsListDescriptor,
+} from "../src/settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 
 import { labelMeasurementService } from "../src/services/labelMeasurementService";
 
@@ -107,13 +100,18 @@ import { TestWrapper } from "./testWrapper";
 describe("Power KPI", () => {
     describe("DOM", () => {
         it("Root element should be defined in DOM", (done) => {
-            const testWrapper: TestWrapper = TestWrapper.create();
+            const testWrapper: TestWrapper = new TestWrapper;
 
-            testWrapper.visualBuilder.updateRenderTimeout(testWrapper.dataView, () => {
-                expect(testWrapper.visualBuilder.$root).toBeInDOM();
+            testWrapper.visualBuilder.updateRenderTimeout(
+                testWrapper.dataView,
+                () => {
+                    Array.from(testWrapper.visualBuilder.root).forEach(
+                        el => expect(document.body.contains(el)).toBeTrue
+                    );
 
-                done();
-            });
+                    done();
+                }
+            );
         });
     });
 
@@ -127,7 +125,8 @@ describe("Power KPI", () => {
         });
 
         it("should call tooltip API", (done) => {
-            const tooltipService: powerbi.extensibility.ITooltipService = createTooltipService(false);
+            const tooltipService: powerbi.extensibility.ITooltipService =
+                createTooltipService(false);
 
             const tooltipComponent: TooltipComponent = new TooltipComponent({
                 tooltipService,
@@ -139,93 +138,99 @@ describe("Power KPI", () => {
 
             const currentDate: Date = new Date();
 
-            const seriesSettings: SeriesSettings = SeriesSettings.getDefault() as SeriesSettings;
+            const firstPoints: IDataRepresentationPoint[] = [
+                {
+                    color: "red",
+                    kpiIndex: 0,
+                    x: currentDate,
+                    y: 100,
+                },
+            ];
 
-            const firstPoints: IDataRepresentationPoint[] = [{
-                color: "red",
-                kpiIndex: 0,
-                x: currentDate,
-                y: 100,
-            }];
+            const secondPoints: IDataRepresentationPoint[] = [
+                {
+                    color: "green",
+                    kpiIndex: 0,
+                    x: currentDate,
+                    y: 200,
+                },
+            ];
 
-            const secondPoints: IDataRepresentationPoint[] = [{
-                color: "green",
-                kpiIndex: 0,
-                x: currentDate,
-                y: 200,
-            }];
+            const thirdPoints: IDataRepresentationPoint[] = [
+                {
+                    color: "blue",
+                    kpiIndex: 0,
+                    x: currentDate,
+                    y: 300,
+                },
+            ];
 
-            const thirdPoints: IDataRepresentationPoint[] = [{
-                color: "blue",
-                kpiIndex: 0,
-                x: currentDate,
-                y: 300,
-            }];
-
-            const series: IDataRepresentationSeries[] = [
+            const series = [
                 {
                     current: null,
                     domain: null,
                     format: null,
-                    gradientPoints: [{
-                        color: firstPoints[0].color,
-                        points: firstPoints,
-                    }],
+                    gradientPoints: [
+                        {
+                            color: firstPoints[0].color,
+                            points: firstPoints,
+                        },
+                    ],
                     hasSelection: false,
                     identity: null,
                     name: "Series1",
                     points: firstPoints,
                     selected: false,
-                    settings: seriesSettings,
                     y: null,
                 },
                 {
                     current: null,
                     domain: null,
                     format: null,
-                    gradientPoints: [{
-                        color: secondPoints[0].color,
-                        points: secondPoints,
-                    }],
+                    gradientPoints: [
+                        {
+                            color: secondPoints[0].color,
+                            points: secondPoints,
+                        },
+                    ],
                     hasSelection: false,
                     identity: null,
                     name: "Series2",
                     points: secondPoints,
                     selected: false,
-                    settings: seriesSettings,
                     y: null,
                 },
                 {
                     current: null,
                     domain: null,
                     format: null,
-                    gradientPoints: [{
-                        color: thirdPoints[0].color,
-                        points: thirdPoints,
-                    }],
+                    gradientPoints: [
+                        {
+                            color: thirdPoints[0].color,
+                            points: thirdPoints,
+                        },
+                    ],
                     hasSelection: false,
                     identity: null,
                     name: "Series3",
                     points: thirdPoints,
                     selected: false,
-                    settings: seriesSettings,
                     y: null,
                 },
-            ];
+            ] as unknown as IDataRepresentationSeries[];
 
-            const variances: number[][] = [
-                [-100],
-                [-200],
-            ];
+            const variances: number[][] = [[-100], [-200]];
 
-            const settings: Settings = Settings.getDefault() as Settings;
+            const settings: Settings = new Settings();
 
             const options: IEventPositionVisualComponentOptions = {
                 data: {
                     series,
                     settings,
                     variances,
-                    x: { axisType: DataRepresentationTypeEnum.DateType } as IDataRepresentationX,
+                    x: {
+                        axisType: DataRepresentationTypeEnum.DateType,
+                    } as IDataRepresentationX,
                 } as IDataRepresentation,
                 position,
             };
@@ -241,10 +246,10 @@ describe("Power KPI", () => {
     });
 
     describe("KPIIndicatorSettings", () => {
-        let kpiIndicatorSettings: KPIIndicatorDescriptor;
+        let kpiIndicatorSettings: KPIIndicatorsListDescriptor;
 
         beforeEach(() => {
-            kpiIndicatorSettings = new KPIIndicatorDescriptor();
+            kpiIndicatorSettings = new KPIIndicatorsListDescriptor();
         });
 
         describe("getElementByIndex", () => {
@@ -258,14 +263,19 @@ describe("Power KPI", () => {
 
             it("should return the first element", () => {
                 const expectedValue: string = testSet[0];
-                const actualValue: string = kpiIndicatorSettings.getElementByIndex(testSet, 0);
+                const actualValue: string =
+                    kpiIndicatorSettings.getElementByIndex(testSet, 0);
 
                 expect(actualValue).toBe(expectedValue);
             });
 
             it("should return the last element", () => {
                 const expectedValue: string = testSet[testSet.length - 1];
-                const actualValue: string = kpiIndicatorSettings.getElementByIndex(testSet, testSet.length - 1);
+                const actualValue: string =
+                    kpiIndicatorSettings.getElementByIndex(
+                        testSet,
+                        testSet.length - 1
+                    );
 
                 expect(actualValue).toBe(expectedValue);
             });
@@ -273,35 +283,41 @@ describe("Power KPI", () => {
 
         describe("getCurrentKPI", () => {
             it("should return the default KPI if KPI value has not been found in the specified KPIs", () => {
-                const actualKPI: IKPIIndicatorSettings = kpiIndicatorSettings.getCurrentKPI(-100);
+                const actualKPI: IKPIIndicatorSettings =
+                    kpiIndicatorSettings.getCurrentKPI(-100);
 
-                expect(actualKPI.shape).toBeNull();
-                expect(actualKPI.color).toBeNull();
+                expect(actualKPI.shape?.value.value).toBeNull();
+                expect(actualKPI.color?.value.value).toBeNull();
             });
 
             it("should return KPI if KPI value has been found in the specified KPIs", () => {
-                const actualKPI: IKPIIndicatorSettings = kpiIndicatorSettings.getCurrentKPI(2);
+                const actualKPI: IKPIIndicatorSettings =
+                    kpiIndicatorSettings.getCurrentKPI(2);
 
-                expect(actualKPI.shape).toBeDefined();
-                expect(actualKPI.color).toBeDefined();
+                expect(actualKPI.shape?.value.value).toBeDefined();
+                expect(actualKPI.color?.value.value).toBeDefined();
             });
         });
     });
 
     describe("NumberDescriptorBase", () => {
         it("defaultFormat and format must be equal to %M/%d/yyyy if type is date", () => {
-            const numberDescriptorBase: NumberDescriptorBase = new NumberDescriptorBase();
+            const numberDescriptorBase: NumberDescriptorBase =
+                new NumberDescriptorBase();
 
             numberDescriptorBase.parse({
                 isAutoHideBehaviorEnabled: false,
-                type: DataRepresentationTypeEnum.DateType,
                 viewport: { height: 600, width: 800 },
             });
 
-            const expectedFormat: string = "%M/%d/yyyy";
+            expect(numberDescriptorBase.defaultFormat).toBeNull;
+            expect(numberDescriptorBase.format.value).toBeNull;
 
+            numberDescriptorBase.applyDefaultFormatByType(DataRepresentationTypeEnum.DateType)
+
+            const expectedFormat: string = "%M/%d/yyyy";
             expect(numberDescriptorBase.defaultFormat).toBe(expectedFormat);
-            expect(numberDescriptorBase.format).toBe(expectedFormat);
+            expect(numberDescriptorBase.format.value).toBe(expectedFormat);
         });
     });
 
@@ -310,69 +326,81 @@ describe("Power KPI", () => {
             const points: IDataRepresentationPoint[] = [
                 {
                     color: "green",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2000, 1, 1),
                     y: 0,
                 },
                 {
                     color: "green",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2001, 1, 1),
                     y: 100,
                 },
                 {
                     color: "green",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2002, 1, 1),
                     y: 1000,
                 },
                 {
                     color: "green",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2003, 1, 1),
                     y: 10000,
                 },
             ];
 
-            const element = renderLineBasedComponent(points, createLineComponent);
+            const element = renderLineBasedComponent(
+                points,
+                createLineComponent
+            );
 
-            expect(element.selectAll(".powerKpi_lineComponent_line").nodes().length).toBe(1);
+            expect(
+                element.selectAll(".powerKpi_lineComponent_line").nodes().length
+            ).toBe(1);
         });
 
         it("two lines should be rendered if points have two different colors", () => {
             const points: IDataRepresentationPoint[] = [
                 {
                     color: "green",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2000, 1, 1),
                     y: 0,
                 },
                 {
                     color: "green",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2001, 1, 1),
                     y: 100,
                 },
                 {
                     color: "blue",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2002, 1, 1),
                     y: 1000,
                 },
                 {
                     color: "blue",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2003, 1, 1),
                     y: 10000,
                 },
             ];
 
-            const element = renderLineBasedComponent(points, createLineComponent);
+            const element = renderLineBasedComponent(
+                points,
+                createLineComponent
+            );
 
-            expect(element.selectAll(".powerKpi_lineComponent_line").nodes().length).toBe(2);
+            expect(
+                element.selectAll(".powerKpi_lineComponent_line").nodes().length
+            ).toBe(2);
         });
 
-        function createLineComponent(options: IVisualComponentConstructorOptions): LineComponent {
+        function createLineComponent(
+            options: IVisualComponentConstructorOptions
+        ): LineComponent {
             return new LineComponent(options);
         }
     });
@@ -382,69 +410,81 @@ describe("Power KPI", () => {
             const points: IDataRepresentationPoint[] = [
                 {
                     color: "green",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2000, 1, 1),
                     y: 0,
                 },
                 {
                     color: "green",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2001, 1, 1),
                     y: 100,
                 },
                 {
                     color: "green",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2002, 1, 1),
                     y: 1000,
                 },
                 {
                     color: "green",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2003, 1, 1),
                     y: 10000,
                 },
             ];
 
-            const element = renderLineBasedComponent(points, createAreaComponent);
+            const element = renderLineBasedComponent(
+                points,
+                createAreaComponent
+            );
 
-            expect(element.selectAll(".powerKpi_areaComponent_area").nodes().length).toBe(1);
+            expect(
+                element.selectAll(".powerKpi_areaComponent_area").nodes().length
+            ).toBe(1);
         });
 
         it("two areas should be rendered if points have two different colors", () => {
             const points: IDataRepresentationPoint[] = [
                 {
                     color: "green",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2000, 1, 1),
                     y: 0,
                 },
                 {
                     color: "green",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2001, 1, 1),
                     y: 100,
                 },
                 {
                     color: "blue",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2002, 1, 1),
                     y: 1000,
                 },
                 {
                     color: "blue",
-                    kpiIndex: undefined,
+                    kpiIndex: 1,
                     x: new Date(2003, 1, 1),
                     y: 10000,
                 },
             ];
 
-            const element = renderLineBasedComponent(points, createAreaComponent);
+            const element = renderLineBasedComponent(
+                points,
+                createAreaComponent
+            );
 
-            expect(element.selectAll(".powerKpi_areaComponent_area").nodes().length).toBe(2);
+            expect(
+                element.selectAll(".powerKpi_areaComponent_area").nodes().length
+            ).toBe(2);
         });
 
-        function createAreaComponent(options: IVisualComponentConstructorOptions): AreaComponent {
+        function createAreaComponent(
+            options: IVisualComponentConstructorOptions
+        ): AreaComponent {
             return new AreaComponent(options);
         }
     });
@@ -470,25 +510,21 @@ describe("Power KPI", () => {
                 radiusFactor: 1,
                 thickness: 1,
                 viewport,
-                x: DataRepresentationScale
-                    .create()
-                    .domain(
-                        [new Date(2014, 5, 5), new Date(2018, 5, 5)],
-                        DataRepresentationTypeEnum.DateType,
-                    ),
-                y: DataRepresentationScale
-                    .create()
-                    .domain(
-                        [0, 1000],
-                        DataRepresentationTypeEnum.NumberType,
-                    ),
+                x: DataRepresentationScale.create().domain(
+                    [new Date(2014, 5, 5), new Date(2018, 5, 5)],
+                    DataRepresentationTypeEnum.DateType
+                ),
+                y: DataRepresentationScale.create().domain(
+                    [0, 1000],
+                    DataRepresentationTypeEnum.NumberType
+                ),
             };
 
             const dotComponent: DotComponent = new DotComponent({ element });
 
             dotComponent.render(dotComponentRenderOptions);
 
-            expect($(element.node())).toBeInDOM();
+            expect(document.body.contains(element.node())).toBeTrue
         });
     });
 
@@ -506,7 +542,8 @@ describe("Power KPI", () => {
         });
 
         it("should init LineComponent if line type is line", () => {
-            const comboComponent: ComboComponent = new ComboComponentLineComponentTest({ element });
+            const comboComponent: ComboComponent =
+                new ComboComponentLineComponentTest({ element });
 
             comboComponent.render({
                 areaOpacity: 1,
@@ -527,21 +564,26 @@ describe("Power KPI", () => {
                 components: Array<IVisualComponent<ComponentsRenderOptions>>,
                 iterator: (
                     component: IVisualComponent<ComponentsRenderOptions>,
-                    index: number,
-                ) => void,
+                    index: number
+                ) => void
             ): void {
                 super.forEach(
                     components,
-                    (component: IVisualComponent<ComponentsRenderOptions>, componentIndex: number) => {
+                    (
+                        component: IVisualComponent<ComponentsRenderOptions>,
+                        componentIndex: number
+                    ) => {
                         expect(component instanceof LineComponent).toBeTruthy();
 
                         iterator(component, componentIndex);
-                    });
+                    }
+                );
             }
         }
 
         it("should init AreaComponent if line type is area", () => {
-            const comboComponent: ComboComponent = new ComboComponentAreaComponentTest({ element });
+            const comboComponent: ComboComponent =
+                new ComboComponentAreaComponentTest({ element });
 
             comboComponent.render({
                 areaOpacity: 1,
@@ -559,15 +601,16 @@ describe("Power KPI", () => {
     });
 
     function createElement(viewport: powerbi.IViewport) {
-        return d3Select(testDom(
-            viewport.height.toString(),
-            viewport.width.toString(),
-        ).get(0));
+        return d3Select(
+            testDom(viewport.height.toString(), viewport.width.toString())
+        );
     }
 
     function renderLineBasedComponent(
         points: IDataRepresentationPoint[],
-        createComponent: (options: IVisualComponentConstructorOptions) => IVisualComponent<ILineComponentRenderOptions>,
+        createComponent: (
+            options: IVisualComponentConstructorOptions
+        ) => IVisualComponent<ILineComponentRenderOptions>
     ) {
         const viewport: powerbi.IViewport = {
             height: 500,
@@ -576,12 +619,14 @@ describe("Power KPI", () => {
 
         const element = createElement(viewport);
 
-        const lineComponent: IVisualComponent<ILineComponentRenderOptions> = createComponent({ element });
+        const lineComponent: IVisualComponent<ILineComponentRenderOptions> =
+            createComponent({ element });
 
         const dates: Date[] = [];
         const values: number[] = [];
 
-        const dataPointFilter: DataRepresentationPointFilter = new DataRepresentationPointFilter();
+        const dataPointFilter: DataRepresentationPointFilter =
+            new DataRepresentationPointFilter();
 
         const gradientPoints: IDataRepresentationPointGradientColor[] = [];
 
@@ -599,12 +644,14 @@ describe("Power KPI", () => {
             opacity: 1,
             thickness: 1,
             viewport,
-            x: DataRepresentationScale
-                .create()
-                .domain([dates[0], dates[dates.length - 1]], DataRepresentationTypeEnum.DateType),
-            y: DataRepresentationScale
-                .create()
-                .domain([values[0], values[values.length - 1]], DataRepresentationTypeEnum.NumberType),
+            x: DataRepresentationScale.create().domain(
+                [dates[0], dates[dates.length - 1]],
+                DataRepresentationTypeEnum.DateType
+            ),
+            y: DataRepresentationScale.create().domain(
+                [values[0], values[values.length - 1]],
+                DataRepresentationTypeEnum.NumberType
+            ),
         });
 
         return element;
@@ -619,68 +666,89 @@ describe("Power KPI", () => {
 
         describe("isPointValid", () => {
             it("should return false if point is undefined", () => {
-                expect(dataRepresentationPointFilter.isPointValid(undefined)).toBeFalsy();
-            });
-
-            it("should return false if point is null", () => {
-                expect(dataRepresentationPointFilter.isPointValid(null)).toBeFalsy();
+                let testVariable;
+                testVariable = undefined;
+                expect(
+                    dataRepresentationPointFilter.isPointValid(testVariable)
+                ).toBeFalsy();
             });
 
             it("should return false if point.y is undefined", () => {
-                expect(dataRepresentationPointFilter.isPointValid({
+                const testPoint = {
                     color: undefined,
                     kpiIndex: undefined,
                     x: undefined,
                     y: undefined,
-                })).toBeFalsy();
+                } as unknown as IDataRepresentationPoint;
+                expect(
+                    dataRepresentationPointFilter.isPointValid(testPoint)
+                ).toBeFalsy();
             });
 
             it("should return false if point.y is null", () => {
-                expect(dataRepresentationPointFilter.isPointValid({
+                const testPoint = {
                     color: undefined,
                     kpiIndex: undefined,
                     x: undefined,
                     y: null,
-                })).toBeFalsy();
+                } as unknown as IDataRepresentationPoint;
+                expect(
+                    dataRepresentationPointFilter.isPointValid(testPoint)
+                ).toBeFalsy();
             });
 
             it("should return false if point.y is null", () => {
-                expect(dataRepresentationPointFilter.isPointValid({
+                const testPoint = {
                     color: undefined,
                     kpiIndex: undefined,
                     x: undefined,
                     y: NaN,
-                })).toBeFalsy();
+                } as unknown as IDataRepresentationPoint;
+                expect(
+                    dataRepresentationPointFilter.isPointValid(testPoint)
+                ).toBeFalsy();
             });
 
             it("should return true if point.y is a valid number", () => {
-                expect(dataRepresentationPointFilter.isPointValid({
+                const testPoint = {
                     color: undefined,
                     kpiIndex: undefined,
                     x: undefined,
                     y: 123,
-                })).toBeTruthy();
+                } as unknown as IDataRepresentationPoint;
+                expect(
+                    dataRepresentationPointFilter.isPointValid(testPoint)
+                ).toBeTruthy();
             });
         });
 
         describe("groupPointByColor", () => {
             it("should not throw any exceptions if point is undefined", () => {
                 expect(() => {
-                    dataRepresentationPointFilter.groupPointByColor([], undefined, false);
+                    let testVariable;
+                    testVariable = undefined;
+                    dataRepresentationPointFilter.groupPointByColor(
+                        [],
+                        testVariable,
+                        false
+                    );
                 }).not.toThrow();
             });
 
             it("should not throw any exceptions if gradientPoints is undefined", () => {
+                const testPoint = {
+                    color: undefined,
+                    kpiIndex: undefined,
+                    x: undefined,
+                    y: 123,
+                } as unknown as IDataRepresentationPoint;
                 expect(() => {
+                    let testVariable;
+                    testVariable = undefined;
                     dataRepresentationPointFilter.groupPointByColor(
-                        undefined,
-                        {
-                            color: undefined,
-                            kpiIndex: undefined,
-                            x: undefined,
-                            y: 123,
-                        },
-                        false,
+                        testVariable,
+                        testPoint,
+                        false
                     );
                 }).not.toThrow();
             });
@@ -788,11 +856,18 @@ describe("Power KPI", () => {
                 expect(getGradientPoints(points)[1].color).toBe(secondColor);
             });
 
-            function getGradientPoints(points: IDataRepresentationPoint[]): IDataRepresentationPointGradientColor[] {
-                const gradientPoints: IDataRepresentationPointGradientColor[] = [];
+            function getGradientPoints(
+                points: IDataRepresentationPoint[]
+            ): IDataRepresentationPointGradientColor[] {
+                const gradientPoints: IDataRepresentationPointGradientColor[] =
+                    [];
 
                 points.filter((point: IDataRepresentationPoint) => {
-                    dataRepresentationPointFilter.groupPointByColor(gradientPoints, point, false);
+                    dataRepresentationPointFilter.groupPointByColor(
+                        gradientPoints,
+                        point,
+                        false
+                    );
                 });
 
                 return gradientPoints;
@@ -804,95 +879,156 @@ describe("Power KPI", () => {
         let legendDescriptor: LegendDescriptor;
 
         beforeEach(() => {
-            legendDescriptor = new LegendDescriptor();
+            const viewport: powerbi.IViewport = {
+                height: 0,
+                width: 0,
+            };
+            legendDescriptor = new LegendDescriptor(viewport);
         });
 
         describe("getLegendMarkerShape", () => {
             it("should return LegendMarkerShape.square if style is LegendStyle.box", () => {
-                legendDescriptor.style = LegendStyle.box;
+                legendDescriptor.style.value = legendDescriptor.getNewComplexValue(
+                    LegendStyle.box, 
+                    legendDescriptor.style.items
+                );
 
-                expect(legendDescriptor.getLegendMarkerShape()).toBe(legendInterfaces.MarkerShape.square);
+                expect(legendDescriptor.getLegendMarkerShape()).toBe(
+                    legendInterfaces.MarkerShape.square
+                );
             });
 
             it("should return LegendMarkerShape.longDash if style is LegendStyle.line", () => {
-                legendDescriptor.style = LegendStyle.line;
+                legendDescriptor.style.value = legendDescriptor.getNewComplexValue(
+                    LegendStyle.line, 
+                    legendDescriptor.style.items
+                );
 
-                expect(legendDescriptor.getLegendMarkerShape()).toBe(legendInterfaces.MarkerShape.longDash);
+                expect(legendDescriptor.getLegendMarkerShape()).toBe(
+                    legendInterfaces.MarkerShape.longDash
+                );
             });
 
             it("should return LegendMarkerShape.longDash if style is LegendStyle.styledLine", () => {
-                legendDescriptor.style = LegendStyle.styledLine;
+                legendDescriptor.style.value = legendDescriptor.getNewComplexValue(
+                    LegendStyle.styledLine, 
+                    legendDescriptor.style.items
+                );
 
-                expect(legendDescriptor.getLegendMarkerShape()).toBe(legendInterfaces.MarkerShape.longDash);
+                expect(legendDescriptor.getLegendMarkerShape()).toBe(
+                    legendInterfaces.MarkerShape.longDash
+                );
             });
 
             it("should return LegendMarkerShape.circle if style is LegendStyle.circle", () => {
-                legendDescriptor.style = LegendStyle.circle;
+                legendDescriptor.style.value = legendDescriptor.getNewComplexValue(
+                    LegendStyle.circle, 
+                    legendDescriptor.style.items
+                );
 
-                expect(legendDescriptor.getLegendMarkerShape()).toBe(legendInterfaces.MarkerShape.circle);
+                expect(legendDescriptor.getLegendMarkerShape()).toBe(
+                    legendInterfaces.MarkerShape.circle
+                );
             });
         });
 
         describe("getLegendLineStyle", () => {
             it("should return LegendLineStyle.solid if style is LegendStyle.line", () => {
-                legendDescriptor.style = LegendStyle.line;
+                legendDescriptor.style.value = legendDescriptor.getNewComplexValue(
+                    LegendStyle.line, 
+                    legendDescriptor.style.items
+                );
 
-                expect(legendDescriptor.getLegendLineStyle(undefined)).toBe(legendInterfaces.LineStyle.solid);
+                let testVariable;
+                testVariable = undefined;
+                expect(legendDescriptor.getLegendLineStyle(testVariable)).toBe(
+                    legendInterfaces.LineStyle.solid
+                );
             });
 
             it("should return LegendLineStyle.solid if style is LegendStyle.styledLine and lineStyle is LineStyle.solidLine", () => {
-                legendDescriptor.style = LegendStyle.styledLine;
+                legendDescriptor.style.value = legendDescriptor.getNewComplexValue(
+                    LegendStyle.styledLine, 
+                    legendDescriptor.style.items
+                );
 
-                expect(legendDescriptor.getLegendLineStyle(LineStyle.solidLine)).toBe(legendInterfaces.LineStyle.solid);
+                expect(
+                    legendDescriptor.getLegendLineStyle(LineStyle.solidLine)
+                ).toBe(legendInterfaces.LineStyle.solid);
             });
 
             it("should return LegendLineStyle.dashed if style is LegendStyle.styledLine and lineStyle is LineStyle.dashedLine", () => {
-                legendDescriptor.style = LegendStyle.styledLine;
+                legendDescriptor.style.value = legendDescriptor.getNewComplexValue(
+                    LegendStyle.styledLine, 
+                    legendDescriptor.style.items
+                );
 
-                expect(legendDescriptor.getLegendLineStyle(LineStyle.dashedLine)).toBe(legendInterfaces.LineStyle.dashed);
+                expect(
+                    legendDescriptor.getLegendLineStyle(LineStyle.dashedLine)
+                ).toBe(legendInterfaces.LineStyle.dashed);
             });
 
             it("should return LegendLineStyle.dashed if style is LegendStyle.styledLine and lineStyle is LineStyle.dotDashedLine", () => {
-                legendDescriptor.style = LegendStyle.styledLine;
+                legendDescriptor.style.value = legendDescriptor.getNewComplexValue(
+                    LegendStyle.styledLine, 
+                    legendDescriptor.style.items
+                );
 
-                expect(legendDescriptor.getLegendLineStyle(LineStyle.dotDashedLine)).toBe(legendInterfaces.LineStyle.dashed);
+                expect(
+                    legendDescriptor.getLegendLineStyle(LineStyle.dotDashedLine)
+                ).toBe(legendInterfaces.LineStyle.dashed);
             });
 
             it("should return LegendLineStyle.solid if style is LegendStyle.styledLine and lineStyle is undefined", () => {
-                legendDescriptor.style = LegendStyle.styledLine;
+                legendDescriptor.style.value = legendDescriptor.getNewComplexValue(
+                    LegendStyle.styledLine, 
+                    legendDescriptor.style.items
+                );
 
-                expect(legendDescriptor.getLegendLineStyle(undefined)).toBe(legendInterfaces.LineStyle.solid);
+                let testVariable;
+                testVariable = undefined;
+                expect(legendDescriptor.getLegendLineStyle(testVariable)).toBe(
+                    legendInterfaces.LineStyle.solid
+                );
             });
         });
     });
 
     describe("DataConverter", () => {
-        it(
-            "dataRepresentation.x.type must be changed to DataRepresentationTypeEnum.StringType if XAxis.type is AxisType.categorical",
-            () => {
-                const testWrapper: TestWrapper = TestWrapper.create();
+        it("dataRepresentation.x.type must be changed to DataRepresentationTypeEnum.StringType if XAxis.type is AxisType.categorical", () => {
+            const testWrapper: TestWrapper = new TestWrapper;
 
-                const dataView: powerbi.DataView = testWrapper.dataView;
+            const dataView: powerbi.DataView = testWrapper.dataView;
 
-                dataView.metadata.objects = {
-                    xAxis: {
-                        type: AxisType.categorical,
-                    },
-                };
+            dataView.metadata.objects = {
+                xAxis: {
+                    type: AxisType.categorical,
+                },
+            };
 
-                const dataConverter: DataConverter = new DataConverter({
-                    colorPalette: createColorPalette(),
-                    createSelectionIdBuilder,
-                });
+            const dataConverter: DataConverter = new DataConverter({
+                colorPalette: createColorPalette(),
+                createSelectionIdBuilder,
+            });
 
-                const dataRepresentation: IDataRepresentation = dataConverter.convert({
+            const axisOptions: AxisOptions = {
+                dataView,
+                xAxisType: AxisType.categorical
+            }
+            dataConverter.getAxisType(axisOptions)
+
+            const dataRepresentation: IDataRepresentation =
+                dataConverter.convert({
                     dataView,
                     hasSelection: false,
+                    settings: new Settings(),
                     viewport: { width: 100, height: 100 },
                 });
 
-                expect(dataRepresentation.x.axisType).toBe(DataRepresentationTypeEnum.StringType);
-            });
+            expect(dataRepresentation.x.axisType).toBe(
+                DataRepresentationTypeEnum.StringType
+            );
+        });
 
         describe("isValueFinite", () => {
             it("should return false if value is null", () => {
@@ -901,7 +1037,7 @@ describe("Power KPI", () => {
                     createSelectionIdBuilder,
                 });
 
-                expect(dataConverter.isValueFinite(null)).toBeFalsy();
+                expect(dataConverter.isValueFinite(null as any as number)).toBeFalsy();
             });
 
             it("should return true if value is a valid number", () => {
@@ -918,12 +1054,15 @@ describe("Power KPI", () => {
     describe("LabelMeasurementService", () => {
         describe("getLabelWidth", () => {
             it("should return 0 if Date object is not valid", () => {
-                expect(labelMeasurementService.getLabelWidth(
-                    [new Date("Power BI rocks")],
-                    null,
-                    8,
-                    "",
-                )).toBe(0);
+                const fakeValueFormatter = null as unknown as valueFormatter.IValueFormatter;
+                expect(
+                    labelMeasurementService.getLabelWidth(
+                        [new Date("Power BI rocks")],
+                        fakeValueFormatter,
+                        8,
+                        ""
+                    )
+                ).toBe(0);
             });
         });
     });

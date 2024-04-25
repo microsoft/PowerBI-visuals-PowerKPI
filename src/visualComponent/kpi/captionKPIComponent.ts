@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-import { Selection } from "d3";
+import { Selection } from "d3-selection";
 
 import powerbi from "powerbi-visuals-api";
 import { textMeasurementService } from "powerbi-visuals-utils-formattingutils";
@@ -93,8 +93,8 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
 
         this.size = size;
 
-        isShown = layout.autoHideVisualComponents
-            ? isShown && this.canComponentBeRenderedAtViewport(viewport, layout.getLayout())
+        isShown = layout.autoHideVisualComponents.value
+            ? isShown && this.canComponentBeRenderedAtViewport(viewport, layout.layout.value.value as LayoutEnum)
             : isShown;
 
         this.isComponentRendered = isShown;
@@ -143,6 +143,7 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
         containerSelector: CssConstants.ClassAndSelector,
         selector: CssConstants.ClassAndSelector,
     ): void {
+        
         const containerSelection: Selection<any, ICaptionKPIComponentOptionsValueSettings[], any, any> = element
             .selectAll(containerSelector.selectorName)
             .data(captions);
@@ -157,7 +158,7 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
                 return (captionItems || []).filter((options: ICaptionKPIComponentOptionsValueSettings) => {
                     return options
                         && options.settings
-                        && options.settings.show;
+                        && options.settings.isElementShown();
                 });
             });
 
@@ -170,11 +171,11 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
             .attr("class", (options: ICaptionKPIComponentOptionsValueSettings) => {
                 let className: string = selector.className;
 
-                if (options.settings.isBold) {
+                if (options.settings.font.bold.value) {
                     className += " boldStyle";
                 }
 
-                if (options.settings.isItalic) {
+                if (options.settings.font.italic.value) {
                     className += " italicStyle";
                 }
 
@@ -184,11 +185,11 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
 
                 return className;
             })
-            .style("color", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.fontColor)
+            .style("color", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.fontColor.value.value)
             .style("font-size", (options: ICaptionKPIComponentOptionsValueSettings) => {
-                return pixelConverter.toString(pixelConverter.fromPointToPixel(options.settings.fontSize));
+                return pixelConverter.toString(pixelConverter.fromPointToPixel(options.settings.font.fontSize.value));
             })
-            .style("font-family", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.fontFamily)
+            .style("font-family", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.font.fontFamily.value)
             .text((options: ICaptionKPIComponentOptionsValueSettings) => options.value);
 
         elementSelection
@@ -213,14 +214,14 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
             let height: number = 0;
 
             captionList.forEach((caption: ICaptionKPIComponentOptionsValueSettings) => {
-                isShown = isShown || caption.settings.show;
+                isShown = isShown || caption.settings.isElementShown();
 
-                if (caption.settings.show) {
+                if (caption.settings.isElementShown()) {
                     const text: string = caption.value || "M";
 
-                    const rect: SVGRect = textMeasurementService.textMeasurementService.measureSvgTextRect({
-                        fontFamily: caption.settings.fontFamily,
-                        fontSize: pixelConverter.toString(pixelConverter.fromPointToPixel(caption.settings.fontSize)),
+                    const rect: SVGRect = textMeasurementService.measureSvgTextRect({
+                        fontFamily: caption.settings.font.fontFamily.value,
+                        fontSize: pixelConverter.toString(pixelConverter.fromPointToPixel(caption.settings.font.fontSize.value)),
                         text,
                     }, text);
 
@@ -239,8 +240,8 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
         };
     }
 
-    private canComponentBeRenderedAtViewport(viewport: powerbi.IViewport, layout: string): boolean {
-        switch (LayoutEnum[layout]) {
+    private canComponentBeRenderedAtViewport(viewport: powerbi.IViewport, layout: LayoutEnum): boolean {
+        switch (layout) {
             case LayoutEnum.Left:
             case LayoutEnum.Right: {
                 return viewport.height >= this.size.height;

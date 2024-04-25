@@ -24,11 +24,54 @@
  *  THE SOFTWARE.
  */
 
+import powerbi from "powerbi-visuals-api";
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+
 import {
     AxisDescriptor,
     AxisType,
 } from "./axisDescriptor";
 
+const typeOptions = [
+    {
+        value: AxisType.continuous,
+        displayName: "Visual_Continuous"
+    },
+    {
+        value: AxisType.categorical,
+        displayName: "Visual_Categorical"
+    }
+]
+
 export class XAxisDescriptor extends AxisDescriptor {
-    public type: AxisType = AxisType.continuous;
+    public type = new formattingSettings.ItemDropdown({
+        name: "type",
+        displayNameKey: "Visual_Type",
+        items: typeOptions,
+        value: typeOptions[0]
+    });
+
+    constructor(
+        viewportToBeHidden: powerbi.IViewport, 
+        viewportToIncreaseDensity: powerbi.IViewport
+    ) {
+        super(viewportToBeHidden, viewportToIncreaseDensity, true)
+
+        this.slices = [this.show, this.font, this.fontColor, this.displayUnits, this.percentile, this.type]
+        this.name = "xAxis";
+        this.displayNameKey = "Visual_X_Axis";
+    }
+
+    public getNewType(value: AxisType) {
+        return this.getNewComplexValue(value, typeOptions)
+    }
+    
+    public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
+        super.setLocalizedDisplayName(localizationManager);
+        typeOptions.forEach(option => {
+            option.displayName = localizationManager.getDisplayName(option.displayName)
+        })
+    }
 }

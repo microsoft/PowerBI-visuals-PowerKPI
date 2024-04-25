@@ -25,28 +25,26 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { NumberDescriptorBase } from "./numberDescriptorBase";
 
 export class LabelsDescriptor extends NumberDescriptorBase {
-    public color: string = "rgb(119, 119, 119)";
-    public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
-    public isBold: boolean = false;
-    public isItalic: boolean = false;
-
-    /**
-     * This property is an alias of density and it's defined special for Power BI.
-     * It's predefined PBI property name in order to create a percentage slider at format panel.
-     */
-    public percentile: number = 100;
-
-    public get density(): number {
-        return this.percentile;
-    }
+    public color = new formattingSettings.ColorPicker({
+        name: "color",
+        displayNameKey: "Visual_Color",
+        value: { value: "rgb(119, 119, 119)" }
+    });
 
     constructor(viewport: powerbi.IViewport) {
         super(viewport);
 
-        this.show = false;
+        this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif";
+        this.show.value = false;
+        this.useExtendedFontPicker()
+    
+        this.slices = [this.show, this.font, this.displayUnits, this.color, this.precision, this.percentile]
+        this.name = "labels"
+        this.displayNameKey = "Visual_Data_Labels"
     }
 }

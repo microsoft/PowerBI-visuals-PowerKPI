@@ -26,9 +26,14 @@
 
 import powerbi from "powerbi-visuals-api";
 
-import { IDataRepresentationPoint } from "./dataRepresentationPoint";
+import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
 
-export interface ILabelEnabledDataRepresentationPoint extends IDataRepresentationPoint {
-    size: powerbi.IViewport;
-    labelFontSize: string;
+export class KPIActualValueDescriptor extends KPIIndicatorDescriptor {
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport);
+
+        this.slices = [this.show, this.font, this.displayUnits, this.precision, this.fontColor] 
+        this.name = "actualValueKPI";
+        this.displayNameKey = "Visual_KPI_Actual_Value";
+    }
 }

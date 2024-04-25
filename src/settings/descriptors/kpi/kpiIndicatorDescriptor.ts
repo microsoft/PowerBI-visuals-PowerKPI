@@ -25,159 +25,22 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import { HorizontalLayoutEnum } from "../../../layout/horizontalLayoutEnum";
+import { displayUnitsOptions, NumberDescriptorBase } from "../numberDescriptorBase";
 
-import { FontSizeDescriptor } from "../autoHiding/fontSizeDescriptor";
-
-interface IPropertyConfiguration {
-    name: string;
-    defaultValue: any | ((index: number) => any);
-    displayName: (text: string) => string;
-}
-
-interface IEnumPropertyConfiguration {
-    name: string;
-    displayName: string;
-}
-
-export interface IKPIIndicatorSettings { // This should be synchronized with _properties
-    color?: string;
-    shape?: string;
-}
-
-export class KPIIndicatorDescriptor extends FontSizeDescriptor {
-
-    public static createDefault(): KPIIndicatorDescriptor {
-        return new KPIIndicatorDescriptor();
-    }
-    public position: string = HorizontalLayoutEnum[HorizontalLayoutEnum.Left];
-    public shouldBackgroundColorMatchKpiColor: boolean = false;
-
-    private _maxAmountOfKPIs: number = 5;
-
-    private _default: IKPIIndicatorSettings = Object.freeze({
-        color: null,
-        shape: null,
+export class KPIIndicatorDescriptor extends NumberDescriptorBase {
+    public fontColor = new formattingSettings.ColorPicker({
+        name: "fontColor",
+        displayNameKey: "Visual_Font_Color",
+        value: { value: "#333333" }
     });
 
-    private kpiIndexPropertyName: string = "kpiIndex";
+     constructor(viewport?: powerbi.IViewport, shouldPropertiesBeHiddenByType: boolean = false) {
+        super(viewport, shouldPropertiesBeHiddenByType);
 
-    private _colors: string[] = [
-        "#01b7a8",
-        "#f2c80f",
-        "#fd625e",
-        "#a66999",
-        "#374649",
-    ];
-
-    private _shapes: IEnumPropertyConfiguration[] = [
-        { name: "circle-full", displayName: "Circle" },
-        { name: "triangle", displayName: "Triangle" },
-        { name: "rhombus", displayName: "Diamond" },
-        { name: "square", displayName: "Square" },
-        { name: "flag", displayName: "Flag" },
-        { name: "exclamation", displayName: "Exclamation" },
-        { name: "checkmark", displayName: "Checkmark" },
-        { name: "arrow-up", displayName: "Arrow Up" },
-        { name: "arrow-right-up", displayName: "Arrow Right Up" },
-        { name: "arrow-right-down", displayName: "Arrow Right Down" },
-        { name: "arrow-down", displayName: "Arrow Down" },
-        { name: "caret-up", displayName: "Caret Up" },
-        { name: "caret-down", displayName: "Caret Down" },
-        { name: "circle-empty", displayName: "Circle Empty" },
-        { name: "circle-x", displayName: "Circle X" },
-        { name: "circle-exclamation", displayName: "Circle Exclamation" },
-        { name: "circle-checkmark", displayName: "Circle Checkmark" },
-        { name: "x", displayName: "X" },
-        { name: "star-empty", displayName: "Star Empty" },
-        { name: "star-full", displayName: "Star Full" },
-    ];
-
-    private _properties: IPropertyConfiguration[] = [
-        {
-            defaultValue: (index: number) => {
-                const color: string = this.getElementByIndex<string>(this._colors, index);
-
-                return color || this._colors[0];
-            },
-            displayName: (text: string) => text,
-            name: "color",
-        },
-        {
-            defaultValue: (index: number) => {
-                const shape: IEnumPropertyConfiguration =
-                    this.getElementByIndex<IEnumPropertyConfiguration>(this._shapes, index);
-
-                return shape
-                    ? shape.name
-                    : this._shapes[0].name;
-            },
-            displayName: () => "    Indicator",
-            name: "shape",
-        },
-        {
-            defaultValue: (index: number) => index + 1,
-            displayName: () => "    Value",
-            name: this.kpiIndexPropertyName,
-        },
-    ];
-
-    constructor(viewport?: powerbi.IViewport) {
-        super(viewport);
-
-        this.applySettingToContext();
-
-        this.show = true;
-        this.fontSize = 12;
-    }
-
-    public getElementByIndex<Type>(setOfValues: Type[], index: number): Type {
-        const amountOfValues: number = setOfValues.length;
-
-        const currentIndex: number = index < amountOfValues
-            ? index
-            : Math.round(index / amountOfValues);
-
-        return setOfValues[currentIndex];
-    }
-
-    public getCurrentKPI(kpiIndex: number): IKPIIndicatorSettings {
-        if (!isNaN(kpiIndex) && kpiIndex !== null) {
-            for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
-                const currentKPIIndex: number = this[this.getPropertyName(this.kpiIndexPropertyName, index)];
-
-                if (currentKPIIndex === kpiIndex) {
-                    return this._properties.reduce((
-                        current: IKPIIndicatorSettings,
-                        property: IPropertyConfiguration,
-                    ) => {
-                        const indexedName: string = this.getPropertyName(property.name, index);
-
-                        current[property.name] = this[indexedName];
-
-                        return current;
-                    }, {});
-                }
-            }
-        }
-
-        return this._default;
-    }
-
-    private applySettingToContext(): void {
-        for (let index: number = 0; index < this._maxAmountOfKPIs; index++) {
-            this._properties.forEach((property: IPropertyConfiguration) => {
-                const indexedName: string = this.getPropertyName(property.name, index);
-
-                this[indexedName] = typeof property.defaultValue === "function"
-                    ? property.defaultValue(index)
-                    : property.defaultValue;
-            });
-        }
-    }
-
-    private getPropertyName(name: string, index: number): string {
-        return `${name}_${index}`;
+        this.displayUnits.value = displayUnitsOptions[1];
+        this.font.fontSize.value = 12;
+        this.useExtendedFontPicker(true)
     }
 }

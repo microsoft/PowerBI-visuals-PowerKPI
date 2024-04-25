@@ -24,46 +24,89 @@
  *  THE SOFTWARE.
  */
 
+import powerbi from "powerbi-visuals-api";
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+
 import {
     BaseDescriptor,
-    IDescriptor,
     IDescriptorParserOptions,
-} from "./descriptor";
+} from "./baseDescriptor";
 
 import { LayoutEnum } from "../../layout/layoutEnum";
 
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+
+const layoutOptions = [
+    {
+        value: LayoutEnum.Top,
+        displayName: "Visual_Top"
+    },
+    {
+        value: LayoutEnum.Left,
+        displayName: "Visual_Left"
+    },
+    {
+        value: LayoutEnum.Bottom,
+        displayName: "Visual_Bottom"
+    },
+    {
+        value: LayoutEnum.Right,
+        displayName: "Visual_Right"
+    }
+]
+
 export class LayoutDescriptor
-    extends BaseDescriptor
-    implements IDescriptor {
+    extends BaseDescriptor {
 
-    public autoHideVisualComponents: boolean = true;
-    public auto: boolean = true;
-    public layout: string = LayoutEnum[LayoutEnum.Top];
+    public autoHideVisualComponents = new formattingSettings.ToggleSwitch({
+        name: "autoHideVisualComponents",
+        displayNameKey: "Visual_Auto_Scale",
+        value: true
+    });
 
-    private _layout: string;
+    public auto = new formattingSettings.ToggleSwitch({
+        name: "auto",
+        displayNameKey: "Visual_Auto",
+        value: true,
+    });
+
+    public layout = new formattingSettings.ItemDropdown({
+        name: "layout",
+        displayNameKey: "Visual_Layout",
+        items: layoutOptions,
+        value: layoutOptions[0]
+    });
 
     private _minSupportedHeight: number = 250;
 
-    public parse(options: IDescriptorParserOptions): void {
-        if (this.auto) {
-            Object.defineProperty(this, "layout", {
-                configurable: true,
-                enumerable: false,
-            });
+    constructor() {
+        super()
+        
+        this.slices = [this.autoHideVisualComponents, this.auto, this.layout];
+        this.name = "layout";
+        this.displayNameKey = "Visual_Layout";
+    }
 
+    public parse(options: IDescriptorParserOptions): void {
+        if (this.auto.value) {
             if (options.viewport.height < this._minSupportedHeight) {
-                this._layout = LayoutEnum[LayoutEnum.Left];
+                this.setNewLayoutPropertyValue(LayoutEnum.Left);
             } else {
-                this._layout = LayoutEnum[LayoutEnum.Top];
+                this.setNewLayoutPropertyValue(LayoutEnum.Top);
             }
 
             return;
         }
-
-        this._layout = this.layout;
     }
 
-    public getLayout(): string {
-        return this._layout;
+    public setNewLayoutPropertyValue(newValue: LayoutEnum){
+        this.layout.value = layoutOptions.filter(el => el.value === newValue)[0] || layoutOptions[0]
+    }
+
+    public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
+        super.setLocalizedDisplayName(localizationManager);
+        layoutOptions.forEach(option => {
+            option.displayName = localizationManager.getDisplayName(option.displayName)
+        })
     }
 }

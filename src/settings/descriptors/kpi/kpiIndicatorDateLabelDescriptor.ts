@@ -24,7 +24,18 @@
  *  THE SOFTWARE.
  */
 
-export enum ContentAlignEnum {
-    contentLeft,
-    contentRight,
+import powerbi from "powerbi-visuals-api";
+
+import { KPIIndicatorLabelDescriptor } from "./kpiIndicatorLabelDescriptor";
+
+export class KPIIndicatorDateLabelDescriptor extends KPIIndicatorLabelDescriptor {
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport);
+
+        this.useExtendedFontPicker()
+        this.slices = [this.show, this.font, this.fontColor]
+        this.name = "dateLabelKPI"
+        this.displayNameKey = "Visual_KPI_Date_Label"
+    }
 }
+ 

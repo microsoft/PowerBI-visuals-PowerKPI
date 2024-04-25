@@ -107,7 +107,7 @@ export class XAxisComponent
             settings,
         } = options;
 
-        if (settings.show) {
+        if (settings.isElementShown()) {
             this.show();
         } else {
             this.hide();
@@ -123,28 +123,28 @@ export class XAxisComponent
             axis.max,
             this.formatter,
             fontSize,
-            settings.fontFamily,
+            settings.font.fontFamily.value,
         );
 
         this.maxElementWidth = labelMeasurementService.getLabelWidth(
             [axis.min, axis.max],
             this.formatter,
             fontSize,
-            settings.fontFamily,
+            settings.font.fontFamily.value,
         );
 
         this.firstLabelWidth = this.getLabelWidthWithAdditionalOffset(
             [domain[0] || ""],
             this.formatter,
             fontSize,
-            settings.fontFamily,
+            settings.font.fontFamily.value,
         ) / 2;
 
         this.latestLabelWidth = this.getLabelWidthWithAdditionalOffset(
             [domain.slice(-1)[0] || ""],
             this.formatter,
             fontSize,
-            settings.fontFamily,
+            settings.font.fontFamily.value,
         ) / 2;
     }
 
@@ -172,7 +172,7 @@ export class XAxisComponent
             axis.scale.getDomain(),
             axis.metadata,
             !axis.scale.isCategorical,
-            settings.density,
+            settings.percentile.value,
         );
 
         if (!this.isShown) {
@@ -208,8 +208,8 @@ export class XAxisComponent
                 }
 
                 if (!isNaN(availableWidth)) {
-                    return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
-                        labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.fontFamily),
+                    return textMeasurementService.getTailoredTextOrDefault(
+                        labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.font.fontFamily.value),
                         availableWidth,
                     );
                 }
@@ -219,10 +219,10 @@ export class XAxisComponent
 
         this.gElement
             .call(this.axisProperties.axis)
-            .attr("font-family", settings.fontFamily)
+            .attr("font-family", settings.font.fontFamily.value)
             .attr("font-size", settings.fontSizeInPx)
-            .attr("fill", settings.fontColor)
-            .attr("color", settings.fontColor);
+            .attr("fill", settings.fontColor.value.value)
+            .attr("color", settings.fontColor.value.value);
     }
 
     public getViewport(): IVisualComponentViewport {
@@ -298,8 +298,8 @@ export class XAxisComponent
         let precision: number;
 
         if (x.axisType === DataRepresentationTypeEnum.NumberType) {
-            minValue = xAxis.displayUnits || x.max;
-            precision = xAxis.precision;
+            minValue = xAxis.displayUnits.value.value || x.max;
+            precision = xAxis.precision.value;
         } else {
             minValue = x.min;
             maxValue = x.max;
