@@ -40,6 +40,7 @@ export class FontSizeDescriptor
     implements IDescriptor {
 
     private minFontSize: number = 8;
+    private maxFontSize: number = 60;
     private isMinFontSizeApplied: boolean = false;
 
     private viewportForFontSize8: powerbi.IViewport = {
@@ -63,6 +64,10 @@ export class FontSizeDescriptor
                 minValue: {
                     type: powerbi.visuals.ValidatorType.Min,
                     value: this.minFontSize,
+                },
+                maxValue: {
+                    type: powerbi.visuals.ValidatorType.Max,
+                    value: this.maxFontSize
                 }
             }
         })
