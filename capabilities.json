@@ -68,9 +68,6 @@
         }
       }
     },
-    "title": {
-      "properties": {}
-    },
     "subtitle": {
       "properties": {
         "show": {

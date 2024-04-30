@@ -33,7 +33,6 @@ import {
 } from "./descriptors/baseDescriptor";
 
 import { DotsDescriptor } from "./descriptors/dotsDescriptor";
-import { FakeTitleDescriptor } from "./descriptors/fakeTitleDescriptor";
 import { KPIIndicatorCustomizableLabelDescriptor } from "./descriptors/kpi/kpiIndicatorCustomizableLabelDescriptor";
 import { KPIIndicatorsListDescriptor } from "./descriptors/kpi/kpiIndicatorsListDescriptor";
 import { KPIIndicatorLabelDescriptor } from "./descriptors/kpi/kpiIndicatorLabelDescriptor";
@@ -91,7 +90,6 @@ const axisViewportToIncreaseDensity: powerbi.IViewport = {
 
 export class Settings extends formattingSettings.Model {
     public layout: LayoutDescriptor = new LayoutDescriptor();
-    public title: FakeTitleDescriptor = new FakeTitleDescriptor();
     public subtitle: SubtitleDescriptor = new SubtitleDescriptor(subtitleViewport);
     public kpiIndicator: KPIIndicatorsListDescriptor = new KPIIndicatorsListDescriptor(kpiCaptionViewport);
     public kpiIndicatorValue: KPIIndicatorValueSignDescriptor = new KPIIndicatorValueSignDescriptor(kpiCaptionViewport);
@@ -152,7 +150,7 @@ export class Settings extends formattingSettings.Model {
     );
     public tooltipValues: TooltipValueDescriptor = new TooltipValueDescriptor();
     public defaultCards = [
-        this.layout, this.title, this.subtitle, this.kpiIndicator, this.kpiIndicatorValue,
+        this.layout, this.subtitle, this.kpiIndicator, this.kpiIndicatorValue,
         this.kpiIndicatorLabel, this.secondKPIIndicatorValue, this.secondKPIIndicatorLabel, 
         this.actualValueKPI, this.actualLabelKPI, this.dateValueKPI, this.dateLabelKPI,
         this.labels, this.line, this.legend, this.xAxis,
