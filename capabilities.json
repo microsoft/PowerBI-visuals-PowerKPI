@@ -1119,6 +1119,7 @@
           "suppressFormatPainterCopy": true
         },
         "precision": {
+          "placeHolderText": "Auto",
           "type": {
             "numeric": true
           },

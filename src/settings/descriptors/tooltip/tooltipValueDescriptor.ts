@@ -29,7 +29,7 @@ export class TooltipValueDescriptor extends NumberDescriptorBase {
     constructor() {
         super()
 
-        this.slices = [this.format, this.displayUnits, this.precision]
+        this.slices = [this.displayUnits, this.precision]
         this.name = "tooltipValues";
         this.displayNameKey = "Visual_Tooltip_Values";
     }
