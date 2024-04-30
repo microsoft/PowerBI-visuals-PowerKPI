@@ -298,7 +298,7 @@ export class XAxisComponent
         let precision: number;
 
         if (x.axisType === DataRepresentationTypeEnum.NumberType) {
-            minValue = xAxis.displayUnits.value.value || x.max;
+            minValue = xAxis.displayUnits.value || x.max;
             precision = xAxis.precision.value;
         } else {
             minValue = x.min;

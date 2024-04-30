@@ -170,7 +170,7 @@ export class TooltipComponent
             series.forEach((dataSeries: IDataRepresentationSeries) => {
                 const valueFormatterInstance: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
                     dataSeries.format || this.numberFormat,
-                    tooltipValues.displayUnits.value.value as number,
+                    tooltipValues.displayUnits.value as number,
                     tooltipValues.precision.value,
                 );
 
@@ -211,7 +211,7 @@ export class TooltipComponent
             const formatter: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
                 tooltipLabel.getFormat(),
                 x.axisType === DataRepresentationTypeEnum.NumberType
-                    ? tooltipLabel.displayUnits.value.value as number
+                    ? tooltipLabel.displayUnits.value as number
                     : undefined,
                 x.axisType === DataRepresentationTypeEnum.NumberType
                     ? tooltipLabel.precision.value
@@ -292,7 +292,7 @@ export class TooltipComponent
 
         const varianceFormatter: valueFormatter.IValueFormatter = this.getValueFormatterByFormat(
             settings.getFormat(),
-            settings.displayUnits.value.value as number,
+            settings.displayUnits.value as number,
             settings.precision.value,
         );
 

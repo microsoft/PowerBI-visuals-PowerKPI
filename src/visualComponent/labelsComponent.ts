@@ -151,7 +151,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
         return series.map((currentSeries: IDataRepresentationSeries, seriesIndex: number) => {
             const labelDataPoints: NewLabelUtils.labelLayout.LabelDataPoint[] = [];
 
-            const labelDisplayUnits: number = (labels.displayUnits.value.value|| currentSeries.domain.max) as number;
+            const labelDisplayUnits: number = (labels.displayUnits.value || currentSeries.domain.max) as number;
 
             const valueFormatters: valueFormatter.IValueFormatter[] = series.map((seriesGroup: IDataRepresentationSeries) => {
                 return this.getValueFormatter(

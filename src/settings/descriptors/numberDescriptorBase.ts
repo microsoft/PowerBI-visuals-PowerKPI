@@ -25,7 +25,6 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
@@ -46,32 +45,6 @@ export enum DisplayUnitsType {
     Trillions = 1000000000000
 }
 
-export const displayUnitsOptions = [
-    {
-        value: DisplayUnitsType.Auto,
-        displayName: "Visual_Auto"
-    },
-    {
-        value: DisplayUnitsType.None,
-        displayName: "Visual_None"
-    },
-    {
-        value: DisplayUnitsType.Thousands,
-        displayName: "Visual_Thousands"
-    },
-    {
-        value: DisplayUnitsType.Millions,
-        displayName: "Visual_Millions"
-    },
-    {
-        value: DisplayUnitsType.Billions,
-        displayName: "Visual_Billions"
-    },
-    {
-        value: DisplayUnitsType.Trillions,
-        displayName: "Visual_Trillions"
-    }
-]
 export class NumberDescriptorBase
     extends FontSizeDescriptor
     implements IDescriptor {
@@ -79,11 +52,10 @@ export class NumberDescriptorBase
     public defaultFormat: string = null;
     public columnFormat: string = null;
 
-    public displayUnits = new formattingSettings.ItemDropdown({
+    public displayUnits = new formattingSettings.AutoDropdown({
         name: "displayUnits",
         displayNameKey: "Visual_Display_Units",
-        items: displayUnitsOptions,
-        value: this.getNewDisplayUnitsValue(DisplayUnitsType.Auto)
+        value: DisplayUnitsType.Auto
     });
 
     public percentile = new formattingSettings.Slider({
@@ -169,16 +141,5 @@ export class NumberDescriptorBase
                 this.defaultFormat = undefined;
             }
         }
-    }
-
-    public getNewDisplayUnitsValue(value: DisplayUnitsType) {
-        return this.getNewComplexValue(value, displayUnitsOptions)
-    }
-
-    public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
-        super.setLocalizedDisplayName(localizationManager);
-        displayUnitsOptions.forEach(option => {
-            option.displayName = localizationManager.getDisplayName(option.displayName)
-        })
     }
 }

@@ -27,7 +27,7 @@
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import { displayUnitsOptions, NumberDescriptorBase } from "../numberDescriptorBase";
+import { DisplayUnitsType, NumberDescriptorBase } from "../numberDescriptorBase";
 
 export class KPIIndicatorDescriptor extends NumberDescriptorBase {
     public fontColor = new formattingSettings.ColorPicker({
@@ -39,7 +39,7 @@ export class KPIIndicatorDescriptor extends NumberDescriptorBase {
      constructor(viewport?: powerbi.IViewport, shouldPropertiesBeHiddenByType: boolean = false) {
         super(viewport, shouldPropertiesBeHiddenByType);
 
-        this.displayUnits.value = displayUnitsOptions[1];
+        this.displayUnits.value = DisplayUnitsType.None;
         this.font.fontSize.value = 12;
         this.useExtendedFontPicker(true)
     }

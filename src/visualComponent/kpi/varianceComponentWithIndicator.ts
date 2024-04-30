@@ -162,7 +162,7 @@ export class VarianceComponentWithIndicator
         };
 
         const formatter: valueFormatter.IValueFormatter = this.getValueFormatter(
-            varianceSettings.displayUnits.value.value as number,
+            varianceSettings.displayUnits.value as number,
             varianceSettings.precision.value,
             kpiIndicatorValue.getFormat(),
         );
