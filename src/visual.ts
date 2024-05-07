@@ -218,35 +218,28 @@ export class PowerKPI implements IVisual {
             secondTooltipVariance
         ]
         settingsToFilterByAxis.forEach(card => {
-            const newSlices = [...card.slices]
-            this.addArrayItems(newSlices, [card.displayUnits, card.precision, card.format])
-            if (card.shouldNumericPropertiesBeHiddenByType
-                && this.axisType !== DataRepresentationTypeEnum.NumberType
-            ) {
-                this.removeArrayItem(newSlices, card.displayUnits)
-                this.removeArrayItem(newSlices, card.precision)
-            }
-    
-            if (this.axisType !== DataRepresentationTypeEnum.NumberType
-                && this.axisType !== DataRepresentationTypeEnum.DateType
-            ) {
-                this.removeArrayItem(newSlices, card.format)
-            }
-            card.slices = newSlices
+            const shouldNumericPropertiesBeHidden = 
+                card.shouldNumericPropertiesBeHiddenByType
+                && this.axisType !== DataRepresentationTypeEnum.NumberType;
+            
+            card.displayUnits.visible = !shouldNumericPropertiesBeHidden;
+            card.precision.visible = !shouldNumericPropertiesBeHidden;
+
+            card.format.visible = 
+                this.axisType == DataRepresentationTypeEnum.NumberType
+                || this.axisType === DataRepresentationTypeEnum.DateType;
         })
     }
 
     private filterSettingsCards() {
-        const newCards = [...this.settings.defaultCards]
-        this.settings.defaultCards.forEach(card => {
-            if(this.shouldDeleteSettingsCard(card.name)){
-                this.removeArrayItem(newCards, card)
+        this.settings.cards.forEach(card => {
+            if(this.shouldHideSettingsCard(card.name)){
+                card.visible = false;
             }
         })
-        this.settings.cards = newCards
     }
 
-    public shouldDeleteSettingsCard (
+    public shouldHideSettingsCard (
         cardName: string,
     ): boolean {
         switch (cardName) {
@@ -272,10 +265,8 @@ export class PowerKPI implements IVisual {
     }
 
     private filterLayoutProperties() {
-        const { layout } = this.settings
-        const newSlices: Array<FormattingSettingsSlice> = [...layout.slices];
-        if(layout.auto.value) this.removeArrayItem(newSlices, layout.layout)
-        layout.slices = newSlices
+        const { layout } = this.settings;
+        layout.layout.visible = !layout.auto.value;
     }
 
     private filterLineProperties(){
@@ -283,58 +274,26 @@ export class PowerKPI implements IVisual {
         line.container.containerItems.forEach(containerItem => {
             const containerName = containerItem.displayName
             const currentSettings = line.getCurrentSettings(containerName);
-            const newSlices: Array<FormattingSettingsSlice> = [...containerItem.slices]
-
-            if(currentSettings.shouldMatchKpiColor) { 
-                this.removeArrayItem(newSlices, newSlices.filter(el => el.name === "interpolation")[0])
-            } else {
-                this.removeArrayItem(newSlices, newSlices.filter(el => el.name === "dataPointStartsKpiColorSegment")[0])
-                this.removeArrayItem(newSlices, newSlices.filter(el => el.name === "interpolationWithColorizedLine")[0])
-            }
-
-            if(currentSettings.lineType !== LineType.area) this.removeArrayItem(newSlices, newSlices.filter(el => el.name === "rawAreaOpacity")[0])
-            containerItem.slices = newSlices
+            containerItem.slices.filter(el => el.name === "interpolation")[0].visible = !currentSettings.shouldMatchKpiColor;
+            containerItem.slices.filter(el => el.name === "dataPointStartsKpiColorSegment")[0].visible = currentSettings.shouldMatchKpiColor;
+            containerItem.slices.filter(el => el.name === "interpolationWithColorizedLine")[0].visible = currentSettings.shouldMatchKpiColor;
+            containerItem.slices.filter(el => el.name === "rawAreaOpacity")[0].visible = currentSettings.lineType === LineType.area;
         })
     }
 
     private filterKPIIndicatorProperties() {
-        const { kpiIndicator } = this.settings
-        const newSlices: Array<FormattingSettingsSlice> = kpiIndicator.getContextProperties()
-
-        if(!this.dataRepresentation?.settings.kpiIndicatorValue.show.value || isNaN(this.dataRepresentation.variance?.[0])) {
-            this.removeArrayItem(newSlices, kpiIndicator.position)
-        }
-        kpiIndicator.slices = newSlices
+        const { kpiIndicator } = this.settings;
+        kpiIndicator.position.visible = this.dataRepresentation?.settings.kpiIndicatorValue.show.value && !isNaN(this.dataRepresentation.variance?.[0]);
     }
 
     private filterKPIIndicatorValueProperties() {
-        const { kpiIndicatorValue } = this.settings
-        const newSlices: Array<FormattingSettingsSlice> = [...kpiIndicatorValue.slices]
-        if(kpiIndicatorValue.matchKPIColor.value) this.removeArrayItem(newSlices, kpiIndicatorValue.fontColor)
-        kpiIndicatorValue.slices = newSlices
+        const { kpiIndicatorValue } = this.settings;
+        kpiIndicatorValue.fontColor.visible = !kpiIndicatorValue.matchKPIColor.value;
     }
 
     private setLocalizedDisplayNames() {
         this.settings.cards.forEach(card => {
             card.setLocalizedDisplayName(this.localizationManager)
         })
-    }
-
-    private removeArrayItem<T>(array: T[], item: T) {
-        const index = array.indexOf(item);
-        if(index > -1) {
-            array.splice(index, 1)
-        }
-    }
-
-    private addArrayItem<T>(array: T[], item: T) {
-        const index = array.indexOf(item);
-        if(index === -1) {
-            array.push(item)
-        }
-    }
-
-    private addArrayItems<T>(array: T[], items: T[]) {
-        items.forEach(item => this.addArrayItem(array, item))
     }
 }

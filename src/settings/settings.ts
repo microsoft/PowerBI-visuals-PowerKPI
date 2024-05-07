@@ -149,7 +149,7 @@ export class Settings extends formattingSettings.Model {
         "Visual_Second_Tooltip_KPI_Indicator_Value"
     );
     public tooltipValues: TooltipValueDescriptor = new TooltipValueDescriptor();
-    public defaultCards = [
+    public cards = [
         this.layout, this.subtitle, this.kpiIndicator, this.kpiIndicatorValue,
         this.kpiIndicatorLabel, this.secondKPIIndicatorValue, this.secondKPIIndicatorLabel, 
         this.actualValueKPI, this.actualLabelKPI, this.dateValueKPI, this.dateLabelKPI,
@@ -158,7 +158,6 @@ export class Settings extends formattingSettings.Model {
         this.secondaryReferenceLineOfYAxis, this.tooltipLabel, this.tooltipVariance, 
         this.secondTooltipVariance, this.tooltipValues
     ]
-    public cards = this.defaultCards
     
     constructor() {
         super();
