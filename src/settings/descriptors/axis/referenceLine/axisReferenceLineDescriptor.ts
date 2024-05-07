@@ -73,4 +73,10 @@ export class AxisReferenceLineDescriptor
         this.displayNameKey = displayNameKey;
     }
 
+    public parse() {
+        // fix thickness value after migration to formatting model
+        if (this.thickness.value > this.thickness.options.maxValue.value){
+            this.thickness.value = this.thickness.options.maxValue.value;
+        }
+    }
 }
