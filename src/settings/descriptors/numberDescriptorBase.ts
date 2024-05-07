@@ -66,6 +66,10 @@ export class NumberDescriptorBase
             maxValue: {
                 type: powerbi.visuals.ValidatorType.Max,
                 value: 100,
+            },
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0
             }
         }
     });
