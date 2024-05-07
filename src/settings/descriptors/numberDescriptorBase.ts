@@ -28,7 +28,7 @@ import powerbi from "powerbi-visuals-api";
 
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import { IDescriptor } from "./baseDescriptor";
+import { IDescriptor, IDescriptorParserOptions } from "./baseDescriptor";
 
 import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
 
@@ -105,6 +105,17 @@ export class NumberDescriptorBase
         super(viewport);
 
         this.shouldNumericPropertiesBeHiddenByType = shouldPropertiesBeHiddenByType;
+    }
+
+    public parse(options: IDescriptorParserOptions){
+        super.parse(options);
+
+        if (this.precision.value < this.precision.options.minValue.value){
+            this.percentile.value = this.precision.options.minValue.value;
+        }
+        if (this.precision.value > this.precision.options.maxValue.value){
+            this.precision.value = this.precision.options.maxValue.value;
+        }
     }
 
     public getFormat(): string {

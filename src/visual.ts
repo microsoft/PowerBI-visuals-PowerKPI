@@ -57,7 +57,6 @@ import { DataRepresentationTypeEnum } from "./dataRepresentation/dataRepresentat
 import { AxisType } from "./settings/descriptors/axis/axisDescriptor";
 import { NumberDescriptorBase } from "./settings/descriptors/numberDescriptorBase";
 
-import FormattingSettingsSlice = formattingSettings.Slice;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
