@@ -26,6 +26,7 @@
 
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
 import {
     IDescriptor,
@@ -52,6 +53,9 @@ import { AxisReferenceLineDescriptor } from "./descriptors/axis/referenceLine/ax
 import { TooltipVarianceDescriptor } from "./descriptors/tooltip/tooltipVarianceDescriptor";
 import { TooltipLabelDescriptor } from "./descriptors/tooltip/tooltipLabelDescriptor";
 import { TooltipValueDescriptor } from "./descriptors/tooltip/tooltipValueDescriptor";
+import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
+import { LineType } from "./descriptors/line/lineTypes";
+import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
 
 const kpiCaptionViewport: powerbi.IViewport = {
     height: 90,
@@ -184,5 +188,101 @@ export class Settings extends formattingSettings.Model {
                     settingsObj.parse(options);
                 }
             });
+    }
+
+    public filterFormattingProperties(dataRepresentation: IDataRepresentation, axisType: DataRepresentationTypeEnum, localizationManager: ILocalizationManager) {
+        this.filterSettingsCards(dataRepresentation);
+        this.filterLayoutProperties();
+        this.filterLineProperties();
+        this.filterKPIIndicatorProperties(dataRepresentation);
+        this.filterKPIIndicatorValueProperties();
+        this.filterSettingsPropertiesByAxisType(axisType);
+        this.setLocalizedDisplayNames(localizationManager);
+    }
+
+    private filterSettingsCards(dataRepresentation: IDataRepresentation) {
+        this.cards.forEach(card => {
+            if(this.shouldHideSettingsCard(card.name, dataRepresentation)){
+                card.visible = false;
+            }
+        })
+    }
+
+    public shouldHideSettingsCard (
+        cardName: string, 
+        dataRepresentation: IDataRepresentation
+    ): boolean {
+        switch (cardName) {
+            case "kpiIndicatorValue": {
+                return isNaN(dataRepresentation?.variance?.[0])
+            }
+            case "kpiIndicatorLabel": {
+                return isNaN(dataRepresentation?.variance?.[0]) && isNaN(dataRepresentation?.series?.[0]?.current?.kpiIndex)
+            }
+            case "secondKPIIndicatorValue":
+            case "secondKPIIndicatorLabel":
+            case "secondTooltipVariance": {
+                return !dataRepresentation?.series || !dataRepresentation?.variance || isNaN(dataRepresentation.variance[1])
+            }
+            case "secondaryYAxis":
+            case "secondaryReferenceLineOfYAxis": {
+                return !dataRepresentation?.groups?.[1]
+            }
+            default: {
+                return false
+            }
+        }
+    }
+
+    private filterLayoutProperties() {
+        this.layout.layout.visible = !this.layout.auto.value;
+    }
+
+    private filterLineProperties(){
+        this.line.container.containerItems.forEach(containerItem => {
+            const containerName = containerItem.displayName;
+            const currentSettings = this.line.getCurrentSettings(containerName);
+            containerItem.slices.filter(el => el.name === "interpolation")[0].visible = !currentSettings.shouldMatchKpiColor;
+            containerItem.slices.filter(el => el.name === "dataPointStartsKpiColorSegment")[0].visible = currentSettings.shouldMatchKpiColor;
+            containerItem.slices.filter(el => el.name === "interpolationWithColorizedLine")[0].visible = currentSettings.shouldMatchKpiColor;
+            containerItem.slices.filter(el => el.name === "rawAreaOpacity")[0].visible = currentSettings.lineType === LineType.area;
+        })
+    }
+
+    private filterKPIIndicatorProperties(dataRepresentation: IDataRepresentation) {
+        this.kpiIndicator.position.visible = dataRepresentation?.settings.kpiIndicatorValue.show.value && !isNaN(dataRepresentation.variance?.[0]);
+    }
+
+    private filterKPIIndicatorValueProperties() {
+        this.kpiIndicatorValue.fontColor.visible = !this.kpiIndicatorValue.matchKPIColor.value;
+    }
+
+    private filterSettingsPropertiesByAxisType(axisType: DataRepresentationTypeEnum) {
+        const settingsToFilterByAxis = [
+            this.kpiIndicatorValue,
+            this.secondKPIIndicatorValue,
+            this.dateValueKPI,
+            this.tooltipLabel,
+            this.tooltipVariance,
+            this.secondTooltipVariance
+        ]
+        settingsToFilterByAxis.forEach(card => {
+            const shouldNumericPropertiesBeHidden = 
+                card.shouldNumericPropertiesBeHiddenByType
+                && axisType !== DataRepresentationTypeEnum.NumberType;
+            
+            card.displayUnits.visible = !shouldNumericPropertiesBeHidden;
+            card.precision.visible = !shouldNumericPropertiesBeHidden;
+
+            card.format.visible = 
+                axisType == DataRepresentationTypeEnum.NumberType
+                || axisType === DataRepresentationTypeEnum.DateType;
+        })
+    }
+
+    private setLocalizedDisplayNames(localizationManager: ILocalizationManager) {
+        this.cards.forEach(card => {
+            card.setLocalizedDisplayName(localizationManager);
+        })
     }
 }

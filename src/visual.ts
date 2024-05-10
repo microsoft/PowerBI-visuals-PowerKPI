@@ -52,7 +52,6 @@ import {
     IBehaviorOptions,
 } from "./behavior/behavior";
 import { Settings } from "./settings/settings";
-import { LineType } from "./settings/descriptors/line/lineTypes";
 import { DataRepresentationTypeEnum } from "./dataRepresentation/dataRepresentationType";
 import { AxisType } from "./settings/descriptors/axis/axisDescriptor";
 import { NumberDescriptorBase } from "./settings/descriptors/numberDescriptorBase";
@@ -182,117 +181,8 @@ export class PowerKPI implements IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
-        this.filterFormattingProperties()
+        this.settings.filterFormattingProperties(this.dataRepresentation, this.axisType, this.localizationManager);
 
         return this.formattingSettingsService.buildFormattingModel(this.settings);
-    }
-
-    private filterFormattingProperties() {
-        this.filterSettingsCards();
-        this.filterLayoutProperties();
-        this.filterLineProperties();
-        this.filterKPIIndicatorProperties();
-        this.filterKPIIndicatorValueProperties();
-        this.filterSettingsPropertiesByAxisType();
-        this.setLocalizedDisplayNames();
-
-    }
-
-    private filterSettingsPropertiesByAxisType() {
-        const { 
-            kpiIndicatorValue,
-            secondKPIIndicatorValue,
-            dateValueKPI,
-            tooltipLabel,
-            tooltipVariance,
-            secondTooltipVariance
-        } = this.settings
-
-        const settingsToFilterByAxis = [
-            kpiIndicatorValue,
-            secondKPIIndicatorValue,
-            dateValueKPI,
-            tooltipLabel,
-            tooltipVariance,
-            secondTooltipVariance
-        ]
-        settingsToFilterByAxis.forEach(card => {
-            const shouldNumericPropertiesBeHidden = 
-                card.shouldNumericPropertiesBeHiddenByType
-                && this.axisType !== DataRepresentationTypeEnum.NumberType;
-            
-            card.displayUnits.visible = !shouldNumericPropertiesBeHidden;
-            card.precision.visible = !shouldNumericPropertiesBeHidden;
-
-            card.format.visible = 
-                this.axisType == DataRepresentationTypeEnum.NumberType
-                || this.axisType === DataRepresentationTypeEnum.DateType;
-        })
-    }
-
-    private filterSettingsCards() {
-        this.settings.cards.forEach(card => {
-            if(this.shouldHideSettingsCard(card.name)){
-                card.visible = false;
-            }
-        })
-    }
-
-    public shouldHideSettingsCard (
-        cardName: string,
-    ): boolean {
-        switch (cardName) {
-            case "kpiIndicatorValue": {
-                return isNaN(this.dataRepresentation?.variance?.[0])
-            }
-            case "kpiIndicatorLabel": {
-                return isNaN(this.dataRepresentation?.variance?.[0]) && isNaN(this.dataRepresentation?.series?.[0]?.current?.kpiIndex)
-            }
-            case "secondKPIIndicatorValue":
-            case "secondKPIIndicatorLabel":
-            case "secondTooltipVariance": {
-                return !this.dataRepresentation?.series || !this.dataRepresentation?.variance || isNaN(this.dataRepresentation.variance[1])
-            }
-            case "secondaryYAxis":
-            case "secondaryReferenceLineOfYAxis": {
-                return !this.dataRepresentation?.groups?.[1]
-            }
-            default: {
-                return false
-            }
-        }
-    }
-
-    private filterLayoutProperties() {
-        const { layout } = this.settings;
-        layout.layout.visible = !layout.auto.value;
-    }
-
-    private filterLineProperties(){
-        const { line } = this.settings
-        line.container.containerItems.forEach(containerItem => {
-            const containerName = containerItem.displayName
-            const currentSettings = line.getCurrentSettings(containerName);
-            containerItem.slices.filter(el => el.name === "interpolation")[0].visible = !currentSettings.shouldMatchKpiColor;
-            containerItem.slices.filter(el => el.name === "dataPointStartsKpiColorSegment")[0].visible = currentSettings.shouldMatchKpiColor;
-            containerItem.slices.filter(el => el.name === "interpolationWithColorizedLine")[0].visible = currentSettings.shouldMatchKpiColor;
-            containerItem.slices.filter(el => el.name === "rawAreaOpacity")[0].visible = currentSettings.lineType === LineType.area;
-        })
-    }
-
-    private filterKPIIndicatorProperties() {
-        const { kpiIndicator } = this.settings;
-        kpiIndicator.position.visible = this.dataRepresentation?.settings.kpiIndicatorValue.show.value && !isNaN(this.dataRepresentation.variance?.[0]);
-    }
-
-    private filterKPIIndicatorValueProperties() {
-        const { kpiIndicatorValue } = this.settings;
-        kpiIndicatorValue.fontColor.visible = !kpiIndicatorValue.matchKPIColor.value;
-    }
-
-    private setLocalizedDisplayNames() {
-        this.settings.cards.forEach(card => {
-            card.setLocalizedDisplayName(this.localizationManager)
-        })
-    }
+    }    
 }

@@ -26,10 +26,11 @@
 
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
-import { BaseDescriptor } from "../../baseDescriptor";
+import { BaseDescriptor, IDescriptor } from "../../baseDescriptor";
 
 export class AxisReferenceLineDescriptor
-    extends BaseDescriptor {
+    extends BaseDescriptor
+    implements IDescriptor {
 
     public show = new formattingSettings.ToggleSwitch({
         name: "show",
