@@ -1,4 +1,4 @@
-/*
+/**
 *  Power BI Visualizations
 *
 *  Copyright (c) Microsoft Corporation
@@ -23,13 +23,15 @@
 *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 *  THE SOFTWARE.
 */
+import { NumberDescriptorBase } from "../numberDescriptorBase";
 
-import { range } from "d3-array";
+export class TooltipValueDescriptor extends NumberDescriptorBase {
+    constructor() {
+        super()
 
-export function getDateRange(start: Date, stop: Date, step: number): Date[] {
-    return range(
-        start.getTime(),
-        stop.getTime(),
-        step,
-    ).map((value) => new Date(value));
+        this.slices = [this.displayUnits, this.precision]
+        this.name = "tooltipValues";
+        this.displayNameKey = "Visual_Tooltip_Values";
+    }
 }
+  

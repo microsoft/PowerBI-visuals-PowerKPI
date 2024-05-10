@@ -56,7 +56,6 @@ export class DateKPIComponent
 
     public render(options: IVisualComponentRenderOptions): void {
         const { settings, x } = options.data;
-
         const captionDetailsKPIComponentOptions: ICaptionKPIComponentOptions = {
             ...options,
         } as ICaptionKPIComponentOptions;
@@ -71,8 +70,8 @@ export class DateKPIComponent
             const formatter: valueFormatter.IValueFormatter = this.getValueFormatter(
                 x.axisType,
                 settings.dateValueKPI.getFormat(),
-                settings.dateValueKPI.displayUnits || x.max,
-                settings.dateValueKPI.precision);
+                settings.dateValueKPI.displayUnits.value || x.max,
+                settings.dateValueKPI.precision.value);
 
             if (formatter) {
                 formattedValue = formatter.format(axisValue);
@@ -124,7 +123,7 @@ export class DateKPIComponent
         value: DataRepresentationAxisValueType,
         precision: number,
     ): valueFormatter.IValueFormatter {
-        return valueFormatter.valueFormatter.create({
+        return valueFormatter.create({
             format,
             precision,
             value,

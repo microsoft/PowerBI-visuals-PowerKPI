@@ -25,13 +25,13 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 import {
     IDescriptor,
     IDescriptorParserOptions,
-} from "../descriptor";
+} from "../baseDescriptor";
 
 import { ShowDescriptor } from "./showDescriptor";
 
@@ -40,6 +40,7 @@ export class FontSizeDescriptor
     implements IDescriptor {
 
     private minFontSize: number = 8;
+    private maxFontSize: number = 60;
     private isMinFontSizeApplied: boolean = false;
 
     private viewportForFontSize8: powerbi.IViewport = {
@@ -47,44 +48,33 @@ export class FontSizeDescriptor
         width: 210,
     };
 
-    private _fontSize: number = this.minFontSize; // This value is in pt.
-
-    constructor(viewport?: powerbi.IViewport) {
-        super(viewport);
-
-        Object.defineProperty(
-            this,
-            "fontSize",
-            {
-                ...Object.getOwnPropertyDescriptor(
-                    FontSizeDescriptor.prototype,
-                    "fontSize",
-                ),
-                configurable: true,
-                enumerable: true,
-            },
-        );
-    }
-
-    public get fontSize(): number {
-        if (this.isMinFontSizeApplied) {
-            return this.minFontSize;
-        }
-
-        return this._fontSize;
-    }
-
-    public set fontSize(fontSize: number) {
-        // Power BI returns numbers as strings for some unknown reason. This is why we convert value to number.
-        const parsedFontSize: number = +fontSize;
-
-        this._fontSize = isNaN(parsedFontSize)
-            ? this.minFontSize
-            : parsedFontSize;
-    }
+    public font = new formattingSettings.FontControl({
+        name: "font",
+        displayNameKey: "Visual_Font",
+        fontFamily: new formattingSettings.FontPicker({
+            name: "fontFamily",
+            displayNameKey: "Visual_Font_Family",
+            value: "Segoe UI, wf_segoe-ui_normal, helvetica, arial, sans-serif"
+        }),
+        fontSize: new formattingSettings.NumUpDown({
+            name: "fontSize",
+            displayNameKey: "Visual_Font_Size",
+            value: this.minFontSize, 
+            options: {
+                minValue: {
+                    type: powerbi.visuals.ValidatorType.Min,
+                    value: this.minFontSize,
+                },
+                maxValue: {
+                    type: powerbi.visuals.ValidatorType.Max,
+                    value: this.maxFontSize
+                }
+            }
+        })
+    });
 
     public get fontSizeInPx(): number {
-        return pixelConverter.fromPointToPixel(this.fontSize);
+        return pixelConverter.fromPointToPixel(this.font.fontSize.value);
     }
 
     public parse(options: IDescriptorParserOptions): void {
@@ -100,5 +90,21 @@ export class FontSizeDescriptor
                 ||
                 options.viewport.height <= this.viewportForFontSize8.height
             );
+
+        if (this.isMinFontSizeApplied) {
+            this.font.fontSize.value = this.minFontSize;
+        }
+    }
+
+    public useExtendedFontPicker(bold?: boolean, italic?: boolean){
+        this.font.bold = new formattingSettings.ToggleSwitch({
+            name: "isBold",
+            value: bold || false
+        })
+        this.font.italic = new formattingSettings.ToggleSwitch({
+            name: "isItalic",
+            value: italic || false
+        });
     }
 }
+ 

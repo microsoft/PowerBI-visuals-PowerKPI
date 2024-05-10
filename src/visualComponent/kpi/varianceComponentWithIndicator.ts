@@ -27,8 +27,8 @@
 import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
 import { HorizontalLayoutEnum } from "../../layout/horizontalLayoutEnum";
-import { IKPIIndicatorSettings } from "../../settings/descriptors/kpi/kpiIndicatorDescriptor";
-import { KPIIndicatorValueDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorValueDescriptor";
+import { IKPIIndicatorSettings } from "../../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
+import { KPIIndicatorDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorDescriptor";
 import { IVisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
 import { AlignEnum } from "./alignEnum";
 import { ICaptionKPIComponentOptionsValueSettings } from "./captionKPIComponentOptions";
@@ -57,6 +57,7 @@ export class VarianceComponentWithIndicator
         this.element.classed(this.componentClassName, true);
     }
 
+    // eslint-disable-next-line max-lines-per-function
     public render(options: IVisualComponentRenderOptions): void {
         const {
             series,
@@ -73,7 +74,6 @@ export class VarianceComponentWithIndicator
             },
             variance,
         } = options.data;
-
         const { current } = series && series.length > 0 && series[0];
         let kpiIndex: number = NaN;
 
@@ -83,54 +83,55 @@ export class VarianceComponentWithIndicator
 
         const kpiIndicatorSettings: IKPIIndicatorSettings = kpiIndicator.getCurrentKPI(kpiIndex);
 
-        const varianceSettings: KPIIndicatorValueDescriptor = { ...kpiIndicatorValue } as unknown as KPIIndicatorValueDescriptor;
-        const kpiLabelSettings: KPIIndicatorValueDescriptor = { ...kpiIndicatorLabel } as unknown as KPIIndicatorValueDescriptor;
+        const varianceSettings: KPIIndicatorDescriptor = this.cloneClass(kpiIndicatorValue);
+        const kpiLabelSettings: KPIIndicatorDescriptor = this.cloneClass(kpiIndicatorLabel);
 
-        kpiLabelSettings.show = kpiIndicatorLabel.isShown();
-
-        varianceSettings.fontColor = kpiIndicatorValue.matchKPIColor
-            && kpiIndicatorSettings
-            && kpiIndicatorSettings.color
-            ? kpiIndicatorSettings.color
-            : kpiIndicatorValue.fontColor;
-
-        if (isNaN(variance[0])) {
-            varianceSettings.show = false;
+        if(varianceSettings.fontColor){
+            varianceSettings.fontColor.value.value = kpiIndicatorValue.matchKPIColor.value
+                && kpiIndicatorSettings
+                && kpiIndicatorSettings.color.value.value
+                ? kpiIndicatorSettings.color.value.value
+                : kpiIndicatorValue.fontColor.value.value;
+        } else {
+            varianceSettings.fontColor = kpiIndicatorValue.fontColor;
         }
 
-        const indicatorSettings: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor();
+        if (isNaN(variance[0])) {
+            varianceSettings.show.value = false;
+        }
 
-        indicatorSettings.fontColor = kpiIndicatorSettings.color;
-        indicatorSettings.show = kpiIndicator.show;
-        indicatorSettings.isBold = false; // This options doesn't make any sense for symbol
-        indicatorSettings.fontSize = kpiIndicator.fontSize;
-        indicatorSettings.fontFamily = null;
+        const indicatorSettings: KPIIndicatorDescriptor = new KPIIndicatorDescriptor();
+
+        indicatorSettings.fontColor.value.value = kpiIndicatorSettings.color.value.value;
+        indicatorSettings.show.value = kpiIndicator.isElementShown();
+        indicatorSettings.font.bold.value = false; // This options doesn't make any sense for symbol
+        indicatorSettings.font.fontSize.value = kpiIndicator.font.fontSize.value;
+        indicatorSettings.font.fontFamily.value = null;
 
         if (isNaN(kpiIndex)) {
-            indicatorSettings.show = false;
+            indicatorSettings.show.value = false;
         }
 
         if (isNaN(variance[0]) && isNaN(kpiIndex)) {
-            kpiLabelSettings.show = false;
+            kpiLabelSettings.show.value = false;
         }
 
         let currentAlign: AlignEnum = AlignEnum.alignRight;
-
-        if (!dateLabelKPI.show
-            && !dateValueKPI.show
-            && !actualLabelKPI.show
-            && (!actualValueKPI.show || series[0] && series[0].current && isNaN(series[0] && series[0].current.y))
-            && (!secondKPIIndicatorValue.show && !secondKPIIndicatorLabel.isShown() || isNaN(variance[1]))) {
+        if (!dateLabelKPI.isElementShown()
+            && !dateValueKPI.isElementShown()
+            && !actualLabelKPI.isElementShown()
+            && (!actualValueKPI.isElementShown() || series[0] && series[0].current && isNaN(series[0] && series[0].current.y))
+            && (!secondKPIIndicatorValue.isElementShown() && !secondKPIIndicatorLabel.isShown() || isNaN(variance[1]))) {
             currentAlign = AlignEnum.alignLeft;
-        } else if (!varianceSettings.show && !kpiLabelSettings.show) {
+        } else if (!varianceSettings.isElementShown() && !kpiLabelSettings.isElementShown()) {
             currentAlign = AlignEnum.alignCenter;
         }
 
-        const className: string = kpiIndicatorSettings.shape
-            ? `${this.indicatorClassName} ${this.glyphClassName} ${kpiIndicatorSettings.shape}`
+        const className: string = kpiIndicatorSettings.shape.value.value
+            ? `${this.indicatorClassName} ${this.glyphClassName} ${kpiIndicatorSettings.shape.value.value}`
             : undefined;
 
-        const title: string = kpiIndicatorLabel.label || `${variance[0]}`;
+        const title: string = kpiIndicatorLabel.label.value || `${variance[0]}`;
 
         const indicatorCaption: ICaptionKPIComponentOptionsValueSettings = {
             className,
@@ -139,18 +140,17 @@ export class VarianceComponentWithIndicator
             value: "",
         };
 
-        const fakedIndicatorSettings: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor();
+        const fakedIndicatorSettings: KPIIndicatorDescriptor = new KPIIndicatorDescriptor();
 
-        // We should implement a copy method for settings
-        fakedIndicatorSettings.fontColor = indicatorSettings.fontColor;
-        fakedIndicatorSettings.show = indicatorSettings.show;
-        fakedIndicatorSettings.isBold = indicatorSettings.isBold;
-        fakedIndicatorSettings.fontSize = indicatorSettings.fontSize;
+        fakedIndicatorSettings.fontColor.value.value = indicatorSettings.fontColor.value.value;
+        fakedIndicatorSettings.show.value = indicatorSettings.isElementShown();
+        fakedIndicatorSettings.font.bold.value = indicatorSettings.font.bold.value;
+        fakedIndicatorSettings.font.fontSize.value = indicatorSettings.font.fontSize.value;
 
-        fakedIndicatorSettings.show = fakedIndicatorSettings.show
-            && varianceSettings.show
-            && kpiLabelSettings.show
-            && !!kpiIndicatorLabel.label;
+        fakedIndicatorSettings.show.value = fakedIndicatorSettings.isElementShown()
+            && varianceSettings.isElementShown()
+            && kpiLabelSettings.isElementShown()
+            && !!kpiIndicatorLabel.label.value;
 
         const fakedIndicatorCaption: ICaptionKPIComponentOptionsValueSettings = {
             className: className
@@ -162,8 +162,8 @@ export class VarianceComponentWithIndicator
         };
 
         const formatter: valueFormatter.IValueFormatter = this.getValueFormatter(
-            varianceSettings.displayUnits,
-            varianceSettings.precision,
+            varianceSettings.displayUnits.value as number,
+            varianceSettings.precision.value,
             kpiIndicatorValue.getFormat(),
         );
 
@@ -176,12 +176,12 @@ export class VarianceComponentWithIndicator
         const labelCaption: ICaptionKPIComponentOptionsValueSettings = {
             className: this.indicatorValueClassName,
             settings: kpiLabelSettings,
-            value: kpiIndicatorLabel.label,
+            value: kpiIndicatorLabel.label.value,
         };
 
         const captions: ICaptionKPIComponentOptionsValueSettings[][] = [];
 
-        switch (HorizontalLayoutEnum[kpiIndicator.position]) {
+        switch (kpiIndicator.position.value.value) {
             case HorizontalLayoutEnum.Right: {
                 captions.push(
                     [valueCaption, indicatorCaption],
@@ -204,5 +204,11 @@ export class VarianceComponentWithIndicator
             captions,
             data: options.data,
         });
+    }
+
+    private cloneClass<T>(instance: T): T {
+        const copy = new (instance.constructor as { new (): T })();
+        Object.assign(copy, instance);
+        return copy;
     }
 }

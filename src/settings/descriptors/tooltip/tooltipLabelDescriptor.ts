@@ -24,8 +24,15 @@
  *  THE SOFTWARE.
  */
 
-import { TooltipDescriptor } from "./tooltipDescriptor";
+import { NumberDescriptorBase } from "../numberDescriptorBase";
 
-export class TooltipLabelDescriptor extends TooltipDescriptor {
-    public label: string = "";
+export class TooltipLabelDescriptor extends NumberDescriptorBase {
+    constructor() {
+        super(undefined, true)
+
+        this.slices = [this.format, this.displayUnits, this.precision]
+        this.name = "tooltipLabel";
+        this.displayNameKey = "Visual_Tooltip_Label";
+    }
 }
+ 

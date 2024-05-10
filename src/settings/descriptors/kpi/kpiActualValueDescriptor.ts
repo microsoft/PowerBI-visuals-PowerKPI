@@ -24,7 +24,16 @@
  *  THE SOFTWARE.
  */
 
-export enum ContentAlignEnum {
-    contentLeft,
-    contentRight,
+import powerbi from "powerbi-visuals-api";
+
+import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
+
+export class KPIActualValueDescriptor extends KPIIndicatorDescriptor {
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport);
+
+        this.slices = [this.font, this.displayUnits, this.precision, this.fontColor] 
+        this.name = "actualValueKPI";
+        this.displayNameKey = "Visual_KPI_Actual_Value";
+    }
 }

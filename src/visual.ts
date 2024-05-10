@@ -24,66 +24,70 @@
  *  THE SOFTWARE.
  */
 import "../styles/styles.less";
-
 import {
-    dispatch,
-    Dispatch,
     select as d3Select,
     Selection,
-} from "d3";
+} from "d3-selection";
+import { dispatch, Dispatch } from "d3-dispatch";
 
 import powerbi from "powerbi-visuals-api";
-
-import { ColorHelper } from "powerbi-visuals-utils-colorutils";
-
 import {
     interactivityBaseService,
     interactivitySelectionService,
 } from "powerbi-visuals-utils-interactivityutils";
+import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 
 import { IConverter } from "./converter/converter";
 import { DataConverter } from "./converter/dataConverter";
 import { IDataRepresentation } from "./dataRepresentation/dataRepresentation";
 import { EventName } from "./event/eventName";
-import { BaseDescriptor } from "./settings/descriptors/descriptor";
-import { SeriesSettings } from "./settings/seriesSettings";
 import { IVisualComponent } from "./visualComponent/base/visualComponent";
 import { IVisualComponentRenderOptions } from "./visualComponent/base/visualComponentRenderOptions";
 import { MainComponent } from "./visualComponent/mainComponent";
 
-import {
-    IDataRepresentationSeries,
-    IDataRepresentationSeriesGroup,
-} from "./dataRepresentation/dataRepresentationSeries";
+import { IDataRepresentationSeries } from "./dataRepresentation/dataRepresentationSeries";
 
 import {
     Behavior,
     IBehaviorOptions,
 } from "./behavior/behavior";
+import { Settings } from "./settings/settings";
+import { DataRepresentationTypeEnum } from "./dataRepresentation/dataRepresentationType";
+import { AxisType } from "./settings/descriptors/axis/axisDescriptor";
+import { NumberDescriptorBase } from "./settings/descriptors/numberDescriptorBase";
 
-export interface IPowerKPIConstructorOptions extends powerbi.extensibility.visual.VisualConstructorOptions {
+import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
+import IVisual = powerbi.extensibility.visual.IVisual;
+import IVisualEventService = powerbi.extensibility.IVisualEventService;
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+
+export interface IPowerKPIConstructorOptions extends VisualConstructorOptions {
     rootElement?: HTMLElement;
 }
 
-export class PowerKPI implements powerbi.extensibility.visual.IVisual {
+export class PowerKPI implements IVisual {
     private static ViewportReducer: number = 3;
 
+    private axisType: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
     private eventDispatcher: Dispatch<any> = dispatch(...Object.keys(EventName));
-
     private element: Selection<any, any, any, any>;
     private converter: IConverter;
     private component: IVisualComponent<IVisualComponentRenderOptions>;
-
     private dataRepresentation: IDataRepresentation;
-
     private behavior: Behavior;
     private interactivityService: interactivityBaseService.IInteractivityService<IDataRepresentationSeries>;
+    private events: IVisualEventService;
+
+    private localizationManager: ILocalizationManager;
+    private settings: Settings;
+    private formattingSettingsService: FormattingSettingsService;
 
     constructor(options: IPowerKPIConstructorOptions) {
-        if (window.location !== window.parent.location) {
-            require("core-js/stable");
-        }
-
+        this.events = options.host.eventService;
+        this.settings = new Settings()
+        this.localizationManager = options.host.createLocalizationManager()
+        this.formattingSettingsService = new FormattingSettingsService(this.localizationManager);
         this.element = d3Select(options.element);
 
         this.converter = new DataConverter({
@@ -105,7 +109,10 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
         });
     }
 
-    public update(options: powerbi.extensibility.visual.VisualUpdateOptions): void {
+    public update(options: VisualUpdateOptions): void {
+        this.events.renderingStarted(options);
+        this.settings = this.formattingSettingsService.populateFormattingSettingsModel(Settings, options.dataViews[0]);
+
         const dataView: powerbi.DataView = options && options.dataViews && options.dataViews[0];
 
         const viewport: powerbi.IViewport = options
@@ -116,12 +123,18 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
             }
             || { height: 0, width: 0 };
 
+        this.axisType = this.converter.getAxisType({
+            dataView,
+            xAxisType: this.settings.xAxis.type.value.value as AxisType
+        });
+        this.updateFormatPropertyValue();
+
         const dataRepresentation: IDataRepresentation = this.converter.convert({
             dataView,
             hasSelection: this.interactivityService && this.interactivityService.hasSelection(),
             viewport,
+            settings: this.settings
         });
-
         if (this.interactivityService) {
             this.interactivityService.applySelectionStateToData(dataRepresentation.series);
 
@@ -136,6 +149,7 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
         }
 
         this.render(dataRepresentation);
+        this.events.renderingFinished(options);
     }
 
     public render(dataRepresentation: IDataRepresentation): void {
@@ -144,101 +158,6 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
         this.component.render({
             data: this.dataRepresentation,
         });
-    }
-
-    public enumerateObjectInstances(
-        options: powerbi.EnumerateVisualObjectInstancesOptions,
-    ): powerbi.VisualObjectInstanceEnumeration {
-        const { objectName } = options;
-
-        const shouldUseContainers: boolean = Object.keys(new SeriesSettings()).indexOf(objectName) !== -1;
-
-        if (shouldUseContainers) {
-            const enumerationObject: powerbi.VisualObjectInstanceEnumerationObject = {
-                containers: [],
-                instances: [],
-            };
-
-            this.enumerateSettings(
-                enumerationObject,
-                objectName,
-                this.getSettings.bind(this),
-            );
-
-            return enumerationObject;
-        }
-
-        let instances: powerbi.VisualObjectInstance[] = this.dataRepresentation
-            && this.dataRepresentation.settings
-            && this.dataRepresentation.settings.enumerateObjectInstances(options)
-            || [];
-
-        switch (options.objectName) {
-            case "kpiIndicator": {
-                if (this.dataRepresentation
-                    && (this.dataRepresentation.variance
-                        && isNaN(this.dataRepresentation.variance[0])
-                        || (this.dataRepresentation.settings
-                            && !this.dataRepresentation.settings.kpiIndicatorValue.show))
-                    && instances
-                    && instances[0]
-                    && instances[0].properties
-                ) {
-                    delete instances[0].properties.position;
-                }
-
-                break;
-            }
-            case "kpiIndicatorValue": {
-                if (this.dataRepresentation
-                    && this.dataRepresentation.variance
-                    && isNaN(this.dataRepresentation.variance[0])
-                ) {
-                    instances = [];
-                }
-
-                break;
-            }
-            case "kpiIndicatorLabel": {
-                if (this.dataRepresentation
-                    && this.dataRepresentation.variance
-                    && isNaN(this.dataRepresentation.variance[0])
-                    && this.dataRepresentation.series
-                    && this.dataRepresentation.series[0]
-                    && this.dataRepresentation.series[0].current
-                    && isNaN(this.dataRepresentation.series[0].current.kpiIndex)
-                ) {
-                    instances = [];
-                }
-
-                break;
-            }
-            case "secondKPIIndicatorValue":
-            case "secondKPIIndicatorLabel":
-            case "secondTooltipVariance": {
-                if (!this.dataRepresentation.series
-                    || !this.dataRepresentation.variance
-                    || isNaN(this.dataRepresentation.variance[1])
-                ) {
-                    instances = [];
-                }
-
-                break;
-            }
-            case "secondaryYAxis":
-            case "secondaryReferenceLineOfYAxis": {
-                if (!this.dataRepresentation
-                    || !this.dataRepresentation.groups
-                    || !this.dataRepresentation.groups[1]
-                ) {
-                    instances = [];
-                }
-
-                break;
-            }
-        }
-
-        return instances;
     }
 
     public destroy(): void {
@@ -250,86 +169,20 @@ export class PowerKPI implements powerbi.extensibility.visual.IVisual {
         this.dataRepresentation = null;
         this.interactivityService = null;
         this.behavior = null;
+        this.settings = null;
     }
 
-    private enumerateSettings(
-        enumerationObject: powerbi.VisualObjectInstanceEnumerationObject,
-        objectName: string,
-        getSettings: (settings: BaseDescriptor) => { [propertyName: string]: powerbi.DataViewPropertyValue },
-    ): void {
-        this.applySettings(
-            objectName,
-            "[All]",
-            null,
-            enumerationObject,
-            getSettings(this.dataRepresentation.settings[objectName]),
-        );
-
-        this.enumerateSettingsDeep(
-            this.getSeries(this.dataRepresentation),
-            objectName,
-            enumerationObject,
-            getSettings,
-        );
+    public updateFormatPropertyValue(){
+        this.settings.cards.forEach(card => {
+            if(card instanceof NumberDescriptorBase){
+                card.applyDefaultFormatByType(this.axisType)
+            }
+        })
     }
 
-    private getSeries(dataRepresentation: IDataRepresentation): IDataRepresentationSeries[] {
-        if (!dataRepresentation) {
-            return [];
-        }
+    public getFormattingModel(): powerbi.visuals.FormattingModel {
+        this.settings.filterFormattingProperties(this.dataRepresentation, this.axisType, this.localizationManager);
 
-        if (!dataRepresentation.isGrouped) {
-            return dataRepresentation.series;
-        }
-
-        const seriesGroup: IDataRepresentationSeriesGroup = dataRepresentation.groups
-            .filter((group: IDataRepresentationSeriesGroup) => {
-                return !!group && !!group.series;
-            })[0];
-
-        return seriesGroup && seriesGroup.series || [];
-    }
-
-    private getSettings(settings: BaseDescriptor): { [propertyName: string]: powerbi.DataViewPropertyValue } {
-        return settings.enumerateProperties();
-    }
-
-    private applySettings(
-        objectName: string,
-        displayName: string,
-        selector: powerbi.data.Selector,
-        enumerationObject: powerbi.VisualObjectInstanceEnumerationObject,
-        properties: { [propertyName: string]: powerbi.DataViewPropertyValue },
-    ): void {
-        const containerIdx: number = enumerationObject.containers.push({ displayName }) - 1;
-
-        enumerationObject.instances.push({
-            containerIdx,
-            objectName,
-            properties,
-            selector,
-        });
-    }
-
-    private enumerateSettingsDeep(
-        seriesArray: IDataRepresentationSeries[],
-        objectName: string,
-        enumerationObject: powerbi.VisualObjectInstanceEnumerationObject,
-        getSettings: (settings: BaseDescriptor) => { [propertyName: string]: powerbi.DataViewPropertyValue },
-    ): void {
-        for (const series of seriesArray) {
-            const name: string = series.groupName || series.name;
-
-            const selector: powerbi.data.Selector = series.identity
-                && (series.identity as powerbi.visuals.ISelectionId).getSelector();
-
-            this.applySettings(
-                objectName,
-                name,
-                ColorHelper.normalizeSelector(selector),
-                enumerationObject,
-                getSettings(series.settings[objectName]),
-            );
-        }
-    }
+        return this.formattingSettingsService.buildFormattingModel(this.settings);
+    }    
 }

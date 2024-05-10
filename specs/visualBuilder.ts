@@ -35,7 +35,7 @@ export class VisualBuilder extends VisualBuilderBase<PowerKPI> {
 
     protected build(): PowerKPI {
         return new PowerKPI({
-            element: this.element.get(0),
+            element: this.element[0],
             host: this.visualHost,
         });
     }
@@ -44,7 +44,7 @@ export class VisualBuilder extends VisualBuilderBase<PowerKPI> {
         return this.visual;
     }
 
-    public get $root(): JQuery {
-        return this.element.children(".powerKpi_powerKPI");
+    public get root(): NodeListOf<Element> {
+        return this.element.querySelectorAll("powerKpi_powerKPI");
     }
 }

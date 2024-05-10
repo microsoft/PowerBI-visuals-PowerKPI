@@ -24,13 +24,18 @@
  *  THE SOFTWARE.
  */
 
-import { KPIIndicatorValueDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorValueDescriptor";
-import { ICaptionKPIComponentOptions } from "./captionKPIComponentOptions";
+import powerbi from "powerbi-visuals-api";
 
-export interface IVarianceKPIComponentOptions extends ICaptionKPIComponentOptions {
-    variance: number;
-    varianceSettings: KPIIndicatorValueDescriptor;
-    label: string;
-    labelSettings: KPIIndicatorValueDescriptor;
-    className?: string;
+import { KPIIndicatorLabelDescriptor } from "./kpiIndicatorLabelDescriptor";
+
+export class KPIIndicatorDateLabelDescriptor extends KPIIndicatorLabelDescriptor {
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport);
+
+        this.useExtendedFontPicker()
+        this.slices = [this.font, this.fontColor]
+        this.name = "dateLabelKPI"
+        this.displayNameKey = "Visual_KPI_Date_Label"
+    }
 }
+ 

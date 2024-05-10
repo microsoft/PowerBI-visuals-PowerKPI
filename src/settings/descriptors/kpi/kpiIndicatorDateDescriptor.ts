@@ -24,21 +24,17 @@
  *  THE SOFTWARE.
  */
 
-import { Selection } from "d3-selection";
-import { Dispatch } from "d3-dispatch";
-
 import powerbi from "powerbi-visuals-api";
-import { interactivityBaseService } from "powerbi-visuals-utils-interactivityutils";
 
-import { IDataRepresentationSeries } from "../../dataRepresentation/dataRepresentationSeries";
+import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
 
-export interface IVisualComponentBaseConstructorOptions {
-    element?: Selection<any, any, any, any>;
-    rootElement?: Selection<any, any, any, any>;
+export class KPIIndicatorDateDescriptor extends KPIIndicatorDescriptor {
+    constructor(viewport?: powerbi.IViewport) {
+        super(viewport, true);
+
+        this.slices = [this.format, this.font, this.fontColor]
+        this.name = "dateValueKPI";
+        this.displayNameKey = "Visual_KPI_Date_Value";
+    }
 }
-
-export interface IVisualComponentConstructorOptions extends IVisualComponentBaseConstructorOptions {
-    eventDispatcher?: Dispatch<any>;
-    interactivityService?: interactivityBaseService.IInteractivityService<IDataRepresentationSeries>;
-    tooltipService?: powerbi.extensibility.ITooltipService;
-}
+ 

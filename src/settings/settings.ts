@@ -25,35 +25,37 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-
-import { SettingsBase } from "./settingBase";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
 import {
     IDescriptor,
     IDescriptorParserOptions,
-} from "./descriptors/descriptor";
-
-import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
+} from "./descriptors/baseDescriptor";
 
 import { DotsDescriptor } from "./descriptors/dotsDescriptor";
-import { FakeTitleDescriptor } from "./descriptors/fakeTitleDescriptor";
 import { KPIIndicatorCustomizableLabelDescriptor } from "./descriptors/kpi/kpiIndicatorCustomizableLabelDescriptor";
-import { KPIIndicatorDescriptor } from "./descriptors/kpi/kpiIndicatorDescriptor";
+import { KPIIndicatorsListDescriptor } from "./descriptors/kpi/kpiIndicatorsListDescriptor";
 import { KPIIndicatorLabelDescriptor } from "./descriptors/kpi/kpiIndicatorLabelDescriptor";
+import { KPIIndicatorDateLabelDescriptor } from "./descriptors/kpi/kpiIndicatorDateLabelDescriptor";
 import { KPIIndicatorValueDescriptor } from "./descriptors/kpi/kpiIndicatorValueDescriptor";
+import { KPIActualValueDescriptor } from "./descriptors/kpi/kpiActualValueDescriptor";
+import { KPIIndicatorDateDescriptor } from "./descriptors/kpi/kpiIndicatorDateDescriptor";
 import { KPIIndicatorValueSignDescriptor } from "./descriptors/kpi/kpiIndicatorValueSignDescriptor";
 import { LabelsDescriptor } from "./descriptors/labelsDescriptor";
 import { LayoutDescriptor } from "./descriptors/layoutDescriptor";
 import { LegendDescriptor } from "./descriptors/legendDescriptor";
-import { LineDescriptor } from "./descriptors/lineDescriptor";
+import { LineDescriptor } from "./descriptors/line/lineDescriptor";
 import { SubtitleDescriptor } from "./descriptors/subtitleDescriptor";
-
 import { XAxisDescriptor } from "./descriptors/axis/xAxisDescriptor";
 import { YAxisDescriptor } from "./descriptors/axis/yAxisDescriptor";
-
 import { AxisReferenceLineDescriptor } from "./descriptors/axis/referenceLine/axisReferenceLineDescriptor";
-import { TooltipDescriptor } from "./descriptors/tooltip/tooltipDescriptor";
+import { TooltipVarianceDescriptor } from "./descriptors/tooltip/tooltipVarianceDescriptor";
 import { TooltipLabelDescriptor } from "./descriptors/tooltip/tooltipLabelDescriptor";
+import { TooltipValueDescriptor } from "./descriptors/tooltip/tooltipValueDescriptor";
+import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
+import { LineType } from "./descriptors/line/lineTypes";
+import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
 
 const kpiCaptionViewport: powerbi.IViewport = {
     height: 90,
@@ -90,38 +92,77 @@ const axisViewportToIncreaseDensity: powerbi.IViewport = {
     width: 250,
 };
 
-export class Settings extends SettingsBase {
+export class Settings extends formattingSettings.Model {
     public layout: LayoutDescriptor = new LayoutDescriptor();
-    public title: FakeTitleDescriptor = new FakeTitleDescriptor();
     public subtitle: SubtitleDescriptor = new SubtitleDescriptor(subtitleViewport);
-    public kpiIndicator: KPIIndicatorDescriptor = new KPIIndicatorDescriptor(kpiCaptionViewport);
+    public kpiIndicator: KPIIndicatorsListDescriptor = new KPIIndicatorsListDescriptor(kpiCaptionViewport);
     public kpiIndicatorValue: KPIIndicatorValueSignDescriptor = new KPIIndicatorValueSignDescriptor(kpiCaptionViewport);
     public kpiIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
+        "kpiIndicatorLabel",
+        "Visual_KPI_Indicator_Label",
         kpiLabelViewport,
     );
     public secondKPIIndicatorValue: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport);
     public secondKPIIndicatorLabel: KPIIndicatorCustomizableLabelDescriptor = new KPIIndicatorCustomizableLabelDescriptor(
-        kpiLabelViewport,
+        "secondKPIIndicatorLabel",
+        "Visual_Second_KPI_Indicator_Label",
+        kpiLabelViewport
     );
-    public actualValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport);
+    public actualValueKPI: KPIActualValueDescriptor = new KPIActualValueDescriptor(kpiCaptionViewport);
     public actualLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport);
-    public dateValueKPI: KPIIndicatorValueDescriptor = new KPIIndicatorValueDescriptor(kpiCaptionViewport, true);
-    public dateLabelKPI: KPIIndicatorLabelDescriptor = new KPIIndicatorLabelDescriptor(kpiLabelViewport);
+    public dateValueKPI: KPIIndicatorDateDescriptor = new KPIIndicatorDateDescriptor(kpiCaptionViewport);
+    public dateLabelKPI: KPIIndicatorDateLabelDescriptor = new KPIIndicatorDateLabelDescriptor(kpiLabelViewport);
     public labels: LabelsDescriptor = new LabelsDescriptor(LabelsViewport);
     public line: LineDescriptor = new LineDescriptor();
     public dots: DotsDescriptor = new DotsDescriptor();
     public legend: LegendDescriptor = new LegendDescriptor(legendViewport);
-    public xAxis: XAxisDescriptor = new XAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, true);
-    public yAxis: YAxisDescriptor = new YAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, false);
-    public secondaryYAxis: YAxisDescriptor = new YAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity, false);
-    public referenceLineOfXAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(false);
-    public referenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor();
-    public secondaryReferenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(false);
-    public tooltipLabel: TooltipDescriptor = new TooltipDescriptor(undefined, true);
-    public tooltipVariance: TooltipLabelDescriptor = new TooltipLabelDescriptor();
-    public secondTooltipVariance: TooltipLabelDescriptor = new TooltipLabelDescriptor();
-    public tooltipValues: TooltipDescriptor = new TooltipDescriptor();
-
+    public xAxis: XAxisDescriptor = new XAxisDescriptor(axisViewportToDecreaseFontSize, axisViewportToIncreaseDensity);
+    public yAxis: YAxisDescriptor = new YAxisDescriptor(
+        "yAxis", 
+        "Visual_Y_Axis", 
+        axisViewportToDecreaseFontSize, 
+        axisViewportToIncreaseDensity
+    );
+    public secondaryYAxis: YAxisDescriptor = new YAxisDescriptor(
+        "secondaryYAxis", 
+        "Visual_Secondary_Y_Axis", 
+        axisViewportToDecreaseFontSize, 
+        axisViewportToIncreaseDensity
+    );
+    public referenceLineOfXAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(
+        "referenceLineOfXAxis", 
+        "Visual_X_Axis_Reference", 
+        false
+    );
+    public referenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(
+        "referenceLineOfYAxis", 
+        "Visual_Y_Axis_Reference"
+    );
+    public secondaryReferenceLineOfYAxis: AxisReferenceLineDescriptor = new AxisReferenceLineDescriptor(
+        "secondaryReferenceLineOfYAxis", 
+        "Visual_Secondary_Y_Axis_Reference", 
+        false
+    );
+    public tooltipLabel: TooltipLabelDescriptor = new TooltipLabelDescriptor();
+    public tooltipVariance: TooltipVarianceDescriptor = new TooltipVarianceDescriptor(
+        "tooltipVariance", 
+        "Visual_Tooltip_KPI_Indicator_Value"
+    );
+    public secondTooltipVariance: TooltipVarianceDescriptor = new TooltipVarianceDescriptor(
+        "secondTooltipVariance", 
+        "Visual_Second_Tooltip_KPI_Indicator_Value"
+    );
+    public tooltipValues: TooltipValueDescriptor = new TooltipValueDescriptor();
+    public cards = [
+        this.layout, this.subtitle, this.kpiIndicator, this.kpiIndicatorValue,
+        this.kpiIndicatorLabel, this.secondKPIIndicatorValue, this.secondKPIIndicatorLabel, 
+        this.actualValueKPI, this.actualLabelKPI, this.dateValueKPI, this.dateLabelKPI,
+        this.labels, this.line, this.legend, this.xAxis,
+        this.yAxis, this.secondaryYAxis, this.referenceLineOfXAxis, this.referenceLineOfYAxis,
+        this.secondaryReferenceLineOfYAxis, this.tooltipLabel, this.tooltipVariance, 
+        this.secondTooltipVariance, this.tooltipValues
+    ]
+    
     constructor() {
         super();
 
@@ -134,16 +175,14 @@ export class Settings extends SettingsBase {
         this.secondTooltipVariance.defaultFormat = percentageFormat;
     }
 
-    public parseSettings(viewport: powerbi.IViewport, type: DataRepresentationTypeEnum): void {
+    public parseSettings(viewport: powerbi.IViewport): void {
         const options: IDescriptorParserOptions = {
-            isAutoHideBehaviorEnabled: this.layout.autoHideVisualComponents,
-            type,
+            isAutoHideBehaviorEnabled: this.layout.autoHideVisualComponents.value,
             viewport,
         };
 
-        Object.keys(this)
-            .forEach((settingName: string) => {
-                const settingsObj: IDescriptor = this[settingName] as IDescriptor;
+        this.cards.forEach((setting) => {
+                const settingsObj: IDescriptor = setting as IDescriptor;
 
                 if (settingsObj.parse) {
                     settingsObj.parse(options);
@@ -151,7 +190,99 @@ export class Settings extends SettingsBase {
             });
     }
 
-    protected processDescriptor(): void {
-        return;
+    public filterFormattingProperties(dataRepresentation: IDataRepresentation, axisType: DataRepresentationTypeEnum, localizationManager: ILocalizationManager) {
+        this.filterSettingsCards(dataRepresentation);
+        this.filterLayoutProperties();
+        this.filterLineProperties();
+        this.filterKPIIndicatorProperties(dataRepresentation);
+        this.filterKPIIndicatorValueProperties();
+        this.filterSettingsPropertiesByAxisType(axisType);
+        this.setLocalizedDisplayNames(localizationManager);
+    }
+
+    private filterSettingsCards(dataRepresentation: IDataRepresentation) {
+        this.cards.forEach(card => {
+            if(this.shouldHideSettingsCard(card.name, dataRepresentation)){
+                card.visible = false;
+            }
+        })
+    }
+
+    public shouldHideSettingsCard (
+        cardName: string, 
+        dataRepresentation: IDataRepresentation
+    ): boolean {
+        switch (cardName) {
+            case "kpiIndicatorValue": {
+                return isNaN(dataRepresentation?.variance?.[0])
+            }
+            case "kpiIndicatorLabel": {
+                return isNaN(dataRepresentation?.variance?.[0]) && isNaN(dataRepresentation?.series?.[0]?.current?.kpiIndex)
+            }
+            case "secondKPIIndicatorValue":
+            case "secondKPIIndicatorLabel":
+            case "secondTooltipVariance": {
+                return !dataRepresentation?.series || !dataRepresentation?.variance || isNaN(dataRepresentation.variance[1])
+            }
+            case "secondaryYAxis":
+            case "secondaryReferenceLineOfYAxis": {
+                return !dataRepresentation?.groups?.[1]
+            }
+            default: {
+                return false
+            }
+        }
+    }
+
+    private filterLayoutProperties() {
+        this.layout.layout.visible = !this.layout.auto.value;
+    }
+
+    private filterLineProperties(){
+        this.line.container.containerItems.forEach(containerItem => {
+            const containerName = containerItem.displayName;
+            const currentSettings = this.line.getCurrentSettings(containerName);
+            containerItem.slices.filter(el => el.name === "interpolation")[0].visible = !currentSettings.shouldMatchKpiColor;
+            containerItem.slices.filter(el => el.name === "dataPointStartsKpiColorSegment")[0].visible = currentSettings.shouldMatchKpiColor;
+            containerItem.slices.filter(el => el.name === "interpolationWithColorizedLine")[0].visible = currentSettings.shouldMatchKpiColor;
+            containerItem.slices.filter(el => el.name === "rawAreaOpacity")[0].visible = currentSettings.lineType === LineType.area;
+        })
+    }
+
+    private filterKPIIndicatorProperties(dataRepresentation: IDataRepresentation) {
+        this.kpiIndicator.position.visible = dataRepresentation?.settings.kpiIndicatorValue.show.value && !isNaN(dataRepresentation.variance?.[0]);
+    }
+
+    private filterKPIIndicatorValueProperties() {
+        this.kpiIndicatorValue.fontColor.visible = !this.kpiIndicatorValue.matchKPIColor.value;
+    }
+
+    private filterSettingsPropertiesByAxisType(axisType: DataRepresentationTypeEnum) {
+        const settingsToFilterByAxis = [
+            this.kpiIndicatorValue,
+            this.secondKPIIndicatorValue,
+            this.dateValueKPI,
+            this.tooltipLabel,
+            this.tooltipVariance,
+            this.secondTooltipVariance
+        ]
+        settingsToFilterByAxis.forEach(card => {
+            const shouldNumericPropertiesBeHidden = 
+                card.shouldNumericPropertiesBeHiddenByType
+                && axisType !== DataRepresentationTypeEnum.NumberType;
+            
+            card.displayUnits.visible = !shouldNumericPropertiesBeHidden;
+            card.precision.visible = !shouldNumericPropertiesBeHidden;
+
+            card.format.visible = 
+                axisType == DataRepresentationTypeEnum.NumberType
+                || axisType === DataRepresentationTypeEnum.DateType;
+        })
+    }
+
+    private setLocalizedDisplayNames(localizationManager: ILocalizationManager) {
+        this.cards.forEach(card => {
+            card.setLocalizedDisplayName(localizationManager);
+        })
     }
 }

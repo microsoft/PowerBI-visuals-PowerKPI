@@ -25,49 +25,31 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-
-import { ViewportDescriptor } from "./viewportDescriptor";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import {
+    BaseDescriptor,
     IDescriptor,
     IDescriptorParserOptions,
-} from "../descriptor";
+} from "../baseDescriptor";
 
-export class ShowDescriptor
-    extends ViewportDescriptor
-    implements IDescriptor {
+export class ShowDescriptor extends BaseDescriptor implements IDescriptor {
 
-    private _show: boolean = true;
+    public show = new formattingSettings.ToggleSwitch({
+        name: "show",
+        displayNameKey: "Visual_Show",
+        value: true
+    });
+
+    public topLevelSlice: formattingSettings.ToggleSwitch = this.show;
 
     private isAbleToBeShown: boolean = true;
 
+    private _viewport: powerbi.IViewport;
+    
     constructor(viewport: powerbi.IViewport = { width: 0, height: 0 }) {
-        super(viewport);
-
-        Object.defineProperty(
-            this,
-            "show",
-            {
-                ...Object.getOwnPropertyDescriptor(
-                    ShowDescriptor.prototype,
-                    "show",
-                ),
-                configurable: true,
-                enumerable: true,
-            },
-        );
-    }
-
-    public get show(): boolean {
-        if (!this.isAbleToBeShown) {
-            return false;
-        }
-
-        return this._show;
-    }
-
-    public set show(isShown: boolean) {
-        this._show = isShown;
+        super()
+        this._viewport = viewport;
     }
 
     public parse(options: IDescriptorParserOptions): void {
@@ -78,10 +60,14 @@ export class ShowDescriptor
             && this._viewport
             &&
             (
-                options.viewport.width <= this._viewport.width
-                ||
+                options.viewport.width <= this._viewport.width ||
                 options.viewport.height <= this._viewport.height
             )
         );
     }
+
+    public isElementShown(): boolean {
+        return this.isAbleToBeShown && this.show.value
+    }
 }
+ 

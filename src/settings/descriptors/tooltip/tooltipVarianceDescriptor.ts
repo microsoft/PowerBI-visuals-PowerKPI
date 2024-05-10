@@ -24,11 +24,22 @@
  *  THE SOFTWARE.
  */
 
-import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+import { NumberDescriptorBase } from "../numberDescriptorBase";
 
-import { IDataRepresentationPoint } from "./dataRepresentationPoint";
+export class TooltipVarianceDescriptor extends NumberDescriptorBase {
+    public label = new formattingSettings.TextInput({
+        name: "label",
+        displayNameKey: "Visual_Label",
+        value: "",
+        placeholder: "Variance"
+    });
 
-export interface ILabelEnabledDataRepresentationPoint extends IDataRepresentationPoint {
-    size: powerbi.IViewport;
-    labelFontSize: string;
+    constructor(name: string, displayName: string) {
+        super()
+
+        this.slices = [this.format, this.displayUnits, this.precision, this.label]
+        this.name = name;
+        this.displayNameKey = displayName;
+    }
 }

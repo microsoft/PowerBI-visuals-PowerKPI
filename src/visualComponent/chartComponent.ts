@@ -110,30 +110,38 @@ export class ChartComponent extends BaseContainerComponent<
             this.components,
             (component: IVisualComponent<IDotComponentRenderOptions | IComboComponentRenderOptions>, componentIndex: number) => {
                 const currentSeries: IDataRepresentationSeries = sortedSeries[componentIndex];
+                const {
+                    opacity,
+                    areaOpacity,
+                    thickness,
+                    lineStyle,
+                    lineType,
+                    interpolation
+                } = settings.line.getCurrentSettings(currentSeries.containerName)
 
                 if (this.shouldRenderFallbackComponents) {
                     const point: IDataRepresentationPoint = currentSeries.points[0];
 
                     component.render({
-                        opacity: currentSeries.settings.line.opacity,
+                        opacity,
                         point,
-                        radiusFactor: settings.dots.radiusFactor,
+                        radiusFactor: settings.dots.radiusFactor.value,
                         series: currentSeries,
-                        thickness: currentSeries.settings.line.thickness,
+                        thickness,
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,
                     });
                 } else {
                     component.render({
-                        areaOpacity: currentSeries.settings.line.areaOpacity,
+                        areaOpacity,
                         gradientPoints: currentSeries.gradientPoints,
-                        interpolation: currentSeries.settings.line.getInterpolation(),
-                        lineStyle: currentSeries.settings.line.lineStyle,
-                        lineType: currentSeries.settings.line.lineType,
-                        opacity: currentSeries.settings.line.opacity,
+                        interpolation,
+                        lineStyle,
+                        lineType,
+                        opacity,
                         series: currentSeries,
-                        thickness: currentSeries.settings.line.thickness,
+                        thickness,
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,

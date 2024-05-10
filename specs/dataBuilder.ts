@@ -58,7 +58,7 @@ export class DataBuilder extends testDataViewBuilder.TestDataViewBuilder {
         }
     }
 
-    public getDataView(columnNames?: string[]): powerbi.DataView {
+    public getDataView(columnNames: string[] = []): powerbi.DataView {
         const datesCategory = {
             source: {
                 displayName: DataBuilder.CategoryColumnName,

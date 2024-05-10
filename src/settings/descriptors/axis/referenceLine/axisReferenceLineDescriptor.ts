@@ -24,31 +24,60 @@
  *  THE SOFTWARE.
  */
 
-import {
-    BaseDescriptor,
-    IDescriptor,
-} from "../../descriptor";
+import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+import { BaseDescriptor, IDescriptor } from "../../baseDescriptor";
 
 export class AxisReferenceLineDescriptor
     extends BaseDescriptor
     implements IDescriptor {
 
-    public show: boolean;
-    public color: string = "#e9e9e9";
-    public thickness: number = 1;
+    public show = new formattingSettings.ToggleSwitch({
+        name: "show",
+        displayNameKey: "Visual_Show",
+        value: true
+    });
+
+    public topLevelSlice: formattingSettings.ToggleSwitch = this.show;
+
+    public color = new formattingSettings.ColorPicker({
+        name: "color",
+        displayNameKey: "Visual_Color",
+        value: { value: "#e9e9e9" }
+    });
 
     private _minThickness: number = 0.2;
     private _maxThickness: number = 5;
+    public thickness = new formattingSettings.Slider({
+        name: "thickness",
+        displayNameKey: "Visual_Thickness",
+        value: 1,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: this._minThickness,
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: this._maxThickness,
+            }
+        }
+    });
 
-    constructor(isShown: boolean = true) {
+    constructor(name: string, displayNameKey: string, isShown: boolean = true) {
         super();
 
-        this.show = isShown;
+        this.show.value = isShown;
+
+        this.slices = [this.color, this.thickness]
+        this.name = name;
+        this.displayNameKey = displayNameKey;
     }
 
-    public parse(): void {
-        this.thickness = Math.min(
-            Math.max(this._minThickness, this.thickness),
-            this._maxThickness);
+    public parse() {
+        // fix thickness value after migration to formatting model
+        if (this.thickness.value > this.thickness.options.maxValue.value){
+            this.thickness.value = this.thickness.options.maxValue.value;
+        }
     }
 }

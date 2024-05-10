@@ -48,7 +48,7 @@ export class VarianceBaseComponent extends CaptionKPIComponent {
         precision: number,
         format: string,
     ): valueFormatter.IValueFormatter {
-        return valueFormatter.valueFormatter.create({
+        return valueFormatter.create({
             displayUnitSystemType: displayUnitSystemType.DisplayUnitSystemType.WholeUnits,
             format,
             precision,
