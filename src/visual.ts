@@ -35,7 +35,7 @@ import {
     interactivityBaseService,
     interactivitySelectionService,
 } from "powerbi-visuals-utils-interactivityutils";
-import { formattingSettings, FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
+import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 
 import { IConverter } from "./converter/converter";
 import { DataConverter } from "./converter/dataConverter";
