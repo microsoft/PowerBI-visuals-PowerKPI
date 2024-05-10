@@ -111,7 +111,7 @@ export class NumberDescriptorBase
         super.parse(options);
 
         if (this.precision.value < this.precision.options.minValue.value){
-            this.percentile.value = this.precision.options.minValue.value;
+            this.precision.value = this.precision.options.minValue.value;
         }
         if (this.precision.value > this.precision.options.maxValue.value){
             this.precision.value = this.precision.options.maxValue.value;
