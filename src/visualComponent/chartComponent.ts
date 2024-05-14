@@ -76,7 +76,7 @@ export class ChartComponent extends BaseContainerComponent<
     }
 
     public render(options: IVisualComponentRenderOptions): void {
-        const { data: { sortedSeries, viewport, x, settings } } = options;
+        const { data: { sortedSeries, viewport, x, settings }, colorPalette } = options;
 
         const shouldRenderFallbackComponents: boolean = sortedSeries
             && sortedSeries[0]
@@ -131,6 +131,7 @@ export class ChartComponent extends BaseContainerComponent<
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,
+                        colorPalette: colorPalette
                     });
                 } else {
                     component.render({
@@ -145,6 +146,7 @@ export class ChartComponent extends BaseContainerComponent<
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,
+                        colorPalette: colorPalette
                     });
                 }
             },

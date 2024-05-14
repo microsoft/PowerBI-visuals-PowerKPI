@@ -31,6 +31,7 @@ import {
 } from "powerbi-visuals-utils-chartutils";
 
 import { interactivityBaseService } from "powerbi-visuals-utils-interactivityutils";
+import ISandboxExtendedColorPalette = powerbi.extensibility.ISandboxExtendedColorPalette
 
 import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
@@ -63,7 +64,8 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
     }
 
     public render(options: IVisualComponentRenderOptions): void {
-        const { data: { settings: { legend, line } } } = options;
+        const { data: { settings: { legend, line } }, colorPalette } = options;
+        
 
         if (!this.legend || !legend.isElementShown()) {
             this.hide();
@@ -72,7 +74,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
         }
 
         try {
-            const legendData: legendInterfaces.LegendData = this.createLegendData(options.data, legend, line);
+            const legendData: legendInterfaces.LegendData = this.createLegendData(options.data, legend, line, colorPalette);
 
             this.legend.changeOrientation(this.getLegendPosition(legend.position.value.value));
 
@@ -117,12 +119,14 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
         }
     }
 
-    private createLegendData(data: IDataRepresentation, legend: LegendDescriptor, line: LineDescriptor): legendInterfaces.LegendData {
+    private createLegendData(data: IDataRepresentation, legend: LegendDescriptor, line: LineDescriptor, colorPalette: ISandboxExtendedColorPalette): legendInterfaces.LegendData {
+        const isHighContrast: boolean = colorPalette.isHighContrast;
+        
         const dataPoints: legendInterfaces.LegendDataPoint[] = data.series
             .map((series: IDataRepresentationSeries) => {
-                const { lineStyle, fillColor } = line.getCurrentSettings(series.containerName)
+                const { lineStyle, fillColor } = line.getCurrentSettings(series.containerName);
                 const dataPoint: legendInterfaces.LegendDataPoint = {
-                    color: fillColor,
+                    color: isHighContrast ? colorPalette.foreground.value : fillColor,
                     identity: series.identity,
                     label: series.name,
                     lineStyle: legend.getLegendLineStyle(lineStyle),
@@ -142,7 +146,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
             fontFamily: legend.font.fontFamily.value,
             fontSize: legend.font.fontSize.value,
             grouped: false,
-            labelColor: legend.labelColor.value.value,
+            labelColor: isHighContrast ? colorPalette.foreground.value : legend.labelColor.value.value,
             title,
         };
     }

@@ -161,6 +161,7 @@ export class SvgComponent extends BaseContainerComponent<
             settings: settings.referenceLineOfXAxis,
             ticks: options.xTicks,
             viewport: reducedViewport,
+            colorPalette: options.colorPalette
         });
 
         this.yAxisReferenceLineComponent.render({
@@ -168,6 +169,7 @@ export class SvgComponent extends BaseContainerComponent<
             settings: settings.referenceLineOfYAxis,
             ticks: options.yTicks,
             viewport: reducedViewport,
+            colorPalette: options.colorPalette
         });
 
         this.secondaryYAxisReferenceLineComponent.render({
@@ -175,6 +177,7 @@ export class SvgComponent extends BaseContainerComponent<
             settings: settings.secondaryReferenceLineOfYAxis,
             ticks: options.secondaryYTicks,
             viewport: reducedViewport,
+            colorPalette: options.colorPalette
         });
 
         this.chartComponent.render(this.renderOptions);
@@ -302,6 +305,7 @@ export class SvgComponent extends BaseContainerComponent<
                 margin,
             },
             additionalMargin,
+            colorPalette
         } = baseOptions;
 
         const amountOfPoints: number = series
@@ -335,6 +339,7 @@ export class SvgComponent extends BaseContainerComponent<
                 series: dataSeries,
             },
             position: { x: xPosition, y: yPosition },
+            colorPalette
         };
 
         if (options.data.variances.length) {

@@ -32,6 +32,7 @@ import { Selection } from "d3-selection";
 
 import powerbi from "powerbi-visuals-api";
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
+import ISandboxExtendedColorPalette = powerbi.extensibility.ISandboxExtendedColorPalette;
 
 import { DataRepresentationAxisValueType } from "../../../dataRepresentation/dataRepresentationAxisValueType";
 import { DataRepresentationScale } from "../../../dataRepresentation/dataRepresentationScale";
@@ -45,6 +46,7 @@ export interface IAxisReferenceLineBaseComponentRenderOptions {
     ticks: DataRepresentationAxisValueType[];
     scale: DataRepresentationScale;
     viewport: powerbi.IViewport;
+    colorPalette: ISandboxExtendedColorPalette;
 }
 
 export abstract class AxisReferenceLineBaseComponent
@@ -68,6 +70,7 @@ export abstract class AxisReferenceLineBaseComponent
             ticks,
             scale,
             settings,
+            colorPalette
         } = options;
 
         if (!ticks || !scale || !settings || !ticks.length) {
@@ -91,6 +94,7 @@ export abstract class AxisReferenceLineBaseComponent
             });
 
         const getPoints: IAxisReferenceLineGetPointsFunction = this.getPoints(options);
+        const isHighContrast: boolean = colorPalette.isHighContrast;
 
         lineSelection
             .enter()
@@ -100,7 +104,7 @@ export abstract class AxisReferenceLineBaseComponent
             .attr("d", (value: DataRepresentationAxisValueType) => {
                 return line(getPoints(value));
             })
-            .style("stroke", settings.color.value.value)
+            .style("stroke", isHighContrast ? colorPalette.foreground.value :settings.color.value.value)
             .style("stroke-width", settings.thickness.value);
 
         lineSelection

@@ -60,11 +60,14 @@ export class DotsComponent extends BaseContainerComponent<
 
     public render(options: IVisualComponentRenderOptions): void {
         const {
-            x,
-            series,
-            viewport,
-            settings: { dots, line },
-        } = options.data;
+            data: {
+                 x,
+                series,
+                viewport,
+                settings: { dots, line },
+            },           
+            colorPalette
+        } = options;
 
         this.initComponents(
             this.components,
@@ -96,6 +99,7 @@ export class DotsComponent extends BaseContainerComponent<
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,
+                        colorPalette
                     });
                 } else {
                     component.hide();

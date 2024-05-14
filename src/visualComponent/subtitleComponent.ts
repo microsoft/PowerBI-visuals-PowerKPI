@@ -49,7 +49,7 @@ export class SubtitleComponent extends BaseComponent<IVisualComponentConstructor
     }
 
     public render(options: IVisualComponentRenderOptions): void {
-        const { subtitle } = options.data.settings;
+        const { data: { settings: { subtitle } }, colorPalette } = options;
 
         const data: SubtitleDescriptor[] = subtitle.isElementShown()
             ? [subtitle]
@@ -59,20 +59,22 @@ export class SubtitleComponent extends BaseComponent<IVisualComponentConstructor
             .selectAll(this.subTitleSelector.selectorName)
             .data(data);
 
+        const isHighContrast: boolean = colorPalette.isHighContrast;
+
         subtitleSelection
             .enter()
             .append("div")
             .classed(this.subTitleSelector.className, true)
             .merge(subtitleSelection)
             .text((settings: SubtitleDescriptor) => settings.titleText.value)
-            .style("color", (settings: SubtitleDescriptor) => settings.fontColor.value.value)
+            .style("color", (settings: SubtitleDescriptor) => isHighContrast ? colorPalette.foreground.value : settings.fontColor.value.value)
             .style("text-align", (settings: SubtitleDescriptor) => settings.alignment.value)
             .style("font-size", (settings: SubtitleDescriptor) => {
                 const fontSizeInPx: number = pixelConverter.fromPointToPixel(settings.font.fontSize.value);
 
                 return pixelConverter.toString(fontSizeInPx);
             })
-            .style("background-color", (settings: SubtitleDescriptor) => settings.background.value.value)
+            .style("background-color", (settings: SubtitleDescriptor) => isHighContrast ? colorPalette.background.value :settings.background.value.value)
             .style("font-family", (settings: SubtitleDescriptor) => settings.font.fontFamily.value)
             .classed(this.boldClassName, subtitle.font.bold.value)
             .classed(this.italicClassName, subtitle.font.italic.value);

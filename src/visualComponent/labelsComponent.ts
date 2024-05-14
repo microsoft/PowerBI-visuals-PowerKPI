@@ -115,12 +115,14 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
         options: IVisualComponentRenderOptions,
     ): Array<NewLabelUtils.labelLayout.LabelDataPointGroup<NewLabelUtils.labelLayout.LabelDataPoint[]>> {
         const {
-            x,
-            series,
-            viewport,
-            settings: { labels },
-
-        } = options.data;
+            data: {
+                x,
+                series,
+                viewport,
+                settings: { labels },
+            },
+            colorPalette
+        } = options;
 
         const xScale: DataRepresentationScale = x.scale
             .copy()
@@ -196,16 +198,18 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
                         ],
                     };
 
+                    const isHighContrast: boolean = colorPalette.isHighContrast;
+
                     const labelDataPoint: NewLabelUtils.labelLayout.LabelDataPoint = {
                         fontProperties: {
-                            color: labels.color.value.value,
+                            color: isHighContrast ? colorPalette.foreground.value : labels.color.value.value,
                             family: labels.font.fontFamily.value,
                             size: NewLabelUtils.units.FontSize.createFromPt(labels.font.fontSize.value),
                         },
                         identity: null,
-                        insideFill: labels.color.value.value,
+                        insideFill: isHighContrast ? colorPalette.foreground.value : labels.color.value.value,
                         isPreferred: pointIndex === 0 || pointIndex === lastPointIndex,
-                        outsideFill: labels.color.value.value,
+                        outsideFill: isHighContrast ? colorPalette.foreground.value : labels.color.value.value,
                         parentShape,
                         parentType: NewLabelUtils.labelLayout.LabelDataPointParentType.Point,
                         text: formattedValue,

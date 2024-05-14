@@ -55,7 +55,7 @@ export class DateKPIComponent
     }
 
     public render(options: IVisualComponentRenderOptions): void {
-        const { settings, x } = options.data;
+        const { data: {settings, x}, colorPalette } = options;
         const captionDetailsKPIComponentOptions: ICaptionKPIComponentOptions = {
             ...options,
         } as ICaptionKPIComponentOptions;
@@ -84,11 +84,13 @@ export class DateKPIComponent
             settings: settings.dateValueKPI,
             title: options.data.x.name || formattedValue,
             value: formattedValue,
+            colorPalette: colorPalette
         };
 
         const labelCaption: ICaptionKPIComponentOptionsValueSettings = {
             settings: settings.dateLabelKPI,
             value: options.data.x.name,
+            colorPalette: colorPalette
         };
 
         captionDetailsKPIComponentOptions.captions = [

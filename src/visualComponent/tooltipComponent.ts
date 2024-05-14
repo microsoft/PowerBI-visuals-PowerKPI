@@ -26,6 +26,7 @@
 
 import powerbi from "powerbi-visuals-api";
 import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
+import ISandboxExtendedColorPalette = powerbi.extensibility.ISandboxExtendedColorPalette;
 
 import { VarianceConverter } from "../converter/varianceConverter";
 import { IDataRepresentationPoint } from "../dataRepresentation/dataRepresentationPoint";
@@ -115,6 +116,7 @@ export class TooltipComponent
                 },
                 variances,
             },
+            colorPalette
         } = options;
 
         if (!tooltipLabel.isElementShown()
@@ -138,6 +140,7 @@ export class TooltipComponent
                 && series[0].points[0]
                 && series[0].points[0].kpiIndex),
             (variances[0] || [])[0],
+            colorPalette,
             legend,
             series[0] && line.getCurrentSettings(series[0].containerName)
         );
@@ -153,6 +156,7 @@ export class TooltipComponent
             this.secondVarianceDisplayName,
             undefined,
             (variances[1] || [])[0],
+            colorPalette
         );
 
         if (secondVariance) {
@@ -185,10 +189,11 @@ export class TooltipComponent
                 ) {
                     const lineSettings = line.getCurrentSettings(dataSeries.containerName)
                     if(lineSettings){
+                        const isHighContrast: boolean = colorPalette.isHighContrast;
                         dataItems.push({
-                            color: lineSettings.fillColor,
+                            color: isHighContrast ? colorPalette.foreground.value : lineSettings.fillColor,
                             displayName: `${dataSeries.name}`,
-                            lineColor: lineSettings.fillColor,
+                            lineColor: isHighContrast ? colorPalette.foreground.value : lineSettings.fillColor,
                             lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle),
                             markerShape: legend.getLegendMarkerShape(),
                             value: valueFormatterInstance.format(dataSeriesPoint.y),
@@ -275,6 +280,7 @@ export class TooltipComponent
         displayName: string,
         commonKPISettings: IKPIIndicatorSettings = {},
         kpiIndicatorVariance: number,
+        colorPalette: ISandboxExtendedColorPalette,
         legendDescriptor?: LegendDescriptor,
         lineSettings?: SimpleLineSetting,
     ): IVisualTooltipDataItem {
@@ -304,7 +310,16 @@ export class TooltipComponent
             ? legendDescriptor.getLegendMarkerShape()
             : this.getTooltipMarkerShape(TooltipMarkerShapeEnum.circle);
 
-        const color: string = commonKPISettings.color && commonKPISettings.color.value.value || this.transparentColor;
+        const isHighContrast: boolean = colorPalette.isHighContrast;
+        let color: string = commonKPISettings.color && commonKPISettings.color.value.value || this.transparentColor;
+
+        if (commonKPISettings.color && commonKPISettings.color.value.value){
+            color = isHighContrast ? colorPalette.foreground.value : commonKPISettings.color.value.value;
+        }
+        else {
+            color = this.transparentColor;
+        }
+
 
         const lineColor: string = lineSettings
             ? color
