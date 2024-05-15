@@ -185,7 +185,7 @@ export class PowerKPI implements IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
-        this.settings.filterFormattingProperties(this.dataRepresentation, this.axisType, this.localizationManager);
+        this.settings.filterFormattingProperties(this.dataRepresentation, this.axisType, this.localizationManager, this.colorPalette.isHighContrast);
 
         return this.formattingSettingsService.buildFormattingModel(this.settings);
     }    
