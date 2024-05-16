@@ -46,6 +46,13 @@ export class SubtitleComponent extends BaseComponent<IVisualComponentConstructor
             options.element,
             this.className,
         );
+
+        this.constructorOptions = {
+            ...options,
+            element: this.element,
+        };
+
+        this.element.on("contextmenu", (event) => this.contextMenuHandler(event));
     }
 
     public render(options: IVisualComponentRenderOptions): void {

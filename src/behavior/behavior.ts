@@ -64,6 +64,17 @@ export class Behavior implements interactivityBaseService.IInteractiveBehavior {
                 selectionHandler.handleClearSelection();
             },
         );
+
+        this.options.eventDispatcher.on(
+            EventName.onContextMenu,
+            (event: PointerEvent, series: IDataRepresentationSeries) => {
+                selectionHandler.handleContextMenu(series, {
+                    x: event.clientX,
+                    y: event.clientY
+                });
+                event.preventDefault();
+            },
+        );
     }
 
     public renderSelection(): void {

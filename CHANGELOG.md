@@ -1,5 +1,6 @@
 ## 3.0.1.0
 * Added high contrast mode
+* Added context menu
 
 ## 3.0.0
 * Updated packages
