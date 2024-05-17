@@ -100,7 +100,7 @@ import { TestWrapper } from "./testWrapper";
 describe("Power KPI", () => {
     describe("DOM", () => {
         it("Root element should be defined in DOM", (done) => {
-            const testWrapper: TestWrapper = new TestWrapper;
+            const testWrapper: TestWrapper = new TestWrapper();
 
             testWrapper.visualBuilder.updateRenderTimeout(
                 testWrapper.dataView,
@@ -132,7 +132,7 @@ describe("Power KPI", () => {
                 tooltipService,
             });
 
-            const testWrapper: TestWrapper = new TestWrapper;
+            const testWrapper: TestWrapper = new TestWrapper();
             const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
 
             spyOn(tooltipService, "show");
@@ -509,7 +509,7 @@ describe("Power KPI", () => {
                 y: 100,
             };
 
-            const testWrapper: TestWrapper = new TestWrapper;
+            const testWrapper: TestWrapper = new TestWrapper();
             const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
 
             const dotComponentRenderOptions: IDotComponentRenderOptions = {
@@ -553,7 +553,7 @@ describe("Power KPI", () => {
             const comboComponent: ComboComponent =
                 new ComboComponentLineComponentTest({ element });
             
-            const testWrapper: TestWrapper = new TestWrapper;
+            const testWrapper: TestWrapper = new TestWrapper();
             const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
 
             comboComponent.render({
@@ -597,7 +597,7 @@ describe("Power KPI", () => {
             const comboComponent: ComboComponent =
                 new ComboComponentAreaComponentTest({ element });
 
-            const testWrapper: TestWrapper = new TestWrapper;
+            const testWrapper: TestWrapper = new TestWrapper();
             const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
 
             comboComponent.render({
@@ -646,7 +646,7 @@ describe("Power KPI", () => {
 
         const gradientPoints: IDataRepresentationPointGradientColor[] = [];
 
-        const testWrapper: TestWrapper = new TestWrapper;
+        const testWrapper: TestWrapper = new TestWrapper();
         const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
 
         points.forEach((point: IDataRepresentationPoint) => {
@@ -1016,7 +1016,7 @@ describe("Power KPI", () => {
 
     describe("DataConverter", () => {
         it("dataRepresentation.x.type must be changed to DataRepresentationTypeEnum.StringType if XAxis.type is AxisType.categorical", () => {
-            const testWrapper: TestWrapper = new TestWrapper;
+            const testWrapper: TestWrapper = new TestWrapper();
 
             const dataView: powerbi.DataView = testWrapper.dataView;
 
