@@ -185,7 +185,7 @@ export class CaptionKPIComponent implements IKPIVisualComponent<ICaptionKPICompo
 
                 return className;
             })
-            .style("color", (options: ICaptionKPIComponentOptionsValueSettings) => options.settings.fontColor.value.value)
+            .style("color", (options: ICaptionKPIComponentOptionsValueSettings) => options.colorPalette.isHighContrast ? options.colorPalette.foreground.value : options.settings.fontColor.value.value)
             .style("font-size", (options: ICaptionKPIComponentOptionsValueSettings) => {
                 return pixelConverter.toString(pixelConverter.fromPointToPixel(options.settings.font.fontSize.value));
             })

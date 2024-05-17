@@ -51,20 +51,23 @@ export class VarianceComponentWithCustomLabel
 
     public render(options: IVisualComponentRenderOptions): void {
         const {
-            series,
-            variance,
-            settings: {
-                dateLabelKPI,
-                dateValueKPI,
-                actualValueKPI,
-                actualLabelKPI,
-                kpiIndicatorValue,
-                kpiIndicatorLabel,
-                secondKPIIndicatorValue,
-                secondKPIIndicatorLabel,
-                kpiIndicator,
+            data: {
+                series,
+                variance,
+                settings: {
+                    dateLabelKPI,
+                    dateValueKPI,
+                    actualValueKPI,
+                    actualLabelKPI,
+                    kpiIndicatorValue,
+                    kpiIndicatorLabel,
+                    secondKPIIndicatorValue,
+                    secondKPIIndicatorLabel,
+                    kpiIndicator,
+                },
             },
-        } = options.data;
+            colorPalette            
+        } = options;
 
         const varianceSettings: KPIIndicatorDescriptor = this.cloneClass(secondKPIIndicatorValue);
 
@@ -105,11 +108,13 @@ export class VarianceComponentWithCustomLabel
             settings: varianceSettings,
             title: secondKPIIndicatorLabel.label.value || `${variance[1]}`,
             value: formatter.format(variance[1]),
+            colorPalette: colorPalette
         };
 
         const labelCaption: ICaptionKPIComponentOptionsValueSettings = {
             settings: labelSettings,
             value: secondKPIIndicatorLabel.label.value,
+            colorPalette: colorPalette
         };
 
         super.render({
@@ -119,6 +124,7 @@ export class VarianceComponentWithCustomLabel
                 [labelCaption],
             ],
             data: options.data,
+            colorPalette
         });
     }
 

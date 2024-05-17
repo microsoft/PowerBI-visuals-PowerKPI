@@ -83,6 +83,7 @@ export class AreaComponent
             interpolation,
             gradientPoints,
             series,
+            colorPalette
         } = options;
 
         this.renderOptions = options;
@@ -103,6 +104,7 @@ export class AreaComponent
             .exit()
             .remove();
 
+        const isHighContrast: boolean = colorPalette.isHighContrast;
         this.areaSelection = areaSelection.enter()
             .append("svg:path")
             .classed(this.areaSelector.className, true)
@@ -116,7 +118,7 @@ export class AreaComponent
                     interpolation,
                 )(gradientGroup.points);
             })
-            .style("fill", (gradientGroup: IDataRepresentationPointGradientColor) => gradientGroup.color);
+            .style("fill", (gradientGroup: IDataRepresentationPointGradientColor) => isHighContrast ? colorPalette.foreground.value : gradientGroup.color);
 
         this.highlight(series && series.hasSelection);
     }

@@ -101,6 +101,7 @@ export class LineComponent extends BaseComponent<IVisualComponentConstructorOpti
             gradientPoints,
             lineStyle,
             series,
+            colorPalette
         } = options;
         this.renderOptions = options;
 
@@ -120,6 +121,8 @@ export class LineComponent extends BaseComponent<IVisualComponentConstructorOpti
             .exit()
             .remove();
 
+        const isHighContrast: boolean = colorPalette.isHighContrast;
+
         this.lineSelection = lineSelection.enter()
             .append("svg:path")
             .classed(this.lineSelector.className, true)
@@ -133,7 +136,7 @@ export class LineComponent extends BaseComponent<IVisualComponentConstructorOpti
                 )(gradientGroup.points);
             })
             .attr("class", `${this.lineSelector.className} ${lineStyle}`)
-            .style("stroke", (gradientGroup: IDataRepresentationPointGradientColor) => gradientGroup.color)
+            .style("stroke", (gradientGroup: IDataRepresentationPointGradientColor) => isHighContrast ? colorPalette.foreground.value : gradientGroup.color)
             .style("stroke-width", () => pixelConverter.toString(thickness));
         this.highlight(series && series.hasSelection);
     }

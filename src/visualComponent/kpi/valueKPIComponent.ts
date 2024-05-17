@@ -56,7 +56,7 @@ export class ValueKPIComponent
     }
 
     public render(options: IVisualComponentRenderOptions): void {
-        const { series, settings, variance } = options.data;
+        const { data: {series, settings, variance}, colorPalette } = options;
         const captionDetailsKPIComponentOptions: ICaptionKPIComponentOptions = { ...options } as ICaptionKPIComponentOptions;
 
         let caption: string = "";
@@ -85,11 +85,13 @@ export class ValueKPIComponent
             settings: settings.actualValueKPI,
             title: details || title,
             value: caption,
+            colorPalette: colorPalette
         };
 
         const labelCaption: ICaptionKPIComponentOptionsValueSettings = {
             settings: settings.actualLabelKPI,
             value: details,
+            colorPalette: colorPalette
         };
 
         captionDetailsKPIComponentOptions.captions = [

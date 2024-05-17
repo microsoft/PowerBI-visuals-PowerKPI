@@ -27,6 +27,7 @@
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+import ColorPicker = formattingSettings.ColorPicker;
 
 import {
     IDescriptor,
@@ -190,7 +191,7 @@ export class Settings extends formattingSettings.Model {
             });
     }
 
-    public filterFormattingProperties(dataRepresentation: IDataRepresentation, axisType: DataRepresentationTypeEnum, localizationManager: ILocalizationManager) {
+    public filterFormattingProperties(dataRepresentation: IDataRepresentation, axisType: DataRepresentationTypeEnum, localizationManager: ILocalizationManager, isHighContrast: boolean) {
         this.filterSettingsCards(dataRepresentation);
         this.filterLayoutProperties();
         this.filterLineProperties();
@@ -198,6 +199,7 @@ export class Settings extends formattingSettings.Model {
         this.filterKPIIndicatorValueProperties();
         this.filterSettingsPropertiesByAxisType(axisType);
         this.setLocalizedDisplayNames(localizationManager);
+        this.hideColorPickers(isHighContrast);
     }
 
     private filterSettingsCards(dataRepresentation: IDataRepresentation) {
@@ -284,5 +286,13 @@ export class Settings extends formattingSettings.Model {
         this.cards.forEach(card => {
             card.setLocalizedDisplayName(localizationManager);
         })
+    }
+
+    private hideColorPickers(isHighContrast: boolean) {
+        this.cards.forEach((card: formattingSettings.SimpleCard) => {
+            card.slices?.forEach((slice) => {
+                slice.visible = slice instanceof ColorPicker ? !isHighContrast : slice.visible;
+            });
+        });
     }
 }

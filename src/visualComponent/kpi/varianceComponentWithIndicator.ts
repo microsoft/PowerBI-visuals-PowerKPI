@@ -60,20 +60,23 @@ export class VarianceComponentWithIndicator
     // eslint-disable-next-line max-lines-per-function
     public render(options: IVisualComponentRenderOptions): void {
         const {
-            series,
-            settings: {
-                dateLabelKPI,
-                dateValueKPI,
-                actualValueKPI,
-                actualLabelKPI,
-                secondKPIIndicatorValue,
-                secondKPIIndicatorLabel,
-                kpiIndicatorValue,
-                kpiIndicatorLabel,
-                kpiIndicator,
-            },
-            variance,
-        } = options.data;
+            data: {
+                series,
+                settings: {
+                    dateLabelKPI,
+                    dateValueKPI,
+                    actualValueKPI,
+                    actualLabelKPI,
+                    secondKPIIndicatorValue,
+                    secondKPIIndicatorLabel,
+                    kpiIndicatorValue,
+                    kpiIndicatorLabel,
+                    kpiIndicator,
+                },
+                variance,
+            },            
+            colorPalette
+        } = options;
         const { current } = series && series.length > 0 && series[0];
         let kpiIndex: number = NaN;
 
@@ -94,6 +97,10 @@ export class VarianceComponentWithIndicator
                 : kpiIndicatorValue.fontColor.value.value;
         } else {
             varianceSettings.fontColor = kpiIndicatorValue.fontColor;
+        }
+
+        if (colorPalette.isHighContrast){
+            varianceSettings.fontColor.value.value = colorPalette.foreground.value;
         }
 
         if (isNaN(variance[0])) {
@@ -138,6 +145,7 @@ export class VarianceComponentWithIndicator
             settings: indicatorSettings,
             title,
             value: "",
+            colorPalette: colorPalette
         };
 
         const fakedIndicatorSettings: KPIIndicatorDescriptor = new KPIIndicatorDescriptor();
@@ -159,6 +167,7 @@ export class VarianceComponentWithIndicator
             settings: fakedIndicatorSettings,
             title,
             value: "",
+            colorPalette: colorPalette
         };
 
         const formatter: valueFormatter.IValueFormatter = this.getValueFormatter(
@@ -171,12 +180,14 @@ export class VarianceComponentWithIndicator
             settings: varianceSettings,
             title,
             value: formatter.format(variance[0]),
+            colorPalette: colorPalette
         };
 
         const labelCaption: ICaptionKPIComponentOptionsValueSettings = {
             className: this.indicatorValueClassName,
             settings: kpiLabelSettings,
             value: kpiIndicatorLabel.label.value,
+            colorPalette: colorPalette
         };
 
         const captions: ICaptionKPIComponentOptionsValueSettings[][] = [];
@@ -203,6 +214,7 @@ export class VarianceComponentWithIndicator
             align: currentAlign,
             captions,
             data: options.data,
+            colorPalette
         });
     }
 

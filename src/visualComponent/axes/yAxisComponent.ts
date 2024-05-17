@@ -36,6 +36,7 @@ import {
     valueFormatter,
 } from "powerbi-visuals-utils-formattingutils";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
+import ISandboxExtendedColorPalette = powerbi.extensibility.ISandboxExtendedColorPalette;
 
 import { IDataRepresentationAxis } from "../../dataRepresentation/dataRepresentationAxis";
 import { YAxisDescriptor } from "../../settings/descriptors/axis/yAxisDescriptor";
@@ -56,6 +57,7 @@ export interface IYAxisComponentRenderOptions {
     axis: IDataRepresentationAxis;
     viewport: powerbi.IViewport;
     margin: IMargin;
+    colorPalette: ISandboxExtendedColorPalette;
 }
 
 export class YAxisComponent
@@ -134,6 +136,7 @@ export class YAxisComponent
             margin,
             settings,
             viewport,
+            colorPalette
         } = options;
 
         const height: number = Math.max(0, viewport.height - margin.top - margin.bottom);
@@ -194,12 +197,14 @@ export class YAxisComponent
             return formattedLabel;
         });
 
+        const isHighContrast: boolean = colorPalette.isHighContrast;
+
         this.gElement
             .call(this.axisProperties.axis)
             .attr("font-family", settings.font.fontFamily.value)
             .attr("font-size", settings.fontSizeInPx)
-            .attr("fill", settings.fontColor.value.value)
-            .attr("color", settings.fontColor.value.value);
+            .attr("fill", isHighContrast ? colorPalette.background.value : settings.fontColor.value.value)
+            .attr("color", isHighContrast ? colorPalette.foreground.value : settings.fontColor.value.value);
     }
 
     public getViewport(): IVisualComponentViewport {

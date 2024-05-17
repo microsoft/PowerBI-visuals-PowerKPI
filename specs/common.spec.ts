@@ -100,7 +100,7 @@ import { TestWrapper } from "./testWrapper";
 describe("Power KPI", () => {
     describe("DOM", () => {
         it("Root element should be defined in DOM", (done) => {
-            const testWrapper: TestWrapper = new TestWrapper;
+            const testWrapper: TestWrapper = new TestWrapper();
 
             testWrapper.visualBuilder.updateRenderTimeout(
                 testWrapper.dataView,
@@ -131,6 +131,9 @@ describe("Power KPI", () => {
             const tooltipComponent: TooltipComponent = new TooltipComponent({
                 tooltipService,
             });
+
+            const testWrapper: TestWrapper = new TestWrapper();
+            const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
 
             spyOn(tooltipService, "show");
 
@@ -233,6 +236,7 @@ describe("Power KPI", () => {
                     } as IDataRepresentationX,
                 } as IDataRepresentation,
                 position,
+                colorPalette
             };
 
             tooltipComponent.render(options);
@@ -505,6 +509,9 @@ describe("Power KPI", () => {
                 y: 100,
             };
 
+            const testWrapper: TestWrapper = new TestWrapper();
+            const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
+
             const dotComponentRenderOptions: IDotComponentRenderOptions = {
                 point,
                 radiusFactor: 1,
@@ -518,6 +525,7 @@ describe("Power KPI", () => {
                     [0, 1000],
                     DataRepresentationTypeEnum.NumberType
                 ),
+                colorPalette,
             };
 
             const dotComponent: DotComponent = new DotComponent({ element });
@@ -544,6 +552,9 @@ describe("Power KPI", () => {
         it("should init LineComponent if line type is line", () => {
             const comboComponent: ComboComponent =
                 new ComboComponentLineComponentTest({ element });
+            
+            const testWrapper: TestWrapper = new TestWrapper();
+            const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
 
             comboComponent.render({
                 areaOpacity: 1,
@@ -556,6 +567,7 @@ describe("Power KPI", () => {
                 viewport,
                 x: DataRepresentationScale.create(),
                 y: DataRepresentationScale.create(),
+                colorPalette,
             });
         });
 
@@ -585,6 +597,9 @@ describe("Power KPI", () => {
             const comboComponent: ComboComponent =
                 new ComboComponentAreaComponentTest({ element });
 
+            const testWrapper: TestWrapper = new TestWrapper();
+            const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
+
             comboComponent.render({
                 areaOpacity: 1,
                 gradientPoints: [],
@@ -596,6 +611,7 @@ describe("Power KPI", () => {
                 viewport,
                 x: DataRepresentationScale.create(),
                 y: DataRepresentationScale.create(),
+                colorPalette,
             });
         });
     });
@@ -630,6 +646,9 @@ describe("Power KPI", () => {
 
         const gradientPoints: IDataRepresentationPointGradientColor[] = [];
 
+        const testWrapper: TestWrapper = new TestWrapper();
+        const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
+
         points.forEach((point: IDataRepresentationPoint) => {
             dates.push(point.x as Date);
             values.push(point.y);
@@ -652,6 +671,7 @@ describe("Power KPI", () => {
                 [values[0], values[values.length - 1]],
                 DataRepresentationTypeEnum.NumberType
             ),
+            colorPalette
         });
 
         return element;
@@ -996,7 +1016,7 @@ describe("Power KPI", () => {
 
     describe("DataConverter", () => {
         it("dataRepresentation.x.type must be changed to DataRepresentationTypeEnum.StringType if XAxis.type is AxisType.categorical", () => {
-            const testWrapper: TestWrapper = new TestWrapper;
+            const testWrapper: TestWrapper = new TestWrapper();
 
             const dataView: powerbi.DataView = testWrapper.dataView;
 

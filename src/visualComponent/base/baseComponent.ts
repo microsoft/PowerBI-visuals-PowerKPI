@@ -264,4 +264,19 @@ export abstract class BaseComponent<ConstructorOptionsType
             event,
         );
     }
+
+    protected contextMenuHandler(event: PointerEvent): void {
+        if (!this.constructorOptions
+            || !this.constructorOptions.eventDispatcher
+        ) {
+            return;
+        }
+
+        this.constructorOptions.eventDispatcher.call(
+            EventName.onContextMenu,
+            undefined,
+            event,
+            this,
+        );
+    }
 }

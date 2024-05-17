@@ -67,6 +67,7 @@ export class DotComponent extends BaseComponent<IVisualComponentConstructorOptio
             viewport,
             thickness,
             radiusFactor,
+            colorPalette
         } = options;
 
         this.renderOptions = options;
@@ -79,10 +80,11 @@ export class DotComponent extends BaseComponent<IVisualComponentConstructorOptio
             .copy()
             .range([viewport.height, 0]);
 
+        const isHighContrast: boolean = colorPalette.isHighContrast;
         this.element
             .attr("cx", xScale.scale(point.x))
             .attr("cy", yScale.scale(point.y))
             .attr("r", thickness * radiusFactor)
-            .style("fill", point.color);
+            .style("fill", isHighContrast ? colorPalette.foreground.value : point.color);
     }
 }

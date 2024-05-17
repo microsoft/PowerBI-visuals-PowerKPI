@@ -78,8 +78,9 @@ export class MainComponent extends BaseContainerComponent<
                 viewport,
                 settings: {
                     kpiIndicator,
-                },
+                }
             },
+            colorPalette
         } = options;
 
         let backgroundColor: string = null;
@@ -91,9 +92,10 @@ export class MainComponent extends BaseContainerComponent<
             && series[0].current
         ) {
             const kpiIndicatorSettings: IKPIIndicatorSettings = kpiIndicator.getCurrentKPI(series[0].current.kpiIndex);
+            const isHighContrast: boolean = colorPalette.isHighContrast;
 
             if (kpiIndicatorSettings && kpiIndicatorSettings.color.value.value) {
-                backgroundColor = kpiIndicatorSettings.color.value.value;
+                backgroundColor = isHighContrast ? colorPalette.foreground.value : kpiIndicatorSettings.color.value.value;
             }
         }
 

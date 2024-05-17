@@ -64,6 +64,8 @@ export class CommonComponent extends BaseContainerComponent<
             new LegendComponent(this.constructorOptions),
             new LayoutComponent(this.constructorOptions),
         ];
+
+        this.element.on("contextmenu", (event) => this.contextMenuHandler(event));
     }
 
     public render(options: IVisualComponentRenderOptions): void {
