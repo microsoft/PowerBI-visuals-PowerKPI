@@ -85,11 +85,11 @@ export interface IKPIIndicatorSettings { // This should be synchronized with _pr
 const positionOptions = [
     {
         value: HorizontalLayoutEnum.Left,
-        displayName: "Left"
+        displayName: "Visual_Left"
     },
     {
         value: HorizontalLayoutEnum.Right,
-        displayName: "Right"
+        displayName: "Visual_Right"
     }
 ]
 export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements IDescriptor {
