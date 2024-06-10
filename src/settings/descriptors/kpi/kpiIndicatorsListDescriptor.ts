@@ -85,11 +85,13 @@ export interface IKPIIndicatorSettings { // This should be synchronized with _pr
 const positionOptions = [
     {
         value: HorizontalLayoutEnum.Left,
-        displayName: "Left"
+        displayName: "Left",
+        displayNameKey: "Visual_Left"
     },
     {
         value: HorizontalLayoutEnum.Right,
-        displayName: "Right"
+        displayName: "Right",
+        displayNameKey: "Visual_Right"
     }
 ]
 export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements IDescriptor {
@@ -137,26 +139,26 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
     ];
 
     private _shapes = [
-        { value: ShapeType.CircleFull, displayName: "Visual_Circle" },
-        { value: ShapeType.Triangle, displayName: "Visual_Triangle" },
-        { value: ShapeType.Rhombus, displayName: "Visual_Diamond" },
-        { value: ShapeType.Square, displayName: "Visual_Square" },
-        { value: ShapeType.Flag, displayName: "Visual_Flag" },
-        { value: ShapeType.Exclamation, displayName: "Visual_Exclamation" },
-        { value: ShapeType.Checkmark, displayName: "Visual_Checkmark" },
-        { value: ShapeType.ArrowUp, displayName: "Visual_Arrow_Up" },
-        { value: ShapeType.ArrowRightUp, displayName: "Visual_Arrow_Right_Up" },
-        { value: ShapeType.ArrowRightDown, displayName: "Visual_Arrow_Right_Down" },
-        { value: ShapeType.ArrowDown, displayName: "Visual_Arrow_Down" },
-        { value: ShapeType.CaretUp, displayName: "Visual_Caret_Up" },
-        { value: ShapeType.CaretDown, displayName: "Visual_Caret_Down" },
-        { value: ShapeType.CircleEmpty, displayName: "Visual_Circle_Empty" },
-        { value: ShapeType.CircleX, displayName: "Visual_Circle_X" },
-        { value: ShapeType.CircleExclamation, displayName: "Visual_Circle_Exclamation" },
-        { value: ShapeType.CircleCheckmark, displayName: "Visual_Circle_Checkmark" },
-        { value: ShapeType.X, displayName: "X" },
-        { value: ShapeType.StarEmpty, displayName: "Visual_Star_Empty" },
-        { value: ShapeType.StarFull, displayName: "Visual_StarFull" },
+        { value: ShapeType.CircleFull, displayName: "Circle", displayNameKey: "Visual_Circle" },
+        { value: ShapeType.Triangle, displayName: "Triangle", displayNameKey: "Visual_Triangle" },
+        { value: ShapeType.Rhombus, displayName: "Diamond", displayNameKey: "Visual_Diamond" },
+        { value: ShapeType.Square, displayName: "Square", displayNameKey: "Visual_Square" },
+        { value: ShapeType.Flag, displayName: "Flag", displayNameKey: "Visual_Flag" },
+        { value: ShapeType.Exclamation, displayName: "Exclamation", displayNameKey: "Visual_Exclamation" },
+        { value: ShapeType.Checkmark, displayName: "Checkmark", displayNameKey: "Visual_Checkmark" },
+        { value: ShapeType.ArrowUp, displayName: "Arrow_Up", displayNameKey: "Visual_Arrow_Up" },
+        { value: ShapeType.ArrowRightUp, displayName: "Arrow_Right_Up", displayNameKey: "Visual_Arrow_Right_Up" },
+        { value: ShapeType.ArrowRightDown, displayName: "Arrow_Right_Down", displayNameKey: "Visual_Arrow_Right_Down" },
+        { value: ShapeType.ArrowDown, displayName: "Arrow_Down", displayNameKey: "Visual_Arrow_Down" },
+        { value: ShapeType.CaretUp, displayName: "Caret_Up", displayNameKey: "Visual_Caret_Up" },
+        { value: ShapeType.CaretDown, displayName: "Caret_Down", displayNameKey: "Visual_Caret_Down" },
+        { value: ShapeType.CircleEmpty, displayName: "Circle_Empty", displayNameKey: "Visual_Circle_Empty" },
+        { value: ShapeType.CircleX, displayName: "Circle_X", displayNameKey: "Visual_Circle_X" },
+        { value: ShapeType.CircleExclamation, displayName: "Circle_Exclamation", displayNameKey: "Visual_Circle_Exclamation" },
+        { value: ShapeType.CircleCheckmark, displayName: "Circle_Checkmark", displayNameKey: "Visual_Circle_Checkmark" },
+        { value: ShapeType.X, displayName: "X", displayNameKey: "X" },
+        { value: ShapeType.StarEmpty, displayName: "Star_Empty", displayNameKey: "Visual_Star_Empty" },
+        { value: ShapeType.StarFull, displayName: "StarFull", displayNameKey: "Visual_StarFull" },
     ];
 
     private _properties: IPropertyConfiguration[] = [
@@ -280,7 +282,7 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
         super.setLocalizedDisplayName(localizationManager);
         [this._shapes, positionOptions].forEach(list => 
             list.forEach(option => {
-                option.displayName = localizationManager.getDisplayName(option.displayName)
+                option.displayName = localizationManager.getDisplayName(option.displayNameKey)
             })
         )
     }

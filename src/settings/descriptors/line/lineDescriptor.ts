@@ -47,88 +47,107 @@ import { LineStyle, LineType, LineInterpolation, SimpleLineSetting } from "./lin
 const lineStyleOptions = [
     {
         value: LineStyle.solidLine,
-        displayName: "Visual_Solid"
+        displayName: "Solid",
+        displayNameKey: "Visual_Solid"
     },
     {
         value: LineStyle.dottedLine,
-        displayName: "Visual_Dotted"
+        displayName: "Dotted",
+        displayNameKey: "Visual_Dotted"
     },
     {
         value: LineStyle.dashedLine,
-        displayName: "Visual_Dashed"
+        displayName: "Dashed",
+        displayNameKey: "Visual_Dashed"
     },
     {
         value: LineStyle.dotDashedLine,
-        displayName: "Visual_Dot-dashed"
+        displayName: "Dot-dashed",
+        displayNameKey: "Visual_Dot-dashed"
     }
 ]
 
 const interpolationWithColorizedLineOptions = [
     {
       value: LineInterpolation.linear,
-      displayName: "Visual_Linear"
+      displayName: "Linear",
+      displayNameKey: "Visual_Linear"
     },
     {
       value: LineInterpolation.stepBefore,
-      displayName: "Visual_Step-before"
+      displayName: "Step-before",
+      displayNameKey: "Visual_Step-before"
     },
     {
       value: LineInterpolation.stepAfter,
-      displayName: "Visual_Step-after"
+      displayName: "Step-after",
+      displayNameKey: "Visual_Step-after"
     }
 ]
 
 const lineTypeOptions = [
     {
         value: LineType.line,
-        displayName: "Visual_Line"
+        displayName: "Line",
+        displayNameKey: "Visual_Line"
     },
     {
         value: LineType.area,
-        displayName: "Visual_Area"
+        displayName: "Area",
+        displayNameKey: "Visual_Area"
     }
 ]
 
 const interpolationOptions = [
     {
         value: LineInterpolation.linear,
-        displayName: "Visual_Linear"
+        displayName: "Linear",
+        displayNameKey: "Visual_Linear"
     },
     {
         value: LineInterpolation.stepBefore,
-        displayName: "Visual_Step-before"
+        displayName: "Step-before",
+        displayNameKey: "Visual_Step-before"
     },
     {
         value: LineInterpolation.stepAfter,
-        displayName: "Visual_Step-after"
+        displayName: "Step-after",
+        displayNameKey: "Visual_Step-after"
     },
     {
         value: LineInterpolation.basis,
-        displayName: "Visual_Basis"
+        displayName: "Basis",
+        displayNameKey: "Visual_Basis"
     },
     {
         value: LineInterpolation.basisOpen,
-        displayName: "Visual_Basis-open"
+        displayName: "Basis-open",
+        displayNameKey: "Visual_Basis-open"
     },
     {
         value: LineInterpolation.basisClosed,
-        displayName: "Visual_Basis-closed"
+        displayName: "Basis-closed",
+        displayNameKey: "Visual_Basis-closed"
     },
     {
         value: LineInterpolation.cardinal,
-        displayName: "Visual_Cardinal"
+        displayName: "Cardinal",
+        displayNameKey: "Visual_Cardinal"
     },
     {
         value: LineInterpolation.cardinalOpen,
-        displayName: "Visual_Cardinal-open"
+        displayName: "Cardinal-open",
+        displayNameKey: "Visual_Cardinal-open"
     },
     {
         value: LineInterpolation.cardinalClosed,
-        displayName: "Visual_Cardinal-closed"
+        displayName: "Cardinal-closed",
+        displayNameKey: "Visual_Cardinal-closed"
     },
     {
         value: LineInterpolation.monotone,
-        displayName: "Visual_Monotone"
+        displayName: "Monotone",
+        displayNameKey: "Visual_Monotone"
     }
 ]
 
@@ -358,7 +377,7 @@ export class LineDescriptor extends BaseDescriptor {
         super.setLocalizedDisplayName(localizationManager);
         [lineStyleOptions, interpolationWithColorizedLineOptions, lineTypeOptions, interpolationOptions].forEach(list => 
             list.forEach(option => {
-                option.displayName = localizationManager.getDisplayName(option.displayName)
+                option.displayName = localizationManager.getDisplayName(option.displayNameKey)
             })
         )
     }

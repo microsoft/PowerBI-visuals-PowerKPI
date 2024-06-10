@@ -39,19 +39,23 @@ import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 const layoutOptions = [
     {
         value: LayoutEnum.Top,
-        displayName: "Visual_Top"
+        displayName: "Top",
+        displayNameKey: "Visual_Top"
     },
     {
         value: LayoutEnum.Left,
-        displayName: "Visual_Left"
+        displayName: "Left",
+        displayNameKey: "Visual_Left"
     },
     {
         value: LayoutEnum.Bottom,
-        displayName: "Visual_Bottom"
+        displayName: "Bottom",
+        displayNameKey: "Visual_Bottom"
     },
     {
         value: LayoutEnum.Right,
-        displayName: "Visual_Right"
+        displayName: "Right",
+        displayNameKey: "Visual_Right"
     }
 ]
 
@@ -106,7 +110,7 @@ export class LayoutDescriptor
     public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
         super.setLocalizedDisplayName(localizationManager);
         layoutOptions.forEach(option => {
-            option.displayName = localizationManager.getDisplayName(option.displayName)
+            option.displayName = localizationManager.getDisplayName(option.displayNameKey)
         })
     }
 }
