@@ -37,11 +37,13 @@ import {
 const typeOptions = [
     {
         value: AxisType.continuous,
-        displayName: "Visual_Continuous"
+        displayName: "Continuous",
+        displayNameKey: "Visual_Continuous"
     },
     {
         value: AxisType.categorical,
-        displayName: "Visual_Categorical"
+        displayName: "Categorical",
+        displayNameKey: "Visual_Categorical"
     }
 ]
 
@@ -71,7 +73,7 @@ export class XAxisDescriptor extends AxisDescriptor {
     public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
         super.setLocalizedDisplayName(localizationManager);
         typeOptions.forEach(option => {
-            option.displayName = localizationManager.getDisplayName(option.displayName)
+            option.displayName = localizationManager.getDisplayName(option.displayNameKey)
         })
     }
 }

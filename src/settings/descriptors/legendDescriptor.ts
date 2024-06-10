@@ -43,19 +43,23 @@ export enum LegendStyle {
 const styleOptions = [
     {
         value: LegendStyle.circle,
-        displayName: "Visual_Circle"
+        displayName: "Circle",
+        displayNameKey: "Visual_Circle"
     },
     {
         value: LegendStyle.box,
-        displayName: "Visual_Box"
+        displayName: "Box",
+        displayNameKey: "Visual_Box"
     },
     {
         value: LegendStyle.line,
-        displayName: "Visual_Line"
+        displayName: "Line",
+        displayNameKey: "Visual_Line"
     },
     {
         value: LegendStyle.styledLine,
-        displayName: "Visual_Styled_Line"
+        displayName: "Styled_Line",
+        displayNameKey: "Visual_Styled_Line"
     }
 ]
 
@@ -73,35 +77,43 @@ export enum LegendPosition {
 const positionOptions = [
     {
         value: LegendPosition.Top,
-        displayName: "Visual_Top"
+        displayName: "Top",
+        displayNameKey: "Visual_Top"
     },
     {
         value: LegendPosition.Bottom,
-        displayName: "Visual_Bottom"
+        displayName: "Bottom",
+        displayNameKey: "Visual_Bottom"
     },
     {
         value: LegendPosition.Left,
-        displayName: "Visual_Left"
+        displayName: "Left",
+        displayNameKey: "Visual_Left"
     },
     {
         value: LegendPosition.Right,
-        displayName: "Visual_Right"
+        displayName: "Right",
+        displayNameKey: "Visual_Right"
     },
     {
         value: LegendPosition.TopCenter,
-        displayName: "Visual_Top_Center"
+        displayName: "Top_Center",
+        displayNameKey: "Visual_Top_Center"
     },
     {
         value: LegendPosition.BottomCenter,
-        displayName: "Visual_Bottom_Center"
+        displayName: "Bottom_Center",
+        displayNameKey: "Visual_Bottom_Center"
     },
     {
         value: LegendPosition.LeftCenter,
-        displayName: "Visual_Left_Center"
+        displayName: "Left_Center",
+        displayNameKey: "Visual_Left_Center"
     },
     {
         value: LegendPosition.RightCenter,
-        displayName: "Visual_Right_Center"
+        displayName: "Right_Center",
+        displayNameKey: "Visual_Right_Center"
     }
 ]
 export class LegendDescriptor extends FontSizeDescriptor {
@@ -198,10 +210,10 @@ export class LegendDescriptor extends FontSizeDescriptor {
     public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
         super.setLocalizedDisplayName(localizationManager);
         styleOptions.forEach(option => {
-            option.displayName = localizationManager.getDisplayName(option.displayName)
+            option.displayName = localizationManager.getDisplayName(option.displayNameKey)
         });
         positionOptions.forEach(option => {
-            option.displayName = localizationManager.getDisplayName(option.displayName)
+            option.displayName = localizationManager.getDisplayName(option.displayNameKey)
         });
     }
 }
