@@ -1,6 +1,11 @@
+## 3.0.2.0
+* Fixed toggle auto values
+* Added locale to y-axis labels formatting
+
 ## 3.0.1.0
 * Added high contrast mode
 * Added context menu
+* Migrated to formatting model
 
 ## 3.0.0
 * Updated packages
