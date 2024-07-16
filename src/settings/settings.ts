@@ -291,7 +291,7 @@ export class Settings extends formattingSettings.Model {
     private hideColorPickers(isHighContrast: boolean) {
         this.cards.forEach((card: formattingSettings.SimpleCard) => {
             card.slices?.forEach((slice) => {
-                slice.visible = slice instanceof ColorPicker ? !isHighContrast : slice.visible;
+                slice.visible = slice instanceof ColorPicker && isHighContrast ? false : slice.visible;
             });
         });
     }
