@@ -99,6 +99,7 @@ export class PlotComponent extends BaseContainerComponent<
                 margin,
                 groups: [firstGroup, secondGroup],
                 viewport,
+                locale,
                 settings: {
                     xAxis,
                     yAxis,
@@ -137,7 +138,8 @@ export class PlotComponent extends BaseContainerComponent<
             margin: null,
             settings: yAxis,
             viewport: null,
-            colorPalette: colorPalette
+            colorPalette: colorPalette,
+            locale: locale
         });
 
         this.secondaryYAxisComponent.preRender({
@@ -145,7 +147,8 @@ export class PlotComponent extends BaseContainerComponent<
             margin: null,
             settings: secondaryYAxis,
             viewport: null,
-            colorPalette: colorPalette
+            colorPalette: colorPalette,
+            locale: locale
         });
 
         const xAxisViewport: IVisualComponentViewport = this.xAxisComponent.getViewport();
@@ -168,7 +171,8 @@ export class PlotComponent extends BaseContainerComponent<
                 height,
                 width: reducedViewport.width,
             },
-            colorPalette: colorPalette
+            colorPalette: colorPalette,
+            locale: locale
         });
 
         this.secondaryYAxisComponent.render({
@@ -179,7 +183,8 @@ export class PlotComponent extends BaseContainerComponent<
                 height,
                 width: reducedViewport.width,
             },
-            colorPalette: colorPalette
+            colorPalette: colorPalette,
+            locale: locale
         });
 
         const yAxisViewport: IVisualComponentViewport = this.yAxisComponent.getViewport();

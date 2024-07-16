@@ -62,6 +62,7 @@ import IVisual = powerbi.extensibility.visual.IVisual;
 import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 import ISandboxExtendedColorPalette = powerbi.extensibility.ISandboxExtendedColorPalette;
+import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 
 export interface IPowerKPIConstructorOptions extends VisualConstructorOptions {
     rootElement?: HTMLElement;
@@ -84,6 +85,7 @@ export class PowerKPI implements IVisual {
     private settings: Settings;
     private formattingSettingsService: FormattingSettingsService;
     private colorPalette: ISandboxExtendedColorPalette;
+    private host: IVisualHost;
 
     constructor(options: IPowerKPIConstructorOptions) {
         this.events = options.host.eventService;
@@ -92,6 +94,8 @@ export class PowerKPI implements IVisual {
         this.formattingSettingsService = new FormattingSettingsService(this.localizationManager);
         this.element = d3Select(options.element);
         this.colorPalette = options.host.colorPalette;
+
+        this.host = options.host;
 
         this.converter = new DataConverter({
             colorPalette: options.host.colorPalette,
@@ -136,7 +140,8 @@ export class PowerKPI implements IVisual {
             dataView,
             hasSelection: this.interactivityService && this.interactivityService.hasSelection(),
             viewport,
-            settings: this.settings
+            settings: this.settings,
+            locale: this.host.locale
         });
         if (this.interactivityService) {
             this.interactivityService.applySelectionStateToData(dataRepresentation.series);

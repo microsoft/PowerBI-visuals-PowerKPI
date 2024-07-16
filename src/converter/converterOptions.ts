@@ -34,6 +34,7 @@ export interface ConverterOptions {
     viewport: powerbi.IViewport;
     hasSelection: boolean;
     settings: Settings;
+    locale: string;
 }
 
 export interface AxisOptions {
