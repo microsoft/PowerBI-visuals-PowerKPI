@@ -1,6 +1,7 @@
 ## 3.0.2.0
 * Fixed toggle auto values
 * Added locale to y-axis labels formatting
+* API 5.11.0
 
 ## 3.0.1.0
 * Added high contrast mode
