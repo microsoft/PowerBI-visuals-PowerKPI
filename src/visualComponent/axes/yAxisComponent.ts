@@ -58,6 +58,7 @@ export interface IYAxisComponentRenderOptions {
     viewport: powerbi.IViewport;
     margin: IMargin;
     colorPalette: ISandboxExtendedColorPalette;
+    locale: string;
 }
 
 export class YAxisComponent
@@ -95,6 +96,7 @@ export class YAxisComponent
         const {
             axis,
             settings,
+            locale
         } = options;
 
         if (settings.isElementShown()) {
@@ -105,14 +107,11 @@ export class YAxisComponent
 
         const fontSize: number = settings.fontSizeInPx;
 
-        this.formatter = labelMeasurementService.getValueFormatter(
-            settings.displayUnits.value || axis.max,
-            undefined,
-            undefined,
-            undefined,
-            settings.precision.value,
-            axis.format || this.valueFormat,
-        );
+        this.formatter = valueFormatter.create({
+            cultureSelector: locale,
+            precision: settings.precision.value,
+            format: axis.format || this.valueFormat,
+            value: settings.displayUnits.value || axis.max});
 
         this.maxLabelHeight = labelMeasurementService.getLabelHeight(
             axis.max,

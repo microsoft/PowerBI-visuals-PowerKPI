@@ -64,6 +64,8 @@ export class ShowDescriptor extends BaseDescriptor implements IDescriptor {
                 options.viewport.height <= this._viewport.height
             )
         );
+
+        this.show.value = this.isElementShown();
     }
 
     public isElementShown(): boolean {

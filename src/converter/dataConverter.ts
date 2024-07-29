@@ -128,7 +128,8 @@ export class DataConverter extends VarianceConverter implements IConverter {
             dataView,
             viewport,
             hasSelection,
-            settings
+            settings,
+            locale
         } = options;
 
         const {
@@ -153,6 +154,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
             variance: [],
             variances: [],
             viewport,
+            locale,
             x: {
                 axisType,
                 format: undefined,

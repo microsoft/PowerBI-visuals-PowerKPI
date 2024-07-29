@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-powerkpi",
-  "version": "3.0.1.0",
+  "version": "3.0.2.0",
   "description": "A powerful KPI Indicator with multi-line chart and labels for current date, value and variances. Rich customization options, including current status labels and symbols, trend and comparison lines, multiple variances, auto-scaling, text formatting, and density controls. Highly flexible for use in large, detailed report tiles or tiny, summary dashboard tiles.",
   "main": "index.js",
   "scripts": {
@@ -53,8 +53,8 @@
     "less": "^4.2.0",
     "less-loader": "^11.1.4",
     "playwright-chromium": "^1.43.1",
-    "powerbi-visuals-api": "~5.9.0",
-    "powerbi-visuals-tools": "5.4.3",
+    "powerbi-visuals-api": "^5.11.0",
+    "powerbi-visuals-tools": "^5.5.1",
     "powerbi-visuals-utils-testutils": "^6.1.1",
     "regenerator-runtime": "0.13.11",
     "style-loader": "^3.3.4",

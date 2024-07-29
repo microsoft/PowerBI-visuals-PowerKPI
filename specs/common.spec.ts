@@ -1043,6 +1043,7 @@ describe("Power KPI", () => {
                     hasSelection: false,
                     settings: new Settings(),
                     viewport: { width: 100, height: 100 },
+                    locale: "en-US"
                 });
 
             expect(dataRepresentation.x.axisType).toBe(
