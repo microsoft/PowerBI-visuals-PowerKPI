@@ -48,29 +48,33 @@ export class FontSizeDescriptor
         width: 210,
     };
 
+    public fontSize = new formattingSettings.NumUpDown({
+        name: "fontSize",
+        displayNameKey: "Visual_Font_Size",
+        value: this.minFontSize,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: this.minFontSize,
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: this.maxFontSize
+            }
+        }
+    });
+
+    public fontFamily = new formattingSettings.FontPicker({
+        name: "fontFamily",
+        displayNameKey: "Visual_Font_Family",
+        value: "Segoe UI, wf_segoe-ui_normal, helvetica, arial, sans-serif"
+    });
+
     public font = new formattingSettings.FontControl({
         name: "font",
         displayNameKey: "Visual_Font",
-        fontFamily: new formattingSettings.FontPicker({
-            name: "fontFamily",
-            displayNameKey: "Visual_Font_Family",
-            value: "Segoe UI, wf_segoe-ui_normal, helvetica, arial, sans-serif"
-        }),
-        fontSize: new formattingSettings.NumUpDown({
-            name: "fontSize",
-            displayNameKey: "Visual_Font_Size",
-            value: this.minFontSize, 
-            options: {
-                minValue: {
-                    type: powerbi.visuals.ValidatorType.Min,
-                    value: this.minFontSize,
-                },
-                maxValue: {
-                    type: powerbi.visuals.ValidatorType.Max,
-                    value: this.maxFontSize
-                }
-            }
-        })
+        fontFamily: this.fontFamily,
+        fontSize: this.fontSize
     });
 
     public get fontSizeInPx(): number {

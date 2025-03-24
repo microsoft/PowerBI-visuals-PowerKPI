@@ -108,7 +108,7 @@ export class KPIIndicatorsListDescriptor extends FontSizeDescriptor implements I
         value: false
     });
 
-    private defaultSlices = [this.font, this.position, this.shouldBackgroundColorMatchKpiColor]
+    private defaultSlices = [this.fontSize, this.position, this.shouldBackgroundColorMatchKpiColor]
     private _maxAmountOfKPIs: number = 5;
 
     private _default: IKPIIndicatorSettings = {
