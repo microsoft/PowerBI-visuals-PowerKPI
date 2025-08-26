@@ -462,7 +462,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
         const gradientPoints: IDataRepresentationPointGradientColor[] = [];
 
         const currentLineSettings = settings.line.getCurrentSettings(name)
-        const dataPointEndsKpiColorSegment: boolean = currentLineSettings.dataPointStartsKpiColorSegment;
+        const dataPointEndsKpiColorSegment: boolean = !currentLineSettings.dataPointStartsKpiColorSegment;
 
         const copiedAxisValues: DataRepresentationAxisValueType[] = dataPointEndsKpiColorSegment
             ? axisValues.slice().reverse()
