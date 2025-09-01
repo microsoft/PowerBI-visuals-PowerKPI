@@ -1,3 +1,6 @@
+## 3.0.3.0
+* Fixed data point starts kpi color segment
+
 ## 3.0.2.0
 * Fixed toggle auto values
 * Added locale to y-axis labels formatting
