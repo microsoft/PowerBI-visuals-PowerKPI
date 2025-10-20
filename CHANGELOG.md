@@ -1,3 +1,7 @@
+## 3.0.4.0
+### Fixes
+* Fixed format value
+
 ## 3.0.3.0
 * Fixed data point starts kpi color segment
 

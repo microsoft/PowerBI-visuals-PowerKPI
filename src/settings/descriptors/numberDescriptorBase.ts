@@ -119,7 +119,8 @@ export class NumberDescriptorBase
     }
 
     public getFormat(): string {
-        return this.format.value || this.columnFormat || this.defaultFormat;
+        this.format.value = this.format.value || this.columnFormat || this.defaultFormat;
+        return this.format.value;
     }
 
     public setColumnFormat(format: string) {
@@ -131,9 +132,6 @@ export class NumberDescriptorBase
     
     public applyDefaultFormatByType(type: DataRepresentationTypeEnum): void {
         if (this.defaultFormat) {
-            if (this.format.value == null) {
-                this.format.value = this.defaultFormat;
-            }
             return;
         }
 
