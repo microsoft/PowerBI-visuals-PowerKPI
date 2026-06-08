@@ -45,6 +45,7 @@ import { AxisType } from "../settings/descriptors/axis/axisDescriptor";
 import { YAxisDescriptor } from "../settings/descriptors/axis/yAxisDescriptor";
 import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 import { Settings } from "../settings/settings";
+import { LineColorMode } from "../settings/descriptors/line/lineTypes";
 import { IConverter } from "./converter";
 import { AxisOptions, ConverterOptions } from "./converterOptions";
 import { VarianceConverter } from "./varianceConverter";
@@ -209,6 +210,11 @@ export class DataConverter extends VarianceConverter implements IConverter {
         // Applies series formats
         dataRepresentation.x.format = dataRepresentation.settings.dateValueKPI.getFormat();
 
+        // Unique palette color index per series (group x measure). Kept
+        // independent from the formatting container so that lines sharing a joint
+        // container still each receive a distinct default color.
+        let seriesColorIndex: number = 0;
+
         // eslint-disable-next-line max-lines-per-function
         dataView.categorical.values.grouped().forEach((columnGroup: powerbi.DataViewValueColumnGroup) => {
             const groupedValues: powerbi.DataViewValueColumn[] = columnGroup.values;
@@ -220,6 +226,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
 
             const kpiIndexes: number[] = (currentKPIColumn?.[0]?.values as number[]) || [];
 
+            // eslint-disable-next-line max-lines-per-function
             groupedValues.forEach((groupedValue: powerbi.DataViewValueColumn) => {
                 const format: string = this.getFormatStringByColumn(groupedValue.source);
 
@@ -278,25 +285,48 @@ export class DataConverter extends VarianceConverter implements IConverter {
                     const groupName: string = isGrouped && columnGroup.name
                         ? `${columnGroup.name}`
                         : undefined;
-                    const containerName = groupName || name
+                    // Joint mode (default) groups all measures of a group under a
+                    // single container (e.g. "A"), so one color/setting applies to the whole
+                    // group. Granular mode gives every line its own container (e.g.
+                    // "A - Sum of Sales"). Without a legend there is nothing to group, so the
+                    // full series name is always used.
+                    const isJointMode: boolean = isGrouped
+                        && settings.line.mode.value.value === LineColorMode.joint;
+                    const containerName = isJointMode ? groupName : name;
 
-                    const identity: ISelectionId = createSelectionIdBuilder()
+                    const identityBuilder: ISelectionIdBuilder = createSelectionIdBuilder()
                         .withSeries(
                             dataView.categorical.values,
                             isGrouped
                                 ? columnGroup
                                 : groupedValue,
-                        )
-                        .withMeasure(groupedValue.source.queryName)
-                        .createSelectionId();
+                        );
+
+                    // In granular mode the override is persisted per measure; in joint mode
+                    // it is persisted at the group level (no measure in the selector).
+                    if (!isJointMode) {
+                        identityBuilder.withMeasure(groupedValue.source.queryName);
+                    }
+
+                    const identity: ISelectionId = identityBuilder.createSelectionId();
 
                     const dataPoint: LineDataPoint = {
                         containerName,
                         selectionId: ColorHelper.normalizeSelector(identity.getSelector()),
-                        objects: columnGroup.objects || groupedValue.source.objects
+                        // Joint reads group-level objects first (legacy/group colors); granular
+                        // reads measure-level first, falling back to group (cross-mode carry-over).
+                        objects: isJointMode
+                            ? (columnGroup.objects || groupedValue.source.objects)
+                            : (groupedValue.source.objects || columnGroup.objects),
                     }
 
-                    const currentSettings = settings.line.populateContainer(dataPoint, colorPalette)
+                    const currentSettings = settings.line.populateContainer(dataPoint)
+
+                    // Resolve the base series color: explicit override wins, otherwise a
+                    // unique color from the palette (per series), restoring 2.0.0 behaviour.
+                    const seriesColor: string = currentSettings.fillColor
+                        || colorPalette.getColor(`${seriesColorIndex}`).value;
+                    seriesColorIndex++;
 
                     if (isNaN(maxThickness) || currentSettings.thickness > maxThickness) {
                         maxThickness = currentSettings.thickness;
@@ -317,6 +347,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
                         containerName,
                         settings,
                         currentPoint,
+                        seriesColor,
                     );
 
                     seriesGroup.series.push({
@@ -328,6 +359,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
                         hasSelection,
                         identity,
                         containerName,
+                        color: seriesColor,
                         name,
                         points,
                         selected: false,
@@ -455,6 +487,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
         name: string,
         settings: Settings,
         currentPoint: IDataRepresentationPointIndexed,
+        seriesColor: string,
     ): {
             points: IDataRepresentationPoint[],
             gradientPoints: IDataRepresentationPointGradientColor[],
@@ -483,7 +516,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
 
                 const kpiIndex: number = this.getKPIIndex(kpiIndexes[categoryIndex]);
 
-                let color: string = currentLineSettings.fillColor;
+                let color: string = seriesColor;
 
                 if (currentLineSettings.shouldMatchKpiColor) {
                     const currentKPI: IKPIIndicatorSettings = settings

@@ -24,6 +24,11 @@ export enum LineType {
     column = "column",
 }
 
+export enum LineColorMode {
+    joint = "joint",
+    granular = "granular",
+}
+
 export interface SimpleLineSetting {
     fillColor: string;
     shouldMatchKpiColor: boolean;

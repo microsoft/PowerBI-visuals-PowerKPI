@@ -26,7 +26,6 @@
 
 import powerbi from "powerbi-visuals-api";
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
-import IColorPalette = powerbi.extensibility.IColorPalette;
 import DataViewObjects = powerbi.DataViewObjects
 
 
@@ -42,7 +41,7 @@ import NumUpDown = formattingSettings.NumUpDown;
 
 import { LineDataPoint } from "../../../converter/dataConverter";
 import { BaseDescriptor } from "../baseDescriptor";
-import { LineStyle, LineType, LineInterpolation, SimpleLineSetting } from "./lineTypes"
+import { LineStyle, LineType, LineInterpolation, LineColorMode, SimpleLineSetting } from "./lineTypes"
 
 const lineStyleOptions = [
     {
@@ -151,7 +150,28 @@ const interpolationOptions = [
     }
 ]
 
+const lineColorModeOptions = [
+    {
+        value: LineColorMode.joint,
+        displayName: "Joint",
+        displayNameKey: "Visual_Line_Mode_Joint"
+    },
+    {
+        value: LineColorMode.granular,
+        displayName: "Granular",
+        displayNameKey: "Visual_Line_Mode_Granular"
+    }
+]
+
 export class LineDescriptor extends BaseDescriptor {
+
+    public mode = new ItemDropdown({
+        name: "mode",
+        displayNameKey: "Visual_Line_Mode",
+        descriptionKey: "Visual_Line_Mode_Description",
+        items: lineColorModeOptions,
+        value: lineColorModeOptions[0]
+    });
 
     public fillColor = new ColorPicker({
         name: "fillColor",
@@ -264,22 +284,26 @@ export class LineDescriptor extends BaseDescriptor {
         this.interpolationWithColorizedLine
     ]
 
+    public allLinesContainerItem: ContainerItem = {
+        displayName: "[ALL]",
+        slices: [...this.defaultSlices]
+    };
+
     public container: Container = {
-        containerItems: [{
-            displayName: "[ALL]",
-            slices: [...this.defaultSlices]
-        }]
+        displayNameKey: "Visual_Line_Apply_To",
+        descriptionKey: "Visual_Line_Apply_To_Description",
+        containerItems: [this.allLinesContainerItem]
     };
 
     constructor() {
         super()
 
-        this.slices = undefined
+        this.slices = [this.mode]
         this.name = "line"
         this.displayNameKey = "Visual_Line"
     }
 
-    public populateContainer(dataPoint: LineDataPoint, colorPalette: IColorPalette) {
+    public populateContainer(dataPoint: LineDataPoint) {
         const { containerName, selectionId, objects } = dataPoint
         const existingContainer = this.getCurrentSettings(containerName)
         if(Object.keys(existingContainer).length) {
@@ -290,9 +314,10 @@ export class LineDescriptor extends BaseDescriptor {
             displayName: containerName,
             slices: []
         }
-        // color by index of container
-        const seriesColor = colorPalette.getColor(`${this.container.containerItems.length}`).value
-        const sliceValues = this.parseContainer(objects, seriesColor)
+        // Container stores only the explicit user override. The default per-series
+        // palette color is resolved later in the converter, so that lines sharing
+        // a joint container still each get a unique default color.
+        const sliceValues = this.parseContainer(objects)
 
         // cloning all slices
         this.defaultSlices.forEach(slice => {
@@ -310,14 +335,16 @@ export class LineDescriptor extends BaseDescriptor {
         return this.getCurrentSettings(containerName)
     }
 
-    public parseContainer(objects: DataViewObjects, defaultColor: string) {
+    public parseContainer(objects: DataViewObjects) {
         const lineObject = objects?.line as any || {};
         // `userGeneralColor` is manually set color for all lines
-        const { lineStyle, thickness, fillColor: userGeneralColor } = this.getCurrentSettings("[ALL]")
+        const { lineStyle, thickness, fillColor: userGeneralColor } = this.getCurrentSettings(this.allLinesContainerItem.displayName)
 
         const oldAPIColor: string = this.getColorFromOldAPI(objects?.series?.fillColor)
         const userColor: string | undefined = lineObject.fillColor?.solid?.color // maunally set color for current line
-        lineObject.fillColor = userColor || oldAPIColor || userGeneralColor || defaultColor;
+        // Only the explicit override is kept here; when none is set the value stays
+        // null and the converter falls back to a unique per-series palette color.
+        lineObject.fillColor = userColor || oldAPIColor || userGeneralColor || null;
 
         const newLineStyle = objects?.lineStyle?.lineStyle || lineStyle
         if (!lineObject.lineStyle) {
@@ -375,7 +402,8 @@ export class LineDescriptor extends BaseDescriptor {
 
     public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
         super.setLocalizedDisplayName(localizationManager);
-        [lineStyleOptions, interpolationWithColorizedLineOptions, lineTypeOptions, interpolationOptions].forEach(list => 
+        this.allLinesContainerItem.displayName = localizationManager.getDisplayName("Visual_Line_All_Default");
+        [lineStyleOptions, interpolationWithColorizedLineOptions, lineTypeOptions, interpolationOptions, lineColorModeOptions].forEach(list => 
             list.forEach(option => {
                 option.displayName = localizationManager.getDisplayName(option.displayNameKey)
             })

@@ -191,9 +191,9 @@ export class TooltipComponent
                     if(lineSettings){
                         const isHighContrast: boolean = colorPalette.isHighContrast;
                         dataItems.push({
-                            color: isHighContrast ? colorPalette.foreground.value : lineSettings.fillColor,
+                            color: isHighContrast ? colorPalette.foreground.value : dataSeries.color,
                             displayName: `${dataSeries.name}`,
-                            lineColor: isHighContrast ? colorPalette.foreground.value : lineSettings.fillColor,
+                            lineColor: isHighContrast ? colorPalette.foreground.value : dataSeries.color,
                             lineStyle: legend.getLegendLineStyle(lineSettings.lineStyle),
                             markerShape: legend.getLegendMarkerShape(),
                             value: valueFormatterInstance.format(dataSeriesPoint.y),

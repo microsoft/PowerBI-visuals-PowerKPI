@@ -49,6 +49,7 @@ export interface IDataRepresentationSeries extends interactivitySelectionService
     hasSelection: boolean;
     containerName: string;
     groupName?: string;
+    color?: string;
 }
 
 export interface IDataRepresentationSeriesGroup {
