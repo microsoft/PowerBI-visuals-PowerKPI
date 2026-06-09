@@ -96,6 +96,7 @@ import { labelMeasurementService } from "../src/services/labelMeasurementService
 
 import { ComboComponentAreaComponentTest } from "./comboComponentAreaComponentTest";
 import { TestWrapper } from "./testWrapper";
+import { DataBuilder } from "./dataBuilder";
 
 describe("Power KPI", () => {
     describe("DOM", () => {
@@ -1049,6 +1050,36 @@ describe("Power KPI", () => {
             expect(dataRepresentation.x.axisType).toBe(
                 DataRepresentationTypeEnum.StringType
             );
+        });
+
+        it("should assign a distinct default color to each series (no color sharing)", () => {
+            const dataViewBuilder: DataBuilder = new DataBuilder();
+            const dataView: powerbi.DataView = dataViewBuilder.getDataView(["Axis", "Values"]);
+
+            const dataConverter: DataConverter = new DataConverter({
+                colorPalette: createColorPalette(),
+                createSelectionIdBuilder,
+            });
+
+            dataConverter.getAxisType({
+                dataView,
+                xAxisType: AxisType.continuous,
+            });
+
+            const dataRepresentation: IDataRepresentation =
+                dataConverter.convert({
+                    dataView,
+                    hasSelection: false,
+                    settings: new Settings(),
+                    viewport: { width: 100, height: 100 },
+                    locale: "en-US"
+                });
+
+            const colors: string[] = dataRepresentation.series.map(series => series.color);
+
+            expect(colors.length).toBeGreaterThan(1);
+            colors.forEach(color => expect(color).toBeDefined());
+            expect(new Set(colors).size).toBe(colors.length);
         });
 
         describe("isValueFinite", () => {
