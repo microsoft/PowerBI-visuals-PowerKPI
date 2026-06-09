@@ -284,8 +284,13 @@ export class LineDescriptor extends BaseDescriptor {
         this.interpolationWithColorizedLine
     ]
 
+    // `displayName` is a stable internal key used only for container lookup in
+    // `getCurrentSettings`; it is intentionally NOT localized to avoid colliding
+    // with a real series/group name. `displayNameKey` drives the localized label
+    // shown in the formatting pane.
     public allLinesContainerItem: ContainerItem = {
         displayName: "[ALL]",
+        displayNameKey: "Visual_Line_All_Default",
         slices: [...this.defaultSlices]
     };
 
@@ -402,7 +407,6 @@ export class LineDescriptor extends BaseDescriptor {
 
     public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
         super.setLocalizedDisplayName(localizationManager);
-        this.allLinesContainerItem.displayName = localizationManager.getDisplayName("Visual_Line_All_Default");
         [lineStyleOptions, interpolationWithColorizedLineOptions, lineTypeOptions, interpolationOptions, lineColorModeOptions].forEach(list => 
             list.forEach(option => {
                 option.displayName = localizationManager.getDisplayName(option.displayNameKey)
