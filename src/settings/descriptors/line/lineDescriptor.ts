@@ -341,7 +341,7 @@ export class LineDescriptor extends BaseDescriptor {
         const { lineStyle, thickness, fillColor: userGeneralColor } = this.getCurrentSettings(this.allLinesContainerItem.displayName)
 
         const oldAPIColor: string = this.getColorFromOldAPI(objects?.series?.fillColor)
-        const userColor: string | undefined = lineObject.fillColor?.solid?.color // maunally set color for current line
+        const userColor: string | undefined = lineObject.fillColor?.solid?.color // manually set color for current line
         // Only the explicit override is kept here; when none is set the value stays
         // null and the converter falls back to a unique per-series palette color.
         lineObject.fillColor = userColor || oldAPIColor || userGeneralColor || null;

@@ -292,7 +292,9 @@ export class DataConverter extends VarianceConverter implements IConverter {
                     // full series name is always used.
                     const isJointMode: boolean = isGrouped
                         && settings.line.mode.value.value === LineColorMode.joint;
-                    const containerName = isJointMode ? groupName : name;
+                    // Fall back to the full series name when the group has no name,
+                    // so the container key is never undefined in joint mode.
+                    const containerName = isJointMode ? (groupName || name) : name;
 
                     const identityBuilder: ISelectionIdBuilder = createSelectionIdBuilder()
                         .withSeries(
