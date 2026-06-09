@@ -194,7 +194,7 @@ export class Settings extends formattingSettings.Model {
     public filterFormattingProperties(dataRepresentation: IDataRepresentation, axisType: DataRepresentationTypeEnum, localizationManager: ILocalizationManager, isHighContrast: boolean) {
         this.filterSettingsCards(dataRepresentation);
         this.filterLayoutProperties();
-        this.filterLineProperties();
+        this.filterLineProperties(dataRepresentation);
         this.filterKPIIndicatorProperties(dataRepresentation);
         this.filterKPIIndicatorValueProperties();
         this.filterSettingsPropertiesByAxisType(axisType);
@@ -240,7 +240,11 @@ export class Settings extends formattingSettings.Model {
         this.layout.layout.visible = !this.layout.auto.value;
     }
 
-    private filterLineProperties(){
+    private filterLineProperties(dataRepresentation: IDataRepresentation){
+        // The color mode (joint/granular) only makes sense when the data is split
+        // by a legend; otherwise every series is already unique.
+        this.line.mode.visible = !!dataRepresentation?.isGrouped;
+
         this.line.container.containerItems.forEach(containerItem => {
             const containerName = containerItem.displayName;
             const currentSettings = this.line.getCurrentSettings(containerName);

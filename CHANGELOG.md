@@ -1,3 +1,9 @@
+## 3.1.0.0
+### Features
+* Added a line color mode (Joint / Granular) to configure colors either per group or per individual line
+### Fixes
+* Fixed series colors being shared between measures of the same group
+
 ## 3.0.4.0
 ### Fixes
 * Fixed format value

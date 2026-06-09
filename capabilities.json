@@ -854,6 +854,13 @@
     },
     "line": {
       "properties": {
+        "mode": {
+          "type": {
+            "enumeration": [
+              { "value": "joint" },
+              { "value": "granular" }]
+          }
+        },
         "fillColor": {
           "type": {
             "fill": {
