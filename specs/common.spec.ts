@@ -72,6 +72,7 @@ import { AreaComponent } from "../src/visualComponent/combo/areaComponent";
 import { ComboComponent } from "../src/visualComponent/combo/comboComponent";
 
 import {
+    LineColorMode,
     LineInterpolation,
     LineStyle,
     LineType,
@@ -1080,6 +1081,74 @@ describe("Power KPI", () => {
             expect(colors.length).toBeGreaterThan(1);
             colors.forEach(color => expect(color).toBeDefined());
             expect(new Set(colors).size).toBe(colors.length);
+        });
+
+        describe("line color mode (Joint/Granular)", () => {
+            const groupValues: string[] = ["GroupA", "GroupB"];
+            const measureNames: string[] = ["Sales", "Cost"];
+
+            function convertGrouped(mode: LineColorMode): IDataRepresentation {
+                const dataView: powerbi.DataView = new DataBuilder()
+                    .getGroupedDataView(groupValues, measureNames);
+
+                const settings: Settings = new Settings();
+                settings.line.mode.value = { value: mode } as any;
+
+                const dataConverter: DataConverter = new DataConverter({
+                    colorPalette: createColorPalette(),
+                    createSelectionIdBuilder,
+                });
+
+                dataConverter.getAxisType({
+                    dataView,
+                    xAxisType: AxisType.continuous,
+                });
+
+                return dataConverter.convert({
+                    dataView,
+                    hasSelection: false,
+                    settings,
+                    viewport: { width: 100, height: 100 },
+                    locale: "en-US"
+                });
+            }
+
+            it("Joint mode groups every measure of a group under a single container", () => {
+                const dataRepresentation: IDataRepresentation = convertGrouped(LineColorMode.joint);
+
+                expect(dataRepresentation.isGrouped).toBeTrue();
+                expect(dataRepresentation.series.length).toBe(groupValues.length * measureNames.length);
+
+                const containerNames: string[] = dataRepresentation.series.map(series => series.containerName);
+
+                // One container per group, shared by all measures of that group.
+                expect(new Set(containerNames).size).toBe(groupValues.length);
+                groupValues.forEach(group => expect(containerNames).toContain(group));
+            });
+
+            it("Granular mode gives every line its own container", () => {
+                const dataRepresentation: IDataRepresentation = convertGrouped(LineColorMode.granular);
+
+                expect(dataRepresentation.isGrouped).toBeTrue();
+                expect(dataRepresentation.series.length).toBe(groupValues.length * measureNames.length);
+
+                const containerNames: string[] = dataRepresentation.series.map(series => series.containerName);
+
+                // One container per line; container name equals the full series name.
+                expect(new Set(containerNames).size).toBe(dataRepresentation.series.length);
+                dataRepresentation.series.forEach(series =>
+                    expect(series.containerName).toBe(series.name));
+            });
+
+            it("keeps a distinct default color per line in both modes", () => {
+                [LineColorMode.joint, LineColorMode.granular].forEach(mode => {
+                    const dataRepresentation: IDataRepresentation = convertGrouped(mode);
+                    const colors: string[] = dataRepresentation.series.map(series => series.color);
+
+                    colors.forEach(color => expect(color).toBeDefined());
+                    expect(new Set(colors).size).toBe(colors.length);
+                });
+            });
         });
 
         describe("isValueFinite", () => {
