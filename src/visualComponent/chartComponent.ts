@@ -117,7 +117,7 @@ export class ChartComponent extends BaseContainerComponent<
                     lineStyle,
                     lineType,
                     interpolation
-                } = settings.line.getCurrentSettings(currentSeries.containerName)
+                } = settings.line.getCurrentSettings(currentSeries.containerKey)
 
                 if (this.shouldRenderFallbackComponents) {
                     const point: IDataRepresentationPoint = currentSeries.points[0];

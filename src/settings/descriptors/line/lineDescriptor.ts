@@ -163,7 +163,18 @@ const lineColorModeOptions = [
     }
 ]
 
+// Container items are looked up by a stable `key` (derived from the series
+// identity in the converter), NOT by their `displayName`. Keeping the key
+// separate from the user-facing label avoids any collision between the lookup
+// key and a real series/group name.
+export interface IKeyedContainerItem extends ContainerItem {
+    key: string;
+}
+
 export class LineDescriptor extends BaseDescriptor {
+
+    // Sentinel key for the "all lines" container, which has no series identity.
+    public static readonly AllLinesContainerKey: string = "__all_lines__";
 
     public mode = new ItemDropdown({
         name: "mode",
@@ -284,11 +295,12 @@ export class LineDescriptor extends BaseDescriptor {
         this.interpolationWithColorizedLine
     ]
 
-    // `displayName` is a stable internal key used only for container lookup in
-    // `getCurrentSettings`; it is intentionally NOT localized to avoid colliding
-    // with a real series/group name. `displayNameKey` drives the localized label
-    // shown in the formatting pane.
-    public allLinesContainerItem: ContainerItem = {
+    // `key` is the stable lookup key used by `getCurrentSettings`; it is a fixed
+    // sentinel for the all-lines container. `displayNameKey` drives the localized
+    // label shown in the formatting pane; `displayName` is only a non-localized
+    // fallback label and is never used as a lookup key.
+    public allLinesContainerItem: IKeyedContainerItem = {
+        key: LineDescriptor.AllLinesContainerKey,
         displayName: "[ALL]",
         displayNameKey: "Visual_Line_All_Default",
         slices: [...this.defaultSlices]
@@ -309,13 +321,14 @@ export class LineDescriptor extends BaseDescriptor {
     }
 
     public populateContainer(dataPoint: LineDataPoint) {
-        const { containerName, selectionId, objects } = dataPoint
-        const existingContainer = this.getCurrentSettings(containerName)
+        const { containerKey, containerName, selectionId, objects } = dataPoint
+        const existingContainer = this.getCurrentSettings(containerKey)
         if(Object.keys(existingContainer).length) {
             return existingContainer
         }
 
-        const containerItem: ContainerItem = {
+        const containerItem: IKeyedContainerItem = {
+            key: containerKey,
             displayName: containerName,
             slices: []
         }
@@ -337,13 +350,13 @@ export class LineDescriptor extends BaseDescriptor {
         });
         this.container.containerItems.push(containerItem);
 
-        return this.getCurrentSettings(containerName)
+        return this.getCurrentSettings(containerKey)
     }
 
     public parseContainer(objects: DataViewObjects) {
         const lineObject = objects?.line as any || {};
         // `userGeneralColor` is manually set color for all lines
-        const { lineStyle, thickness, fillColor: userGeneralColor } = this.getCurrentSettings(this.allLinesContainerItem.displayName)
+        const { lineStyle, thickness, fillColor: userGeneralColor } = this.getCurrentSettings(LineDescriptor.AllLinesContainerKey)
 
         const oldAPIColor: string = this.getColorFromOldAPI(objects?.series?.fillColor)
         const userColor: string | undefined = lineObject.fillColor?.solid?.color // manually set color for current line
@@ -364,8 +377,9 @@ export class LineDescriptor extends BaseDescriptor {
         return lineObject
     }
 
-    public getCurrentSettings(containerName: string): SimpleLineSetting {
-        const currentContainer = this.container.containerItems.filter(el => el.displayName === containerName)[0];
+    public getCurrentSettings(containerKey: string): SimpleLineSetting {
+        const currentContainer = this.container.containerItems
+            .find(el => (el as IKeyedContainerItem).key === containerKey);
         const currentLineSettings: SimpleLineSetting = {} as SimpleLineSetting
         let interpolationWithColorizedLine;
 

@@ -48,6 +48,7 @@ export interface IDataRepresentationSeries extends interactivitySelectionService
     y: IDataRepresentationAxis;
     hasSelection: boolean;
     containerName: string;
+    containerKey: string;
     groupName?: string;
     color?: string;
 }
