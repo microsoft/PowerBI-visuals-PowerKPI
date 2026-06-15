@@ -1106,7 +1106,9 @@ describe("Power KPI", () => {
                     withTable: () => builder,
                     createSelectionId: () => ({
                         getKey: () => measurePart ? `${seriesPart}|${measurePart}` : `${seriesPart}`,
-                        getSelector: () => ({}),
+                        getSelector: () => measurePart
+                            ? ({ data: [{ id: seriesPart }], metadata: measurePart })
+                            : ({ data: [{ id: seriesPart }] }),
                         getSelectorsByColumn: () => ({}),
                         equals: () => false,
                         includes: () => false,
@@ -1185,6 +1187,39 @@ describe("Power KPI", () => {
                     colors.forEach(color => expect(color).toBeDefined());
                     expect(new Set(colors).size).toBe(colors.length);
                 });
+            });
+
+            // Regression: ColorHelper.normalizeSelector strips the measure (metadata)
+            // from a dynamic-series selector. In granular mode that collapsed every
+            // measure of a group onto one selector, so picking a color for "A - Sales"
+            // also changed "A - Cost" and overrides failed to persist. The granular
+            // selector must retain the measure so each line persists independently.
+            function containerSelectors(settings: Settings): any[] {
+                return settings.line.container.containerItems
+                    .filter(item => (item as any).key !== LineDescriptor.AllLinesContainerKey)
+                    .map(item => (item.slices[0] as any).selector);
+            }
+
+            it("Granular mode keeps a distinct selector (with measure) per line", () => {
+                const { settings } = convertGrouped(LineColorMode.granular);
+                const selectors: any[] = containerSelectors(settings);
+
+                expect(selectors.length).toBe(groupValues.length * measureNames.length);
+                // Every line has its own selector, and every selector carries a measure.
+                selectors.forEach(selector => expect(selector.metadata).toBeDefined());
+                const unique: Set<string> = new Set(selectors.map(s => JSON.stringify(s)));
+                expect(unique.size).toBe(selectors.length);
+            });
+
+            it("Joint mode collapses to one measure-less selector per group", () => {
+                const { settings } = convertGrouped(LineColorMode.joint);
+                const selectors: any[] = containerSelectors(settings);
+
+                expect(selectors.length).toBe(groupValues.length);
+                // Group-level selectors must NOT carry a measure.
+                selectors.forEach(selector => expect(selector.metadata).toBeUndefined());
+                const unique: Set<string> = new Set(selectors.map(s => JSON.stringify(s)));
+                expect(unique.size).toBe(groupValues.length);
             });
         });
 

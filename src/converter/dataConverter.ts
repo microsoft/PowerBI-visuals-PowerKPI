@@ -318,10 +318,19 @@ export class DataConverter extends VarianceConverter implements IConverter {
                     // and it naturally differs per series (granular) or per group (joint).
                     const containerKey: string = identity.getKey();
 
+                    // Granular overrides must persist per (series + measure). The measure
+                    // lives in the selector's `metadata`, but ColorHelper.normalizeSelector
+                    // strips it for dynamic series, collapsing every measure of a group onto
+                    // a single series-level selector. So we keep the full selector in granular
+                    // mode and only normalize (group level) in joint mode.
+                    const selector: Selector = isJointMode
+                        ? ColorHelper.normalizeSelector(identity.getSelector())
+                        : identity.getSelector();
+
                     const dataPoint: LineDataPoint = {
                         containerKey,
                         containerName,
-                        selectionId: ColorHelper.normalizeSelector(identity.getSelector()),
+                        selectionId: selector,
                         // Joint reads group-level objects first (legacy/group colors); granular
                         // reads measure-level first, falling back to group (cross-mode carry-over).
                         objects: isJointMode
