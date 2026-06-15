@@ -80,6 +80,7 @@ import {
 
 import { DataConverter } from "../src/converter/dataConverter";
 import { AxisOptions } from "../src/converter/converterOptions";
+import { LineDescriptor } from "../src/settings/descriptors/line/lineDescriptor";
 import { DataRepresentationScale } from "../src/dataRepresentation/dataRepresentationScale";
 import { AxisType } from "../src/settings/descriptors/axis/axisDescriptor";
 
@@ -1087,7 +1088,35 @@ describe("Power KPI", () => {
             const groupValues: string[] = ["GroupA", "GroupB"];
             const measureNames: string[] = ["Sales", "Cost"];
 
-            function convertGrouped(mode: LineColorMode): IDataRepresentation {
+            // The default mock selection-id builder returns a constant key for every
+            // series, which would collapse all series into one container. This builder
+            // derives a distinct key from the series group (+ measure in granular mode),
+            // mirroring how a real host produces stable identity keys.
+            function keyedSelectionIdBuilder(): any {
+                let seriesPart = "";
+                let measurePart = "";
+                const builder: any = {
+                    withCategory: () => builder,
+                    withSeries: (_values: any, group: any) => {
+                        seriesPart = group?.name ?? group?.source?.groupName ?? group?.source?.displayName ?? "";
+                        return builder;
+                    },
+                    withMeasure: (measureId: string) => { measurePart = measureId; return builder; },
+                    withMatrixNode: () => builder,
+                    withTable: () => builder,
+                    createSelectionId: () => ({
+                        getKey: () => measurePart ? `${seriesPart}|${measurePart}` : `${seriesPart}`,
+                        getSelector: () => ({}),
+                        getSelectorsByColumn: () => ({}),
+                        equals: () => false,
+                        includes: () => false,
+                        hasIdentity: () => true,
+                    }),
+                };
+                return builder;
+            }
+
+            function convertGrouped(mode: LineColorMode): { dataRepresentation: IDataRepresentation, settings: Settings } {
                 const dataView: powerbi.DataView = new DataBuilder()
                     .getGroupedDataView(groupValues, measureNames);
 
@@ -1096,7 +1125,7 @@ describe("Power KPI", () => {
 
                 const dataConverter: DataConverter = new DataConverter({
                     colorPalette: createColorPalette(),
-                    createSelectionIdBuilder,
+                    createSelectionIdBuilder: keyedSelectionIdBuilder,
                 });
 
                 dataConverter.getAxisType({
@@ -1104,17 +1133,19 @@ describe("Power KPI", () => {
                     xAxisType: AxisType.continuous,
                 });
 
-                return dataConverter.convert({
+                const dataRepresentation: IDataRepresentation = dataConverter.convert({
                     dataView,
                     hasSelection: false,
                     settings,
                     viewport: { width: 100, height: 100 },
                     locale: "en-US"
                 });
+
+                return { dataRepresentation, settings };
             }
 
             it("Joint mode groups every measure of a group under a single container", () => {
-                const dataRepresentation: IDataRepresentation = convertGrouped(LineColorMode.joint);
+                const { dataRepresentation, settings } = convertGrouped(LineColorMode.joint);
 
                 expect(dataRepresentation.isGrouped).toBeTrue();
                 expect(dataRepresentation.series.length).toBe(groupValues.length * measureNames.length);
@@ -1124,10 +1155,13 @@ describe("Power KPI", () => {
                 // One container per group, shared by all measures of that group.
                 expect(new Set(containerNames).size).toBe(groupValues.length);
                 groupValues.forEach(group => expect(containerNames).toContain(group));
+
+                // The keyed container index holds [ALL] + one container per group.
+                expect(settings.line.container.containerItems.length).toBe(groupValues.length + 1);
             });
 
             it("Granular mode gives every line its own container", () => {
-                const dataRepresentation: IDataRepresentation = convertGrouped(LineColorMode.granular);
+                const { dataRepresentation, settings } = convertGrouped(LineColorMode.granular);
 
                 expect(dataRepresentation.isGrouped).toBeTrue();
                 expect(dataRepresentation.series.length).toBe(groupValues.length * measureNames.length);
@@ -1138,16 +1172,60 @@ describe("Power KPI", () => {
                 expect(new Set(containerNames).size).toBe(dataRepresentation.series.length);
                 dataRepresentation.series.forEach(series =>
                     expect(series.containerName).toBe(series.name));
+
+                // The keyed container index holds [ALL] + one container per line.
+                expect(settings.line.container.containerItems.length).toBe(dataRepresentation.series.length + 1);
             });
 
             it("keeps a distinct default color per line in both modes", () => {
                 [LineColorMode.joint, LineColorMode.granular].forEach(mode => {
-                    const dataRepresentation: IDataRepresentation = convertGrouped(mode);
+                    const { dataRepresentation } = convertGrouped(mode);
                     const colors: string[] = dataRepresentation.series.map(series => series.color);
 
                     colors.forEach(color => expect(color).toBeDefined());
                     expect(new Set(colors).size).toBe(colors.length);
                 });
+            });
+        });
+
+        describe("LineDescriptor container keying", () => {
+            function dataPoint(containerKey: string, color: string): any {
+                return {
+                    containerKey,
+                    containerName: "Shared label",
+                    selectionId: {} as any,
+                    objects: { line: { fillColor: { solid: { color } } } } as any,
+                };
+            }
+
+            it("resolves settings by stable key, not by display name", () => {
+                const line: LineDescriptor = new LineDescriptor();
+
+                // Two containers with the SAME display name but different keys.
+                line.populateContainer(dataPoint("key-1", "#111111"));
+                line.populateContainer(dataPoint("key-2", "#222222"));
+
+                expect(line.getCurrentSettings("key-1").fillColor).toBe("#111111");
+                expect(line.getCurrentSettings("key-2").fillColor).toBe("#222222");
+
+                // [ALL] + two distinct containers despite the identical display name.
+                expect(line.container.containerItems.length).toBe(3);
+            });
+
+            it("does not collide with a real series literally named '[ALL]'", () => {
+                const line: LineDescriptor = new LineDescriptor();
+
+                line.populateContainer({
+                    containerKey: "series-key",
+                    containerName: "[ALL]",
+                    selectionId: {} as any,
+                    objects: { line: { fillColor: { solid: { color: "#abcdef" } } } } as any,
+                });
+
+                // The series override is stored under its own key, and the all-lines
+                // container keeps its sentinel key untouched.
+                expect(line.getCurrentSettings("series-key").fillColor).toBe("#abcdef");
+                expect(line.getCurrentSettings(LineDescriptor.AllLinesContainerKey).fillColor).toBeNull();
             });
         });
 

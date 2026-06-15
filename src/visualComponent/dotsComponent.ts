@@ -90,7 +90,7 @@ export class DotsComponent extends BaseContainerComponent<
                 if (point) {
                     component.show();
 
-                    const lineSettings = line.getCurrentSettings(currentSeries.containerName)
+                    const lineSettings = line.getCurrentSettings(currentSeries.containerKey)
                     component.render({
                         point,
                         radiusFactor: dots.radiusFactor.value,

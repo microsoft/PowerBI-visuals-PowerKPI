@@ -142,7 +142,7 @@ export class TooltipComponent
             (variances[0] || [])[0],
             colorPalette,
             legend,
-            series[0] && line.getCurrentSettings(series[0].containerName)
+            series[0] && line.getCurrentSettings(series[0].containerKey)
         );
 
         if (firstVariance) {
@@ -187,7 +187,7 @@ export class TooltipComponent
                     && dataSeriesPoint.y !== undefined
                     && !isNaN(dataSeriesPoint.y)
                 ) {
-                    const lineSettings = line.getCurrentSettings(dataSeries.containerName)
+                    const lineSettings = line.getCurrentSettings(dataSeries.containerKey)
                     if(lineSettings){
                         const isHighContrast: boolean = colorPalette.isHighContrast;
                         dataItems.push({

@@ -74,6 +74,7 @@ export interface IDataConverterConstructorOptions {
 }
 
 export interface LineDataPoint {
+    containerKey: string;
     containerName: string;
     selectionId: Selector;
     objects: DataViewObjects;
@@ -312,7 +313,13 @@ export class DataConverter extends VarianceConverter implements IConverter {
 
                     const identity: ISelectionId = identityBuilder.createSelectionId();
 
+                    // Stable, identity-derived lookup key for the formatting container.
+                    // Unlike the display name, it cannot collide with a real series name,
+                    // and it naturally differs per series (granular) or per group (joint).
+                    const containerKey: string = identity.getKey();
+
                     const dataPoint: LineDataPoint = {
+                        containerKey,
                         containerName,
                         selectionId: ColorHelper.normalizeSelector(identity.getSelector()),
                         // Joint reads group-level objects first (legacy/group colors); granular
@@ -346,7 +353,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
                         groupedValue,
                         seriesY,
                         kpiIndexes,
-                        containerName,
+                        containerKey,
                         settings,
                         currentPoint,
                         seriesColor,
@@ -361,6 +368,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
                         hasSelection,
                         identity,
                         containerName,
+                        containerKey,
                         color: seriesColor,
                         name,
                         points,
@@ -486,7 +494,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
         groupedValue: powerbi.DataViewValueColumn,
         seriesY: IDataRepresentationAxisBase,
         kpiIndexes: number[],
-        name: string,
+        containerKey: string,
         settings: Settings,
         currentPoint: IDataRepresentationPointIndexed,
         seriesColor: string,
@@ -496,7 +504,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
         } {
         const gradientPoints: IDataRepresentationPointGradientColor[] = [];
 
-        const currentLineSettings = settings.line.getCurrentSettings(name)
+        const currentLineSettings = settings.line.getCurrentSettings(containerKey)
         const dataPointEndsKpiColorSegment: boolean = !currentLineSettings.dataPointStartsKpiColorSegment;
 
         const copiedAxisValues: DataRepresentationAxisValueType[] = dataPointEndsKpiColorSegment

@@ -124,7 +124,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
         
         const dataPoints: legendInterfaces.LegendDataPoint[] = data.series
             .map((series: IDataRepresentationSeries) => {
-                const { lineStyle } = line.getCurrentSettings(series.containerName);
+                const { lineStyle } = line.getCurrentSettings(series.containerKey);
                 const dataPoint: legendInterfaces.LegendDataPoint = {
                     color: isHighContrast ? colorPalette.foreground.value : series.color,
                     identity: series.identity,

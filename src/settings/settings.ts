@@ -46,7 +46,7 @@ import { KPIIndicatorValueSignDescriptor } from "./descriptors/kpi/kpiIndicatorV
 import { LabelsDescriptor } from "./descriptors/labelsDescriptor";
 import { LayoutDescriptor } from "./descriptors/layoutDescriptor";
 import { LegendDescriptor } from "./descriptors/legendDescriptor";
-import { LineDescriptor } from "./descriptors/line/lineDescriptor";
+import { LineDescriptor, IKeyedContainerItem } from "./descriptors/line/lineDescriptor";
 import { SubtitleDescriptor } from "./descriptors/subtitleDescriptor";
 import { XAxisDescriptor } from "./descriptors/axis/xAxisDescriptor";
 import { YAxisDescriptor } from "./descriptors/axis/yAxisDescriptor";
@@ -246,8 +246,7 @@ export class Settings extends formattingSettings.Model {
         this.line.mode.visible = !!dataRepresentation?.isGrouped;
 
         this.line.container.containerItems.forEach(containerItem => {
-            const containerName = containerItem.displayName;
-            const currentSettings = this.line.getCurrentSettings(containerName);
+            const currentSettings = this.line.getCurrentSettings((containerItem as IKeyedContainerItem).key);
             containerItem.slices.filter(el => el.name === "interpolation")[0].visible = !currentSettings.shouldMatchKpiColor;
             containerItem.slices.filter(el => el.name === "dataPointStartsKpiColorSegment")[0].visible = currentSettings.shouldMatchKpiColor;
             containerItem.slices.filter(el => el.name === "interpolationWithColorizedLine")[0].visible = currentSettings.shouldMatchKpiColor;
