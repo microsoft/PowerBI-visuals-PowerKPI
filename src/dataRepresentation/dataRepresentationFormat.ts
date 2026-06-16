@@ -26,4 +26,4 @@
 
 export interface IDataRepresentationFormat {
     format: string;
-};
+}

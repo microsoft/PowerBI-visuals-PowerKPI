@@ -26,7 +26,6 @@
 
 import powerbi from "powerbi-visuals-api";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
-
 import { IMargin } from "powerbi-visuals-utils-svgutils";
 
 import { BaseContainerComponent } from "./base/baseContainerComponent";
@@ -162,6 +161,7 @@ export class SvgComponent extends BaseContainerComponent<
             settings: settings.referenceLineOfXAxis,
             ticks: options.xTicks,
             viewport: reducedViewport,
+            colorPalette: options.colorPalette
         });
 
         this.yAxisReferenceLineComponent.render({
@@ -169,6 +169,7 @@ export class SvgComponent extends BaseContainerComponent<
             settings: settings.referenceLineOfYAxis,
             ticks: options.yTicks,
             viewport: reducedViewport,
+            colorPalette: options.colorPalette
         });
 
         this.secondaryYAxisReferenceLineComponent.render({
@@ -176,6 +177,7 @@ export class SvgComponent extends BaseContainerComponent<
             settings: settings.secondaryReferenceLineOfYAxis,
             ticks: options.secondaryYTicks,
             viewport: reducedViewport,
+            colorPalette: options.colorPalette
         });
 
         this.chartComponent.render(this.renderOptions);
@@ -199,13 +201,13 @@ export class SvgComponent extends BaseContainerComponent<
     }
 
     private bindEvents(): void {
-        this.element.on("mousemove", () => this.pointerMoveEvent(this.renderOptions));
-        this.element.on("touchmove", () => this.pointerMoveEvent(this.renderOptions));
+        this.element.on("mousemove", (event) => this.pointerMoveEvent(this.renderOptions, event));
+        this.element.on("touchmove", (event) => this.pointerMoveEvent(this.renderOptions, event));
 
         this.element.on("mouseleave", () => this.pointerLeaveHandler());
         this.element.on("touchend", () => this.pointerLeaveHandler());
 
-        this.element.on("click", (this.clickHandler.bind(this)));
+        this.element.on("click", (event) => this.clickHandler(event));
     }
 
     private updateMargin(margin: IMargin, additionalMargin: IMargin): void {
@@ -230,24 +232,22 @@ export class SvgComponent extends BaseContainerComponent<
         });
     }
 
-    private pointerMoveEvent(options: ISvgComponentRenderOptions): void {
+    private pointerMoveEvent(options: ISvgComponentRenderOptions, event: MouseEvent | TouchEvent): void {
         const { data: { settings, variance } } = options;
 
         const isSecondTooltipShown: boolean = variance
             && !isNaN(variance[1])
-            && settings.secondTooltipVariance.show;
+            && settings.secondTooltipVariance.isElementShown();
 
-        if (!settings.tooltipLabel.show
-            && !settings.tooltipValues.show
-            && !settings.tooltipVariance.show
+        if (!settings.tooltipLabel.isElementShown()
+            && !settings.tooltipValues.isElementShown()
+            && !settings.tooltipVariance.isElementShown()
             && !isSecondTooltipShown
         ) {
             this.pointerLeaveHandler();
 
             return;
         }
-
-        const event: MouseEvent | TouchEvent = require("d3-selection").event;
 
         event.preventDefault();
         event.stopPropagation();
@@ -303,9 +303,9 @@ export class SvgComponent extends BaseContainerComponent<
             data: {
                 series,
                 margin,
-                settings: { yAxis },
             },
             additionalMargin,
+            colorPalette
         } = baseOptions;
 
         const amountOfPoints: number = series
@@ -339,6 +339,7 @@ export class SvgComponent extends BaseContainerComponent<
                 series: dataSeries,
             },
             position: { x: xPosition, y: yPosition },
+            colorPalette
         };
 
         if (options.data.variances.length) {

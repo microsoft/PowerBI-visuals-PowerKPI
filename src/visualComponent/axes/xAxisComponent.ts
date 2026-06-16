@@ -36,6 +36,7 @@ import {
     valueFormatter,
 } from "powerbi-visuals-utils-formattingutils";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
+import ISandboxExtendedColorPalette = powerbi.extensibility.ISandboxExtendedColorPalette;
 
 import { IDataRepresentationX } from "../../dataRepresentation/dataRepresentationAxis";
 import { DataRepresentationAxisValueType } from "../../dataRepresentation/dataRepresentationAxisValueType";
@@ -59,6 +60,7 @@ export interface IXAxisComponentRenderOptions {
     viewport: powerbi.IViewport;
     margin: IMargin;
     additionalMargin: IMargin;
+    colorPalette: ISandboxExtendedColorPalette;
 }
 
 export class XAxisComponent
@@ -107,7 +109,7 @@ export class XAxisComponent
             settings,
         } = options;
 
-        if (settings.show) {
+        if (settings.isElementShown()) {
             this.show();
         } else {
             this.hide();
@@ -123,28 +125,28 @@ export class XAxisComponent
             axis.max,
             this.formatter,
             fontSize,
-            settings.fontFamily,
+            settings.font.fontFamily.value,
         );
 
         this.maxElementWidth = labelMeasurementService.getLabelWidth(
             [axis.min, axis.max],
             this.formatter,
             fontSize,
-            settings.fontFamily,
+            settings.font.fontFamily.value,
         );
 
         this.firstLabelWidth = this.getLabelWidthWithAdditionalOffset(
             [domain[0] || ""],
             this.formatter,
             fontSize,
-            settings.fontFamily,
+            settings.font.fontFamily.value,
         ) / 2;
 
         this.latestLabelWidth = this.getLabelWidthWithAdditionalOffset(
             [domain.slice(-1)[0] || ""],
             this.formatter,
             fontSize,
-            settings.fontFamily,
+            settings.font.fontFamily.value,
         ) / 2;
     }
 
@@ -163,6 +165,7 @@ export class XAxisComponent
             viewport,
             margin,
             additionalMargin,
+            colorPalette
         } = options;
 
         const width: number = Math.max(0, viewport.width - margin.left - margin.right);
@@ -172,7 +175,7 @@ export class XAxisComponent
             axis.scale.getDomain(),
             axis.metadata,
             !axis.scale.isCategorical,
-            settings.density,
+            settings.percentile.value,
         );
 
         if (!this.isShown) {
@@ -208,8 +211,8 @@ export class XAxisComponent
                 }
 
                 if (!isNaN(availableWidth)) {
-                    return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
-                        labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.fontFamily),
+                    return textMeasurementService.getTailoredTextOrDefault(
+                        labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.font.fontFamily.value),
                         availableWidth,
                     );
                 }
@@ -217,12 +220,14 @@ export class XAxisComponent
                 return formattedLabel;
             });
 
+        const isHighContrast: boolean = colorPalette.isHighContrast;
+        
         this.gElement
             .call(this.axisProperties.axis)
-            .attr("font-family", settings.fontFamily)
+            .attr("font-family", settings.font.fontFamily.value)
             .attr("font-size", settings.fontSizeInPx)
-            .attr("fill", settings.fontColor)
-            .attr("color", settings.fontColor);
+            .attr("fill", isHighContrast ? colorPalette.background.value : settings.fontColor.value.value)
+            .attr("color", isHighContrast ? colorPalette.foreground.value :  settings.fontColor.value.value);
     }
 
     public getViewport(): IVisualComponentViewport {
@@ -298,8 +303,8 @@ export class XAxisComponent
         let precision: number;
 
         if (x.axisType === DataRepresentationTypeEnum.NumberType) {
-            minValue = xAxis.displayUnits || x.max;
-            precision = xAxis.precision;
+            minValue = xAxis.displayUnits.value || x.max;
+            precision = xAxis.precision.value;
         } else {
             minValue = x.min;
             maxValue = x.max;

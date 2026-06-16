@@ -23,11 +23,13 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+import ISandboxExtendedColorPalette = powerbi.extensibility.ISandboxExtendedColorPalette;
 
 import { IDataRepresentation } from "../../dataRepresentation/dataRepresentation";
 import { IDataRepresentationSeries } from "../../dataRepresentation/dataRepresentationSeries";
 
 export interface IVisualComponentRenderOptionsBase {
+    colorPalette: ISandboxExtendedColorPalette;
     series?: IDataRepresentationSeries;
 }
 

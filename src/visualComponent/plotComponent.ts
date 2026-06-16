@@ -91,18 +91,23 @@ export class PlotComponent extends BaseContainerComponent<
         ];
     }
 
+    // eslint-disable-next-line max-lines-per-function
     public render(options: IVisualComponentRenderOptions): void {
         const {
-            x,
-            margin,
-            groups: [firstGroup, secondGroup],
-            viewport,
-            settings: {
-                xAxis,
-                yAxis,
-                secondaryYAxis,
+            data: {
+                 x,
+                margin,
+                groups: [firstGroup, secondGroup],
+                viewport,
+                locale,
+                settings: {
+                    xAxis,
+                    yAxis,
+                    secondaryYAxis,
+                },
             },
-        } = options.data;
+            colorPalette
+        } = options;
 
         if (!firstGroup && !secondGroup) {
             this.hide();
@@ -125,6 +130,7 @@ export class PlotComponent extends BaseContainerComponent<
             margin: null,
             settings: xAxis,
             viewport: null,
+            colorPalette: colorPalette
         });
 
         this.yAxisComponent.preRender({
@@ -132,6 +138,8 @@ export class PlotComponent extends BaseContainerComponent<
             margin: null,
             settings: yAxis,
             viewport: null,
+            colorPalette: colorPalette,
+            locale: locale
         });
 
         this.secondaryYAxisComponent.preRender({
@@ -139,6 +147,8 @@ export class PlotComponent extends BaseContainerComponent<
             margin: null,
             settings: secondaryYAxis,
             viewport: null,
+            colorPalette: colorPalette,
+            locale: locale
         });
 
         const xAxisViewport: IVisualComponentViewport = this.xAxisComponent.getViewport();
@@ -161,6 +171,8 @@ export class PlotComponent extends BaseContainerComponent<
                 height,
                 width: reducedViewport.width,
             },
+            colorPalette: colorPalette,
+            locale: locale
         });
 
         this.secondaryYAxisComponent.render({
@@ -171,6 +183,8 @@ export class PlotComponent extends BaseContainerComponent<
                 height,
                 width: reducedViewport.width,
             },
+            colorPalette: colorPalette,
+            locale: locale
         });
 
         const yAxisViewport: IVisualComponentViewport = this.yAxisComponent.getViewport();
@@ -201,6 +215,7 @@ export class PlotComponent extends BaseContainerComponent<
                 height: reducedViewport.height,
                 width,
             },
+            colorPalette
         });
 
         this.svgComponent.render({
@@ -222,6 +237,7 @@ export class PlotComponent extends BaseContainerComponent<
             yTicks: this.yAxisComponent.getTicks(),
 
             secondaryYTicks: this.secondaryYAxisComponent.getTicks(),
+            colorPalette,
         });
     }
 

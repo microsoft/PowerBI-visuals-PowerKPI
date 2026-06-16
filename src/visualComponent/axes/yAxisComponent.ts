@@ -36,6 +36,7 @@ import {
     valueFormatter,
 } from "powerbi-visuals-utils-formattingutils";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
+import ISandboxExtendedColorPalette = powerbi.extensibility.ISandboxExtendedColorPalette;
 
 import { IDataRepresentationAxis } from "../../dataRepresentation/dataRepresentationAxis";
 import { YAxisDescriptor } from "../../settings/descriptors/axis/yAxisDescriptor";
@@ -56,6 +57,8 @@ export interface IYAxisComponentRenderOptions {
     axis: IDataRepresentationAxis;
     viewport: powerbi.IViewport;
     margin: IMargin;
+    colorPalette: ISandboxExtendedColorPalette;
+    locale: string;
 }
 
 export class YAxisComponent
@@ -71,7 +74,7 @@ export class YAxisComponent
     private maxLabelWidth: number = 0;
     private maxLabelHeight: number = 0;
 
-    private valueFormat: string = valueFormatter.valueFormatter.DefaultNumericFormat;
+    private valueFormat: string = valueFormatter.DefaultNumericFormat;
 
     constructor(options: IVisualComponentConstructorOptions) {
         super();
@@ -93,9 +96,10 @@ export class YAxisComponent
         const {
             axis,
             settings,
+            locale
         } = options;
 
-        if (settings.show) {
+        if (settings.isElementShown()) {
             this.show();
         } else {
             this.hide();
@@ -103,20 +107,17 @@ export class YAxisComponent
 
         const fontSize: number = settings.fontSizeInPx;
 
-        this.formatter = labelMeasurementService.getValueFormatter(
-            settings.displayUnits || axis.max,
-            undefined,
-            undefined,
-            undefined,
-            settings.precision,
-            axis.format || this.valueFormat,
-        );
+        this.formatter = valueFormatter.create({
+            cultureSelector: locale,
+            precision: settings.precision.value,
+            format: axis.format || this.valueFormat,
+            value: settings.displayUnits.value || axis.max});
 
         this.maxLabelHeight = labelMeasurementService.getLabelHeight(
             axis.max,
             this.formatter,
             fontSize,
-            settings.fontFamily,
+            settings.font.fontFamily.value,
         );
     }
 
@@ -134,6 +135,7 @@ export class YAxisComponent
             margin,
             settings,
             viewport,
+            colorPalette
         } = options;
 
         const height: number = Math.max(0, viewport.height - margin.top - margin.bottom);
@@ -141,20 +143,20 @@ export class YAxisComponent
         this.axisProperties = this.getAxisProperties(
             height,
             [axis.min, axis.max],
-            settings.density,
-            settings.density === settings.maxDensity,
+            settings.percentile.value,
+            settings.percentile.value === settings.maxDensity,
         );
 
         if (!this.isShown) {
             return;
         }
 
-        this.maxLabelWidth = settings.show
+        this.maxLabelWidth = settings.isElementShown()
             ? labelMeasurementService.getLabelWidth(
                 this.getTicks(),
                 this.formatter,
                 settings.fontSizeInPx,
-                settings.fontFamily,
+                settings.font.fontFamily.value,
             )
             : 0;
 
@@ -185,8 +187,8 @@ export class YAxisComponent
             const formattedLabel: string = this.formatter.format(item);
 
             if (shouldLabelsBeTruncated) {
-                return textMeasurementService.textMeasurementService.getTailoredTextOrDefault(
-                    labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.fontFamily),
+                return textMeasurementService.getTailoredTextOrDefault(
+                    labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.font.fontFamily.value),
                     availableWidth,
                 );
             }
@@ -194,12 +196,14 @@ export class YAxisComponent
             return formattedLabel;
         });
 
+        const isHighContrast: boolean = colorPalette.isHighContrast;
+
         this.gElement
             .call(this.axisProperties.axis)
-            .attr("font-family", settings.fontFamily)
+            .attr("font-family", settings.font.fontFamily.value)
             .attr("font-size", settings.fontSizeInPx)
-            .attr("fill", settings.fontColor)
-            .attr("color", settings.fontColor);
+            .attr("fill", isHighContrast ? colorPalette.background.value : settings.fontColor.value.value)
+            .attr("color", isHighContrast ? colorPalette.foreground.value : settings.fontColor.value.value);
     }
 
     public getViewport(): IVisualComponentViewport {

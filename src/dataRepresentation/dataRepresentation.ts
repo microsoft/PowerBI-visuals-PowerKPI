@@ -45,5 +45,6 @@ export interface IDataRepresentation {
     variances: number[][];
     margin: IMargin;
     x: IDataRepresentationX;
+    locale: string;
     isGrouped?: boolean;
 }

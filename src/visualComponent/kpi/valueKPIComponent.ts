@@ -52,11 +52,11 @@ export class ValueKPIComponent
 
         this.element.classed(this.extraClassName, true);
 
-        this.valueFormat = valueFormatter.valueFormatter.DefaultNumericFormat;
+        this.valueFormat = valueFormatter.DefaultNumericFormat;
     }
 
     public render(options: IVisualComponentRenderOptions): void {
-        const { series, settings, variance } = options.data;
+        const { data: {series, settings, variance}, colorPalette } = options;
         const captionDetailsKPIComponentOptions: ICaptionKPIComponentOptions = { ...options } as ICaptionKPIComponentOptions;
 
         let caption: string = "";
@@ -68,11 +68,11 @@ export class ValueKPIComponent
             && options.data.series[0].current
             && !isNaN(options.data.series[0].current.y)
         ) {
-            const formatter: valueFormatter.IValueFormatter = valueFormatter.valueFormatter.create({
+            const formatter: valueFormatter.IValueFormatter = valueFormatter.create({
                 displayUnitSystemType: displayUnitSystemType.DisplayUnitSystemType.WholeUnits,
                 format: options.data.series[0].format || this.valueFormat,
-                precision: settings.actualValueKPI.precision,
-                value: settings.actualValueKPI.displayUnits || series[0].domain.max,
+                precision: settings.actualValueKPI.precision.value,
+                value: settings.actualValueKPI.displayUnits.value || series[0].domain.max,
             });
 
             const value: number = options.data.series[0].current.y;
@@ -81,16 +81,17 @@ export class ValueKPIComponent
             caption = formatter.format(value);
             details = options.data.series[0].name;
         }
-
         const valueCaption: ICaptionKPIComponentOptionsValueSettings = {
             settings: settings.actualValueKPI,
             title: details || title,
             value: caption,
+            colorPalette: colorPalette
         };
 
         const labelCaption: ICaptionKPIComponentOptionsValueSettings = {
             settings: settings.actualLabelKPI,
             value: details,
+            colorPalette: colorPalette
         };
 
         captionDetailsKPIComponentOptions.captions = [
@@ -105,17 +106,17 @@ export class ValueKPIComponent
             && !isNaN(series[0].current.kpiIndex);
 
         let currentAlign: AlignEnum = AlignEnum.alignCenter;
-
-        if (!settings.dateLabelKPI.show && !settings.dateValueKPI.show) {
+        if (!settings.dateLabelKPI.isElementShown() && !settings.dateValueKPI.isElementShown()) {
             currentAlign = AlignEnum.alignLeft;
-        } else if (((!settings.kpiIndicatorValue.show || isNaN(variance[0]))
-            && (!settings.kpiIndicatorLabel.isShown()
-                || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex))
-            )
-            && (!isVarianceKPIAvailable || !settings.kpiIndicator.show))
-            && (!settings.secondKPIIndicatorValue.show && !settings.secondKPIIndicatorLabel.isShown()
-                || isNaN(variance[1]))
-        ) {
+        } else if ((
+            (!settings.kpiIndicatorValue.isElementShown() || isNaN(variance[0])) && 
+            (!settings.kpiIndicatorLabel.isShown() || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex))) && 
+            (!isVarianceKPIAvailable || !settings.kpiIndicator.isElementShown())
+        ) && (
+            !settings.secondKPIIndicatorValue.isElementShown() && 
+            !settings.secondKPIIndicatorLabel.isShown() ||
+            isNaN(variance[1])
+        )) {
             currentAlign = AlignEnum.alignRight;
         }
 

@@ -24,10 +24,14 @@
  *  THE SOFTWARE.
  */
 
+import powerbi from "powerbi-visuals-api";
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+
 import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import { FontSizeDescriptor } from "./autoHiding/fontSizeDescriptor";
-import { LineStyle } from "./lineDescriptor";
+import { LineStyle } from "./line/lineTypes";
 
 export enum LegendStyle {
     circle = "circle",
@@ -36,16 +40,134 @@ export enum LegendStyle {
     styledLine = "styledLine",
 }
 
+const styleOptions = [
+    {
+        value: LegendStyle.circle,
+        displayName: "Circle",
+        displayNameKey: "Visual_Circle"
+    },
+    {
+        value: LegendStyle.box,
+        displayName: "Box",
+        displayNameKey: "Visual_Box"
+    },
+    {
+        value: LegendStyle.line,
+        displayName: "Line",
+        displayNameKey: "Visual_Line"
+    },
+    {
+        value: LegendStyle.styledLine,
+        displayName: "Styled_Line",
+        displayNameKey: "Visual_Styled_Line"
+    }
+]
+
+export enum LegendPosition {
+    Top = "Top",
+    Bottom = "Bottom",
+    Right = "Right",
+    Left = "Left",
+    TopCenter = "TopCenter",
+    BottomCenter = "BottomCenter",
+    RightCenter = "RightCenter",
+    LeftCenter = "LeftCenter"
+}
+
+const positionOptions = [
+    {
+        value: LegendPosition.Top,
+        displayName: "Top",
+        displayNameKey: "Visual_Top"
+    },
+    {
+        value: LegendPosition.Bottom,
+        displayName: "Bottom",
+        displayNameKey: "Visual_Bottom"
+    },
+    {
+        value: LegendPosition.Left,
+        displayName: "Left",
+        displayNameKey: "Visual_Left"
+    },
+    {
+        value: LegendPosition.Right,
+        displayName: "Right",
+        displayNameKey: "Visual_Right"
+    },
+    {
+        value: LegendPosition.TopCenter,
+        displayName: "Top_Center",
+        displayNameKey: "Visual_Top_Center"
+    },
+    {
+        value: LegendPosition.BottomCenter,
+        displayName: "Bottom_Center",
+        displayNameKey: "Visual_Bottom_Center"
+    },
+    {
+        value: LegendPosition.LeftCenter,
+        displayName: "Left_Center",
+        displayNameKey: "Visual_Left_Center"
+    },
+    {
+        value: LegendPosition.RightCenter,
+        displayName: "Right_Center",
+        displayNameKey: "Visual_Right_Center"
+    }
+]
 export class LegendDescriptor extends FontSizeDescriptor {
-    public position: string = "BottomCenter";
-    public showTitle: boolean = true;
-    public titleText: string = "";
-    public labelColor: string = "rgb(102, 102, 102)";
-    public fontFamily: string = "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif";
-    public style: LegendStyle = LegendStyle.circle;
+    public position = new formattingSettings.ItemDropdown({
+        name: "position",
+        displayNameKey: "Visual_Position",
+        items: positionOptions,
+        value: positionOptions.filter(el => el.value === LegendPosition.BottomCenter)[0]
+    });
+
+    public showTitle = new formattingSettings.ToggleSwitch({
+        name: "showTitle",
+        displayNameKey: "Visual_Title",
+        value: true,
+    });
+
+    public titleText = new formattingSettings.TextInput({
+        name: "titleText",
+        displayNameKey: "Visual_Legend_Name",
+        value: null,
+        placeholder: ""
+    });
+
+    public labelColor = new formattingSettings.ColorPicker({
+        name: "labelColor",
+        displayNameKey: "Visual_Color",
+        value: { value: "rgb(102, 102, 102)" }
+    });
+
+    public style = new formattingSettings.ItemDropdown({
+        name: "style",
+        displayNameKey: "Visual_Style",
+        items: styleOptions,
+        value: styleOptions.filter(el => el.value === LegendStyle.circle)[0]
+    });
+
+    constructor(viewport: powerbi.IViewport) {
+        super(viewport)
+
+        this.name = "legend"
+        this.displayNameKey = "Visual_Legend"
+        this.font.fontFamily.value = "Segoe UI Light, wf_segoe-ui_light, helvetica, arial, sans-serif"
+        this.slices = [
+            this.font,
+            this.position,
+            this.showTitle,
+            this.titleText,
+            this.labelColor,
+            this.style
+        ]
+    }
 
     public getLegendMarkerShape(): legendInterfaces.MarkerShape {
-        switch (this.style) {
+        switch (this.style.value.value) {
             case LegendStyle.box: {
                 return legendInterfaces.MarkerShape.square;
             }
@@ -61,7 +183,7 @@ export class LegendDescriptor extends FontSizeDescriptor {
     }
 
     public getLegendLineStyle(lineStyle: LineStyle): legendInterfaces.LineStyle {
-        switch (this.style) {
+        switch (this.style.value.value) {
             case LegendStyle.styledLine: {
                 switch (lineStyle) {
                     case LineStyle.dottedLine: {
@@ -83,5 +205,15 @@ export class LegendDescriptor extends FontSizeDescriptor {
         }
 
         return undefined;
+    }
+    
+    public setLocalizedDisplayName(localizationManager: ILocalizationManager) {
+        super.setLocalizedDisplayName(localizationManager);
+        styleOptions.forEach(option => {
+            option.displayName = localizationManager.getDisplayName(option.displayNameKey)
+        });
+        positionOptions.forEach(option => {
+            option.displayName = localizationManager.getDisplayName(option.displayNameKey)
+        });
     }
 }

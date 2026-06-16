@@ -24,16 +24,19 @@
  *  THE SOFTWARE.
  */
 
+import powerbi from "powerbi-visuals-api";
 import {
     legend as legendModule,
     legendInterfaces,
 } from "powerbi-visuals-utils-chartutils";
 
 import { interactivityBaseService } from "powerbi-visuals-utils-interactivityutils";
+import ISandboxExtendedColorPalette = powerbi.extensibility.ISandboxExtendedColorPalette
 
 import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
+import { LineDescriptor } from "../settings/descriptors/line/lineDescriptor";
 import { BaseComponent } from "./base/baseComponent";
 import { IVisualComponentViewport } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
@@ -61,18 +64,19 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
     }
 
     public render(options: IVisualComponentRenderOptions): void {
-        const { data: { settings: { legend } } } = options;
+        const { data: { settings: { legend, line } }, colorPalette } = options;
+        
 
-        if (!this.legend || !legend.show) {
+        if (!this.legend || !legend.isElementShown()) {
             this.hide();
 
             return;
         }
 
         try {
-            const legendData: legendInterfaces.LegendData = this.createLegendData(options.data, legend);
+            const legendData: legendInterfaces.LegendData = this.createLegendData(options.data, legend, line, colorPalette);
 
-            this.legend.changeOrientation(this.getLegendPosition(legend.position));
+            this.legend.changeOrientation(this.getLegendPosition(legend.position.value.value));
 
             this.legend.drawLegend(legendData, options.data.viewport);
 
@@ -115,36 +119,39 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
         }
     }
 
-    private createLegendData(data: IDataRepresentation, settings: LegendDescriptor): legendInterfaces.LegendData {
+    private createLegendData(data: IDataRepresentation, legend: LegendDescriptor, line: LineDescriptor, colorPalette: ISandboxExtendedColorPalette): legendInterfaces.LegendData {
+        const isHighContrast: boolean = colorPalette.isHighContrast;
+        
         const dataPoints: legendInterfaces.LegendDataPoint[] = data.series
             .map((series: IDataRepresentationSeries) => {
+                const { lineStyle } = line.getCurrentSettings(series.containerKey);
                 const dataPoint: legendInterfaces.LegendDataPoint = {
-                    color: series.settings.line.fillColor,
+                    color: isHighContrast ? colorPalette.foreground.value : series.color,
                     identity: series.identity,
                     label: series.name,
-                    lineStyle: settings.getLegendLineStyle(series.settings.line.lineStyle),
-                    markerShape: settings.getLegendMarkerShape(),
+                    lineStyle: legend.getLegendLineStyle(lineStyle),
+                    markerShape: legend.getLegendMarkerShape(),
                     selected: series.selected,
                 };
 
                 return dataPoint;
             });
 
-        const title: string = !!(settings.titleText && settings.showTitle)
-            ? settings.titleText
+        const title: string = legend.titleText.value && legend.showTitle.value
+            ? legend.titleText.value
             : undefined;
 
         return {
             dataPoints,
-            fontFamily: settings.fontFamily,
-            fontSize: settings.fontSize,
+            fontFamily: legend.font.fontFamily.value,
+            fontSize: legend.font.fontSize.value,
             grouped: false,
-            labelColor: settings.labelColor,
+            labelColor: isHighContrast ? colorPalette.foreground.value : legend.labelColor.value.value,
             title,
         };
     }
-
-    private getLegendPosition(position: string): number {
+    
+    private getLegendPosition(position: powerbi.EnumMemberValue): number {
         const positionIndex: number = legendInterfaces.LegendPosition[position];
 
         return positionIndex === undefined

@@ -28,13 +28,10 @@ import powerbi from "powerbi-visuals-api";
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
-import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
-import LegendPosition = legendInterfaces.LegendPosition;
-
 import { LayoutEnum } from "../../layout/layoutEnum";
 import { LayoutToStyleEnum } from "../../layout/layoutToStyleEnum";
 import { LayoutDescriptor } from "../../settings/descriptors/layoutDescriptor";
-import { LegendDescriptor } from "../../settings/descriptors/legendDescriptor";
+import { LegendDescriptor, LegendPosition } from "../../settings/descriptors/legendDescriptor";
 import { BaseContainerComponent } from "../base/baseContainerComponent";
 import { IVisualComponentViewport } from "../base/visualComponent";
 import { IVisualComponentConstructorOptions } from "../base/visualComponentConstructorOptions";
@@ -90,12 +87,12 @@ export class KPIComponent extends BaseContainerComponent<
         const { viewport: { width, height }, settings: { layout, legend } } = options.data;
 
         const viewport: powerbi.IViewport = { width, height };
-
-        this.layout = LayoutEnum[layout.getLayout()];
+        this.layout = layout.layout.value.value as LayoutEnum;
 
         this.applyStyleBasedOnLayout(layout, legend, viewport);
 
         let howManyComponentsWasRendered: number = 0;
+
         this.components.forEach((component: IKPIVisualComponent<IVisualComponentRenderOptions>) => {
 
             component.render(options);
@@ -146,13 +143,13 @@ export class KPIComponent extends BaseContainerComponent<
             switch (this.layout) {
                 case LayoutEnum.Left:
                 case LayoutEnum.Right: {
-                    viewport.width = element.clientWidth;
+                    viewport.width = element?.clientWidth;
                     break;
                 }
                 case LayoutEnum.Top:
                 case LayoutEnum.Bottom:
                 default: {
-                    viewport.height = element.clientHeight;
+                    viewport.height = element?.clientHeight;
                     break;
                 }
             }
@@ -169,17 +166,16 @@ export class KPIComponent extends BaseContainerComponent<
         let currentLayout: LayoutToStyleEnum;
         let kpiLayout: KPIComponentLayoutEnum;
         let maxWidth: string;
-
-        switch (LayoutEnum[layoutSettings.getLayout()]) {
+        switch (layoutSettings.layout.value.value) {
             case LayoutEnum.Left:
             case LayoutEnum.Right: {
                 kpiLayout = KPIComponentLayoutEnum.kpiComponentColumn;
                 maxWidth = null;
 
-                if (!legend.show
-                    || (LegendPosition[legend.position]
-                        && (LegendPosition[legend.position] === LegendPosition.Bottom
-                            || LegendPosition[legend.position] === LegendPosition.BottomCenter))
+                if (
+                    !legend.isElementShown() || 
+                    legend.position.value.value === LegendPosition.Bottom || 
+                    legend.position.value.value === LegendPosition.BottomCenter
                 ) {
                     currentLayout = LayoutToStyleEnum.columnReversedLayout;
                 } else {

@@ -60,11 +60,14 @@ export class DotsComponent extends BaseContainerComponent<
 
     public render(options: IVisualComponentRenderOptions): void {
         const {
-            x,
-            series,
-            viewport,
-            settings: { dots },
-        } = options.data;
+            data: {
+                 x,
+                series,
+                viewport,
+                settings: { dots, line },
+            },           
+            colorPalette
+        } = options;
 
         this.initComponents(
             this.components,
@@ -87,14 +90,16 @@ export class DotsComponent extends BaseContainerComponent<
                 if (point) {
                     component.show();
 
+                    const lineSettings = line.getCurrentSettings(currentSeries.containerKey)
                     component.render({
                         point,
-                        radiusFactor: dots.radiusFactor,
+                        radiusFactor: dots.radiusFactor.value,
                         series: currentSeries,
-                        thickness: currentSeries.settings.line.thickness,
+                        thickness: lineSettings.thickness,
                         viewport,
                         x: x.scale,
                         y: currentSeries.y.scale,
+                        colorPalette
                     });
                 } else {
                     component.hide();

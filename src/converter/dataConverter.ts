@@ -25,8 +25,8 @@
  */
 
 import powerbi from "powerbi-visuals-api";
-
 import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
+import { ColorHelper } from "powerbi-visuals-utils-colorutils";
 
 import {
     kpiColumn,
@@ -43,19 +43,17 @@ import { DataRepresentationScale } from "../dataRepresentation/dataRepresentatio
 import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
 import { AxisType } from "../settings/descriptors/axis/axisDescriptor";
 import { YAxisDescriptor } from "../settings/descriptors/axis/yAxisDescriptor";
-import { BaseDescriptor } from "../settings/descriptors/descriptor";
-import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorDescriptor";
-import { SeriesSettings } from "../settings/seriesSettings";
+import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 import { Settings } from "../settings/settings";
+import { LineColorMode } from "../settings/descriptors/line/lineTypes";
 import { IConverter } from "./converter";
-import { IConverterOptions } from "./converterOptions";
+import { AxisOptions, ConverterOptions } from "./converterOptions";
 import { VarianceConverter } from "./varianceConverter";
 
 import {
     IDataRepresentationSeries,
     IDataRepresentationSeriesGroup,
 } from "../dataRepresentation/dataRepresentationSeries";
-
 import {
     IDataRepresentationPoint,
     IDataRepresentationPointGradientColor,
@@ -64,20 +62,39 @@ import {
 import { IDataRepresentationAxisBase } from "../dataRepresentation/dataRepresentationAxis";
 import { DataRepresentationAxisValueType } from "../dataRepresentation/dataRepresentationAxisValueType";
 
+import DataViewObjects = powerbi.DataViewObjects;
+import ISelectionId = powerbi.visuals.ISelectionId;
+import IColorPalette = powerbi.extensibility.IColorPalette;
+import ISelectionIdBuilder = powerbi.visuals.ISelectionIdBuilder;
+import Selector = powerbi.data.Selector;
+
 export interface IDataConverterConstructorOptions {
-    colorPalette: powerbi.extensibility.IColorPalette;
-    createSelectionIdBuilder: () => powerbi.visuals.ISelectionIdBuilder;
+    colorPalette: IColorPalette;
+    createSelectionIdBuilder: () => ISelectionIdBuilder;
 }
 
-export class DataConverter
-    extends VarianceConverter
-    implements IConverter {
+export interface LineDataPoint {
+    containerKey: string;
+    containerName: string;
+    selectionId: Selector;
+    objects: DataViewObjects;
+}
+
+export interface AxisInfo {
+    axisType: DataRepresentationTypeEnum;
+    metadata: powerbi.DataViewMetadataColumn;
+    name: string;
+}
+
+export class DataConverter extends VarianceConverter implements IConverter {
+
+    private axisInfo: AxisInfo;
 
     constructor(private constructorOptions: IDataConverterConstructorOptions) {
         super();
     }
 
-    public convert(options: IConverterOptions): IDataRepresentation {
+    public convert(options: ConverterOptions): IDataRepresentation {
         const dataRepresentation: IDataRepresentation = this.process(options);
 
         this.postProcess(dataRepresentation);
@@ -85,11 +102,36 @@ export class DataConverter
         return dataRepresentation;
     }
 
-    public process(options: IConverterOptions): IDataRepresentation {
+    public getAxisType(options: AxisOptions) {
+        const { dataView, xAxisType } = options
+        let axisType: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
+        const axisCategory: powerbi.DataViewCategoryColumn = dataView?.categorical?.categories?.[0];
+        const axisCategoryType: powerbi.ValueTypeDescriptor = axisCategory?.source?.type;
+
+        if (axisCategoryType?.text || xAxisType === AxisType.categorical) {
+            axisType = DataRepresentationTypeEnum.StringType;
+        } else if (axisCategoryType?.dateTime) {
+            axisType = DataRepresentationTypeEnum.DateType;
+        } else if (axisCategoryType?.integer || axisCategoryType?.numeric) {
+            axisType = DataRepresentationTypeEnum.NumberType;
+        }
+
+        this.axisInfo = {
+            axisType,
+            metadata: axisCategory?.source,
+            name: axisCategory?.source.displayName
+        }
+        return axisType
+    }
+
+    // eslint-disable-next-line max-lines-per-function
+    public process(options: ConverterOptions): IDataRepresentation {
         const {
             dataView,
             viewport,
             hasSelection,
+            settings,
+            locale
         } = options;
 
         const {
@@ -97,9 +139,7 @@ export class DataConverter
             createSelectionIdBuilder,
         } = this.constructorOptions;
 
-        const settings: Settings = Settings.parse(dataView) as Settings;
-
-        let axisType: DataRepresentationTypeEnum = DataRepresentationTypeEnum.None;
+        const axisType: DataRepresentationTypeEnum = this.axisInfo.axisType ?? DataRepresentationTypeEnum.None;
 
         const dataRepresentation: IDataRepresentation = {
             groups: [],
@@ -116,6 +156,7 @@ export class DataConverter
             variance: [],
             variances: [],
             viewport,
+            locale,
             x: {
                 axisType,
                 format: undefined,
@@ -139,41 +180,27 @@ export class DataConverter
             return dataRepresentation;
         }
 
+        dataRepresentation.x.metadata = this.axisInfo.metadata;
+        dataRepresentation.x.name = this.axisInfo.name;
+        dataRepresentation.x.axisType = this.axisInfo.axisType;
+
         const axisCategory: powerbi.DataViewCategoryColumn = dataView.categorical.categories[0];
-
-        dataRepresentation.x.metadata = axisCategory.source;
-        dataRepresentation.x.name = axisCategory.source.displayName;
-
-        settings.parse(dataView);
-
         const axisCategoryType: powerbi.ValueTypeDescriptor = axisCategory.source.type;
 
         if (axisCategoryType.text) {
-            settings.xAxis.type = AxisType.categorical;
+            settings.xAxis.type.value = settings.xAxis.getNewType(AxisType.categorical);
         }
 
-        if (axisCategoryType.text || settings.xAxis.type === AxisType.categorical) {
-            axisType = DataRepresentationTypeEnum.StringType;
-        } else if (axisCategoryType.dateTime) {
-            axisType = DataRepresentationTypeEnum.DateType;
-        } else if (axisCategoryType.integer || axisCategoryType.numeric) {
-            axisType = DataRepresentationTypeEnum.NumberType;
-        }
-
-        settings.parseSettings(viewport, axisType);
-
-        dataRepresentation.x.axisType = axisType;
+        settings.parseSettings(viewport);
 
         let maxThickness: number = NaN;
-
-        let seriesColorIndex: number = 0;
 
         if (dataView.categorical.values
             && dataView.categorical.values.source
             && dataView.categorical.values.source.displayName
-            && settings.legend.titleText === undefined
+            && settings.legend.titleText.value === undefined
         ) {
-            settings.legend.titleText = dataView.categorical.values.source.displayName;
+            settings.legend.titleText.value = dataView.categorical.values.source.displayName;
         }
 
         const axisCategoryFormat: string = this.getFormatStringByColumn(axisCategory && axisCategory.source);
@@ -184,6 +211,12 @@ export class DataConverter
         // Applies series formats
         dataRepresentation.x.format = dataRepresentation.settings.dateValueKPI.getFormat();
 
+        // Unique palette color index per series (group x measure). Kept
+        // independent from the formatting container so that lines sharing a joint
+        // container still each receive a distinct default color.
+        let seriesColorIndex: number = 0;
+
+        // eslint-disable-next-line max-lines-per-function
         dataView.categorical.values.grouped().forEach((columnGroup: powerbi.DataViewValueColumnGroup) => {
             const groupedValues: powerbi.DataViewValueColumn[] = columnGroup.values;
 
@@ -192,11 +225,9 @@ export class DataConverter
                     return groupedValue.source.roles[kpiColumn.name];
                 });
 
-            const kpiIndexes: number[] = (currentKPIColumn
-                && currentKPIColumn[0]
-                && currentKPIColumn[0].values as number[]
-            ) || [];
+            const kpiIndexes: number[] = (currentKPIColumn?.[0]?.values as number[]) || [];
 
+            // eslint-disable-next-line max-lines-per-function
             groupedValues.forEach((groupedValue: powerbi.DataViewValueColumn) => {
                 const format: string = this.getFormatStringByColumn(groupedValue.source);
 
@@ -215,7 +246,6 @@ export class DataConverter
                 }
 
                 let groupIndex: number = -1;
-
                 if (groupedValue.source.roles[valuesColumn.name]) {
                     groupIndex = 0;
                 } else if (groupedValue.source.roles[secondaryValuesColumn.name]) {
@@ -223,7 +253,6 @@ export class DataConverter
                 }
 
                 if (groupIndex !== -1) {
-
                     if (!dataRepresentation.groups[groupIndex]) {
                         dataRepresentation.groups[groupIndex] = {
                             series: [],
@@ -246,26 +275,79 @@ export class DataConverter
                         y: NaN,
                     };
 
-                    const seriesSettings: SeriesSettings = (SeriesSettings.getDefault() as SeriesSettings);
-
-                    for (const propertyName in seriesSettings) {
-                        const descriptor: BaseDescriptor = seriesSettings[propertyName];
-                        const defaultDescriptor: BaseDescriptor = settings[propertyName];
-
-                        if (descriptor && descriptor.applyDefault && defaultDescriptor) {
-                            descriptor.applyDefault(defaultDescriptor);
-                        }
+                    const isGrouped: boolean = columnGroup && !!columnGroup.identity;
+                    if (isGrouped) {
+                        dataRepresentation.isGrouped = isGrouped;
                     }
 
-                    seriesSettings.parseObjects(columnGroup.objects || groupedValue.source.objects);
+                    const name: string = isGrouped && columnGroup.name
+                        ? `${columnGroup.name} - ${groupedValue.source.displayName}`
+                        : groupedValue.source.displayName;
+                    const groupName: string = isGrouped && columnGroup.name
+                        ? `${columnGroup.name}`
+                        : undefined;
+                    // Joint mode (default) groups all measures of a group under a
+                    // single container (e.g. "A"), so one color/setting applies to the whole
+                    // group. Granular mode gives every line its own container (e.g.
+                    // "A - Sum of Sales"). Without a legend there is nothing to group, so the
+                    // full series name is always used.
+                    const isJointMode: boolean = isGrouped
+                        && settings.line.mode.value.value === LineColorMode.joint;
+                    // Fall back to the full series name when the group has no name,
+                    // so the container key is never undefined in joint mode.
+                    const containerName = isJointMode ? (groupName || name) : name;
 
-                    if (!seriesSettings.line.fillColor
-                        && colorPalette
-                        && colorPalette.getColor
-                    ) {
-                        seriesSettings.line.fillColor = colorPalette.getColor(`${seriesColorIndex}`).value;
+                    const identityBuilder: ISelectionIdBuilder = createSelectionIdBuilder()
+                        .withSeries(
+                            dataView.categorical.values,
+                            isGrouped
+                                ? columnGroup
+                                : groupedValue,
+                        );
 
-                        seriesColorIndex++;
+                    // In granular mode the override is persisted per measure; in joint mode
+                    // it is persisted at the group level (no measure in the selector).
+                    if (!isJointMode) {
+                        identityBuilder.withMeasure(groupedValue.source.queryName);
+                    }
+
+                    const identity: ISelectionId = identityBuilder.createSelectionId();
+
+                    // Stable, identity-derived lookup key for the formatting container.
+                    // Unlike the display name, it cannot collide with a real series name,
+                    // and it naturally differs per series (granular) or per group (joint).
+                    const containerKey: string = identity.getKey();
+
+                    // Granular overrides must persist per (series + measure). The measure
+                    // lives in the selector's `metadata`, but ColorHelper.normalizeSelector
+                    // strips it for dynamic series, collapsing every measure of a group onto
+                    // a single series-level selector. So we keep the full selector in granular
+                    // mode and only normalize (group level) in joint mode.
+                    const selector: Selector = isJointMode
+                        ? ColorHelper.normalizeSelector(identity.getSelector())
+                        : identity.getSelector();
+
+                    const dataPoint: LineDataPoint = {
+                        containerKey,
+                        containerName,
+                        selectionId: selector,
+                        // Joint reads group-level objects first (legacy/group colors); granular
+                        // reads measure-level first, falling back to group (cross-mode carry-over).
+                        objects: isJointMode
+                            ? (columnGroup.objects || groupedValue.source.objects)
+                            : (groupedValue.source.objects || columnGroup.objects),
+                    }
+
+                    const currentSettings = settings.line.populateContainer(dataPoint)
+
+                    // Resolve the base series color: explicit override wins, otherwise a
+                    // unique color from the palette (per series), restoring 2.0.0 behaviour.
+                    const seriesColor: string = currentSettings.fillColor
+                        || colorPalette.getColor(`${seriesColorIndex}`).value;
+                    seriesColorIndex++;
+
+                    if (isNaN(maxThickness) || currentSettings.thickness > maxThickness) {
+                        maxThickness = currentSettings.thickness;
                     }
 
                     const seriesY: IDataRepresentationAxisBase = {
@@ -280,38 +362,11 @@ export class DataConverter
                         groupedValue,
                         seriesY,
                         kpiIndexes,
-                        seriesSettings,
+                        containerKey,
                         settings,
                         currentPoint,
+                        seriesColor,
                     );
-
-                    const isGrouped: boolean = columnGroup && !!columnGroup.identity;
-
-                    if (isGrouped) {
-                        dataRepresentation.isGrouped = isGrouped;
-                    }
-
-                    const identity: powerbi.extensibility.ISelectionId = createSelectionIdBuilder()
-                        .withSeries(
-                            dataView.categorical.values,
-                            isGrouped
-                                ? columnGroup
-                                : groupedValue,
-                        )
-                        .withMeasure(groupedValue.source.queryName)
-                        .createSelectionId();
-
-                    if (isNaN(maxThickness) || seriesSettings.line.thickness > maxThickness) {
-                        maxThickness = seriesSettings.line.thickness;
-                    }
-
-                    const name: string = isGrouped && columnGroup.name
-                        ? `${columnGroup.name} - ${groupedValue.source.displayName}`
-                        : groupedValue.source.displayName;
-
-                    const groupName: string = isGrouped && columnGroup.name
-                        ? `${columnGroup.name}`
-                        : undefined;
 
                     seriesGroup.series.push({
                         current: currentPoint,
@@ -321,10 +376,12 @@ export class DataConverter
                         groupName,
                         hasSelection,
                         identity,
+                        containerName,
+                        containerKey,
+                        color: seriesColor,
                         name,
                         points,
                         selected: false,
-                        settings: seriesSettings,
                         y: seriesGroup.y,
                     });
                 }
@@ -400,12 +457,12 @@ export class DataConverter
                     : settings.secondaryYAxis;
 
                 const yMin: number = this.getNotNaNValue(
-                    yAxisSettings.min,
+                    yAxisSettings.min.value,
                     seriesGroup.y.min as number,
                 );
 
                 const yMax: number = this.getNotNaNValue(
-                    yAxisSettings.max,
+                    yAxisSettings.max.value,
                     seriesGroup.y.max as number,
                 );
 
@@ -446,16 +503,18 @@ export class DataConverter
         groupedValue: powerbi.DataViewValueColumn,
         seriesY: IDataRepresentationAxisBase,
         kpiIndexes: number[],
-        seriesSettings: SeriesSettings,
+        containerKey: string,
         settings: Settings,
         currentPoint: IDataRepresentationPointIndexed,
+        seriesColor: string,
     ): {
             points: IDataRepresentationPoint[],
             gradientPoints: IDataRepresentationPointGradientColor[],
         } {
         const gradientPoints: IDataRepresentationPointGradientColor[] = [];
 
-        const dataPointEndsKpiColorSegment: boolean = !seriesSettings.line.dataPointStartsKpiColorSegment;
+        const currentLineSettings = settings.line.getCurrentSettings(containerKey)
+        const dataPointEndsKpiColorSegment: boolean = !currentLineSettings.dataPointStartsKpiColorSegment;
 
         const copiedAxisValues: DataRepresentationAxisValueType[] = dataPointEndsKpiColorSegment
             ? axisValues.slice().reverse()
@@ -476,14 +535,14 @@ export class DataConverter
 
                 const kpiIndex: number = this.getKPIIndex(kpiIndexes[categoryIndex]);
 
-                let color: string = seriesSettings.line.fillColor;
+                let color: string = seriesColor;
 
-                if (seriesSettings.line.shouldMatchKpiColor) {
+                if (currentLineSettings.shouldMatchKpiColor) {
                     const currentKPI: IKPIIndicatorSettings = settings
                         .kpiIndicator
                         .getCurrentKPI(kpiIndex);
 
-                    color = currentKPI && currentKPI.color || color;
+                    color = currentKPI.color.value.value || color;
                 }
 
                 if (this.isValueFinite(value)
@@ -606,7 +665,7 @@ export class DataConverter
         }
 
         if (value instanceof Date) {
-            return valueFormatter.valueFormatter.format(value, format || "dddd, MMMM dd, yyyy");
+            return valueFormatter.format(value, format || "dddd, MMMM dd, yyyy");
         }
 
         return `${value}`;

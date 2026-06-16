@@ -26,7 +26,7 @@
 
 import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
-import { KPIIndicatorValueDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorValueDescriptor";
+import { KPIIndicatorDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorDescriptor";
 import { IVisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
 import { AlignEnum } from "./alignEnum";
 import { ICaptionKPIComponentOptionsValueSettings } from "./captionKPIComponentOptions";
@@ -51,34 +51,31 @@ export class VarianceComponentWithCustomLabel
 
     public render(options: IVisualComponentRenderOptions): void {
         const {
-            series,
-            variance,
-            settings: {
-                dateLabelKPI,
-                dateValueKPI,
-                actualValueKPI,
-                actualLabelKPI,
-                kpiIndicatorValue,
-                kpiIndicatorLabel,
-                secondKPIIndicatorValue,
-                secondKPIIndicatorLabel,
-                kpiIndicator,
+            data: {
+                series,
+                variance,
+                settings: {
+                    dateLabelKPI,
+                    dateValueKPI,
+                    actualValueKPI,
+                    actualLabelKPI,
+                    kpiIndicatorValue,
+                    kpiIndicatorLabel,
+                    secondKPIIndicatorValue,
+                    secondKPIIndicatorLabel,
+                    kpiIndicator,
+                },
             },
-        } = options.data;
+            colorPalette            
+        } = options;
 
-        const varianceSettings: KPIIndicatorValueDescriptor = {
-            ...secondKPIIndicatorValue,
-        } as KPIIndicatorValueDescriptor; // TODO: potential issue
+        const varianceSettings: KPIIndicatorDescriptor = this.cloneClass(secondKPIIndicatorValue);
 
-        const labelSettings: KPIIndicatorValueDescriptor = {
-            ...secondKPIIndicatorLabel,
-        } as unknown as KPIIndicatorValueDescriptor; // TODO: potential issue
-
-        labelSettings.show = secondKPIIndicatorLabel.isShown();
+        const labelSettings: KPIIndicatorDescriptor = this.cloneClass(secondKPIIndicatorLabel);
 
         if (isNaN(variance[1])) {
-            varianceSettings.show = false;
-            labelSettings.show = false;
+            varianceSettings.show.value = false;
+            labelSettings.show.value = false;
         }
 
         const isVarianceKPIAvailable: boolean = series
@@ -89,33 +86,35 @@ export class VarianceComponentWithCustomLabel
 
         let currentAlign: AlignEnum = AlignEnum.alignCenter;
 
-        if (!dateLabelKPI.show
-            && !dateValueKPI.show
-            && (!actualValueKPI.show || series[0] && series[0].current && isNaN(series[0] && series[0].current.y))
-            && !actualLabelKPI.show
+        if (!dateLabelKPI.isElementShown()
+            && !dateValueKPI.isElementShown()
+            && (!actualValueKPI.isElementShown() || series[0] && series[0].current && isNaN(series[0] && series[0].current.y))
+            && !actualLabelKPI.isElementShown()
         ) {
             currentAlign = AlignEnum.alignLeft;
-        } else if ((!kpiIndicatorValue.show || isNaN(variance[0]))
+        } else if ((!kpiIndicatorValue.isElementShown() || isNaN(variance[0]))
             && (!kpiIndicatorLabel.isShown() || (isNaN(variance[0]) && series[0] && series[0].current && isNaN(series[0].current.kpiIndex)))
-            && (!isVarianceKPIAvailable || !kpiIndicator.show)) {
+            && (!isVarianceKPIAvailable || !kpiIndicator.isElementShown())) {
             currentAlign = AlignEnum.alignRight;
         }
 
         const formatter: valueFormatter.IValueFormatter = this.getValueFormatter(
-            varianceSettings.displayUnits,
-            varianceSettings.precision,
+            varianceSettings.displayUnits.value as number,
+            varianceSettings.precision.value,
             secondKPIIndicatorValue.getFormat(),
         );
 
         const valueCaption: ICaptionKPIComponentOptionsValueSettings = {
             settings: varianceSettings,
-            title: secondKPIIndicatorLabel.label || `${variance[1]}`,
+            title: secondKPIIndicatorLabel.label.value || `${variance[1]}`,
             value: formatter.format(variance[1]),
+            colorPalette: colorPalette
         };
 
         const labelCaption: ICaptionKPIComponentOptionsValueSettings = {
             settings: labelSettings,
-            value: secondKPIIndicatorLabel.label,
+            value: secondKPIIndicatorLabel.label.value,
+            colorPalette: colorPalette
         };
 
         super.render({
@@ -125,6 +124,13 @@ export class VarianceComponentWithCustomLabel
                 [labelCaption],
             ],
             data: options.data,
+            colorPalette
         });
+    }
+
+    private cloneClass<T>(instance: T): T {
+        const copy = new (instance.constructor as { new (): T })();
+        Object.assign(copy, instance);
+        return copy;
     }
 }

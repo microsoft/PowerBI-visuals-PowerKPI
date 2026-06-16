@@ -24,16 +24,17 @@
  *  THE SOFTWARE.
  */
 
+import { range as d3Range } from "d3-array";
 import {
-    range as d3Range,
     ScaleQuantize,
     scaleQuantize,
-} from "d3";
+} from "d3-scale";
 
 import { label as NewLabelUtils } from "powerbi-visuals-utils-chartutils";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 import {
+    interfaces,
     textMeasurementService,
     valueFormatter,
 } from "powerbi-visuals-utils-formattingutils";
@@ -67,7 +68,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
     public render(options: IVisualComponentRenderOptions): void {
         const { settings: { labels } } = options.data;
 
-        if (labels.show) {
+        if (labels.isElementShown()) {
             try { // This try-catch protects visual from being destroyed by PBI core team due to changes for core visuals
                 this.renderLabels(options);
             } catch (err) {
@@ -82,8 +83,8 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
         const { viewport, settings: { labels } } = options.data;
 
         this.element
-            .classed(this.italicClassName, labels.isItalic)
-            .classed(this.boldClassName, labels.isBold);
+            .classed(this.italicClassName, labels.font.italic.value)
+            .classed(this.boldClassName, labels.font.bold.value);
 
         const labelLayoutOptions: NewLabelUtils.labelLayout.DataLabelLayoutOptions =
             NewLabelUtils.labelUtils.getDataLabelLayoutOptions(null);
@@ -102,7 +103,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
         text: string,
         fontSize: number,
         fontFamily: string,
-    ): textMeasurementService.TextProperties {
+    ): interfaces.TextProperties {
         return {
             fontFamily,
             fontSize: pixelConverter.toString(fontSize),
@@ -114,18 +115,20 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
         options: IVisualComponentRenderOptions,
     ): Array<NewLabelUtils.labelLayout.LabelDataPointGroup<NewLabelUtils.labelLayout.LabelDataPoint[]>> {
         const {
-            x,
-            series,
-            viewport,
-            settings: { labels },
-
-        } = options.data;
+            data: {
+                x,
+                series,
+                viewport,
+                settings: { labels },
+            },
+            colorPalette
+        } = options;
 
         const xScale: DataRepresentationScale = x.scale
             .copy()
             .range([0, viewport.width]);
 
-        const fontSizeInPx: number = pixelConverter.fromPointToPixel(labels.fontSize);
+        const fontSizeInPx: number = pixelConverter.fromPointToPixel(labels.font.fontSize.value);
 
         const pointsLength: number = series
             && series[0]
@@ -137,11 +140,11 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
 
         const availableAmountOfLabels: number = NewLabelUtils.labelUtils.getNumberOfLabelsToRender(
             viewport.width,
-            labels.density,
+            labels.percentile.value,
             this.minimumLabelsToRender,
             this.estimatedLabelWidth);
 
-        const maxNumberOfLabels: number = Math.round(availableAmountOfLabels * labels.density / 100);
+        const maxNumberOfLabels: number = Math.round(availableAmountOfLabels * labels.percentile.value / 100);
 
         const indexScale: ScaleQuantize<number> = scaleQuantize()
             .domain([0, maxNumberOfLabels])
@@ -150,12 +153,12 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
         return series.map((currentSeries: IDataRepresentationSeries, seriesIndex: number) => {
             const labelDataPoints: NewLabelUtils.labelLayout.LabelDataPoint[] = [];
 
-            const labelDisplayUnits: number = labels.displayUnits || (currentSeries.domain.max as number);
+            const labelDisplayUnits: number = (labels.displayUnits.value || currentSeries.domain.max) as number;
 
             const valueFormatters: valueFormatter.IValueFormatter[] = series.map((seriesGroup: IDataRepresentationSeries) => {
                 return this.getValueFormatter(
                     labelDisplayUnits,
-                    labels.precision,
+                    labels.precision.value,
                     seriesGroup.format);
             });
 
@@ -173,13 +176,13 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
 
                     const formattedValue: string = valueFormatters[seriesIndex].format(point.y);
 
-                    const textProperties: textMeasurementService.TextProperties = this.getTextProperties(
+                    const textProperties: interfaces.TextProperties = this.getTextProperties(
                         formattedValue,
                         fontSizeInPx,
-                        labels.fontFamily);
+                        labels.font.fontFamily.value);
 
-                    const textWidth: number = textMeasurementService.textMeasurementService.measureSvgTextWidth(textProperties);
-                    const textHeight: number = textMeasurementService.textMeasurementService.estimateSvgTextHeight(textProperties);
+                    const textWidth: number = textMeasurementService.measureSvgTextWidth(textProperties);
+                    const textHeight: number = textMeasurementService.estimateSvgTextHeight(textProperties);
 
                     const parentShape: NewLabelUtils.labelLayout.LabelParentPoint = {
                         point: {
@@ -195,16 +198,18 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
                         ],
                     };
 
+                    const isHighContrast: boolean = colorPalette.isHighContrast;
+
                     const labelDataPoint: NewLabelUtils.labelLayout.LabelDataPoint = {
                         fontProperties: {
-                            color: labels.color,
-                            family: labels.fontFamily,
-                            size: NewLabelUtils.units.FontSize.createFromPt(labels.fontSize),
+                            color: isHighContrast ? colorPalette.foreground.value : labels.color.value.value,
+                            family: labels.font.fontFamily.value,
+                            size: NewLabelUtils.units.FontSize.createFromPt(labels.font.fontSize.value),
                         },
                         identity: null,
-                        insideFill: labels.color,
+                        insideFill: isHighContrast ? colorPalette.foreground.value : labels.color.value.value,
                         isPreferred: pointIndex === 0 || pointIndex === lastPointIndex,
-                        outsideFill: labels.color,
+                        outsideFill: isHighContrast ? colorPalette.foreground.value : labels.color.value.value,
                         parentShape,
                         parentType: NewLabelUtils.labelLayout.LabelDataPointParentType.Point,
                         text: formattedValue,
@@ -230,7 +235,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
         precision: number,
         format: string,
     ): valueFormatter.IValueFormatter {
-        return valueFormatter.valueFormatter.create({
+        return valueFormatter.create({
             format,
             precision,
             value: displayUnits,

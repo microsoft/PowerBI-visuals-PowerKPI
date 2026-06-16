@@ -25,41 +25,26 @@
  */
 
 import powerbi from "powerbi-visuals-api";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import {
-    IDescriptor,
-    IDescriptorParserOptions,
-} from "./../descriptor";
-
-import { KPIIndicatorValueDescriptor } from "./kpiIndicatorValueDescriptor";
+import { KPIIndicatorDescriptor } from "./kpiIndicatorDescriptor";
+import { IDescriptor } from "../baseDescriptor";
 
 export class KPIIndicatorValueSignDescriptor
-    extends KPIIndicatorValueDescriptor
+    extends KPIIndicatorDescriptor
     implements IDescriptor {
 
-    public matchKPIColor: boolean = true;
+    public matchKPIColor = new formattingSettings.ToggleSwitch({
+        name: "matchKPIColor",
+        displayNameKey: "Visual_Match_KPI_Indicator_Color",
+        value: true
+    });
 
     constructor(viewport?: powerbi.IViewport) {
         super(viewport);
 
-        /**
-         * Below is small hack to change order of properties
-         * The matchKPIColor should be before fontColor for better UX
-         */
-        delete this.fontColor;
-        this.fontColor = "#333333";
-    }
-
-    public parse(options: IDescriptorParserOptions): void {
-        super.parse(options);
-
-        this.makePropertyFontColorPropertyEnumerable(!this.matchKPIColor);
-    }
-
-    private makePropertyFontColorPropertyEnumerable(isEnumerable: boolean): void {
-        Object.defineProperty(this, "fontColor", {
-            configurable: true,
-            enumerable: isEnumerable,
-        });
+        this.slices = [this.font, this.format, this.displayUnits, this.precision, this.matchKPIColor, this.fontColor]
+        this.name = "kpiIndicatorValue";
+        this.displayNameKey = "Visual_KPI_Indicator_Value";
     }
 }

@@ -1,0 +1,9 @@
+node_modules
+dist
+.eslintrc.js
+coverage
+karma.conf.ts
+test.webpack.config.js
+webpack.config.js
+lib
+specs

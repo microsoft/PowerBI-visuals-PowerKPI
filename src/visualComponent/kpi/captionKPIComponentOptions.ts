@@ -23,16 +23,17 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-
-import { KPIIndicatorValueDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorValueDescriptor";
+import ISandboxExtendedColorPalette = powerbi.extensibility.ISandboxExtendedColorPalette;
+import { KPIIndicatorDescriptor } from "../../settings/descriptors/kpi/kpiIndicatorDescriptor";
 import { IVisualComponentRenderOptions } from "../base/visualComponentRenderOptions";
 import { AlignEnum } from "./alignEnum";
 
 export interface ICaptionKPIComponentOptionsValueSettings {
     value: string;
     title?: string;
-    settings: KPIIndicatorValueDescriptor;
+    settings: KPIIndicatorDescriptor;
     className?: string;
+    colorPalette: ISandboxExtendedColorPalette;
 }
 
 export interface ICaptionKPIComponentOptions extends IVisualComponentRenderOptions {

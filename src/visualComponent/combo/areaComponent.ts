@@ -26,11 +26,8 @@
 
 import powerbi from "powerbi-visuals-api";
 
-import {
-    area,
-    Area,
-    Selection,
-} from "d3";
+import { Selection } from "d3-selection";
+import { area, Area } from "d3-shape";
 
 import { CssConstants } from "powerbi-visuals-utils-svgutils";
 
@@ -43,8 +40,7 @@ import {
     IDataRepresentationPointGradientColor,
 } from "../../dataRepresentation/dataRepresentationPoint";
 
-import { LineInterpolation } from "../../settings/descriptors/lineDescriptor";
-
+import { LineInterpolation } from "../../settings/descriptors/line/lineTypes";
 import {
     ILineComponentRenderOptions,
     LineComponent,
@@ -87,6 +83,7 @@ export class AreaComponent
             interpolation,
             gradientPoints,
             series,
+            colorPalette
         } = options;
 
         this.renderOptions = options;
@@ -107,10 +104,11 @@ export class AreaComponent
             .exit()
             .remove();
 
+        const isHighContrast: boolean = colorPalette.isHighContrast;
         this.areaSelection = areaSelection.enter()
             .append("svg:path")
             .classed(this.areaSelector.className, true)
-            .on("click", this.clickHandler.bind(this))
+            .on("click", (event) => this.clickHandler(event))
             .merge(areaSelection)
             .attr("d", (gradientGroup: IDataRepresentationPointGradientColor) => {
                 return this.getArea(
@@ -120,7 +118,7 @@ export class AreaComponent
                     interpolation,
                 )(gradientGroup.points);
             })
-            .style("fill", (gradientGroup: IDataRepresentationPointGradientColor) => gradientGroup.color);
+            .style("fill", (gradientGroup: IDataRepresentationPointGradientColor) => isHighContrast ? colorPalette.foreground.value : gradientGroup.color);
 
         this.highlight(series && series.hasSelection);
     }

@@ -26,7 +26,7 @@
 
 import powerbi from "powerbi-visuals-api";
 
-import { getRandomNumbers, testDataViewBuilder } from "powerbi-visuals-utils-testutils";
+import { getRandomNumbers, testDataViewBuilder, createCategoricalDataViewBuilder } from "powerbi-visuals-utils-testutils";
 import { valueType } from "powerbi-visuals-utils-typeutils";
 
 import { getDateRange } from "./helpers";
@@ -58,7 +58,7 @@ export class DataBuilder extends testDataViewBuilder.TestDataViewBuilder {
         }
     }
 
-    public getDataView(columnNames?: string[]): powerbi.DataView {
+    public getDataView(columnNames: string[] = []): powerbi.DataView {
         const datesCategory = {
             source: {
                 displayName: DataBuilder.CategoryColumnName,
@@ -85,5 +85,52 @@ export class DataBuilder extends testDataViewBuilder.TestDataViewBuilder {
             valuesCategory,
             columnNames,
         ).build();
+    }
+
+    /**
+     * Builds a grouped (dynamic series) data view: each group value (e.g. "GroupA")
+     * carries the same set of measures. Used to exercise the Joint/Granular line
+     * color modes, which depend on `columnGroup.identity` being present.
+     */
+    public getGroupedDataView(
+        groupValues: string[] = ["GroupA", "GroupB"],
+        measureNames: string[] = ["Sales", "Cost"],
+    ): powerbi.DataView {
+        return createCategoricalDataViewBuilder()
+            .withCategory({
+                source: {
+                    displayName: DataBuilder.CategoryColumnName,
+                    format: "%M/%d/yyyy",
+                    roles: { Axis: true },
+                    type: valueType.ValueType.fromDescriptor({ dateTime: true }),
+                },
+                values: this.dates,
+                identityFrom: { fields: [] },
+            })
+            .withGroupedValues({
+                groupColumn: {
+                    source: {
+                        displayName: "Series",
+                        roles: { SeriesColumn: true },
+                        type: valueType.ValueType.fromDescriptor({ text: true }),
+                    },
+                    values: groupValues,
+                    identityFrom: { fields: [{}] },
+                },
+                valueColumns: measureNames.map((name: string) => ({
+                    source: {
+                        displayName: name,
+                        queryName: `Sum(${name})`,
+                        roles: { Values: true },
+                        type: valueType.ValueType.fromDescriptor({ integer: true }),
+                    },
+                })),
+                data: groupValues.map(() =>
+                    measureNames.map(() => ({
+                        values: getRandomNumbers(this.dates.length, 0, 100),
+                    })),
+                ),
+            })
+            .build();
     }
 }

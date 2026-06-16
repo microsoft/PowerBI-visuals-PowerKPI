@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-import { Dispatch } from "d3";
+import { Dispatch } from "d3-dispatch";
 
 import {
     interactivityBaseService,
@@ -62,6 +62,17 @@ export class Behavior implements interactivityBaseService.IInteractiveBehavior {
             EventName.onClearSelection,
             () => {
                 selectionHandler.handleClearSelection();
+            },
+        );
+
+        this.options.eventDispatcher.on(
+            EventName.onContextMenu,
+            (event: PointerEvent, series: IDataRepresentationSeries) => {
+                selectionHandler.handleContextMenu(series, {
+                    x: event.clientX,
+                    y: event.clientY
+                });
+                event.preventDefault();
             },
         );
     }
