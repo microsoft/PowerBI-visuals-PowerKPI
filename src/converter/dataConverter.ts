@@ -216,6 +216,11 @@ export class DataConverter extends VarianceConverter implements IConverter {
         // container still each receive a distinct default color.
         let seriesColorIndex: number = 0;
 
+        // Clear per-series containers so each convert pass re-reads the current
+        // DataView objects. Without this, stale containers from a previous pass
+        // would be reused and any user color overrides would be silently ignored.
+        settings.line.clearContainers();
+
         // eslint-disable-next-line max-lines-per-function
         dataView.categorical.values.grouped().forEach((columnGroup: powerbi.DataViewValueColumnGroup) => {
             const groupedValues: powerbi.DataViewValueColumn[] = columnGroup.values;

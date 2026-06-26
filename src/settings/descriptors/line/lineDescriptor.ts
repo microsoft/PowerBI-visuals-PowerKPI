@@ -320,6 +320,10 @@ export class LineDescriptor extends BaseDescriptor {
         this.displayNameKey = "Visual_Line"
     }
 
+    public clearContainers(): void {
+        this.container.containerItems = [this.allLinesContainerItem];
+    }
+
     public populateContainer(dataPoint: LineDataPoint) {
         const { containerKey, containerName, selectionId, objects } = dataPoint
         const existingContainer = this.getCurrentSettings(containerKey)
