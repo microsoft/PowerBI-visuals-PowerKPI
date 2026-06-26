@@ -1,3 +1,7 @@
+## 3.1.1.0
+### Fixes
+* Fixed line colors of other series being reset when switching to Granular mode and changing one series' color
+
 ## 3.1.0.0
 ### Features
 * Added a line color mode (Joint / Granular) to configure colors either per group or per individual line
