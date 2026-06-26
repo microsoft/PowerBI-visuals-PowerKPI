@@ -77,6 +77,8 @@ export class SvgComponent extends BaseContainerComponent<
 
     private positions: number[];
 
+    private isClickHandledByChild: boolean = false;
+
     constructor(options: IVisualComponentConstructorOptions) {
         super();
 
@@ -207,14 +209,18 @@ export class SvgComponent extends BaseContainerComponent<
         this.element.on("mouseleave", () => this.pointerLeaveHandler());
         this.element.on("touchend", () => this.pointerLeaveHandler());
 
-        // Only handle clicks that originate directly on the SVG background, not clicks that
-        // bubbled up from a child element (line, dot, area) that already dispatched onClick.
-        // This prevents the double-dispatch that would immediately clear any selection made
-        // by a child handler, while still letting all clicks bubble to the Power BI host.
+        // Treat any click not already handled by a child interactive mark as a background
+        // click (→ onClearSelection). The flag is set in clickComponentHandler when a child
+        // mark dispatches onClick first; it is always reset here so the next click starts
+        // fresh. This avoids the double-dispatch that would clear selection immediately
+        // after a child set it, while still working correctly for overlay <g> elements and
+        // non-interactive SVG children (reference lines, labels, axes) that have no
+        // custom click handler and so never set the flag.
         this.element.on("click", (event: MouseEvent) => {
-            if (event.target === event.currentTarget) {
+            if (!this.isClickHandledByChild) {
                 this.clickHandler(event);
             }
+            this.isClickHandledByChild = false;
         });
     }
 
@@ -438,13 +444,13 @@ export class SvgComponent extends BaseContainerComponent<
             return;
         }
 
-        event.preventDefault();
-
         if (this === component) {
             this.constructorOptions.eventDispatcher.call(EventName.onClearSelection);
 
             return;
         }
+
+        this.isClickHandledByChild = true;
 
         const renderOptions: IVisualComponentRenderOptionsBase = component
             && component.getRenderOptions
