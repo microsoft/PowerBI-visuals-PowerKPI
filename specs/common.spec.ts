@@ -118,6 +118,36 @@ describe("Power KPI", () => {
         });
     });
 
+    describe("Selection Behavior", () => {
+        it("should propagate click events on the SVG chart area to the visual container so Power BI can activate the visual", (done) => {
+            const testWrapper: TestWrapper = new TestWrapper();
+
+            testWrapper.visualBuilder.updateRenderTimeout(
+                testWrapper.dataView,
+                () => {
+                    let didBubble: boolean = false;
+
+                    testWrapper.visualBuilder.element.addEventListener("click", () => {
+                        didBubble = true;
+                    });
+
+                    const svgElement: Element = testWrapper.visualBuilder.element
+                        .querySelector("svg.powerKpi_svgComponent");
+
+                    expect(svgElement).not.toBeNull();
+
+                    svgElement.dispatchEvent(
+                        new MouseEvent("click", { bubbles: true, cancelable: true })
+                    );
+
+                    expect(didBubble).toBe(true);
+
+                    done();
+                }
+            );
+        });
+    });
+
     describe("TooltipComponent", () => {
         it("constructor shouldn't throw any exception during initialization", () => {
             expect(() => {

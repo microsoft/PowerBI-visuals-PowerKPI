@@ -207,7 +207,15 @@ export class SvgComponent extends BaseContainerComponent<
         this.element.on("mouseleave", () => this.pointerLeaveHandler());
         this.element.on("touchend", () => this.pointerLeaveHandler());
 
-        this.element.on("click", (event) => this.clickHandler(event));
+        // Only handle clicks that originate directly on the SVG background, not clicks that
+        // bubbled up from a child element (line, dot, area) that already dispatched onClick.
+        // This prevents the double-dispatch that would immediately clear any selection made
+        // by a child handler, while still letting all clicks bubble to the Power BI host.
+        this.element.on("click", (event: MouseEvent) => {
+            if (event.target === event.currentTarget) {
+                this.clickHandler(event);
+            }
+        });
     }
 
     private updateMargin(margin: IMargin, additionalMargin: IMargin): void {
@@ -431,8 +439,6 @@ export class SvgComponent extends BaseContainerComponent<
         }
 
         event.preventDefault();
-        event.stopPropagation();
-        event.stopImmediatePropagation();
 
         if (this === component) {
             this.constructorOptions.eventDispatcher.call(EventName.onClearSelection);

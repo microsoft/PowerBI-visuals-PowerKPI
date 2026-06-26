@@ -1,3 +1,7 @@
+## 3.1.1.0
+### Fixes
+* Fixed visual not activating when clicking on chart lines or empty SVG canvas area
+
 ## 3.1.0.0
 ### Features
 * Added a line color mode (Joint / Granular) to configure colors either per group or per individual line
