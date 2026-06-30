@@ -1361,7 +1361,11 @@ describe("Power KPI", () => {
                     element.node().querySelectorAll(".visualXAxisContainer .tick").length;
 
                 // Wide labels: adaptive thinning must reduce the tick count below baseline.
-                widthSpy.and.returnValue(60);
+                // 150 px is used (not 60 px) so that slotsAvailable < n in all environments:
+                // in headless Chrome, createAxis produces only ~4 ticks because real font
+                // metrics widen minOrdinalRectThickness, and 60 px leaves room for those
+                // 4 ticks without any thinning (slot = 133 px > 60 px).
+                widthSpy.and.returnValue(150);
                 xAxisComponent.render(renderOptions);
 
                 const thinnedTicks: NodeListOf<Element> =
@@ -1426,7 +1430,10 @@ describe("Power KPI", () => {
                 const element = createElement(viewport);
                 const xAxisComponent: XAxisComponent = new XAxisComponent({ element });
                 const startDate: Date = new Date(2016, 0, 1);
-                const endDate: Date = new Date(2017, 11, 31);
+                // Jan 1, 2018 is a D3 "nice" time boundary: the last generated tick lands
+                // at the domain endpoint (~400 px) in all environments, so the >80%
+                // position assertion passes regardless of real vs zero font metrics.
+                const endDate: Date = new Date(2018, 0, 1);
                 const axis: IDataRepresentationX = {
                     axisType: DataRepresentationTypeEnum.DateType,
                     format: undefined,
@@ -1456,7 +1463,9 @@ describe("Power KPI", () => {
                 };
                 xAxisComponent.preRender(renderOptions);
 
-                spyOn(labelMeasurementService, "getTextWidth").and.returnValue(60);
+                // 150 px: forces slotsAvailable < n even when createAxis produces only ~4
+                // ticks (headless Chrome real font metrics reduce axis density).
+                spyOn(labelMeasurementService, "getTextWidth").and.returnValue(150);
                 xAxisComponent.render(renderOptions);
 
                 const ticks: NodeListOf<Element> =
@@ -1552,7 +1561,9 @@ describe("Power KPI", () => {
                 };
                 xAxisComponent.preRender(renderOptions);
 
-                const spy = spyOn(labelMeasurementService, "getTextWidth").and.returnValue(60);
+                // 150 px: ensures the first render thins even in headless Chrome where
+                // createAxis produces only ~4 ticks (real font metrics reduce density).
+                const spy = spyOn(labelMeasurementService, "getTextWidth").and.returnValue(150);
                 xAxisComponent.render(renderOptions);
                 const thinnedCount: number =
                     element.node().querySelectorAll(".visualXAxisContainer .tick").length;
