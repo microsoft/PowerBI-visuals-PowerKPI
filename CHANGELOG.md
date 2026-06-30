@@ -1,3 +1,7 @@
+## 3.1.1.0
+### Fixes
+* Fixed x-axis labels overlapping at large font sizes by adding adaptive tick thinning — reduces tick density when rendered label width exceeds available slot width
+
 ## 3.1.0.0
 ### Features
 * Added a line color mode (Joint / Granular) to configure colors either per group or per individual line

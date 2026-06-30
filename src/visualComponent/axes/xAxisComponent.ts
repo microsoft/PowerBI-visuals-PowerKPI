@@ -68,6 +68,10 @@ export class XAxisComponent
     implements IAxisComponent<IXAxisComponentRenderOptions> {
 
     private labelPadding: number = 8;
+    // Upper bound on ticks sampled during adaptive measurement. Caps render-time
+    // cost at O(maxTickSample) per render regardless of axis density; first and
+    // last ticks are always included in the sample set.
+    private readonly maxTickSample: number = 20;
 
     private className: string = "visualXAxis";
     private elementClassNameContainer: string = "visualXAxisContainer";
@@ -194,15 +198,23 @@ export class XAxisComponent
 
         this.gElement.attr("transform", svgManipulation.translate(0, 0));
 
-        this.axisProperties.axis
-            .tickFormat((item: number) => {
-                const currentValue: any = axis.axisType === DataRepresentationTypeEnum.DateType
-                    ? new Date(item)
-                    : item;
+        // getAxisProperties() is called at the top of every render(), so the axis is always
+        // fresh from createAxis() — rawTickValues is the full intended tick set, never a stale
+        // thinned subset from a prior render.
+        const rawTickValues: Array<number | Date | string> | null =
+            this.axisProperties.axis.tickValues() as Array<number | Date | string> | null;
+        const scale = this.axisProperties.scale;
+        const tickValues: Array<number | Date | string> =
+            rawTickValues
+            ?? (typeof scale.ticks === "function"
+                ? (scale.ticks() as Array<number | Date | string>)
+                : (scale.domain() as Array<number | Date | string>));
 
-                const formattedLabel: string = axis.axisType === DataRepresentationTypeEnum.DateType
-                    ? this.axisProperties.formatter.format(currentValue)
-                    : this.formatter.format(currentValue);
+        this.computeAdaptiveTicks(tickValues, axis, settings, width);
+
+        this.axisProperties.axis
+            .tickFormat((item: number | Date | string) => {
+                const formattedLabel: string = this.formatTickLabel(item, axis);
 
                 let availableWidth: number = NaN;
 
@@ -248,6 +260,79 @@ export class XAxisComponent
             width: this.firstLabelWidth,
             width2: this.latestLabelWidth,
         };
+    }
+
+    private formatTickLabel(item: number | Date | string, axis: IDataRepresentationX): string {
+        if (axis.axisType === DataRepresentationTypeEnum.DateType) {
+            // Handles number (ms timestamp), Date object, or ISO date string.
+            // Falls back to String(item) when the value cannot be parsed as a valid date
+            // (e.g. a pre-formatted label string) to avoid passing Invalid Date to the formatter.
+            const date: Date = item instanceof Date ? item : new Date(item);
+            if (!isNaN(date.getTime())) {
+                return this.axisProperties.formatter.format(date);
+            }
+            return String(item);
+        }
+        if (typeof item === "string") {
+            return item;  // categorical string — return verbatim
+        }
+        return this.formatter.format(item);
+    }
+
+    private computeAdaptiveTicks(
+        tickValues: Array<number | Date | string>,
+        axis: IDataRepresentationX,
+        settings: AxisDescriptor,
+        width: number,
+    ): void {
+        if (tickValues.length <= 1 || width <= 0) {
+            return;
+        }
+
+        // Intended for auto-generated tick arrays produced by createAxis(), which
+        // always calls axis.tickValues([...]). Applies adaptive thinning to prevent
+        // rendered labels from overlapping at the current viewport width.
+        //
+        // Samples at most maxTickSample indices (O(maxTickSample) per render
+        // regardless of axis density); first and last ticks are always sampled.
+        const n: number = tickValues.length;
+        const sampleStep: number = Math.max(1, Math.ceil(n / this.maxTickSample));
+        const sampleIndices: Set<number> = new Set<number>();
+        for (let i: number = 0; i < n; i += sampleStep) {
+            sampleIndices.add(i);
+        }
+        sampleIndices.add(n - 1);
+
+        let maxLabelWidth: number = 0;
+        for (const i of sampleIndices) {
+            const label: string = this.formatTickLabel(tickValues[i], axis);
+            const w: number = labelMeasurementService.getTextWidth(label, settings.fontSizeInPx, settings.font.fontFamily.value);
+            if (w > maxLabelWidth) {
+                maxLabelWidth = w;
+                if (maxLabelWidth + this.labelPadding >= width) {
+                    break; // slotsAvailable collapses to 1; no need to measure more
+                }
+            }
+        }
+
+        const slotsAvailable: number = Math.max(1, Math.floor(width / (maxLabelWidth + this.labelPadding)));
+        if (slotsAvailable <= 1) {
+            // Extreme narrow width: only one slot fits — show just the last tick.
+            this.axisProperties.axis.tickValues([tickValues[n - 1]]);
+            return;
+        }
+
+        // Endpoints-inclusive step: ceil((n-1)/(k-1)) guarantees index 0 (via modulo)
+        // and index n-1 (explicit guard) are always kept.
+        // slotsAvailable >= 2 is guaranteed by the early-exit above.
+        const tickStep: number = Math.max(1, Math.ceil((n - 1) / (slotsAvailable - 1)));
+
+        // Always write back the final tick set — when no thinning is needed this explicitly
+        // restores full density (defensive guard against future axis-caching refactors).
+        const finalTicks: Array<number | Date | string> = tickStep > 1
+            ? tickValues.filter((_: number | Date | string, i: number) => i % tickStep === 0 || i === n - 1)
+            : tickValues;
+        this.axisProperties.axis.tickValues(finalTicks);
     }
 
     protected getLabelWidthWithAdditionalOffset(

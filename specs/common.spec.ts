@@ -99,6 +99,8 @@ import { labelMeasurementService } from "../src/services/labelMeasurementService
 import { ComboComponentAreaComponentTest } from "./comboComponentAreaComponentTest";
 import { TestWrapper } from "./testWrapper";
 import { DataBuilder } from "./dataBuilder";
+import { XAxisComponent, IXAxisComponentRenderOptions } from "../src/visualComponent/axes/xAxisComponent";
+import { IMargin } from "powerbi-visuals-utils-svgutils";
 
 describe("Power KPI", () => {
     describe("DOM", () => {
@@ -1297,6 +1299,340 @@ describe("Power KPI", () => {
                         ""
                     )
                 ).toBe(0);
+            });
+        });
+    });
+
+    describe("XAxisComponent", () => {
+        describe("adaptive tick thinning", () => {
+            it("should reduce tick count when label width exceeds available slot width", () => {
+                // Regression test for x-axis label overlap at large font sizes.
+                // preRender() uses a 50-tick formatter that produces SHORT date labels,
+                // so maxElementWidth is small and createAxis permits many ticks.
+                // render() must detect that the ACTUAL rendered labels are WIDE and
+                // reduce tick density so labels no longer overlap.
+
+                const viewportWidth: number = 400;
+                const viewport: powerbi.IViewport = { width: viewportWidth, height: 60 };
+                const element = createElement(viewport);
+
+                const xAxisComponent: XAxisComponent = new XAxisComponent({ element });
+
+                const startDate: Date = new Date(2016, 0, 1);
+                const endDate: Date = new Date(2017, 11, 31);
+
+                const axis: IDataRepresentationX = {
+                    axisType: DataRepresentationTypeEnum.DateType,
+                    format: undefined,
+                    max: endDate,
+                    metadata: {
+                        displayName: "Date",
+                        format: "%M/%d/yyyy",
+                        type: { dateTime: true },
+                    } as powerbi.DataViewMetadataColumn,
+                    min: startDate,
+                    name: "Axis",
+                    scale: DataRepresentationScale.create().domain(
+                        [startDate, endDate],
+                        DataRepresentationTypeEnum.DateType
+                    ),
+                    values: [],
+                };
+
+                const settings = new Settings().xAxis;
+                const zeroMargin: IMargin = { bottom: 0, left: 0, right: 0, top: 0 };
+                const colorPalette = createColorPalette();
+
+                const renderOptions: IXAxisComponentRenderOptions = {
+                    additionalMargin: zeroMargin,
+                    axis,
+                    colorPalette,
+                    margin: zeroMargin,
+                    settings,
+                    viewport,
+                };
+
+                xAxisComponent.preRender(renderOptions);
+
+                // Narrow-label baseline (5 px): deterministic regardless of environment.
+                const widthSpy = spyOn(labelMeasurementService, "getTextWidth").and.returnValue(5);
+                xAxisComponent.render(renderOptions);
+                const baselineTickCount: number =
+                    element.node().querySelectorAll(".visualXAxisContainer .tick").length;
+
+                // Wide labels: adaptive thinning must reduce the tick count below baseline.
+                widthSpy.and.returnValue(60);
+                xAxisComponent.render(renderOptions);
+
+                const thinnedTicks: NodeListOf<Element> =
+                    element.node().querySelectorAll(".visualXAxisContainer .tick");
+
+                expect(thinnedTicks.length).toBeLessThan(baselineTickCount);
+            });
+
+            it("should not thin ticks when all labels fit within the viewport", () => {
+                const viewportWidth: number = 400;
+                const viewport: powerbi.IViewport = { width: viewportWidth, height: 60 };
+                const element = createElement(viewport);
+                const xAxisComponent: XAxisComponent = new XAxisComponent({ element });
+                const startDate: Date = new Date(2016, 0, 1);
+                const endDate: Date = new Date(2017, 11, 31);
+                const axis: IDataRepresentationX = {
+                    axisType: DataRepresentationTypeEnum.DateType,
+                    format: undefined,
+                    max: endDate,
+                    metadata: {
+                        displayName: "Date",
+                        format: "%M/%d/yyyy",
+                        type: { dateTime: true },
+                    } as powerbi.DataViewMetadataColumn,
+                    min: startDate,
+                    name: "Axis",
+                    scale: DataRepresentationScale.create().domain(
+                        [startDate, endDate],
+                        DataRepresentationTypeEnum.DateType
+                    ),
+                    values: [],
+                };
+                const settings = new Settings().xAxis;
+                const zeroMargin: IMargin = { bottom: 0, left: 0, right: 0, top: 0 };
+                const renderOptions: IXAxisComponentRenderOptions = {
+                    additionalMargin: zeroMargin,
+                    axis,
+                    colorPalette: createColorPalette(),
+                    margin: zeroMargin,
+                    settings,
+                    viewport,
+                };
+                xAxisComponent.preRender(renderOptions);
+
+                // Both renders stub getTextWidth to 5 px — deterministic, avoids JSDOM dependency.
+                spyOn(labelMeasurementService, "getTextWidth").and.returnValue(5);
+
+                xAxisComponent.render(renderOptions);
+                const firstCount: number =
+                    element.node().querySelectorAll(".visualXAxisContainer .tick").length;
+
+                xAxisComponent.render(renderOptions);
+                const secondCount: number =
+                    element.node().querySelectorAll(".visualXAxisContainer .tick").length;
+
+                expect(secondCount).toBe(firstCount);
+            });
+
+            it("should preserve the first and last tick after thinning", () => {
+                const viewportWidth: number = 400;
+                const viewport: powerbi.IViewport = { width: viewportWidth, height: 60 };
+                const element = createElement(viewport);
+                const xAxisComponent: XAxisComponent = new XAxisComponent({ element });
+                const startDate: Date = new Date(2016, 0, 1);
+                const endDate: Date = new Date(2017, 11, 31);
+                const axis: IDataRepresentationX = {
+                    axisType: DataRepresentationTypeEnum.DateType,
+                    format: undefined,
+                    max: endDate,
+                    metadata: {
+                        displayName: "Date",
+                        format: "%M/%d/yyyy",
+                        type: { dateTime: true },
+                    } as powerbi.DataViewMetadataColumn,
+                    min: startDate,
+                    name: "Axis",
+                    scale: DataRepresentationScale.create().domain(
+                        [startDate, endDate],
+                        DataRepresentationTypeEnum.DateType
+                    ),
+                    values: [],
+                };
+                const settings = new Settings().xAxis;
+                const zeroMargin: IMargin = { bottom: 0, left: 0, right: 0, top: 0 };
+                const renderOptions: IXAxisComponentRenderOptions = {
+                    additionalMargin: zeroMargin,
+                    axis,
+                    colorPalette: createColorPalette(),
+                    margin: zeroMargin,
+                    settings,
+                    viewport,
+                };
+                xAxisComponent.preRender(renderOptions);
+
+                spyOn(labelMeasurementService, "getTextWidth").and.returnValue(60);
+                xAxisComponent.render(renderOptions);
+
+                const ticks: NodeListOf<Element> =
+                    element.node().querySelectorAll(".visualXAxisContainer .tick");
+                expect(ticks.length).toBeGreaterThanOrEqual(2);
+
+                const getX = (el: Element): number => {
+                    const m: RegExpExecArray | null =
+                        /translate\(([^,)]+)/.exec(el.getAttribute("transform") ?? "");
+                    return m ? parseFloat(m[1]) : 0;
+                };
+                const xs: number[] = Array.from(ticks).map(getX);
+
+                expect(xs[0]).toBeLessThan(viewportWidth * 0.1);
+                expect(xs[xs.length - 1]).toBeGreaterThan(viewportWidth * 0.8);
+            });
+
+            it("should not measure labels when the available width is zero", () => {
+                const viewport: powerbi.IViewport = { width: 400, height: 60 };
+                const zeroViewport: powerbi.IViewport = { width: 0, height: 60 };
+                const element = createElement(viewport);
+                const xAxisComponent: XAxisComponent = new XAxisComponent({ element });
+                const startDate: Date = new Date(2016, 0, 1);
+                const endDate: Date = new Date(2017, 11, 31);
+                const axis: IDataRepresentationX = {
+                    axisType: DataRepresentationTypeEnum.DateType,
+                    format: undefined,
+                    max: endDate,
+                    metadata: {
+                        displayName: "Date",
+                        format: "%M/%d/yyyy",
+                        type: { dateTime: true },
+                    } as powerbi.DataViewMetadataColumn,
+                    min: startDate,
+                    name: "Axis",
+                    scale: DataRepresentationScale.create().domain(
+                        [startDate, endDate],
+                        DataRepresentationTypeEnum.DateType
+                    ),
+                    values: [],
+                };
+                const settings = new Settings().xAxis;
+                const zeroMargin: IMargin = { bottom: 0, left: 0, right: 0, top: 0 };
+                const renderOptions: IXAxisComponentRenderOptions = {
+                    additionalMargin: zeroMargin,
+                    axis,
+                    colorPalette: createColorPalette(),
+                    margin: zeroMargin,
+                    settings,
+                    viewport,
+                };
+                xAxisComponent.preRender(renderOptions);
+
+                const widthSpy = spyOn(labelMeasurementService, "getTextWidth");
+                xAxisComponent.render({ ...renderOptions, viewport: zeroViewport });
+
+                expect(widthSpy).not.toHaveBeenCalled();
+            });
+
+            it("should restore full tick density after prior thinning", () => {
+                const viewportWidth: number = 400;
+                const viewport: powerbi.IViewport = { width: viewportWidth, height: 60 };
+                const element = createElement(viewport);
+                const xAxisComponent: XAxisComponent = new XAxisComponent({ element });
+                const startDate: Date = new Date(2016, 0, 1);
+                const endDate: Date = new Date(2017, 11, 31);
+                const axis: IDataRepresentationX = {
+                    axisType: DataRepresentationTypeEnum.DateType,
+                    format: undefined,
+                    max: endDate,
+                    metadata: {
+                        displayName: "Date",
+                        format: "%M/%d/yyyy",
+                        type: { dateTime: true },
+                    } as powerbi.DataViewMetadataColumn,
+                    min: startDate,
+                    name: "Axis",
+                    scale: DataRepresentationScale.create().domain(
+                        [startDate, endDate],
+                        DataRepresentationTypeEnum.DateType
+                    ),
+                    values: [],
+                };
+                const settings = new Settings().xAxis;
+                const zeroMargin: IMargin = { bottom: 0, left: 0, right: 0, top: 0 };
+                const renderOptions: IXAxisComponentRenderOptions = {
+                    additionalMargin: zeroMargin,
+                    axis,
+                    colorPalette: createColorPalette(),
+                    margin: zeroMargin,
+                    settings,
+                    viewport,
+                };
+                xAxisComponent.preRender(renderOptions);
+
+                const spy = spyOn(labelMeasurementService, "getTextWidth").and.returnValue(60);
+                xAxisComponent.render(renderOptions);
+                const thinnedCount: number =
+                    element.node().querySelectorAll(".visualXAxisContainer .tick").length;
+
+                spy.and.returnValue(5);
+                xAxisComponent.render(renderOptions);
+                const recoveredCount: number =
+                    element.node().querySelectorAll(".visualXAxisContainer .tick").length;
+
+                expect(recoveredCount).toBeGreaterThan(thinnedCount);
+            });
+
+            it("should render exactly one tick when labels are too wide to fit more than one slot", () => {
+                const viewportWidth: number = 400;
+                const viewport: powerbi.IViewport = { width: viewportWidth, height: 60 };
+                const element = createElement(viewport);
+                const xAxisComponent: XAxisComponent = new XAxisComponent({ element });
+                const startDate: Date = new Date(2016, 0, 1);
+                const endDate: Date = new Date(2017, 11, 31);
+                const axis: IDataRepresentationX = {
+                    axisType: DataRepresentationTypeEnum.DateType,
+                    format: undefined,
+                    max: endDate,
+                    metadata: {
+                        displayName: "Date",
+                        format: "%M/%d/yyyy",
+                        type: { dateTime: true },
+                    } as powerbi.DataViewMetadataColumn,
+                    min: startDate,
+                    name: "Axis",
+                    scale: DataRepresentationScale.create().domain(
+                        [startDate, endDate],
+                        DataRepresentationTypeEnum.DateType
+                    ),
+                    values: [],
+                };
+                const settings = new Settings().xAxis;
+                const zeroMargin: IMargin = { bottom: 0, left: 0, right: 0, top: 0 };
+                const renderOptions: IXAxisComponentRenderOptions = {
+                    additionalMargin: zeroMargin,
+                    axis,
+                    colorPalette: createColorPalette(),
+                    margin: zeroMargin,
+                    settings,
+                    viewport,
+                };
+                xAxisComponent.preRender(renderOptions);
+
+                // Label width (401 px) exceeds viewport (400 px):
+                // slotsAvailable = max(1, floor(400 / (401 + 8))) = max(1, 0) = 1 — exactly one tick.
+                spyOn(labelMeasurementService, "getTextWidth").and.returnValue(401);
+                xAxisComponent.render(renderOptions);
+
+                const ticks: NodeListOf<Element> =
+                    element.node().querySelectorAll(".visualXAxisContainer .tick");
+                expect(ticks.length).toBe(1);
+            });
+        });
+
+        describe("formatTickLabel", () => {
+            it("should return a non-parseable string verbatim when axisType is DateType (Invalid Date fallback)", () => {
+                const element = createElement({ width: 400, height: 60 });
+                const xAxisComponent = new XAxisComponent({ element }) as any;
+
+                const result: string = xAxisComponent.formatTickLabel("not-a-date", {
+                    axisType: DataRepresentationTypeEnum.DateType,
+                });
+
+                expect(result).toBe("not-a-date");
+            });
+
+            it("should return a categorical string verbatim when axisType is StringType", () => {
+                const element = createElement({ width: 400, height: 60 });
+                const xAxisComponent = new XAxisComponent({ element }) as any;
+
+                const result: string = xAxisComponent.formatTickLabel("Category A", {
+                    axisType: DataRepresentationTypeEnum.StringType,
+                });
+
+                expect(result).toBe("Category A");
             });
         });
     });
