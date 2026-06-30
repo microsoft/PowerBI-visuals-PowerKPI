@@ -1,6 +1,6 @@
 ## 3.1.1.0
 ### Fixes
-* Fixed line colors of other series being reset when switching to Granular mode and changing one series' color
+* Fixed other lines being recolored when changing a single line's color (default palette colors are now reserved per line regardless of overrides)
 
 ## 3.1.0.0
 ### Features

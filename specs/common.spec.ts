@@ -1222,8 +1222,22 @@ describe("Power KPI", () => {
                 expect(unique.size).toBe(groupValues.length);
             });
 
-            it("should not reset the color of untargeted series when one series color is changed in Granular mode", () => {
+            // Regression: changing one line's color used to recolor the others, because
+            // the palette was queried lazily and an overridden line skipped its slot.
+            const changedColor: string = "#ff0000";
+
+            // Fresh palette per convert models a report reload (override already persisted).
+            function convertGranular(withOverride: boolean): IDataRepresentation {
                 const dataView: powerbi.DataView = new DataBuilder().getGroupedDataView(groupValues, measureNames);
+
+                if (withOverride) {
+                    // Override the first line only (GroupA – Sales). In granular mode
+                    // the override lives at the measure level:
+                    // grouped()[0] = GroupA, .values[0] = Sales measure.
+                    dataView.categorical.values.grouped()[0].values[0].source.objects = {
+                        line: { fillColor: { solid: { color: changedColor } } },
+                    } as powerbi.DataViewObjects;
+                }
 
                 const settings: Settings = new Settings();
                 settings.line.mode.value = { value: LineColorMode.granular } as any;
@@ -1234,43 +1248,28 @@ describe("Power KPI", () => {
                 });
                 dataConverter.getAxisType({ dataView, xAxisType: AxisType.continuous });
 
-                // First conversion — no explicit color overrides; establishes baseline palette colors.
-                const first: IDataRepresentation = dataConverter.convert({
+                return dataConverter.convert({
                     dataView,
                     hasSelection: false,
                     settings,
                     viewport: { width: 100, height: 100 },
                     locale: "en-US",
                 });
+            }
 
-                const baselineColors: string[] = first.series.map(s => s.color);
+            it("changing one line's color must not recolor the other lines", () => {
+                const baseline: IDataRepresentation = convertGranular(false);
+                const baselineColors: string[] = baseline.series.map(s => s.color);
                 expect(new Set(baselineColors).size).toBe(baselineColors.length);
 
-                // Inject a fillColor override for the first series only (GroupA – Sales).
-                // In granular mode the override lives at the measure level:
-                // grouped()[0] = GroupA, .values[0] = Sales measure.
-                const changedColor: string = "#ff0000";
-                dataView.categorical.values.grouped()[0].values[0].source.objects = {
-                    line: { fillColor: { solid: { color: changedColor } } },
-                } as powerbi.DataViewObjects;
+                const updated: IDataRepresentation = convertGranular(true);
 
-                // Second conversion with the SAME settings instance.
-                // Without clearContainers() the stale container for series[0] returns
-                // early and the injected override is never read — the bug.
-                const second: IDataRepresentation = dataConverter.convert({
-                    dataView,
-                    hasSelection: false,
-                    settings,
-                    viewport: { width: 100, height: 100 },
-                    locale: "en-US",
-                });
+                // Only the targeted line reflects the user's color change.
+                expect(updated.series[0].color).toBe(changedColor);
 
-                // Only the targeted series should reflect the user's color change.
-                expect(second.series[0].color).toBe(changedColor);
-
-                // All other series must keep their original baseline palette colors.
-                for (let i: number = 1; i < second.series.length; i++) {
-                    expect(second.series[i].color).toBe(baselineColors[i]);
+                // Every other line keeps its original palette color — no recoloring.
+                for (let i: number = 1; i < updated.series.length; i++) {
+                    expect(updated.series[i].color).toBe(baselineColors[i]);
                 }
             });
         });
