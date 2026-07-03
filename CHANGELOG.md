@@ -1,3 +1,7 @@
+## 3.1.1.0
+### Fixes
+* Fixed other lines being recolored when changing a single line's color (default palette colors are now reserved per line regardless of overrides)
+
 ## 3.1.0.0
 ### Features
 * Added a line color mode (Joint / Granular) to configure colors either per group or per individual line
