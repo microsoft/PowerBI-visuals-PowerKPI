@@ -1,6 +1,7 @@
 ## 3.1.1.0
 ### Fixes
 * Fixed x-axis labels overlapping at large font sizes by adding adaptive tick thinning — reduces tick density when rendered label width exceeds available slot width
+* Fixed other lines being recolored when changing a single line's color (default palette colors are now reserved per line regardless of overrides)
 
 ## 3.1.0.0
 ### Features

@@ -340,11 +340,11 @@ export class DataConverter extends VarianceConverter implements IConverter {
 
                     const currentSettings = settings.line.populateContainer(dataPoint)
 
-                    // Resolve the base series color: explicit override wins, otherwise a
-                    // unique color from the palette (per series), restoring 2.0.0 behaviour.
-                    const seriesColor: string = currentSettings.fillColor
-                        || colorPalette.getColor(`${seriesColorIndex}`).value;
+                    // Reserve a palette color for every line regardless of overrides, so
+                    // default colors stay stable; an explicit override takes precedence.
+                    const defaultColor: string = colorPalette.getColor(`${seriesColorIndex}`).value;
                     seriesColorIndex++;
+                    const seriesColor: string = currentSettings.fillColor || defaultColor;
 
                     if (isNaN(maxThickness) || currentSettings.thickness > maxThickness) {
                         maxThickness = currentSettings.thickness;
