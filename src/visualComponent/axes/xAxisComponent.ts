@@ -68,10 +68,6 @@ export class XAxisComponent
     implements IAxisComponent<IXAxisComponentRenderOptions> {
 
     private labelPadding: number = 8;
-    // Upper bound on ticks sampled during adaptive measurement. Caps render-time
-    // cost at O(maxTickSample) per render regardless of axis density; first and
-    // last ticks are always included in the sample set.
-    private readonly maxTickSample: number = 20;
 
     private className: string = "visualXAxis";
     private elementClassNameContainer: string = "visualXAxisContainer";
@@ -198,19 +194,15 @@ export class XAxisComponent
 
         this.gElement.attr("transform", svgManipulation.translate(0, 0));
 
-        // getAxisProperties() is called at the top of every render(), so the axis is always
-        // fresh from createAxis() — rawTickValues is the full intended tick set, never a stale
-        // thinned subset from a prior render.
-        const rawTickValues: Array<number | Date | string> | null =
-            this.axisProperties.axis.tickValues() as Array<number | Date | string> | null;
-        const scale = this.axisProperties.scale;
-        const tickValues: Array<number | Date | string> =
-            rawTickValues
-            ?? (typeof scale.ticks === "function"
-                ? (scale.ticks() as Array<number | Date | string>)
-                : (scale.domain() as Array<number | Date | string>));
-
-        this.computeAdaptiveTicks(tickValues, axis, settings, width);
+        this.thinAxisIfLabelsOverflow(
+            axis,
+            settings,
+            width,
+            axis.scale.getDomain(),
+            axis.metadata,
+            !axis.scale.isCategorical,
+            settings.percentile.value,
+        );
 
         this.axisProperties.axis
             .tickFormat((item: number | Date | string) => {
@@ -279,60 +271,60 @@ export class XAxisComponent
         return this.formatter.format(item);
     }
 
-    private computeAdaptiveTicks(
-        tickValues: Array<number | Date | string>,
+    private thinAxisIfLabelsOverflow(
         axis: IDataRepresentationX,
         settings: AxisDescriptor,
         width: number,
+        dataDomain: DataRepresentationAxisValueType[],
+        metaDataColumn: powerbi.DataViewMetadataColumn,
+        isScalar: boolean,
+        density: number,
     ): void {
-        if (tickValues.length <= 1 || width <= 0) {
+        if (width <= 0) {
             return;
         }
 
-        // Intended for auto-generated tick arrays produced by createAxis(), which
-        // always calls axis.tickValues([...]). Applies adaptive thinning to prevent
-        // rendered labels from overlapping at the current viewport width.
-        //
-        // Samples at most maxTickSample indices (O(maxTickSample) per render
-        // regardless of axis density); first and last ticks are always sampled.
-        const n: number = tickValues.length;
-        const sampleStep: number = Math.max(1, Math.ceil(n / this.maxTickSample));
-        const sampleIndices: Set<number> = new Set<number>();
-        for (let i: number = 0; i < n; i += sampleStep) {
-            sampleIndices.add(i);
-        }
-        sampleIndices.add(n - 1);
+        const rawTickValues: Array<number | Date | string> | null =
+            this.axisProperties.axis.tickValues();
 
-        let maxLabelWidth: number = 0;
-        for (const i of sampleIndices) {
-            const label: string = this.formatTickLabel(tickValues[i], axis);
-            const w: number = labelMeasurementService.getTextWidth(label, settings.fontSizeInPx, settings.font.fontFamily.value);
-            if (w > maxLabelWidth) {
-                maxLabelWidth = w;
-                if (maxLabelWidth + this.labelPadding >= width) {
-                    break; // slotsAvailable collapses to 1; no need to measure more
-                }
+        if (!rawTickValues || rawTickValues.length <= 1) {
+            return;
+        }
+
+        let actualMaxLabelWidth: number = 0;
+        for (const tickValue of rawTickValues) {
+            const label: string = this.formatTickLabel(tickValue, axis);
+            const labelWidth: number = labelMeasurementService.getTextWidth(
+                label,
+                settings.fontSizeInPx,
+                settings.font.fontFamily.value,
+            );
+
+            if (labelWidth > actualMaxLabelWidth) {
+                actualMaxLabelWidth = labelWidth;
             }
         }
 
-        const slotsAvailable: number = Math.max(1, Math.floor(width / (maxLabelWidth + this.labelPadding)));
-        if (slotsAvailable <= 1) {
-            // Extreme narrow width: only one slot fits — show just the last tick.
-            this.axisProperties.axis.tickValues([tickValues[n - 1]]);
+        if (actualMaxLabelWidth <= this.maxElementWidth) {
+            // The original assumption already covers the actual label width — no thinning needed.
             return;
         }
 
-        // Endpoints-inclusive step: ceil((n-1)/(k-1)) guarantees index 0 (via modulo)
-        // and index n-1 (explicit guard) are always kept.
-        // slotsAvailable >= 2 is guaranteed by the early-exit above.
-        const tickStep: number = Math.max(1, Math.ceil((n - 1) / (slotsAvailable - 1)));
+        this.axisProperties = this.getAxisProperties(
+            width,
+            dataDomain,
+            metaDataColumn,
+            isScalar,
+            density,
+            actualMaxLabelWidth + this.labelPadding,
+        );
 
-        // Always write back the final tick set — when no thinning is needed this explicitly
-        // restores full density (defensive guard against future axis-caching refactors).
-        const finalTicks: Array<number | Date | string> = tickStep > 1
-            ? tickValues.filter((_: number | Date | string, i: number) => i % tickStep === 0 || i === n - 1)
-            : tickValues;
-        this.axisProperties.axis.tickValues(finalTicks);
+        const thinnedTickValues: Array<number | Date | string> | null =
+            this.axisProperties.axis.tickValues();
+
+        if (thinnedTickValues && thinnedTickValues.length === 1 && thinnedTickValues[0] !== rawTickValues[0]) {
+            this.axisProperties.axis.tickValues([rawTickValues[0]]);
+        }
     }
 
     protected getLabelWidthWithAdditionalOffset(
@@ -355,13 +347,14 @@ export class XAxisComponent
 
     private getAxisProperties(
         pixelSpan: number,
-        dataDomain: any[],
+        dataDomain: DataRepresentationAxisValueType[],
         metaDataColumn: powerbi.DataViewMetadataColumn,
         isScalar: boolean,
         density: number,
+        minOrdinalRectThickness: number = this.maxElementWidth + this.labelPadding,
     ) {
         return createAxis({
-            dataDomain,
+            dataDomain: dataDomain as number[],
             density,
             formatString: undefined,
             innerPaddingRatio: 1,
@@ -369,7 +362,7 @@ export class XAxisComponent
             isScalar,
             isVertical: false,
             metaDataColumn,
-            minOrdinalRectThickness: this.maxElementWidth + this.labelPadding,
+            minOrdinalRectThickness,
             outerPadding: 0,
             pixelSpan,
             shouldClamp: false,
