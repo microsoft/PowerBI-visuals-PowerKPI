@@ -1451,6 +1451,38 @@ describe("Power KPI", () => {
                 expect(secondCount).toBe(firstCount);
             });
 
+            it("should not thin ticks when the label is wider than the preRender estimate but still fits its actual tick slot", () => {
+                const viewportWidth: number = 400;
+                // Jan 1, 2018 is a D3 "nice" time boundary that reliably yields only a handful
+                // of ticks (~4) across 400 px in all environments (see the neighboring test),
+                // so each tick's real slot (xLabelMaxWidth) is comfortably wide (~90+ px).
+                const { element, xAxisComponent, renderOptions } = createXAxisTestContext(
+                    { width: viewportWidth, height: 60 },
+                    { endDate: new Date(2018, 0, 1) },
+                );
+
+                // Real font metrics for preRender()'s short 50-tick estimate — no spy yet, so
+                // maxElementWidth ends up narrow (a handful of characters, well under 40 px).
+                xAxisComponent.preRender(renderOptions);
+
+                // Narrow-label baseline (5 px) establishes the natural, un-thinned tick count
+                // for this domain/viewport (first pass is independent of this stub value).
+                const widthSpy = spyOn(labelMeasurementService, "getTextWidth").and.returnValue(5);
+                xAxisComponent.render(renderOptions);
+                const baselineCount: number =
+                    element.node().querySelectorAll(".visualXAxisContainer .tick").length;
+
+                // 40 px: wider than the short preRender() estimate (would have wrongly triggered
+                // the old maxElementWidth-based check) but well within the ~90+ px real slot width
+                // of the ~4-tick set produced for this domain/viewport — must NOT thin.
+                widthSpy.and.returnValue(40);
+                xAxisComponent.render(renderOptions);
+                const renderedCount: number =
+                    element.node().querySelectorAll(".visualXAxisContainer .tick").length;
+
+                expect(renderedCount).toBe(baselineCount);
+            });
+
             it("should preserve the first and last tick after thinning", () => {
                 const viewportWidth: number = 400;
                 // Jan 1, 2018 is a D3 "nice" time boundary: the last generated tick lands

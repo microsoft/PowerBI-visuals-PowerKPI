@@ -305,8 +305,7 @@ export class XAxisComponent
             }
         }
 
-        if (actualMaxLabelWidth <= this.maxElementWidth) {
-            // The original assumption already covers the actual label width — no thinning needed.
+        if (actualMaxLabelWidth + this.labelPadding <= this.axisProperties.xLabelMaxWidth) {
             return;
         }
 
