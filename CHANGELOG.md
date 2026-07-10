@@ -3,6 +3,7 @@
 * Added a line color mode (Joint / Granular) to configure colors either per group or per individual line
 ### Fixes
 * Fixed series colors being shared between measures of the same group
+* Fixed X-axis tick labels overlapping when the visual is narrowed and the axis font size is increased - the axis now redistributes to fewer, wider-spaced ticks that fit their available space, falling back to per-label truncation only when a single tick still can't fit
 
 ## 3.0.4.0
 ### Fixes

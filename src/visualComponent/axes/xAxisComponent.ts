@@ -129,7 +129,17 @@ export class XAxisComponent
         );
 
         this.maxElementWidth = labelMeasurementService.getLabelWidth(
-            [axis.min, axis.max],
+            // For a categorical (string) axis, axis.scale.getDomain() already contains
+            // every category label the axis can show - not just the endpoints - so any
+            // one of them (e.g. a longer middle category) can be the widest rendered
+            // label. Measuring only [axis.min, axis.max] under-estimated label width in
+            // that case, which fed an under-estimated minOrdinalRectThickness into the
+            // tick-count/density calculation and let too many ticks be selected.
+            // Scalar (numeric/date) axes don't have discrete categories to sample - the
+            // domain is just [min, max] - so behavior there is unchanged.
+            axis.scale.isCategorical && domain.length
+                ? domain
+                : [axis.min, axis.max],
             this.formatter,
             fontSize,
             settings.font.fontFamily.value,
@@ -169,14 +179,18 @@ export class XAxisComponent
         } = options;
 
         const width: number = Math.max(0, viewport.width - margin.left - margin.right);
+        const domain: any[] = axis.scale.getDomain();
+        const isScalar: boolean = !axis.scale.isCategorical;
 
         this.axisProperties = this.getAxisProperties(
             width,
-            axis.scale.getDomain(),
+            domain,
             axis.metadata,
-            !axis.scale.isCategorical,
+            isScalar,
             settings.percentile.value,
         );
+
+        this.refitAxisPropertiesToActualLabelWidth(width, domain, axis, settings, isScalar);
 
         if (!this.isShown) {
             return;
@@ -195,30 +209,7 @@ export class XAxisComponent
         this.gElement.attr("transform", svgManipulation.translate(0, 0));
 
         this.axisProperties.axis
-            .tickFormat((item: number) => {
-                const currentValue: any = axis.axisType === DataRepresentationTypeEnum.DateType
-                    ? new Date(item)
-                    : item;
-
-                const formattedLabel: string = axis.axisType === DataRepresentationTypeEnum.DateType
-                    ? this.axisProperties.formatter.format(currentValue)
-                    : this.formatter.format(currentValue);
-
-                let availableWidth: number = NaN;
-
-                if (this.maxElementWidth > width) {
-                    availableWidth = width;
-                }
-
-                if (!isNaN(availableWidth)) {
-                    return textMeasurementService.getTailoredTextOrDefault(
-                        labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.font.fontFamily.value),
-                        availableWidth,
-                    );
-                }
-
-                return formattedLabel;
-            });
+            .tickFormat((item: number) => this.getFormattedAndFittedTickLabel(item, axis, settings, width));
 
         const isHighContrast: boolean = colorPalette.isHighContrast;
         
@@ -291,6 +282,157 @@ export class XAxisComponent
             tickLabelPadding: undefined,
             useTickIntervalForDisplayUnits: true,
         });
+    }
+
+    /**
+     * The label width used to pick the tick count (this.maxElementWidth, computed in
+     * preRender()) is only an estimate - the formatter that actually renders date-axis labels
+     * (this.axisProperties.formatter) is only resolved *after* createAxis() picks
+     * tickValues/bestTickCount, so it can legitimately produce wider text than assumed.
+     * If the real widest label doesn't fit in its own tick slot (xLabelMaxWidth), recreate the
+     * axis with a bigger thickness estimate so *fewer, wider-spaced* ticks are chosen - instead
+     * of keeping the original tick count and truncating every single label down to an
+     * unreadable "Jan …", "Feb …", "Mar …" run.
+     */
+    private refitAxisPropertiesToActualLabelWidth(
+        width: number,
+        domain: any[],
+        axis: IDataRepresentationX,
+        settings: AxisDescriptor,
+        isScalar: boolean,
+    ): void {
+        const maxRefitAttempts: number = 4;
+
+        for (let attempt: number = 0; attempt < maxRefitAttempts; attempt++) {
+            const actualMaxLabelWidth: number = this.getActualMaxTickLabelWidth(axis, settings);
+            const perTickWidth: number = this.axisProperties.xLabelMaxWidth;
+            const tickCount: number = this.getTicks().length;
+
+            const labelDoesNotFit: boolean =
+                !isNaN(actualMaxLabelWidth)
+                && actualMaxLabelWidth > 0
+                && !isNaN(perTickWidth)
+                && perTickWidth > 0
+                && actualMaxLabelWidth > perTickWidth;
+
+            // Once we are down to a single tick, xLabelMaxWidth already equals the full
+            // available width - there is no more room to gain by asking for even fewer
+            // ticks, so stop iterating and let the render-time truncation guard handle the
+            // (now unavoidable) case where a single label still doesn't fit.
+            if (!labelDoesNotFit || tickCount <= 1 || actualMaxLabelWidth <= this.maxElementWidth) {
+                break;
+            }
+
+            const previousAxisProperties = this.axisProperties;
+            const previousMaxElementWidth: number = this.maxElementWidth;
+
+            this.maxElementWidth = actualMaxLabelWidth;
+
+            this.axisProperties = this.getAxisProperties(
+                width,
+                domain,
+                axis.metadata,
+                isScalar,
+                settings.percentile.value,
+            );
+
+            // Not every axis type floors its tick count at 1 the way date axes do (see
+            // MinAmountOfTicksForDates in axisHelper.ts) - e.g. a purely numeric axis can have
+            // its tick count computed straight down to 0 once minOrdinalRectThickness exceeds
+            // the available pixel span. Rendering zero tick labels is worse than the
+            // overlap/truncation this loop exists to avoid, so undo this attempt and stop.
+            if (this.getTicks().length === 0) {
+                this.axisProperties = previousAxisProperties;
+                this.maxElementWidth = previousMaxElementWidth;
+
+                break;
+            }
+        }
+    }
+
+    /**
+     * Formats a tick value the way render() will draw it, then shortens it with an ellipsis
+     * only if it still doesn't fit the space actually available to it - its own tick slot
+     * (xLabelMaxWidth) first, falling back to the whole axis width as a last resort. Comparing
+     * against the whole axis width alone almost never triggers for categorical/date labels,
+     * which is why labels used to overlap instead of being shortened when the visual got
+     * narrower and/or the font got larger.
+     */
+    private getFormattedAndFittedTickLabel(
+        item: number,
+        axis: IDataRepresentationX,
+        settings: AxisDescriptor,
+        width: number,
+    ): string {
+        const formattedLabel: string = this.formatTickValue(item, axis);
+
+        const formattedLabelWidth: number = labelMeasurementService.getTextWidth(
+            formattedLabel,
+            settings.fontSizeInPx,
+            settings.font.fontFamily.value,
+        );
+
+        const perTickWidth: number = this.axisProperties.xLabelMaxWidth;
+
+        let availableWidth: number = NaN;
+
+        if (!isNaN(perTickWidth) && perTickWidth > 0 && formattedLabelWidth > perTickWidth) {
+            availableWidth = perTickWidth;
+        } else if (formattedLabelWidth > width) {
+            availableWidth = width;
+        }
+
+        if (!isNaN(availableWidth)) {
+            return textMeasurementService.getTailoredTextOrDefault(
+                labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.font.fontFamily.value),
+                availableWidth,
+            );
+        }
+
+        return formattedLabel;
+    }
+
+    /**
+     * Formats a raw tick value the same way it will be rendered on the axis. For date axes the
+     * label is produced by this.axisProperties.formatter, which is only resolved once
+     * createAxis() has picked the tick count/interval - it is not known ahead of time (see
+     * this.getValueFormatterOfXAxis() for why the preRender() estimate can differ).
+     */
+    private formatTickValue(item: number, axis: IDataRepresentationX): string {
+        const currentValue: any = axis.axisType === DataRepresentationTypeEnum.DateType
+            ? new Date(item)
+            : item;
+
+        return axis.axisType === DataRepresentationTypeEnum.DateType
+            ? this.axisProperties.formatter.format(currentValue)
+            : this.formatter.format(currentValue);
+    }
+
+    /**
+     * Measures the widest label among the ticks currently selected by this.axisProperties
+     * (i.e. the labels that will actually be drawn at the current tick count), using the same
+     * formatter/font that render() will use. Used to detect when the tick-count estimate from
+     * preRender() under-shot the real label width, so the axis can be recreated with fewer,
+     * wider-spaced ticks instead of truncating every label.
+     */
+    private getActualMaxTickLabelWidth(axis: IDataRepresentationX, settings: AxisDescriptor): number {
+        const tickValues: any[] = (this.axisProperties && this.axisProperties.axis.tickValues()) || [];
+
+        if (!tickValues.length) {
+            return NaN;
+        }
+
+        return tickValues.reduce((maxWidth: number, tickValue: any) => {
+            const formattedLabel: string = this.formatTickValue(tickValue, axis);
+
+            const labelWidth: number = labelMeasurementService.getTextWidth(
+                formattedLabel,
+                settings.fontSizeInPx,
+                settings.font.fontFamily.value,
+            );
+
+            return Math.max(maxWidth, labelWidth);
+        }, 0);
     }
 
     private areRenderOptionsValid(options: IXAxisComponentRenderOptions): boolean {
