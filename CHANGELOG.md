@@ -1,5 +1,6 @@
 ## 3.1.1.0
 ### Fixes
+* Fixed other lines being recolored when changing a single line's color (default palette colors are now reserved per line regardless of overrides)
 * Fixed visual not activating when clicking on chart lines or empty SVG canvas area
 
 ## 3.1.0.0
