@@ -24,6 +24,7 @@
  *  THE SOFTWARE.
  */
 import { select as d3Select } from "d3-selection";
+import { dispatch, Dispatch } from "d3-dispatch";
 
 import powerbi from "powerbi-visuals-api";
 
@@ -53,6 +54,8 @@ import { DataRepresentationPointFilter } from "../src/dataRepresentation/dataRep
 import { IDataRepresentationSeries } from "../src/dataRepresentation/dataRepresentationSeries";
 import { DataRepresentationTypeEnum } from "../src/dataRepresentation/dataRepresentationType";
 import { Settings } from "../src/settings/settings";
+import { EventName } from "../src/event/eventName";
+import { SvgComponent } from "../src/visualComponent/svgComponent";
 import { IEventPositionVisualComponentOptions } from "../src/visualComponent/eventPositionVisualComponentOptions";
 import { TooltipComponent } from "../src/visualComponent/tooltipComponent";
 
@@ -151,39 +154,25 @@ describe("Power KPI", () => {
             );
         });
 
-        it("clicking an interactive line mark should not trigger the SVG-level clear-selection (no double-dispatch)", (done) => {
-            const testWrapper: TestWrapper = new TestWrapper();
+        it("clicking an interactive line mark should not trigger the SVG-level clear-selection (no double-dispatch)", () => {
+            const {
+                linePath,
+                onClearSelectionSpy,
+                onSelectSpy,
+            } = renderSvgComponentWithClickableLine();
 
-            testWrapper.visualBuilder.updateRenderTimeout(
-                testWrapper.dataView,
-                () => {
-                    const selectionManager = testWrapper.visualBuilder.visualHost
-                        .createSelectionManager();
-                    const clearSpy = spyOn(selectionManager, "clear").and.callThrough();
+            expect(linePath).not.toBeNull();
 
-                    const linePath: Element | null = testWrapper.visualBuilder.element
-                        .querySelector("path.powerKpi_lineComponent_line");
-
-                    // The test DataView produces SVG container elements but no rendered
-                    // line <path>s (the visual needs a richer data fixture to produce
-                    // gradient-coloured segments). Skip rather than fail so the suite
-                    // stays green; the structural guarantee (isClickHandledByChild flag)
-                    // is verified by code review and by the background-click test below.
-                    if (!linePath) {
-                        pending("No line path rendered in this test DataView fixture");
-                        done();
-                        return;
-                    }
-
-                    linePath.dispatchEvent(
-                        new MouseEvent("click", { bubbles: true, cancelable: true })
-                    );
-
-                    expect(clearSpy).not.toHaveBeenCalled();
-
-                    done();
-                }
+            linePath?.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true })
             );
+
+            // The child mark's own click handler already dispatched onSelect (and, in
+            // doing so, set SvgComponent's isClickHandledByChild flag) before the same
+            // native event finished bubbling to the SVG root's click listener. That
+            // listener must therefore suppress the redundant onClearSelection dispatch.
+            expect(onSelectSpy).toHaveBeenCalled();
+            expect(onClearSelectionSpy).not.toHaveBeenCalled();
         });
 
         it("clicking the SVG background should dispatch clear-selection", (done) => {
@@ -777,6 +766,107 @@ describe("Power KPI", () => {
         });
 
         return element;
+    }
+
+    /**
+     * Renders a real SvgComponent (which owns the click-guard under test) together with
+     * a single interactive LineComponent nested as a genuine DOM descendant of the
+     * SvgComponent's root <svg>, with both sharing one d3-dispatch instance - mirroring
+     * how visual.ts wires components together in production.
+     *
+     * This lets a native click on the rendered line <path> both (a) synchronously set
+     * SvgComponent's isClickHandledByChild flag via the shared EventName.onClick
+     * dispatch, and (b) bubble up to SvgComponent's own native "click" listener,
+     * reproducing the exact double-dispatch scenario the fix guards against.
+     */
+    function renderSvgComponentWithClickableLine(): {
+        linePath: Element | null;
+        onClearSelectionSpy: jasmine.Spy;
+        onSelectSpy: jasmine.Spy;
+    } {
+        const viewport: powerbi.IViewport = {
+            height: 500,
+            width: 500,
+        };
+
+        const container = createElement(viewport);
+
+        const eventDispatcher: Dispatch<any> = dispatch(...Object.keys(EventName));
+
+        const onClearSelectionSpy: jasmine.Spy = jasmine.createSpy("onClearSelection");
+        const onSelectSpy: jasmine.Spy = jasmine.createSpy("onSelect");
+
+        eventDispatcher.on(EventName.onClearSelection, onClearSelectionSpy);
+        eventDispatcher.on(EventName.onSelect, onSelectSpy);
+
+        // eslint-disable-next-line no-new
+        new SvgComponent({ element: container, eventDispatcher });
+
+        const svgElement: SVGElement | null = container
+            .node()
+            .querySelector("svg.powerKpi_svgComponent");
+
+        if (!svgElement) {
+            return { linePath: null, onClearSelectionSpy, onSelectSpy };
+        }
+
+        const testWrapper: TestWrapper = new TestWrapper();
+        const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
+
+        const lineComponent: LineComponent = new LineComponent({
+            element: d3Select(svgElement),
+            eventDispatcher,
+        });
+
+        const points: IDataRepresentationPoint[] = [
+            {
+                color: "green",
+                kpiIndex: 1,
+                x: new Date(2000, 1, 1),
+                y: 0,
+            },
+            {
+                color: "green",
+                kpiIndex: 1,
+                x: new Date(2001, 1, 1),
+                y: 100,
+            },
+        ];
+
+        const gradientPoints: IDataRepresentationPointGradientColor[] = [
+            {
+                color: "green",
+                points,
+            },
+        ];
+
+        lineComponent.render({
+            gradientPoints,
+            interpolation: LineInterpolation.linear,
+            lineStyle: LineStyle.solidLine,
+            opacity: 1,
+            series: {
+                hasSelection: false,
+                selected: false,
+            } as IDataRepresentationSeries,
+            thickness: 1,
+            viewport,
+            x: DataRepresentationScale.create().domain(
+                [points[0].x as Date, points[1].x as Date],
+                DataRepresentationTypeEnum.DateType
+            ),
+            y: DataRepresentationScale.create().domain(
+                [points[0].y, points[1].y],
+                DataRepresentationTypeEnum.NumberType
+            ),
+            colorPalette,
+        });
+
+        const linePath: Element | null = svgElement.querySelector(
+            "path.powerKpi_lineComponent_line"
+        );
+
+        return { linePath, onClearSelectionSpy, onSelectSpy };
     }
 
     describe("DataRepresentationPointFilter", () => {
