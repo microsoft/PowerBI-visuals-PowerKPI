@@ -27,6 +27,8 @@
 import powerbi from "powerbi-visuals-api";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 import { IMargin } from "powerbi-visuals-utils-svgutils";
+import { interactivityBaseService } from "powerbi-visuals-utils-interactivityutils";
+import type { Selection } from "d3-selection";
 
 import { BaseContainerComponent } from "./base/baseContainerComponent";
 import { IVisualComponent } from "./base/visualComponent";
@@ -77,7 +79,7 @@ export class SvgComponent extends BaseContainerComponent<
 
     private positions: number[];
 
-    private isClickHandledByChild: boolean = false;
+    private clearCatcherElement: Selection<SVGRectElement, unknown, null, undefined>;
 
     constructor(options: IVisualComponentConstructorOptions) {
         super();
@@ -87,6 +89,8 @@ export class SvgComponent extends BaseContainerComponent<
             this.className,
             "svg",
         );
+
+        this.clearCatcherElement = interactivityBaseService.appendClearCatcher(this.element);
 
         this.constructorOptions = {
             ...options,
@@ -146,6 +150,12 @@ export class SvgComponent extends BaseContainerComponent<
 
         this.updateViewport(reducedViewport);
 
+        this.clearCatcherElement
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", reducedViewport.width)
+            .attr("height", reducedViewport.height);
+
         this.updateMargin(margin, additionalMargin);
 
         this.positions = this.getPositions(reducedViewport, values, scale);
@@ -203,25 +213,13 @@ export class SvgComponent extends BaseContainerComponent<
     }
 
     private bindEvents(): void {
+        this.element.on("click", (event: MouseEvent) => this.clickHandler(event));
+
         this.element.on("mousemove", (event) => this.pointerMoveEvent(this.renderOptions, event));
         this.element.on("touchmove", (event) => this.pointerMoveEvent(this.renderOptions, event));
 
         this.element.on("mouseleave", () => this.pointerLeaveHandler());
         this.element.on("touchend", () => this.pointerLeaveHandler());
-
-        // Treat any click not already handled by a child interactive mark as a background
-        // click (→ onClearSelection). The flag is set in clickComponentHandler when a child
-        // mark dispatches onClick first; it is always reset here so the next click starts
-        // fresh. This avoids the double-dispatch that would clear selection immediately
-        // after a child set it, while still working correctly for overlay <g> elements and
-        // non-interactive SVG children (reference lines, labels, axes) that have no
-        // custom click handler and so never set the flag.
-        this.element.on("click", (event: MouseEvent) => {
-            if (!this.isClickHandledByChild) {
-                this.clickHandler(event);
-            }
-            this.isClickHandledByChild = false;
-        });
     }
 
     private updateMargin(margin: IMargin, additionalMargin: IMargin): void {
@@ -449,8 +447,6 @@ export class SvgComponent extends BaseContainerComponent<
 
             return;
         }
-
-        this.isClickHandledByChild = true;
 
         const renderOptions: IVisualComponentRenderOptionsBase = component
             && component.getRenderOptions

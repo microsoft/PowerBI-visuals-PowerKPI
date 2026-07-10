@@ -167,15 +167,47 @@ describe("Power KPI", () => {
                 new MouseEvent("click", { bubbles: true, cancelable: true })
             );
 
-            // The child mark's own click handler already dispatched onSelect (and, in
-            // doing so, set SvgComponent's isClickHandledByChild flag) before the same
-            // native event finished bubbling to the SVG root's click listener. That
-            // listener must therefore suppress the redundant onClearSelection dispatch.
+            // See createSvgComponentForMarkClickTests's doc comment for why this proves
+            // no-double-dispatch.
             expect(onSelectSpy).toHaveBeenCalled();
             expect(onClearSelectionSpy).not.toHaveBeenCalled();
         });
 
-        it("clicking the SVG background should dispatch clear-selection", (done) => {
+        it("clicking an interactive area mark should not trigger the SVG-level clear-selection (no double-dispatch)", () => {
+            const {
+                areaPath,
+                onClearSelectionSpy,
+                onSelectSpy,
+            } = renderSvgComponentWithClickableArea();
+
+            expect(areaPath).not.toBeNull();
+
+            areaPath?.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true })
+            );
+
+            expect(onSelectSpy).toHaveBeenCalled();
+            expect(onClearSelectionSpy).not.toHaveBeenCalled();
+        });
+
+        it("clicking an interactive dot mark should not trigger the SVG-level clear-selection (no double-dispatch)", () => {
+            const {
+                dotElement,
+                onClearSelectionSpy,
+                onSelectSpy,
+            } = renderSvgComponentWithClickableDot();
+
+            expect(dotElement).not.toBeNull();
+
+            dotElement?.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true })
+            );
+
+            expect(onSelectSpy).toHaveBeenCalled();
+            expect(onClearSelectionSpy).not.toHaveBeenCalled();
+        });
+
+        it("clicking empty canvas area between lines (ADO #2154389) should dispatch clear-selection via the clearCatcher rect", (done) => {
             const testWrapper: TestWrapper = new TestWrapper();
 
             testWrapper.visualBuilder.updateRenderTimeout(
@@ -185,16 +217,46 @@ describe("Power KPI", () => {
                         .createSelectionManager();
                     const clearSpy = spyOn(selectionManager, "clear").and.callThrough();
 
-                    const svgElement: Element | null = testWrapper.visualBuilder.element
-                        .querySelector("svg.powerKpi_svgComponent");
+                    const clearCatcherElement: Element | null = testWrapper.visualBuilder.element
+                        .querySelector("svg.powerKpi_svgComponent rect.clearCatcher");
 
-                    if (!svgElement) {
-                        fail("SVG element not found in DOM");
+                    if (!clearCatcherElement) {
+                        fail("clearCatcher element not found in DOM");
                         done();
                         return;
                     }
 
-                    svgElement.dispatchEvent(
+                    clearCatcherElement.dispatchEvent(
+                        new MouseEvent("click", { bubbles: true, cancelable: true })
+                    );
+
+                    expect(clearSpy).toHaveBeenCalled();
+
+                    done();
+                }
+            );
+        });
+
+        it("clicking a non-interactive SVG child (e.g. the chart group) should still dispatch clear-selection via the root handler", (done) => {
+            const testWrapper: TestWrapper = new TestWrapper();
+
+            testWrapper.visualBuilder.updateRenderTimeout(
+                testWrapper.dataView,
+                () => {
+                    const selectionManager = testWrapper.visualBuilder.visualHost
+                        .createSelectionManager();
+                    const clearSpy = spyOn(selectionManager, "clear").and.callThrough();
+
+                    const nonInteractiveChild: Element | null = testWrapper.visualBuilder.element
+                        .querySelector("svg.powerKpi_svgComponent g.powerKpi_multiShapeComponent");
+
+                    if (!nonInteractiveChild) {
+                        fail("non-interactive chart group element not found in DOM");
+                        done();
+                        return;
+                    }
+
+                    nonInteractiveChild.dispatchEvent(
                         new MouseEvent("click", { bubbles: true, cancelable: true })
                     );
 
@@ -768,28 +830,40 @@ describe("Power KPI", () => {
         return element;
     }
 
-    /**
-     * Renders a real SvgComponent (which owns the click-guard under test) together with
-     * a single interactive LineComponent nested as a genuine DOM descendant of the
-     * SvgComponent's root <svg>, with both sharing one d3-dispatch instance - mirroring
-     * how visual.ts wires components together in production.
-     *
-     * This lets a native click on the rendered line <path> both (a) synchronously set
-     * SvgComponent's isClickHandledByChild flag via the shared EventName.onClick
-     * dispatch, and (b) bubble up to SvgComponent's own native "click" listener,
-     * reproducing the exact double-dispatch scenario the fix guards against.
-     */
-    function renderSvgComponentWithClickableLine(): {
-        linePath: Element | null;
-        onClearSelectionSpy: jasmine.Spy;
-        onSelectSpy: jasmine.Spy;
-    } {
-        const viewport: powerbi.IViewport = {
-            height: 500,
-            width: 500,
-        };
+    const markClickTestViewport: powerbi.IViewport = {
+        height: 500,
+        width: 500,
+    };
 
-        const container = createElement(viewport);
+    const markClickTestPoints: IDataRepresentationPoint[] = [
+        {
+            color: "green",
+            kpiIndex: 1,
+            x: new Date(2000, 1, 1),
+            y: 0,
+        },
+        {
+            color: "green",
+            kpiIndex: 1,
+            x: new Date(2001, 1, 1),
+            y: 100,
+        },
+    ];
+
+    /**
+     * Shared setup for the "no-double-dispatch" mark-click tests below: creates a real
+     * SvgComponent plus a single d3-dispatch instance and onSelect/onClearSelection spies,
+     * mirroring how visual.ts wires components together in production.
+     *
+     * A native click on an interactive mark (line/area/dot) rendered as a genuine DOM
+     * descendant of the returned svgElement exercises the real SvgComponent click-handling:
+     * the mark's own listener dispatches onSelect and then calls event.stopPropagation()
+     * (see LineComponent/AreaComponent/DotComponent), so the click never bubbles up to the
+     * root <svg> handler that would otherwise dispatch onClearSelection (see
+     * SvgComponent.clearCatcherElement's doc comment for the full clear-selection design).
+     */
+    function createSvgComponentForMarkClickTests() {
+        const container = createElement(markClickTestViewport);
 
         const eventDispatcher: Dispatch<any> = dispatch(...Object.keys(EventName));
 
@@ -806,37 +880,38 @@ describe("Power KPI", () => {
             .node()
             .querySelector("svg.powerKpi_svgComponent");
 
+        const testWrapper: TestWrapper = new TestWrapper();
+        const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
+
+        return { svgElement, eventDispatcher, colorPalette, onClearSelectionSpy, onSelectSpy };
+    }
+
+    function renderSvgComponentWithClickableLine(): {
+        linePath: Element | null;
+        onClearSelectionSpy: jasmine.Spy;
+        onSelectSpy: jasmine.Spy;
+    } {
+        const {
+            svgElement,
+            eventDispatcher,
+            colorPalette,
+            onClearSelectionSpy,
+            onSelectSpy,
+        } = createSvgComponentForMarkClickTests();
+
         if (!svgElement) {
             return { linePath: null, onClearSelectionSpy, onSelectSpy };
         }
-
-        const testWrapper: TestWrapper = new TestWrapper();
-        const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
 
         const lineComponent: LineComponent = new LineComponent({
             element: d3Select(svgElement),
             eventDispatcher,
         });
 
-        const points: IDataRepresentationPoint[] = [
-            {
-                color: "green",
-                kpiIndex: 1,
-                x: new Date(2000, 1, 1),
-                y: 0,
-            },
-            {
-                color: "green",
-                kpiIndex: 1,
-                x: new Date(2001, 1, 1),
-                y: 100,
-            },
-        ];
-
         const gradientPoints: IDataRepresentationPointGradientColor[] = [
             {
                 color: "green",
-                points,
+                points: markClickTestPoints,
             },
         ];
 
@@ -850,13 +925,13 @@ describe("Power KPI", () => {
                 selected: false,
             } as IDataRepresentationSeries,
             thickness: 1,
-            viewport,
+            viewport: markClickTestViewport,
             x: DataRepresentationScale.create().domain(
-                [points[0].x as Date, points[1].x as Date],
+                [markClickTestPoints[0].x as Date, markClickTestPoints[1].x as Date],
                 DataRepresentationTypeEnum.DateType
             ),
             y: DataRepresentationScale.create().domain(
-                [points[0].y, points[1].y],
+                [markClickTestPoints[0].y, markClickTestPoints[1].y],
                 DataRepresentationTypeEnum.NumberType
             ),
             colorPalette,
@@ -867,6 +942,117 @@ describe("Power KPI", () => {
         );
 
         return { linePath, onClearSelectionSpy, onSelectSpy };
+    }
+
+    function renderSvgComponentWithClickableArea(): {
+        areaPath: Element | null;
+        onClearSelectionSpy: jasmine.Spy;
+        onSelectSpy: jasmine.Spy;
+    } {
+        const {
+            svgElement,
+            eventDispatcher,
+            colorPalette,
+            onClearSelectionSpy,
+            onSelectSpy,
+        } = createSvgComponentForMarkClickTests();
+
+        if (!svgElement) {
+            return { areaPath: null, onClearSelectionSpy, onSelectSpy };
+        }
+
+        const areaComponent: AreaComponent = new AreaComponent({
+            element: d3Select(svgElement),
+            eventDispatcher,
+        });
+
+        const gradientPoints: IDataRepresentationPointGradientColor[] = [
+            {
+                color: "green",
+                points: markClickTestPoints,
+            },
+        ];
+
+        areaComponent.render({
+            areaOpacity: 1,
+            gradientPoints,
+            interpolation: LineInterpolation.linear,
+            lineStyle: LineStyle.solidLine,
+            opacity: 1,
+            series: {
+                hasSelection: false,
+                selected: false,
+            } as IDataRepresentationSeries,
+            thickness: 1,
+            viewport: markClickTestViewport,
+            x: DataRepresentationScale.create().domain(
+                [markClickTestPoints[0].x as Date, markClickTestPoints[1].x as Date],
+                DataRepresentationTypeEnum.DateType
+            ),
+            y: DataRepresentationScale.create().domain(
+                [markClickTestPoints[0].y, markClickTestPoints[1].y],
+                DataRepresentationTypeEnum.NumberType
+            ),
+            colorPalette,
+        });
+
+        const areaPath: Element | null = svgElement.querySelector(
+            "path.powerKpi_areaComponent_area"
+        );
+
+        return { areaPath, onClearSelectionSpy, onSelectSpy };
+    }
+
+    // DotComponent only carries series info (and so only dispatches onSelect) when it's used
+    // as chartComponent's single-data-point fallback mark (see chartComponent.ts) - it doesn't
+    // wire up series itself otherwise. The render options here mirror that real usage.
+    function renderSvgComponentWithClickableDot(): {
+        dotElement: Element | null;
+        onClearSelectionSpy: jasmine.Spy;
+        onSelectSpy: jasmine.Spy;
+    } {
+        const {
+            svgElement,
+            eventDispatcher,
+            colorPalette,
+            onClearSelectionSpy,
+            onSelectSpy,
+        } = createSvgComponentForMarkClickTests();
+
+        if (!svgElement) {
+            return { dotElement: null, onClearSelectionSpy, onSelectSpy };
+        }
+
+        const dotComponent: DotComponent = new DotComponent({
+            element: d3Select(svgElement),
+            eventDispatcher,
+        });
+
+        dotComponent.render({
+            point: markClickTestPoints[0],
+            radiusFactor: 1,
+            series: {
+                hasSelection: false,
+                selected: false,
+            } as IDataRepresentationSeries,
+            thickness: 5,
+            viewport: markClickTestViewport,
+            x: DataRepresentationScale.create().domain(
+                [markClickTestPoints[0].x as Date, markClickTestPoints[1].x as Date],
+                DataRepresentationTypeEnum.DateType
+            ),
+            y: DataRepresentationScale.create().domain(
+                [markClickTestPoints[0].y, markClickTestPoints[1].y],
+                DataRepresentationTypeEnum.NumberType
+            ),
+            colorPalette,
+        });
+
+        const dotElement: Element | null = svgElement.querySelector(
+            "circle.powerKpi_dotComponent"
+        );
+
+        return { dotElement, onClearSelectionSpy, onSelectSpy };
     }
 
     describe("DataRepresentationPointFilter", () => {

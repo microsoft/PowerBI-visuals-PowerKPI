@@ -126,7 +126,7 @@ export class LineComponent extends BaseComponent<IVisualComponentConstructorOpti
         this.lineSelection = lineSelection.enter()
             .append("svg:path")
             .classed(this.lineSelector.className, true)
-            .on("click", (event) => this.clickHandler(event))
+            .on("click", (event) => { this.clickHandler(event); event.stopPropagation(); })
             .merge(lineSelection)
             .attr("d", (gradientGroup: IDataRepresentationPointGradientColor) => {
                 return this.getLine(
