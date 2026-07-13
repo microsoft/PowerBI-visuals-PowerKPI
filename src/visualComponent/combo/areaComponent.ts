@@ -108,7 +108,7 @@ export class AreaComponent
         this.areaSelection = areaSelection.enter()
             .append("svg:path")
             .classed(this.areaSelector.className, true)
-            .on("click", (event) => { this.clickHandler(event); event.stopPropagation(); })
+            .on("click", (event) => this.clickHandler(event))
             .merge(areaSelection)
             .attr("d", (gradientGroup: IDataRepresentationPointGradientColor) => {
                 return this.getArea(

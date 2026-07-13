@@ -51,7 +51,7 @@ export class DotComponent extends BaseComponent<IVisualComponentConstructorOptio
             "circle",
         );
 
-        this.element.on("click", (event) => { this.clickHandler(event); event.stopPropagation(); });
+        this.element.on("click", (event) => this.clickHandler(event));
 
         this.constructorOptions = {
             ...options,

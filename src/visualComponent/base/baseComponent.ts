@@ -36,6 +36,11 @@ import {
     IVisualComponentViewport,
 } from "./visualComponent";
 
+export const CLICK_HANDLED_EVENT_PROPERTY = "powerKpiClickHandled";
+export interface IHandledClickEvent {
+    [CLICK_HANDLED_EVENT_PROPERTY]?: boolean;
+}
+
 export abstract class BaseComponent<ConstructorOptionsType
     extends IVisualComponentConstructorOptions, RenderOptionsType>
     implements IVisualComponent<RenderOptionsType> {
@@ -255,6 +260,10 @@ export abstract class BaseComponent<ConstructorOptionsType
             || !this.constructorOptions.eventDispatcher
         ) {
             return;
+        }
+
+        if (event) {
+            (event as IHandledClickEvent)[CLICK_HANDLED_EVENT_PROPERTY] = true;
         }
 
         this.constructorOptions.eventDispatcher.call(

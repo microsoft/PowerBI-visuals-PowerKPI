@@ -154,6 +154,41 @@ describe("Power KPI", () => {
             );
         });
 
+        it("clicking a REAL rendered line mark in the full visual should still bubble to the visual container so Power BI can activate the visual", (done) => {
+            const testWrapper: TestWrapper = new TestWrapper();
+            const dataView: powerbi.DataView = testWrapper.dataViewBuilder.getDataView(
+                ["Axis", "Values"]
+            );
+
+            testWrapper.visualBuilder.updateRenderTimeout(
+                dataView,
+                () => {
+                    let didBubble: boolean = false;
+
+                    testWrapper.visualBuilder.element.addEventListener("click", () => {
+                        didBubble = true;
+                    });
+
+                    const linePath: Element | null = testWrapper.visualBuilder.element
+                        .querySelector("path.powerKpi_lineComponent_line");
+
+                    expect(linePath).not.toBeNull();
+                    if (!linePath) {
+                        done();
+                        return;
+                    }
+
+                    linePath.dispatchEvent(
+                        new MouseEvent("click", { bubbles: true, cancelable: true })
+                    );
+
+                    expect(didBubble).toBe(true);
+
+                    done();
+                }
+            );
+        });
+
         it("clicking an interactive line mark should not trigger the SVG-level clear-selection (no double-dispatch)", () => {
             const {
                 linePath,

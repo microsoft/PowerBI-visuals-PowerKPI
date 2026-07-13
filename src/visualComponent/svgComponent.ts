@@ -31,6 +31,10 @@ import { interactivityBaseService } from "powerbi-visuals-utils-interactivityuti
 import type { Selection } from "d3-selection";
 
 import { BaseContainerComponent } from "./base/baseContainerComponent";
+import {
+    CLICK_HANDLED_EVENT_PROPERTY,
+    IHandledClickEvent,
+} from "./base/baseComponent";
 import { IVisualComponent } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
 
@@ -213,7 +217,13 @@ export class SvgComponent extends BaseContainerComponent<
     }
 
     private bindEvents(): void {
-        this.element.on("click", (event: MouseEvent) => this.clickHandler(event));
+        this.element.on("click", (event: MouseEvent) => {
+            if ((event as IHandledClickEvent)[CLICK_HANDLED_EVENT_PROPERTY]) {
+                return;
+            }
+
+            this.clickHandler(event);
+        });
 
         this.element.on("mousemove", (event) => this.pointerMoveEvent(this.renderOptions, event));
         this.element.on("touchmove", (event) => this.pointerMoveEvent(this.renderOptions, event));
