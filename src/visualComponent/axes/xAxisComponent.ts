@@ -265,6 +265,7 @@ export class XAxisComponent
         metaDataColumn: powerbi.DataViewMetadataColumn,
         isScalar: boolean,
         density: number,
+        minOrdinalRectThickness: number = this.maxElementWidth + this.labelPadding,
     ) {
         return createAxis({
             dataDomain,
@@ -275,7 +276,7 @@ export class XAxisComponent
             isScalar,
             isVertical: false,
             metaDataColumn,
-            minOrdinalRectThickness: this.maxElementWidth + this.labelPadding,
+            minOrdinalRectThickness,
             outerPadding: 0,
             pixelSpan,
             shouldClamp: false,
@@ -293,6 +294,14 @@ export class XAxisComponent
      * axis with a bigger thickness estimate so *fewer, wider-spaced* ticks are chosen - instead
      * of keeping the original tick count and truncating every single label down to an
      * unreadable "Jan …", "Feb …", "Mar …" run.
+     *
+     * The thickness is threaded through getAxisProperties() as a local, never stored on the
+     * instance, so this render-time refit can't leak into a later render() call that isn't
+     * preceded by preRender(). The loop terminates by convergence rather than a fixed attempt
+     * cap: it only continues while the required thickness strictly grows and the tick count
+     * strictly shrinks (bounded below by 1), so a handful of passes is guaranteed regardless of
+     * tick count. The per-slot truncation in getFormattedAndFittedTickLabel() remains the final
+     * fallback once no more ticks can be dropped.
      */
     private refitAxisPropertiesToActualLabelWidth(
         width: number,
@@ -301,9 +310,9 @@ export class XAxisComponent
         settings: AxisDescriptor,
         isScalar: boolean,
     ): void {
-        const maxRefitAttempts: number = 4;
+        let thickness: number = this.maxElementWidth + this.labelPadding;
 
-        for (let attempt: number = 0; attempt < maxRefitAttempts; attempt++) {
+        for (;;) {
             const actualMaxLabelWidth: number = this.getActualMaxTickLabelWidth(axis, settings);
             const perTickWidth: number = this.axisProperties.xLabelMaxWidth;
             const tickCount: number = this.getTicks().length;
@@ -319,14 +328,22 @@ export class XAxisComponent
             // available width - there is no more room to gain by asking for even fewer
             // ticks, so stop iterating and let the render-time truncation guard handle the
             // (now unavoidable) case where a single label still doesn't fit.
-            if (!labelDoesNotFit || tickCount <= 1 || actualMaxLabelWidth <= this.maxElementWidth) {
+            if (!labelDoesNotFit || tickCount <= 1) {
                 break;
             }
 
-            const previousAxisProperties = this.axisProperties;
-            const previousMaxElementWidth: number = this.maxElementWidth;
+            const requiredThickness: number = actualMaxLabelWidth + this.labelPadding;
 
-            this.maxElementWidth = actualMaxLabelWidth;
+            // Convergence guard #1 (fixed point on width): if asking for the actual label
+            // width wouldn't widen the tick slot beyond what we already requested, another
+            // pass can't thin the axis any further - stop.
+            if (requiredThickness <= thickness) {
+                break;
+            }
+
+            thickness = requiredThickness;
+
+            const previousAxisProperties = this.axisProperties;
 
             this.axisProperties = this.getAxisProperties(
                 width,
@@ -334,17 +351,27 @@ export class XAxisComponent
                 axis.metadata,
                 isScalar,
                 settings.percentile.value,
+                thickness,
             );
+
+            const newTickCount: number = this.getTicks().length;
 
             // Not every axis type floors its tick count at 1 the way date axes do (see
             // MinAmountOfTicksForDates in axisHelper.ts) - e.g. a purely numeric axis can have
             // its tick count computed straight down to 0 once minOrdinalRectThickness exceeds
             // the available pixel span. Rendering zero tick labels is worse than the
             // overlap/truncation this loop exists to avoid, so undo this attempt and stop.
-            if (this.getTicks().length === 0) {
+            if (newTickCount === 0) {
                 this.axisProperties = previousAxisProperties;
-                this.maxElementWidth = previousMaxElementWidth;
 
+                break;
+            }
+
+            // Convergence guard #2 (fixed point on tick count): if a wider thickness didn't
+            // actually drop any ticks, further passes won't either - stop. Because the tick
+            // count decreases monotonically toward 1 whenever the loop does make progress,
+            // this guarantees termination without a fixed attempt cap.
+            if (newTickCount >= tickCount) {
                 break;
             }
         }
