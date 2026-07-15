@@ -82,7 +82,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
             this.bindLegendEvents(options.data.series);
 
             this.show();
-        } catch (_) {
+        } catch {
             this.hide();
         }
     }
@@ -110,7 +110,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
                 options.element.node(),
                 true,
             );
-        } catch (_) {
+        } catch {
             return null;
         }
     }
