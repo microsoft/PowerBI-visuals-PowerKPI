@@ -24,6 +24,7 @@
  *  THE SOFTWARE.
  */
 import { select as d3Select } from "d3-selection";
+import { dispatch as d3Dispatch } from "d3-dispatch";
 
 import powerbi from "powerbi-visuals-api";
 
@@ -52,9 +53,11 @@ import { IDataRepresentationX } from "../src/dataRepresentation/dataRepresentati
 import { DataRepresentationPointFilter } from "../src/dataRepresentation/dataRepresentationPointFilter";
 import { IDataRepresentationSeries } from "../src/dataRepresentation/dataRepresentationSeries";
 import { DataRepresentationTypeEnum } from "../src/dataRepresentation/dataRepresentationType";
+import { EventName } from "../src/event/eventName";
 import { Settings } from "../src/settings/settings";
 import { IEventPositionVisualComponentOptions } from "../src/visualComponent/eventPositionVisualComponentOptions";
 import { TooltipComponent } from "../src/visualComponent/tooltipComponent";
+import { LegendComponent } from "../src/visualComponent/legendComponent";
 
 import {
     ILineComponentRenderOptions,
@@ -115,6 +118,58 @@ describe("Power KPI", () => {
                     done();
                 }
             );
+        });
+    });
+
+    describe("LegendComponent", () => {
+        it("should dispatch one selection event for a legend item after rerender", () => {
+            const viewport: powerbi.IViewport = { height: 500, width: 500 };
+            const element = createElement(viewport);
+            const testWrapper: TestWrapper = new TestWrapper();
+            const settings: Settings = new Settings();
+            const dataView: powerbi.DataView = testWrapper.dataViewBuilder.getDataView(["Axis", "Values"]);
+            const dataConverter: DataConverter = new DataConverter({
+                colorPalette: testWrapper.visualBuilder.visualHost.colorPalette,
+                createSelectionIdBuilder,
+            });
+
+            dataConverter.getAxisType({
+                dataView,
+                xAxisType: AxisType.continuous,
+            });
+
+            const data: IDataRepresentation = dataConverter.convert({
+                dataView,
+                hasSelection: false,
+                locale: "en-US",
+                settings,
+                viewport,
+            });
+            const eventDispatcher = d3Dispatch(EventName.onSelect);
+            const selectionHandler = jasmine.createSpy("selectionHandler");
+            const legendComponent: LegendComponent = new LegendComponent({
+                element,
+                eventDispatcher,
+            });
+            const renderOptions = {
+                colorPalette: testWrapper.visualBuilder.visualHost.colorPalette,
+                data,
+            };
+
+            eventDispatcher.on(EventName.onSelect, selectionHandler);
+            legendComponent.render(renderOptions);
+            legendComponent.render(renderOptions);
+
+            const legendItem: SVGGElement = element.select<SVGGElement>(".legendItem").node();
+            const clickEvent: MouseEvent = new MouseEvent("click", {
+                bubbles: true,
+                ctrlKey: true,
+            });
+
+            legendItem.dispatchEvent(clickEvent);
+
+            expect(selectionHandler).toHaveBeenCalledTimes(1);
+            expect(selectionHandler).toHaveBeenCalledWith(clickEvent, data.series[0]);
         });
     });
 

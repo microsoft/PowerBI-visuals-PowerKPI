@@ -30,11 +30,11 @@ import {
     legendInterfaces,
 } from "powerbi-visuals-utils-chartutils";
 
-import { interactivityBaseService } from "powerbi-visuals-utils-interactivityutils";
 import ISandboxExtendedColorPalette = powerbi.extensibility.ISandboxExtendedColorPalette
 
 import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
 import { IDataRepresentationSeries } from "../dataRepresentation/dataRepresentationSeries";
+import { EventName } from "../event/eventName";
 import { LegendDescriptor } from "../settings/descriptors/legendDescriptor";
 import { LineDescriptor } from "../settings/descriptors/line/lineDescriptor";
 import { BaseComponent } from "./base/baseComponent";
@@ -79,6 +79,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
             this.legend.changeOrientation(this.getLegendPosition(legend.position.value.value));
 
             this.legend.drawLegend(legendData, options.data.viewport);
+            this.bindLegendEvents(options.data.series);
 
             this.show();
         } catch (_) {
@@ -104,19 +105,30 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
     }
 
     private createLegend(options: IVisualComponentConstructorOptions): legendInterfaces.ILegend {
-        const interactivityService: interactivityBaseService.IInteractivityService<legendInterfaces.LegendDataPoint> =
-            (options.interactivityService as interactivityBaseService.IInteractivityService<any>) || undefined;
-
         try {
             return legendModule.createLegend(
                 options.element.node(),
-                false,
-                interactivityService,
                 true,
             );
         } catch (_) {
             return null;
         }
+    }
+
+    private bindLegendEvents(series: IDataRepresentationSeries[]): void {
+        this.element
+            .selectAll<SVGGElement, legendInterfaces.LegendDataPoint>(".legendItem")
+            .on("click.powerKPI", (event: MouseEvent, dataPoint: legendInterfaces.LegendDataPoint) => {
+                const selectedSeries: IDataRepresentationSeries = series.find((item: IDataRepresentationSeries) =>
+                    dataPoint.identity.equals(item.identity as unknown as powerbi.visuals.ISelectionId));
+
+                if (!selectedSeries || !this.constructorOptions.eventDispatcher) {
+                    return;
+                }
+
+                event.stopPropagation();
+                this.constructorOptions.eventDispatcher.call(EventName.onSelect, undefined, event, selectedSeries);
+            });
     }
 
     private createLegendData(data: IDataRepresentation, legend: LegendDescriptor, line: LineDescriptor, colorPalette: ISandboxExtendedColorPalette): legendInterfaces.LegendData {
@@ -127,7 +139,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
                 const { lineStyle } = line.getCurrentSettings(series.containerKey);
                 const dataPoint: legendInterfaces.LegendDataPoint = {
                     color: isHighContrast ? colorPalette.foreground.value : series.color,
-                    identity: series.identity,
+                    identity: series.identity as unknown as powerbi.visuals.ISelectionId,
                     label: series.name,
                     lineStyle: legend.getLegendLineStyle(lineStyle),
                     markerShape: legend.getLegendMarkerShape(),
