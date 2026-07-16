@@ -139,7 +139,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
                 const { lineStyle } = line.getCurrentSettings(series.containerKey);
                 const dataPoint: legendInterfaces.LegendDataPoint = {
                     color: isHighContrast ? colorPalette.foreground.value : series.color,
-                    identity: series.identity as unknown as powerbi.visuals.ISelectionId,
+                    identity: series.identity as powerbi.visuals.ISelectionId,
                     label: series.name,
                     lineStyle: legend.getLegendLineStyle(lineStyle),
                     markerShape: legend.getLegendMarkerShape(),
