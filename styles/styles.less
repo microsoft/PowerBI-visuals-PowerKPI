@@ -382,6 +382,15 @@
         .powerKpi_svgComponent {
             overflow: visible;
 
+            // Standard "clearCatcher" background hit-target (see
+            // powerbi-visuals-utils-interactivityutils' appendClearCatcher): kept invisible
+            // via fill: transparent (not fill: none, which would opt it out of pointer-events
+            // hit-testing) so clicks on empty canvas area are still captured.
+            .clearCatcher {
+                fill: transparent;
+                pointer-events: all;
+            }
+
             .powerKpi_dotsComponent {
                 pointer-events: none;
             }

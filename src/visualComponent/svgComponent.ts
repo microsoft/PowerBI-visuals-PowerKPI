@@ -27,8 +27,14 @@
 import powerbi from "powerbi-visuals-api";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 import { IMargin } from "powerbi-visuals-utils-svgutils";
+import { interactivityBaseService } from "powerbi-visuals-utils-interactivityutils";
+import type { Selection } from "d3-selection";
 
 import { BaseContainerComponent } from "./base/baseContainerComponent";
+import {
+    CLICK_HANDLED_EVENT_PROPERTY,
+    IHandledClickEvent,
+} from "./base/baseComponent";
 import { IVisualComponent } from "./base/visualComponent";
 import { IVisualComponentConstructorOptions } from "./base/visualComponentConstructorOptions";
 
@@ -77,6 +83,8 @@ export class SvgComponent extends BaseContainerComponent<
 
     private positions: number[];
 
+    private clearCatcherElement: Selection<SVGRectElement, unknown, null, undefined>;
+
     constructor(options: IVisualComponentConstructorOptions) {
         super();
 
@@ -85,6 +93,8 @@ export class SvgComponent extends BaseContainerComponent<
             this.className,
             "svg",
         );
+
+        this.clearCatcherElement = interactivityBaseService.appendClearCatcher(this.element);
 
         this.constructorOptions = {
             ...options,
@@ -144,6 +154,12 @@ export class SvgComponent extends BaseContainerComponent<
 
         this.updateViewport(reducedViewport);
 
+        this.clearCatcherElement
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", reducedViewport.width)
+            .attr("height", reducedViewport.height);
+
         this.updateMargin(margin, additionalMargin);
 
         this.positions = this.getPositions(reducedViewport, values, scale);
@@ -201,13 +217,19 @@ export class SvgComponent extends BaseContainerComponent<
     }
 
     private bindEvents(): void {
+        this.element.on("click", (event: MouseEvent) => {
+            if ((event as IHandledClickEvent)[CLICK_HANDLED_EVENT_PROPERTY]) {
+                return;
+            }
+
+            this.clickHandler(event);
+        });
+
         this.element.on("mousemove", (event) => this.pointerMoveEvent(this.renderOptions, event));
         this.element.on("touchmove", (event) => this.pointerMoveEvent(this.renderOptions, event));
 
         this.element.on("mouseleave", () => this.pointerLeaveHandler());
         this.element.on("touchend", () => this.pointerLeaveHandler());
-
-        this.element.on("click", (event) => this.clickHandler(event));
     }
 
     private updateMargin(margin: IMargin, additionalMargin: IMargin): void {
@@ -429,10 +451,6 @@ export class SvgComponent extends BaseContainerComponent<
         if (!this.constructorOptions || !this.constructorOptions.eventDispatcher) {
             return;
         }
-
-        event.preventDefault();
-        event.stopPropagation();
-        event.stopImmediatePropagation();
 
         if (this === component) {
             this.constructorOptions.eventDispatcher.call(EventName.onClearSelection);

@@ -35,7 +35,7 @@ export class VisualBuilder extends VisualBuilderBase<PowerKPI> {
 
     protected build(): PowerKPI {
         return new PowerKPI({
-            element: this.element[0],
+            element: this.element,
             host: this.visualHost,
         });
     }
