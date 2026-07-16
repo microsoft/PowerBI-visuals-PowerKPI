@@ -1,13 +1,14 @@
 ## 3.1.1.0
 ### Fixes
 * Fixed other lines being recolored when changing a single line's color (default palette colors are now reserved per line regardless of overrides)
+* Fixed X-axis tick labels overlapping when the visual is narrowed and the axis font size is increased - the axis now redistributes to fewer, wider-spaced ticks that fit their available space, falling back to per-label truncation only when a single tick still can't fit
+* Fixed visual not activating when clicking on chart lines or empty SVG canvas area
 
 ## 3.1.0.0
 ### Features
 * Added a line color mode (Joint / Granular) to configure colors either per group or per individual line
 ### Fixes
 * Fixed series colors being shared between measures of the same group
-* Fixed X-axis tick labels overlapping when the visual is narrowed and the axis font size is increased - the axis now redistributes to fewer, wider-spaced ticks that fit their available space, falling back to per-label truncation only when a single tick still can't fit
 
 ## 3.0.4.0
 ### Fixes
