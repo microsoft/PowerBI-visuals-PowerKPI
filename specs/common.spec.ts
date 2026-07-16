@@ -892,10 +892,10 @@ describe("Power KPI", () => {
      *
      * A native click on an interactive mark (line/area/dot) rendered as a genuine DOM
      * descendant of the returned svgElement exercises the real SvgComponent click-handling:
-     * the mark's own listener dispatches onSelect and then calls event.stopPropagation()
-     * (see LineComponent/AreaComponent/DotComponent), so the click never bubbles up to the
-     * root <svg> handler that would otherwise dispatch onClearSelection (see
-     * SvgComponent.clearCatcherElement's doc comment for the full clear-selection design).
+     * the mark's listener calls BaseComponent.clickHandler(), which marks the native event
+     * before dispatching onClick. The event continues bubbling, but the root <svg> handler
+     * in SvgComponent.bindEvents() sees the marker and returns without dispatching
+     * onClearSelection.
      */
     function createSvgComponentForMarkClickTests() {
         const container = createElement(markClickTestViewport);
