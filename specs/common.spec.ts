@@ -31,6 +31,7 @@ import powerbi from "powerbi-visuals-api";
 import { legendInterfaces } from "powerbi-visuals-utils-chartutils";
 
 import {
+    assertColorsMatch,
     createColorPalette,
     createSelectionIdBuilder,
     createTooltipService,
@@ -146,7 +147,7 @@ describe("Power KPI", () => {
                 settings,
                 viewport,
             });
-            const eventDispatcher = dispatch(EventName.onSelect);
+            const eventDispatcher = dispatch(EventName.onSelect, EventName.onHighlight);
             const selectionHandler = jasmine.createSpy("selectionHandler");
             const legendComponent: LegendComponent = new LegendComponent({
                 element,
@@ -171,6 +172,195 @@ describe("Power KPI", () => {
 
             expect(selectionHandler).toHaveBeenCalledTimes(1);
             expect(selectionHandler).toHaveBeenCalledWith(clickEvent, data.series[0]);
+        });
+
+        it("should update styled-line legend colors from live selection state", () => {
+            const viewport: powerbi.IViewport = { height: 500, width: 500 };
+            const element = createElement(viewport);
+            const testWrapper: TestWrapper = new TestWrapper();
+            const settings: Settings = new Settings();
+            const dataView: powerbi.DataView = testWrapper.dataViewBuilder.getDataView(["Axis", "Values"]);
+            const colorPalette: powerbi.extensibility.ISandboxExtendedColorPalette = createColorPalette();
+            const dataConverter: DataConverter = new DataConverter({
+                colorPalette,
+                createSelectionIdBuilder,
+            });
+
+            Object.defineProperty(colorPalette, "isHighContrast", { value: true });
+            colorPalette.foreground.value = "#FFFFFF";
+            settings.legend.style.value = settings.legend.getNewComplexValue(
+                LegendStyle.styledLine,
+                settings.legend.style.items
+            );
+
+            dataConverter.getAxisType({
+                dataView,
+                xAxisType: AxisType.continuous,
+            });
+
+            const data: IDataRepresentation = dataConverter.convert({
+                dataView,
+                hasSelection: false,
+                locale: "en-US",
+                settings,
+                viewport,
+            });
+            const eventDispatcher = dispatch(EventName.onSelect, EventName.onHighlight);
+            const legendComponent: LegendComponent = new LegendComponent({
+                element,
+                eventDispatcher,
+            });
+            const renderOptions = { colorPalette, data };
+
+            legendComponent.render(renderOptions);
+
+            let legendIcons: SVGPathElement[] = Array.from(
+                element.selectAll<SVGPathElement, legendInterfaces.LegendDataPoint>(".legendIcon").nodes()
+            );
+            const originalDashArray: string = legendIcons[0].style.strokeDasharray;
+
+            expect(legendIcons.length).toBeGreaterThan(1);
+            expect(legendIcons[0].style.fill).toBe("");
+            assertColorsMatch(getComputedStyle(legendIcons[0]).stroke, colorPalette.foreground.value);
+
+            data.series[0].selected = true;
+            eventDispatcher.call(EventName.onHighlight, undefined, true);
+
+            assertColorsMatch(getComputedStyle(legendIcons[0]).stroke, colorPalette.foreground.value);
+            assertColorsMatch(getComputedStyle(legendIcons[1]).stroke, colorPalette.foreground.value);
+            expect(Number(getComputedStyle(legendIcons[0]).opacity)).toBe(1);
+            expect(Number(getComputedStyle(legendIcons[1]).opacity)).toBeCloseTo(1 / 3);
+
+            data.series[1].selected = true;
+            eventDispatcher.call(EventName.onHighlight, undefined, true);
+
+            assertColorsMatch(getComputedStyle(legendIcons[0]).stroke, colorPalette.foreground.value);
+            assertColorsMatch(getComputedStyle(legendIcons[1]).stroke, colorPalette.foreground.value);
+            expect(Number(getComputedStyle(legendIcons[0]).opacity)).toBe(1);
+            expect(Number(getComputedStyle(legendIcons[1]).opacity)).toBe(1);
+
+            data.series.forEach((series: IDataRepresentationSeries) => series.selected = false);
+            eventDispatcher.call(EventName.onHighlight, undefined, false);
+
+            legendIcons.forEach((legendIcon: SVGPathElement) => {
+                assertColorsMatch(getComputedStyle(legendIcon).stroke, colorPalette.foreground.value);
+                expect(Number(getComputedStyle(legendIcon).opacity)).toBe(1);
+                expect(legendIcon.style.strokeDasharray).toBe(originalDashArray);
+            });
+
+            data.series[0].selected = true;
+            legendComponent.render(renderOptions);
+            legendIcons = Array.from(
+                element.selectAll<SVGPathElement, legendInterfaces.LegendDataPoint>(".legendIcon").nodes()
+            );
+
+            assertColorsMatch(getComputedStyle(legendIcons[0]).stroke, colorPalette.foreground.value);
+            assertColorsMatch(getComputedStyle(legendIcons[1]).stroke, colorPalette.foreground.value);
+            expect(Number(getComputedStyle(legendIcons[0]).opacity)).toBe(1);
+            expect(Number(getComputedStyle(legendIcons[1]).opacity)).toBeCloseTo(1 / 3);
+
+            legendComponent.destroy();
+            expect(eventDispatcher.on(`${EventName.onHighlight}.legend`)).toBeUndefined();
+        });
+
+        it("should synchronize chart and legend colors across selection transitions", (done) => {
+            const testWrapper: TestWrapper = new TestWrapper();
+            const dataView: powerbi.DataView = testWrapper.dataViewBuilder.getDataView(["Axis", "Values"]);
+
+            testWrapper.visualBuilder.updateRenderTimeout(
+                dataView,
+                () => {
+                    const legendItems: NodeListOf<SVGGElement> = testWrapper.visualBuilder.element
+                        .querySelectorAll<SVGGElement>(".legendItem");
+                    const legendIcons: NodeListOf<SVGPathElement> = testWrapper.visualBuilder.element
+                        .querySelectorAll<SVGPathElement>(".legendIcon");
+                    const linePaths: NodeListOf<SVGPathElement> = testWrapper.visualBuilder.element
+                        .querySelectorAll<SVGPathElement>("path.powerKpi_lineComponent_line");
+
+                    expect(legendItems.length).toBeGreaterThan(2);
+                    expect(legendIcons.length).toBe(legendItems.length);
+                    expect(linePaths.length).toBeGreaterThan(1);
+
+                    const legendColors: string[] = Array.from(
+                        legendIcons,
+                        (legendIcon: SVGPathElement) => getComputedStyle(legendIcon).fill
+                    );
+
+                    legendItems[0].dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+                    renderTimeout(() => {
+                        const lineOpacities: number[] = Array.from(
+                            linePaths,
+                            linePath => Number(getComputedStyle(linePath).opacity)
+                        );
+
+                        expect(lineOpacities.some(opacity => opacity < 1)).toBeTrue();
+                        expect(lineOpacities.some(opacity => opacity === 1)).toBeTrue();
+                        assertColorsMatch(getComputedStyle(legendIcons[0]).fill, legendColors[0]);
+                        assertColorsMatch(getComputedStyle(legendIcons[1]).fill, legendColors[1]);
+                        expect(Number(getComputedStyle(legendIcons[0]).opacity)).toBe(1);
+                        expect(Number(getComputedStyle(legendIcons[1]).opacity)).toBeCloseTo(1 / 3);
+
+                        legendItems[1].dispatchEvent(new MouseEvent("click", {
+                            bubbles: true,
+                            ctrlKey: true,
+                        }));
+
+                        renderTimeout(() => {
+                            assertColorsMatch(getComputedStyle(legendIcons[0]).fill, legendColors[0]);
+                            assertColorsMatch(getComputedStyle(legendIcons[1]).fill, legendColors[1]);
+                            assertColorsMatch(getComputedStyle(legendIcons[2]).fill, legendColors[2]);
+                            expect(Number(getComputedStyle(legendIcons[0]).opacity)).toBe(1);
+                            expect(Number(getComputedStyle(legendIcons[1]).opacity)).toBe(1);
+                            expect(Number(getComputedStyle(legendIcons[2]).opacity)).toBeCloseTo(1 / 3);
+
+                            const clearCatcher: SVGRectElement | null = testWrapper.visualBuilder.element
+                                .querySelector<SVGRectElement>("svg.powerKpi_svgComponent rect.clearCatcher");
+
+                            expect(clearCatcher).not.toBeNull();
+                            if (!clearCatcher) {
+                                done();
+                                return;
+                            }
+
+                            clearCatcher.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+                            renderTimeout(() => {
+                                const clearedLegendIcons: NodeListOf<SVGPathElement> = testWrapper.visualBuilder.element
+                                    .querySelectorAll<SVGPathElement>(".legendIcon");
+                                const clearedLinePaths: NodeListOf<SVGPathElement> = testWrapper.visualBuilder.element
+                                    .querySelectorAll<SVGPathElement>("path.powerKpi_lineComponent_line");
+
+                                clearedLegendIcons.forEach((legendIcon: SVGPathElement, index: number) => {
+                                    assertColorsMatch(getComputedStyle(legendIcon).fill, legendColors[index]);
+                                    expect(Number(getComputedStyle(legendIcon).opacity)).toBe(1);
+                                });
+                                expect(Array.from(clearedLinePaths).every((linePath: SVGPathElement) =>
+                                    Number(getComputedStyle(linePath).opacity) === 1)).toBeTrue();
+
+                                const selectionManager = testWrapper.visualBuilder.visualHost.createSelectionManager() as
+                                    powerbi.extensibility.ISelectionManager & {
+                                        simutateSelection(selections: powerbi.visuals.ISelectionId[]): void;
+                                    };
+                                const restoredIdentity: powerbi.visuals.ISelectionId = d3Select<SVGGElement, legendInterfaces.LegendDataPoint>(
+                                    legendItems[1]
+                                ).datum().identity;
+
+                                selectionManager.select(restoredIdentity, false);
+                                selectionManager.simutateSelection([restoredIdentity]);
+
+                                renderTimeout(() => {
+                                    assertColorsMatch(getComputedStyle(legendIcons[0]).fill, legendColors[0]);
+                                    assertColorsMatch(getComputedStyle(legendIcons[1]).fill, legendColors[1]);
+                                    expect(Number(getComputedStyle(legendIcons[0]).opacity)).toBeCloseTo(1 / 3);
+                                    expect(Number(getComputedStyle(legendIcons[1]).opacity)).toBe(1);
+                                    done();
+                                });
+                            });
+                        });
+                    });
+                }
+            );
         });
     });
 

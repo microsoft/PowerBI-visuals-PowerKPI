@@ -61,11 +61,19 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
         };
 
         this.legend = this.createLegend(this.constructorOptions);
+
+        if (this.constructorOptions.eventDispatcher) {
+            this.constructorOptions.eventDispatcher.on(
+                `${EventName.onHighlight}.legend`,
+                this.highlight.bind(this),
+            );
+        }
     }
 
     public render(options: IVisualComponentRenderOptions): void {
         const { data: { settings: { legend, line } }, colorPalette } = options;
-        
+
+        this.renderOptions = options;
 
         if (!this.legend || !legend.isElementShown()) {
             this.hide();
@@ -80,6 +88,7 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
 
             this.legend.drawLegend(legendData, options.data.viewport);
             this.bindLegendEvents(options.data.series);
+            this.highlight(options.data.series.some((series: IDataRepresentationSeries) => series.selected));
 
             this.show();
         } catch {
@@ -88,9 +97,37 @@ export class LegendComponent extends BaseComponent<IVisualComponentConstructorOp
     }
 
     public destroy(): void {
+        if (this.constructorOptions.eventDispatcher) {
+            this.constructorOptions.eventDispatcher.on(`${EventName.onHighlight}.legend`, null);
+        }
+
         this.legend = null;
 
         super.destroy();
+    }
+
+    public highlight(hasSelection: boolean): void {
+        if (!this.element || !this.renderOptions) {
+            return;
+        }
+
+        const series: IDataRepresentationSeries[] = this.renderOptions.data.series;
+
+        this.element
+            .selectAll<SVGPathElement, legendInterfaces.LegendDataPoint>(".legendIcon")
+            .style("fill", (dataPoint: legendInterfaces.LegendDataPoint) =>
+                dataPoint.markerShape === legendInterfaces.MarkerShape.longDash
+                    ? null
+                    : dataPoint.color)
+            .style("stroke", (dataPoint: legendInterfaces.LegendDataPoint) => dataPoint.color)
+            .style("opacity", (dataPoint: legendInterfaces.LegendDataPoint) => {
+                const matchingSeries: IDataRepresentationSeries = series.find((item: IDataRepresentationSeries) =>
+                    dataPoint.identity.equals(item.identity as unknown as powerbi.visuals.ISelectionId));
+
+                return hasSelection && matchingSeries && !matchingSeries.selected
+                    ? 1 / 3
+                    : 1;
+            });
     }
 
     public getViewport(): IVisualComponentViewport {
