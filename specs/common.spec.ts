@@ -23,6 +23,9 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
+/// <reference types="jasmine" />
+/// <reference types="karma" />
+
 import { select as d3Select } from "d3-selection";
 import { dispatch, Dispatch } from "d3-dispatch";
 
