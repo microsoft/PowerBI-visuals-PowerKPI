@@ -26,6 +26,8 @@
 
 "use strict";
 
+import type { ConfigOptions } from "karma";
+
 process.env.CHROME_BIN = require("playwright-chromium").chromium.executablePath();
 
 const path = require("path");
@@ -36,7 +38,13 @@ const tsconfig = require("./test.tsconfig.json");
 const testRecursivePath = "specs/*.spec.ts";
 const coverageFolder = "coverage";
 
-module.exports = (config) => {
+interface PowerKpiKarmaConfigOptions extends ConfigOptions {
+    typescriptPreprocessor: {
+        options: typeof tsconfig.compilerOptions;
+    };
+}
+
+module.exports = (config: { set(options: PowerKpiKarmaConfigOptions): void }) => {
     config.set({
         browsers: ["ChromeHeadless"],
         colors: true,

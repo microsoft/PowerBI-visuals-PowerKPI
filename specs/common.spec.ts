@@ -165,7 +165,13 @@ describe("Power KPI", () => {
             legendComponent.render(renderOptions);
             legendComponent.render(renderOptions);
 
-            const legendItem: SVGGElement = element.select<SVGGElement>(".legendItem").node();
+            const legendItem: SVGGElement | null = element.select<SVGGElement>(".legendItem").node();
+
+            if (!legendItem) {
+                fail("legend item not found in DOM");
+                return;
+            }
+
             const clickEvent: MouseEvent = new MouseEvent("click", {
                 bubbles: true,
                 ctrlKey: true,
@@ -972,7 +978,7 @@ describe("Power KPI", () => {
 
     describe("ComboComponent", () => {
         let viewport: powerbi.IViewport;
-        let element;
+        let element: ReturnType<typeof createElement>;
 
         beforeEach(() => {
             viewport = {
@@ -1054,6 +1060,16 @@ describe("Power KPI", () => {
         return d3Select(
             testDom(viewport.height.toString(), viewport.width.toString())
         );
+    }
+
+    function getRequiredSeriesColors(series: IDataRepresentationSeries[]): string[] {
+        return series.map((item: IDataRepresentationSeries) => {
+            if (item.color === undefined) {
+                throw new Error(`Expected series "${item.name}" to have a color`);
+            }
+
+            return item.color;
+        });
     }
 
     function renderLineBasedComponent(
@@ -1159,7 +1175,7 @@ describe("Power KPI", () => {
 
         const svgElement: SVGElement | null = container
             .node()
-            .querySelector("svg.powerKpi_svgComponent");
+            ?.querySelector("svg.powerKpi_svgComponent") ?? null;
 
         const testWrapper: TestWrapper = new TestWrapper();
         const colorPalette = testWrapper.visualBuilder.visualHost.colorPalette;
@@ -1345,10 +1361,8 @@ describe("Power KPI", () => {
 
         describe("isPointValid", () => {
             it("should return false if point is undefined", () => {
-                let testVariable;
-                testVariable = undefined;
                 expect(
-                    dataRepresentationPointFilter.isPointValid(testVariable)
+                    dataRepresentationPointFilter.isPointValid(undefined)
                 ).toBeFalsy();
             });
 
@@ -1404,11 +1418,9 @@ describe("Power KPI", () => {
         describe("groupPointByColor", () => {
             it("should not throw any exceptions if point is undefined", () => {
                 expect(() => {
-                    let testVariable;
-                    testVariable = undefined;
                     dataRepresentationPointFilter.groupPointByColor(
                         [],
-                        testVariable,
+                        undefined,
                         false
                     );
                 }).not.toThrow();
@@ -1422,10 +1434,8 @@ describe("Power KPI", () => {
                     y: 123,
                 } as unknown as IDataRepresentationPoint;
                 expect(() => {
-                    let testVariable;
-                    testVariable = undefined;
                     dataRepresentationPointFilter.groupPointByColor(
-                        testVariable,
+                        undefined,
                         testPoint,
                         false
                     );
@@ -1618,9 +1628,7 @@ describe("Power KPI", () => {
                     legendDescriptor.style.items
                 );
 
-                let testVariable;
-                testVariable = undefined;
-                expect(legendDescriptor.getLegendLineStyle(testVariable)).toBe(
+                expect(legendDescriptor.getLegendLineStyle(undefined)).toBe(
                     legendInterfaces.LineStyle.solid
                 );
             });
@@ -1664,9 +1672,7 @@ describe("Power KPI", () => {
                     legendDescriptor.style.items
                 );
 
-                let testVariable;
-                testVariable = undefined;
-                expect(legendDescriptor.getLegendLineStyle(testVariable)).toBe(
+                expect(legendDescriptor.getLegendLineStyle(undefined)).toBe(
                     legendInterfaces.LineStyle.solid
                 );
             });
@@ -1733,7 +1739,7 @@ describe("Power KPI", () => {
                     locale: "en-US"
                 });
 
-            const colors: string[] = dataRepresentation.series.map(series => series.color);
+            const colors: string[] = getRequiredSeriesColors(dataRepresentation.series);
 
             expect(colors.length).toBeGreaterThan(1);
             colors.forEach(color => expect(color).toBeDefined());
@@ -1838,7 +1844,7 @@ describe("Power KPI", () => {
             it("keeps a distinct default color per line in both modes", () => {
                 [LineColorMode.joint, LineColorMode.granular].forEach(mode => {
                     const { dataRepresentation } = convertGrouped(mode);
-                    const colors: string[] = dataRepresentation.series.map(series => series.color);
+                    const colors: string[] = getRequiredSeriesColors(dataRepresentation.series);
 
                     colors.forEach(color => expect(color).toBeDefined());
                     expect(new Set(colors).size).toBe(colors.length);
@@ -1853,7 +1859,15 @@ describe("Power KPI", () => {
             function containerSelectors(settings: Settings): any[] {
                 return settings.line.container.containerItems
                     .filter(item => (item as any).key !== LineDescriptor.AllLinesContainerKey)
-                    .map(item => (item.slices[0] as any).selector);
+                    .map(item => {
+                        const firstSlice = item.slices?.[0];
+
+                        if (!firstSlice) {
+                            throw new Error(`Expected line container "${item.displayName}" to have a slice`);
+                        }
+
+                        return (firstSlice as any).selector;
+                    });
             }
 
             it("Granular mode keeps a distinct selector (with measure) per line", () => {
@@ -1890,7 +1904,13 @@ describe("Power KPI", () => {
                     // Override the first line only (GroupA – Sales). In granular mode
                     // the override lives at the measure level:
                     // grouped()[0] = GroupA, .values[0] = Sales measure.
-                    dataView.categorical.values.grouped()[0].values[0].source.objects = {
+                    const firstMeasure = dataView.categorical?.values?.grouped()[0]?.values[0];
+
+                    if (!firstMeasure) {
+                        throw new Error("Expected grouped categorical measure data");
+                    }
+
+                    firstMeasure.source.objects = {
                         line: { fillColor: { solid: { color: changedColor } } },
                     } as powerbi.DataViewObjects;
                 }
@@ -1915,7 +1935,7 @@ describe("Power KPI", () => {
 
             it("changing one line's color must not recolor the other lines", () => {
                 const baseline: IDataRepresentation = convertGranular(false);
-                const baselineColors: string[] = baseline.series.map(s => s.color);
+                const baselineColors: string[] = getRequiredSeriesColors(baseline.series);
                 expect(new Set(baselineColors).size).toBe(baselineColors.length);
 
                 const updated: IDataRepresentation = convertGranular(true);
