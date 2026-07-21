@@ -124,7 +124,6 @@ export class DataConverter extends VarianceConverter implements IConverter {
         return axisType
     }
 
-    // eslint-disable-next-line max-lines-per-function
     public process(options: ConverterOptions): IDataRepresentation {
         const {
             dataView,
@@ -216,7 +215,6 @@ export class DataConverter extends VarianceConverter implements IConverter {
         // container still each receive a distinct default color.
         let seriesColorIndex: number = 0;
 
-        // eslint-disable-next-line max-lines-per-function
         dataView.categorical.values.grouped().forEach((columnGroup: powerbi.DataViewValueColumnGroup) => {
             const groupedValues: powerbi.DataViewValueColumn[] = columnGroup.values;
 
@@ -227,7 +225,6 @@ export class DataConverter extends VarianceConverter implements IConverter {
 
             const kpiIndexes: number[] = (currentKPIColumn?.[0]?.values as number[]) || [];
 
-            // eslint-disable-next-line max-lines-per-function
             groupedValues.forEach((groupedValue: powerbi.DataViewValueColumn) => {
                 const format: string = this.getFormatStringByColumn(groupedValue.source);
 
@@ -683,11 +680,11 @@ export class DataConverter extends VarianceConverter implements IConverter {
             axis.max = value;
         }
 
-        if (value !== null && value < axis.min) {
+        if (value !== null && typeof axis.min === "number" && value < axis.min) {
             axis.min = value;
         }
 
-        if (value !== null && value > axis.max) {
+        if (value !== null && typeof axis.max === "number" && value > axis.max) {
             axis.max = value;
         }
     }
