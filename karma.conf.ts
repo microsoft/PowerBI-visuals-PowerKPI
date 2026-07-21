@@ -31,7 +31,7 @@ process.env.CHROME_BIN = require("playwright-chromium").chromium.executablePath(
 const path = require("path");
 
 const webpackConfig = require("./test.webpack.config.js");
-const tsconfig = require("./tsconfig.json");
+const tsconfig = require("./test.tsconfig.json");
 
 const testRecursivePath = "specs/*.spec.ts";
 const coverageFolder = "coverage";

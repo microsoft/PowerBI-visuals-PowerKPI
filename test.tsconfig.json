@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["jasmine", "karma", "node"],
+    "declaration": false
+  },
+  "include": [
+    "specs/**/*.ts",
+    "src/**/*.ts"
+  ]
+}
