@@ -69,8 +69,7 @@ export abstract class BaseComponent<ConstructorOptionsType
 
     public abstract render(options: RenderOptionsType): void;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-    public highlight(hasSelection: boolean): void {}
+    public highlight(_: boolean): void {}
 
     public initElement(
         baseElement: Selection<any, RenderOptionsType, any, any>,

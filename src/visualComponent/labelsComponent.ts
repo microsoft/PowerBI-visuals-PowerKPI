@@ -71,7 +71,7 @@ export class LabelsComponent extends BaseComponent<IVisualComponentConstructorOp
         if (labels.isElementShown()) {
             try { // This try-catch protects visual from being destroyed by PBI core team due to changes for core visuals
                 this.renderLabels(options);
-            } catch (err) {
+            } catch {
                 this.clear();
             }
         } else {

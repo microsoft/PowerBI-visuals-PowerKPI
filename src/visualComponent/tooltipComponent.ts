@@ -98,7 +98,6 @@ export class TooltipComponent
         this.clear();
     }
 
-    // eslint-disable-next-line max-lines-per-function
     private showTooltip(options: IEventPositionVisualComponentOptions): void {
         const {
             position,
