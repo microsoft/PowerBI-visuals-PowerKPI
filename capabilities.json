@@ -1162,6 +1162,23 @@
           },
           "placeHolderText": "Auto",
           "suppressFormatPainterCopy": true
+        },
+        "fixedLabelWidthMode": {
+          "type": {
+            "enumeration": [
+              {
+                "value": "auto"
+              },
+              {
+                "value": "fixed"
+              }
+            ]
+          }
+        },
+        "fixedLabelWidth": {
+          "type": {
+            "numeric": true
+          }
         }
       }
     },
@@ -1229,6 +1246,23 @@
           },
           "placeHolderText": "Auto",
           "suppressFormatPainterCopy": true
+        },
+        "fixedLabelWidthMode": {
+          "type": {
+            "enumeration": [
+              {
+                "value": "auto"
+              },
+              {
+                "value": "fixed"
+              }
+            ]
+          }
+        },
+        "fixedLabelWidth": {
+          "type": {
+            "numeric": true
+          }
         }
       }
     },

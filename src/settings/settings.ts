@@ -197,6 +197,7 @@ export class Settings extends formattingSettings.Model {
         this.filterLineProperties(dataRepresentation);
         this.filterKPIIndicatorProperties(dataRepresentation);
         this.filterKPIIndicatorValueProperties();
+        this.filterYAxisProperties();
         this.filterSettingsPropertiesByAxisType(axisType);
         this.setLocalizedDisplayNames(localizationManager);
         this.hideColorPickers(isHighContrast);
@@ -260,6 +261,13 @@ export class Settings extends formattingSettings.Model {
 
     private filterKPIIndicatorValueProperties() {
         this.kpiIndicatorValue.fontColor.visible = !this.kpiIndicatorValue.matchKPIColor.value;
+    }
+
+    private filterYAxisProperties() {
+        // The pixel width input only applies when the label area sizing is Fixed
+        [this.yAxis, this.secondaryYAxis].forEach((axis: YAxisDescriptor) => {
+            axis.fixedLabelWidth.visible = axis.isLabelWidthFixed();
+        });
     }
 
     private filterSettingsPropertiesByAxisType(axisType: DataRepresentationTypeEnum) {

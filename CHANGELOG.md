@@ -1,3 +1,7 @@
+## 3.1.2.0
+### Features
+* Added a Label Area Sizing option (Auto / Fixed) to the Y axis and the secondary Y axis to reserve a fixed pixel width for axis labels, so the plot area keeps the same position when filters change the magnitude of the displayed values
+
 ## 3.1.1.0
 ### Fixes
 * Fixed other lines being recolored when changing a single line's color (default palette colors are now reserved per line regardless of overrides)
