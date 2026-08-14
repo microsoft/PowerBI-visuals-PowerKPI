@@ -1096,6 +1096,34 @@
               { "value": "1"  }
             ]
           }
+        },
+        "min": {
+          "type": {
+            "numeric": true
+          },
+          "placeHolderText": "Auto",
+          "suppressFormatPainterCopy": true
+        },
+        "max": {
+          "type": {
+            "numeric": true
+          },
+          "placeHolderText": "Auto",
+          "suppressFormatPainterCopy": true
+        },
+        "minDate": {
+          "type": {
+            "text": true
+          },
+          "placeHolderText": "Auto",
+          "suppressFormatPainterCopy": true
+        },
+        "maxDate": {
+          "type": {
+            "text": true
+          },
+          "placeHolderText": "Auto",
+          "suppressFormatPainterCopy": true
         }
       }
     },

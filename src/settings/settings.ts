@@ -291,10 +291,21 @@ export class Settings extends formattingSettings.Model {
             card.displayUnits.visible = !shouldNumericPropertiesBeHidden;
             card.precision.visible = !shouldNumericPropertiesBeHidden;
 
-            card.format.visible = 
+            card.format.visible =
                 axisType == DataRepresentationTypeEnum.NumberType
                 || axisType === DataRepresentationTypeEnum.DateType;
         })
+
+        // The X axis boundaries are typed with the input matching the axis type:
+        // numeric fields for a numeric axis, date fields for a date axis. A
+        // categorical axis has no range to bound, so neither pair is offered.
+        const isNumberAxis: boolean = axisType === DataRepresentationTypeEnum.NumberType;
+        const isDateAxis: boolean = axisType === DataRepresentationTypeEnum.DateType;
+
+        this.xAxis.min.visible = isNumberAxis;
+        this.xAxis.max.visible = isNumberAxis;
+        this.xAxis.minDate.visible = isDateAxis;
+        this.xAxis.maxDate.visible = isDateAxis;
     }
 
     private setLocalizedDisplayNames(localizationManager: ILocalizationManager) {

@@ -29,6 +29,9 @@ import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
+import { DataRepresentationAxisValueType } from "../../../dataRepresentation/dataRepresentationAxisValueType";
+import { DataRepresentationTypeEnum } from "../../../dataRepresentation/dataRepresentationType";
+
 import {
     AxisDescriptor,
     AxisType,
@@ -55,15 +58,103 @@ export class XAxisDescriptor extends AxisDescriptor {
         value: typeOptions[0]
     });
 
+    public min = new formattingSettings.NumUpDown({
+        name: "min",
+        displayNameKey: "Visual_Min",
+        value: NaN,
+    });
+    public max = new formattingSettings.NumUpDown({
+        name: "max",
+        displayNameKey: "Visual_Max",
+        value: NaN,
+    });
+
+    // The formatting API exposes no date property type, so date boundaries are typed
+    // as text and parsed here. Numeric axes keep the numeric inputs above.
+    public minDate = new formattingSettings.TextInput({
+        name: "minDate",
+        displayNameKey: "Visual_Min",
+        descriptionKey: "Visual_Axis_Date_Boundary_Description",
+        value: "",
+        placeholder: ""
+    });
+    public maxDate = new formattingSettings.TextInput({
+        name: "maxDate",
+        displayNameKey: "Visual_Max",
+        descriptionKey: "Visual_Axis_Date_Boundary_Description",
+        value: "",
+        placeholder: ""
+    });
+
     constructor(
-        viewportToBeHidden: powerbi.IViewport, 
+        viewportToBeHidden: powerbi.IViewport,
         viewportToIncreaseDensity: powerbi.IViewport
     ) {
         super(viewportToBeHidden, viewportToIncreaseDensity, true)
 
-        this.slices = [this.font, this.fontColor, this.displayUnits, this.percentile, this.type]
+        this.slices = [
+            this.font,
+            this.fontColor,
+            this.displayUnits,
+            this.percentile,
+            this.type,
+            this.min,
+            this.max,
+            this.minDate,
+            this.maxDate
+        ]
         this.name = "xAxis";
         this.displayNameKey = "Visual_X_Axis";
+    }
+
+    public getMin(type: DataRepresentationTypeEnum): DataRepresentationAxisValueType {
+        return this.getBoundary(type, this.min.value, this.minDate.value);
+    }
+
+    public getMax(type: DataRepresentationTypeEnum): DataRepresentationAxisValueType {
+        return this.getBoundary(type, this.max.value, this.maxDate.value);
+    }
+
+    /**
+     * Returns the boundary the author pinned for the current axis type, or undefined
+     * when it is left empty - in which case the axis keeps its data driven bound.
+     */
+    private getBoundary(
+        type: DataRepresentationTypeEnum,
+        numericValue: number,
+        dateValue: string,
+    ): DataRepresentationAxisValueType {
+        switch (type) {
+            case DataRepresentationTypeEnum.NumberType: {
+                return numericValue === null || isNaN(numericValue)
+                    ? undefined
+                    : numericValue;
+            }
+            case DataRepresentationTypeEnum.DateType: {
+                return this.parseDate(dateValue);
+            }
+            default: {
+                // A categorical axis is a list of categories rather than a range,
+                // so it has no boundary to pin
+                return undefined;
+            }
+        }
+    }
+
+    /**
+     * An entry that is empty or cannot be read as a date is ignored, so a typo never
+     * collapses the axis - it simply falls back to the computed boundary.
+     */
+    private parseDate(value: string): Date {
+        if (!value) {
+            return undefined;
+        }
+
+        const date: Date = new Date(value);
+
+        return isNaN(date.getTime())
+            ? undefined
+            : date;
     }
 
     public getNewType(value: AxisType) {

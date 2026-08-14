@@ -42,6 +42,7 @@ import { IDataRepresentationPointIndexed } from "../dataRepresentation/dataRepre
 import { DataRepresentationScale } from "../dataRepresentation/dataRepresentationScale";
 import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
 import { AxisType } from "../settings/descriptors/axis/axisDescriptor";
+import { XAxisDescriptor } from "../settings/descriptors/axis/xAxisDescriptor";
 import { YAxisDescriptor } from "../settings/descriptors/axis/yAxisDescriptor";
 import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 import { Settings } from "../settings/settings";
@@ -390,6 +391,8 @@ export class DataConverter extends VarianceConverter implements IConverter {
 
         dataRepresentation.x.values = axisCategory.values as DataRepresentationAxisValueType[];
 
+        this.applyXAxisBoundaries(dataRepresentation, settings.xAxis);
+
         this.getXAxisScale(
             dataRepresentation.x.scale,
             dataRepresentation.x.min,
@@ -699,6 +702,37 @@ export class DataConverter extends VarianceConverter implements IConverter {
             || kpiIndex as any instanceof Date
             ? NaN
             : kpiIndex;
+    }
+
+    /**
+     * Replaces the computed X boundaries with the ones pinned in the X axis card,
+     * the same way postProcess applies the Y axis boundaries. A boundary left empty
+     * keeps its computed value, and an inverted pair is reordered so that the scale
+     * never receives a reversed domain.
+     */
+    private applyXAxisBoundaries(
+        dataRepresentation: IDataRepresentation,
+        xAxisSettings: XAxisDescriptor,
+    ): void {
+        const type: DataRepresentationTypeEnum = dataRepresentation.x.axisType;
+
+        const min: DataRepresentationAxisValueType = xAxisSettings.getMin(type);
+        const max: DataRepresentationAxisValueType = xAxisSettings.getMax(type);
+
+        if (min === undefined && max === undefined) {
+            return;
+        }
+
+        const newMin: DataRepresentationAxisValueType = min !== undefined
+            ? min
+            : dataRepresentation.x.min;
+
+        const newMax: DataRepresentationAxisValueType = max !== undefined
+            ? max
+            : dataRepresentation.x.max;
+
+        dataRepresentation.x.min = newMin <= newMax ? newMin : newMax;
+        dataRepresentation.x.max = newMin <= newMax ? newMax : newMin;
     }
 
     private getXAxisScale(

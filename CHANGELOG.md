@@ -1,3 +1,7 @@
+## 3.1.4.0
+### Features
+* Added Min and Max settings to the X axis, pinning the axis range instead of fitting it to the data - numeric fields on a numeric axis, date fields on a date axis
+
 ## 3.1.3.0
 ### Features
 * Added a Scatter option to the Line Type setting, rendering each data point as a standalone dot without a connecting line
