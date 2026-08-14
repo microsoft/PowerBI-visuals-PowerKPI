@@ -1,3 +1,7 @@
+## 3.1.3.0
+### Features
+* Added a Scatter option to the Line Type setting, rendering each data point as a standalone dot without a connecting line
+
 ## 3.1.2.0
 ### Features
 * Added a Label Area Sizing option (Auto / Fixed) to the Y axis and the secondary Y axis to reserve a fixed pixel width for axis labels, so the plot area keeps the same position when filters change the magnitude of the displayed values

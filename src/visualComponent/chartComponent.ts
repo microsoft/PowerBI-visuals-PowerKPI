@@ -141,6 +141,7 @@ export class ChartComponent extends BaseContainerComponent<
                         lineStyle,
                         lineType,
                         opacity,
+                        radiusFactor: settings.dots.radiusFactor.value,
                         series: currentSeries,
                         thickness,
                         viewport,

@@ -884,7 +884,8 @@
           "type": {
             "enumeration": [
               { "value": "line" },
-              { "value": "area"}]
+              { "value": "area"},
+              { "value": "scatter"}]
           }
         },
         "thickness": {

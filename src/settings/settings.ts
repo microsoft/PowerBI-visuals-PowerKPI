@@ -248,9 +248,13 @@ export class Settings extends formattingSettings.Model {
 
         this.line.container.containerItems.forEach(containerItem => {
             const currentSettings = this.line.getCurrentSettings((containerItem as IKeyedContainerItem).key);
-            containerItem.slices.filter(el => el.name === "interpolation")[0].visible = !currentSettings.shouldMatchKpiColor;
+            // Scatter draws standalone points, so the settings shaping the connecting
+            // line have no effect on it
+            const isScatter: boolean = currentSettings.lineType === LineType.scatter;
+            containerItem.slices.filter(el => el.name === "interpolation")[0].visible = !currentSettings.shouldMatchKpiColor && !isScatter;
             containerItem.slices.filter(el => el.name === "dataPointStartsKpiColorSegment")[0].visible = currentSettings.shouldMatchKpiColor;
-            containerItem.slices.filter(el => el.name === "interpolationWithColorizedLine")[0].visible = currentSettings.shouldMatchKpiColor;
+            containerItem.slices.filter(el => el.name === "interpolationWithColorizedLine")[0].visible = currentSettings.shouldMatchKpiColor && !isScatter;
+            containerItem.slices.filter(el => el.name === "lineStyle")[0].visible = !isScatter;
             containerItem.slices.filter(el => el.name === "rawAreaOpacity")[0].visible = currentSettings.lineType === LineType.area;
         })
     }
