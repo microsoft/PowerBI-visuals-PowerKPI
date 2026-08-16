@@ -371,6 +371,26 @@
             .flexOrder(1);
         }
 
+        .powerKpi_zoomSliderComponent {
+            // The track is inset by a handle radius, so nothing needs to bleed outside
+            overflow: hidden;
+            flex-shrink: 0;
+
+            .powerKpi_zoomSlider_track {
+                stroke: #d9d9d9;
+            }
+
+            .powerKpi_zoomSlider_range {
+                stroke: #909090;
+            }
+
+            .powerKpi_zoomSlider_handle {
+                fill: #ffffff;
+                stroke: #909090;
+                cursor: pointer;
+            }
+        }
+
         .powerKpi_verticalLineComponent {
             .verticalLine {
                 stroke: #666;

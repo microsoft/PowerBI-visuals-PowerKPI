@@ -30,4 +30,5 @@ export enum EventName {
     onClearSelection = "onClearSelection",
     onHighlight = "onHighlight",
     onContextMenu = "onContextMenu",
+    onZoom = "onZoom",
 }

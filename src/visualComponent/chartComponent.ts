@@ -75,6 +75,16 @@ export class ChartComponent extends BaseContainerComponent<
         }
     }
 
+    /**
+     * Restricts the marks to the given clip path. The domain can be narrower than the
+     * data - a pinned boundary or a zoom range - and a point outside it is still mapped
+     * through the scale, so without this it would be painted over the axis and past the
+     * edge of the visual.
+     */
+    public applyClipPath(clipPathId: string): void {
+        this.element.attr("clip-path", `url(#${clipPathId})`);
+    }
+
     public render(options: IVisualComponentRenderOptions): void {
         const { data: { sortedSeries, viewport, x, settings }, colorPalette } = options;
 

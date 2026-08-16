@@ -64,6 +64,7 @@
     "Visual_Min": "Min",
     "Visual_Max": "Max",
     "Visual_Axis_Date_Boundary_Description": "Date boundary, for example 2024-01-31. Leave empty to fit the axis to the data.",
+    "Visual_Zoom_Slider": "Zoom Slider",
     "Visual_Label_Area_Sizing": "Label Area Sizing",
     "Visual_Label_Area_Sizing_Description": "Auto sizes the label area to the rendered labels. Fixed reserves a constant width so the plot area keeps the same position when the data changes.",
     "Visual_Label_Area_Width": "Label Area Width (px)",

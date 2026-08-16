@@ -48,6 +48,7 @@ import { LayoutDescriptor } from "./descriptors/layoutDescriptor";
 import { LegendDescriptor } from "./descriptors/legendDescriptor";
 import { LineDescriptor, IKeyedContainerItem } from "./descriptors/line/lineDescriptor";
 import { SubtitleDescriptor } from "./descriptors/subtitleDescriptor";
+import { ZoomSliderDescriptor } from "./descriptors/zoomSliderDescriptor";
 import { XAxisDescriptor } from "./descriptors/axis/xAxisDescriptor";
 import { YAxisDescriptor } from "./descriptors/axis/yAxisDescriptor";
 import { AxisReferenceLineDescriptor } from "./descriptors/axis/referenceLine/axisReferenceLineDescriptor";
@@ -57,6 +58,7 @@ import { TooltipValueDescriptor } from "./descriptors/tooltip/tooltipValueDescri
 import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
 import { LineType } from "./descriptors/line/lineTypes";
 import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
+import { isZoomableAxisType } from "../dataRepresentation/dataRepresentationZoom";
 
 const kpiCaptionViewport: powerbi.IViewport = {
     height: 90,
@@ -154,6 +156,7 @@ export class Settings extends formattingSettings.Model {
         "Visual_Second_Tooltip_KPI_Indicator_Value"
     );
     public tooltipValues: TooltipValueDescriptor = new TooltipValueDescriptor();
+    public zoomSlider: ZoomSliderDescriptor = new ZoomSliderDescriptor();
     public cards = [
         this.layout, this.subtitle, this.kpiIndicator, this.kpiIndicatorValue,
         this.kpiIndicatorLabel, this.secondKPIIndicatorValue, this.secondKPIIndicatorLabel, 
@@ -161,7 +164,7 @@ export class Settings extends formattingSettings.Model {
         this.labels, this.line, this.legend, this.xAxis,
         this.yAxis, this.secondaryYAxis, this.referenceLineOfXAxis, this.referenceLineOfYAxis,
         this.secondaryReferenceLineOfYAxis, this.tooltipLabel, this.tooltipVariance, 
-        this.secondTooltipVariance, this.tooltipValues
+        this.secondTooltipVariance, this.tooltipValues, this.zoomSlider
     ]
     
     constructor() {
@@ -198,6 +201,7 @@ export class Settings extends formattingSettings.Model {
         this.filterKPIIndicatorProperties(dataRepresentation);
         this.filterKPIIndicatorValueProperties();
         this.filterYAxisProperties();
+        this.filterZoomSliderProperties(axisType);
         this.filterSettingsPropertiesByAxisType(axisType);
         this.setLocalizedDisplayNames(localizationManager);
         this.hideColorPickers(isHighContrast);
@@ -272,6 +276,11 @@ export class Settings extends formattingSettings.Model {
         [this.yAxis, this.secondaryYAxis].forEach((axis: YAxisDescriptor) => {
             axis.fixedLabelWidth.visible = axis.isLabelWidthFixed();
         });
+    }
+
+    private filterZoomSliderProperties(axisType: DataRepresentationTypeEnum) {
+        // Zooming narrows a continuous range, so a categorical X axis is not offered one
+        this.zoomSlider.showForXAxis.visible = isZoomableAxisType(axisType);
     }
 
     private filterSettingsPropertiesByAxisType(axisType: DataRepresentationTypeEnum) {
