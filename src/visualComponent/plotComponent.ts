@@ -51,15 +51,25 @@ import {
     SvgComponent,
 } from "./svgComponent";
 
+import {
+    IZoomSliderComponentRenderOptions,
+    ZoomSliderAxis,
+    ZoomSliderComponent,
+} from "./zoomSliderComponent";
+
+import { isZoomableAxisType } from "../dataRepresentation/dataRepresentationZoom";
+
 export class PlotComponent extends BaseContainerComponent<
     IVisualComponentConstructorOptions,
     IVisualComponentRenderOptions,
-    IVisualComponentRenderOptions | IXAxisComponentRenderOptions | IYAxisComponentRenderOptions
+    IVisualComponentRenderOptions | IXAxisComponentRenderOptions | IYAxisComponentRenderOptions | IZoomSliderComponentRenderOptions
     > {
     private xAxisComponent: IAxisComponent<IXAxisComponentRenderOptions>;
     private yAxisComponent: IAxisComponent<IYAxisComponentRenderOptions>;
     private secondaryYAxisComponent: IAxisComponent<IYAxisComponentRenderOptions>;
     private svgComponent: IVisualComponent<ISvgComponentRenderOptions>;
+    private xZoomSliderComponent: ZoomSliderComponent;
+    private yZoomSliderComponent: ZoomSliderComponent;
 
     private additionalWidthOffset: number = 5;
 
@@ -78,16 +88,23 @@ export class PlotComponent extends BaseContainerComponent<
 
         this.hide();
 
+        // The plot lays its children out in DOM order, so the vertical zoom slider is
+        // created first to sit left of the Y axis, and the horizontal one last so that
+        // it wraps onto its own full width row underneath the X axis.
+        this.yZoomSliderComponent = new ZoomSliderComponent(this.constructorOptions);
         this.yAxisComponent = new YAxisComponent(this.constructorOptions);
         this.svgComponent = new SvgComponent(this.constructorOptions);
         this.secondaryYAxisComponent = new YAxisComponent(this.constructorOptions);
         this.xAxisComponent = new XAxisComponent(this.constructorOptions);
+        this.xZoomSliderComponent = new ZoomSliderComponent(this.constructorOptions);
 
         this.components = [
+            this.yZoomSliderComponent,
             this.yAxisComponent,
             this.svgComponent,
             this.secondaryYAxisComponent,
             this.xAxisComponent,
+            this.xZoomSliderComponent,
         ];
     }
 
@@ -100,10 +117,12 @@ export class PlotComponent extends BaseContainerComponent<
                 groups: [firstGroup, secondGroup],
                 viewport,
                 locale,
+                zoom,
                 settings: {
                     xAxis,
                     yAxis,
                     secondaryYAxis,
+                    zoomSlider,
                 },
             },
             colorPalette
@@ -158,9 +177,24 @@ export class PlotComponent extends BaseContainerComponent<
             this.secondaryYAxisComponent.getViewport().height,
         );
 
+        // Each slider is rendered once the space it reserves is known; its own band is
+        // taken out of the chart area first so the two never overlap. The horizontal one
+        // is offered only on an axis that has a range to narrow, never on a categorical
+        // one, and the guard is applied here as well as in the pane: the field can be
+        // swapped for a text column while the setting stays on.
+        const isXAxisZoomable: boolean = isZoomableAxisType(x.axisType);
+
+        const xZoomSliderHeight: number = zoomSlider.isShownForXAxis() && isXAxisZoomable
+            ? ZoomSliderComponent.Thickness
+            : 0;
+
+        const yZoomSliderWidth: number = zoomSlider.isShownForYAxis()
+            ? ZoomSliderComponent.Thickness
+            : 0;
+
         const height: number = Math.max(
             0,
-            reducedViewport.height - xAxisViewport.height - maxYAxisHeight,
+            reducedViewport.height - xAxisViewport.height - maxYAxisHeight - xZoomSliderHeight,
         );
 
         this.yAxisComponent.render({
@@ -198,13 +232,41 @@ export class PlotComponent extends BaseContainerComponent<
             - yAxisViewport.width
             - secondaryYAxisViewport.width
             - leftOffset
-            - rightOffset,
+            - rightOffset
+            - yZoomSliderWidth,
         );
+
+        // Both sliders span the drawing area rather than the whole plot: the same
+        // margins the chart applies are taken off their length, and the space the
+        // components before them occupy is added back as an offset. Without it the
+        // horizontal slider would start under the Y axis labels and the vertical one
+        // would start above the top of the chart.
+        this.yZoomSliderComponent.render({
+            axis: ZoomSliderAxis.y,
+            isShown: zoomSlider.isShownForYAxis(),
+            offset: margin.top,
+            range: zoom.y,
+            viewport: {
+                height: Math.max(0, height - margin.top - margin.bottom),
+                width: yZoomSliderWidth,
+            },
+        });
+
+        this.xZoomSliderComponent.render({
+            axis: ZoomSliderAxis.x,
+            isShown: zoomSlider.isShownForXAxis() && isXAxisZoomable,
+            offset: yZoomSliderWidth + yAxisViewport.width + leftOffset + margin.left,
+            range: zoom.x,
+            viewport: {
+                height: xZoomSliderHeight,
+                width: Math.max(0, width - margin.left - margin.right),
+            },
+        });
 
         this.xAxisComponent.render({
             additionalMargin: {
                 bottom: 0,
-                left: yAxisViewport.width + leftOffset,
+                left: yZoomSliderWidth + yAxisViewport.width + leftOffset,
                 right: 0,
                 top: 0,
             },
@@ -248,6 +310,8 @@ export class PlotComponent extends BaseContainerComponent<
         this.yAxisComponent = null;
         this.secondaryYAxisComponent = null;
         this.svgComponent = null;
+        this.xZoomSliderComponent = null;
+        this.yZoomSliderComponent = null;
     }
 
     private getOffset(xAxisWidth: number, yAxisWidth: number): number {

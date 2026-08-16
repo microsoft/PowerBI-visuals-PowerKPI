@@ -94,6 +94,11 @@ const lineTypeOptions = [
         value: LineType.area,
         displayName: "Area",
         displayNameKey: "Visual_Area"
+    },
+    {
+        value: LineType.scatter,
+        displayName: "Scatter",
+        displayNameKey: "Visual_Scatter"
     }
 ]
 

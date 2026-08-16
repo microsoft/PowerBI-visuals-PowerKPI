@@ -39,7 +39,12 @@ import {
     LineComponent,
 } from "./lineComponent";
 
-export interface IComboComponentRenderOptions extends IAreaComponentRenderOptions {
+import {
+    IScatterComponentRenderOptions,
+    ScatterComponent,
+} from "./scatterComponent";
+
+export interface IComboComponentRenderOptions extends IAreaComponentRenderOptions, IScatterComponentRenderOptions {
     lineType: LineType;
 }
 
@@ -85,6 +90,9 @@ export class ComboComponent extends BaseContainerComponent<
                 switch (this.currentLineType) {
                     case LineType.area: {
                         return new AreaComponent(this.constructorOptions);
+                    }
+                    case LineType.scatter: {
+                        return new ScatterComponent(this.constructorOptions);
                     }
                     case LineType.column:
                     default: {

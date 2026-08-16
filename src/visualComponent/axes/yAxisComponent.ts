@@ -151,23 +151,37 @@ export class YAxisComponent
             return;
         }
 
-        this.maxLabelWidth = settings.isElementShown()
-            ? labelMeasurementService.getLabelWidth(
-                this.getTicks(),
-                this.formatter,
-                settings.fontSizeInPx,
-                settings.font.fontFamily.value,
-            )
-            : 0;
-
         const availableWidth: number = viewport.width / 2;
 
         let shouldLabelsBeTruncated: boolean = false;
 
-        if (this.maxLabelWidth > availableWidth) {
-            this.maxLabelWidth = availableWidth;
+        if (settings.isLabelWidthFixed()) {
+            // Fixed sizing reserves exactly the configured width, whether the rendered
+            // labels are narrower or wider, so the plot area always starts at the same
+            // offset. It is clamped to half of the viewport - the same limit Auto
+            // sizing applies - so the plot area cannot collapse on small viewports.
+            // Labels are always routed through the truncation formatter below, which
+            // returns them unchanged when they fit and ellipsises them when they don't
+            this.maxLabelWidth = settings.isElementShown()
+                ? Math.min(settings.fixedLabelWidth.value, availableWidth)
+                : 0;
 
             shouldLabelsBeTruncated = true;
+        } else {
+            this.maxLabelWidth = settings.isElementShown()
+                ? labelMeasurementService.getLabelWidth(
+                    this.getTicks(),
+                    this.formatter,
+                    settings.fontSizeInPx,
+                    settings.font.fontFamily.value,
+                )
+                : 0;
+
+            if (this.maxLabelWidth > availableWidth) {
+                this.maxLabelWidth = availableWidth;
+
+                shouldLabelsBeTruncated = true;
+            }
         }
 
         this.element
@@ -187,9 +201,12 @@ export class YAxisComponent
             const formattedLabel: string = this.formatter.format(item);
 
             if (shouldLabelsBeTruncated) {
+                // In Auto sizing maxLabelWidth has been clamped to availableWidth whenever
+                // truncation is on, so truncating to it preserves the upstream behaviour;
+                // in Fixed sizing it is the configured width the labels must not exceed
                 return textMeasurementService.getTailoredTextOrDefault(
                     labelMeasurementService.getTextProperties(formattedLabel, settings.fontSizeInPx, settings.font.fontFamily.value),
-                    availableWidth,
+                    this.maxLabelWidth,
                 );
             }
 

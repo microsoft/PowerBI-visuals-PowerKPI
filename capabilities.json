@@ -884,7 +884,8 @@
           "type": {
             "enumeration": [
               { "value": "line" },
-              { "value": "area"}]
+              { "value": "area"},
+              { "value": "scatter"}]
           }
         },
         "thickness": {
@@ -1037,6 +1038,25 @@
         }
       }
     },
+    "zoomSlider": {
+      "properties": {
+        "show": {
+          "type": {
+            "bool": true
+          }
+        },
+        "showForXAxis": {
+          "type": {
+            "bool": true
+          }
+        },
+        "showForYAxis": {
+          "type": {
+            "bool": true
+          }
+        }
+      }
+    },
     "xAxis": {
       "properties": {
         "show": {
@@ -1095,6 +1115,34 @@
               { "value": "1"  }
             ]
           }
+        },
+        "min": {
+          "type": {
+            "numeric": true
+          },
+          "placeHolderText": "Auto",
+          "suppressFormatPainterCopy": true
+        },
+        "max": {
+          "type": {
+            "numeric": true
+          },
+          "placeHolderText": "Auto",
+          "suppressFormatPainterCopy": true
+        },
+        "minDate": {
+          "type": {
+            "text": true
+          },
+          "placeHolderText": "Auto",
+          "suppressFormatPainterCopy": true
+        },
+        "maxDate": {
+          "type": {
+            "text": true
+          },
+          "placeHolderText": "Auto",
+          "suppressFormatPainterCopy": true
         }
       }
     },
@@ -1162,6 +1210,23 @@
           },
           "placeHolderText": "Auto",
           "suppressFormatPainterCopy": true
+        },
+        "fixedLabelWidthMode": {
+          "type": {
+            "enumeration": [
+              {
+                "value": "auto"
+              },
+              {
+                "value": "fixed"
+              }
+            ]
+          }
+        },
+        "fixedLabelWidth": {
+          "type": {
+            "numeric": true
+          }
         }
       }
     },
@@ -1229,6 +1294,23 @@
           },
           "placeHolderText": "Auto",
           "suppressFormatPainterCopy": true
+        },
+        "fixedLabelWidthMode": {
+          "type": {
+            "enumeration": [
+              {
+                "value": "auto"
+              },
+              {
+                "value": "fixed"
+              }
+            ]
+          }
+        },
+        "fixedLabelWidth": {
+          "type": {
+            "numeric": true
+          }
         }
       }
     },

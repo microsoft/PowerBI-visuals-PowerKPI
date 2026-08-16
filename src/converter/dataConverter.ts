@@ -42,6 +42,7 @@ import { IDataRepresentationPointIndexed } from "../dataRepresentation/dataRepre
 import { DataRepresentationScale } from "../dataRepresentation/dataRepresentationScale";
 import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
 import { AxisType } from "../settings/descriptors/axis/axisDescriptor";
+import { XAxisDescriptor } from "../settings/descriptors/axis/xAxisDescriptor";
 import { YAxisDescriptor } from "../settings/descriptors/axis/yAxisDescriptor";
 import { IKPIIndicatorSettings } from "../settings/descriptors/kpi/kpiIndicatorsListDescriptor";
 import { Settings } from "../settings/settings";
@@ -60,6 +61,13 @@ import {
 } from "../dataRepresentation/dataRepresentationPoint";
 
 import { IDataRepresentationAxisBase } from "../dataRepresentation/dataRepresentationAxis";
+import {
+    applyZoomToInterval,
+    createDefaultZoom,
+    isFullRange,
+    isZoomableAxisType,
+    IDataRepresentationZoomRange,
+} from "../dataRepresentation/dataRepresentationZoom";
 import { DataRepresentationAxisValueType } from "../dataRepresentation/dataRepresentationAxisValueType";
 
 import DataViewObjects = powerbi.DataViewObjects;
@@ -131,7 +139,8 @@ export class DataConverter extends VarianceConverter implements IConverter {
             viewport,
             hasSelection,
             settings,
-            locale
+            locale,
+            zoom
         } = options;
 
         const {
@@ -157,6 +166,7 @@ export class DataConverter extends VarianceConverter implements IConverter {
             variances: [],
             viewport,
             locale,
+            zoom: zoom || createDefaultZoom(),
             x: {
                 axisType,
                 format: undefined,
@@ -390,6 +400,10 @@ export class DataConverter extends VarianceConverter implements IConverter {
 
         dataRepresentation.x.values = axisCategory.values as DataRepresentationAxisValueType[];
 
+        this.applyXAxisBoundaries(dataRepresentation, settings.xAxis);
+
+        this.applyXAxisZoom(dataRepresentation);
+
         this.getXAxisScale(
             dataRepresentation.x.scale,
             dataRepresentation.x.min,
@@ -466,8 +480,16 @@ export class DataConverter extends VarianceConverter implements IConverter {
                     seriesGroup.y.max as number,
                 );
 
-                seriesGroup.y.min = Math.min(yMin, yMax);
-                seriesGroup.y.max = Math.max(yMin, yMax);
+                // The zoom range narrows what the author pinned, so zooming stays
+                // relative to the axis actually on screen
+                const zoomedY = applyZoomToInterval(
+                    Math.min(yMin, yMax),
+                    Math.max(yMin, yMax),
+                    dataRepresentation.zoom?.y,
+                );
+
+                seriesGroup.y.min = zoomedY.min;
+                seriesGroup.y.max = zoomedY.max;
 
                 seriesGroup.y.scale.domain(
                     [seriesGroup.y.min, seriesGroup.y.max],
@@ -699,6 +721,62 @@ export class DataConverter extends VarianceConverter implements IConverter {
             || kpiIndex as any instanceof Date
             ? NaN
             : kpiIndex;
+    }
+
+    /**
+     * Narrows the X domain to the range the zoom slider keeps. A continuous axis is
+     * narrowed arithmetically - dates through their time value - while a categorical
+     * axis is handled by getZoomedCategories, its domain being the category list.
+     */
+    private applyXAxisZoom(dataRepresentation: IDataRepresentation): void {
+        const range: IDataRepresentationZoomRange = dataRepresentation.zoom.x;
+        const type: DataRepresentationTypeEnum = dataRepresentation.x.axisType;
+
+        if (isFullRange(range) || !isZoomableAxisType(type)) {
+            return;
+        }
+
+        const zoomed = applyZoomToInterval(
+            Number(dataRepresentation.x.min),
+            Number(dataRepresentation.x.max),
+            range,
+        );
+
+        const isDate: boolean = type === DataRepresentationTypeEnum.DateType;
+
+        dataRepresentation.x.min = isDate ? new Date(zoomed.min) : zoomed.min;
+        dataRepresentation.x.max = isDate ? new Date(zoomed.max) : zoomed.max;
+    }
+
+    /**
+     * Replaces the computed X boundaries with the ones pinned in the X axis card, the
+     * same way postProcess applies the Y axis boundaries. A boundary left empty keeps its
+     * computed value, and an inverted pair is reordered so that the scale never receives
+     * a reversed domain.
+     */
+    private applyXAxisBoundaries(
+        dataRepresentation: IDataRepresentation,
+        xAxisSettings: XAxisDescriptor,
+    ): void {
+        const type: DataRepresentationTypeEnum = dataRepresentation.x.axisType;
+
+        const min: DataRepresentationAxisValueType = xAxisSettings.getMin(type);
+        const max: DataRepresentationAxisValueType = xAxisSettings.getMax(type);
+
+        if (min === undefined && max === undefined) {
+            return;
+        }
+
+        const newMin: DataRepresentationAxisValueType = min !== undefined
+            ? min
+            : dataRepresentation.x.min;
+
+        const newMax: DataRepresentationAxisValueType = max !== undefined
+            ? max
+            : dataRepresentation.x.max;
+
+        dataRepresentation.x.min = newMin <= newMax ? newMin : newMax;
+        dataRepresentation.x.max = newMin <= newMax ? newMax : newMin;
     }
 
     private getXAxisScale(

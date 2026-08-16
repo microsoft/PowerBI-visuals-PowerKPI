@@ -65,6 +65,10 @@ export interface ISvgComponentRenderOptions extends IVisualComponentRenderOption
     additionalMargin: IMargin;
 }
 
+// Power BI renders every tile of a page into the same document, so the clip path of one
+// visual would capture the charts of the others if the id were shared.
+let svgComponentCount: number = 0;
+
 export class SvgComponent extends BaseContainerComponent<
     IVisualComponentConstructorOptions,
     ISvgComponentRenderOptions,
@@ -76,7 +80,8 @@ export class SvgComponent extends BaseContainerComponent<
     private yAxisReferenceLineComponent: IVisualComponent<IAxisReferenceLineBaseComponentRenderOptions>;
     private secondaryYAxisReferenceLineComponent: IVisualComponent<IAxisReferenceLineBaseComponentRenderOptions>;
 
-    private chartComponent: IVisualComponent<IVisualComponentRenderOptions>;
+    private chartComponent: ChartComponent;
+    private chartClipRectElement: Selection<SVGRectElement, unknown, null, undefined>;
     private labelsComponent: IVisualComponent<IVisualComponentRenderOptions>;
 
     private dynamicComponents: Array<IVisualComponent<IVisualComponentRenderOptions | IEventPositionVisualComponentOptions>> = [];
@@ -125,6 +130,16 @@ export class SvgComponent extends BaseContainerComponent<
             }),
         ];
 
+        const clipPathId: string = `powerKpi_chartClip_${svgComponentCount++}`;
+
+        this.chartClipRectElement = this.element
+            .append("defs")
+            .append("clipPath")
+            .attr("id", clipPathId)
+            .append("rect");
+
+        this.chartComponent.applyClipPath(clipPathId);
+
         this.bindEvents();
 
         if (this.constructorOptions.eventDispatcher) {
@@ -161,6 +176,7 @@ export class SvgComponent extends BaseContainerComponent<
             .attr("height", reducedViewport.height);
 
         this.updateMargin(margin, additionalMargin);
+        this.updateChartClip(reducedViewport, margin);
 
         this.positions = this.getPositions(reducedViewport, values, scale);
 
@@ -230,6 +246,19 @@ export class SvgComponent extends BaseContainerComponent<
 
         this.element.on("mouseleave", () => this.pointerLeaveHandler());
         this.element.on("touchend", () => this.pointerLeaveHandler());
+    }
+
+    /**
+     * Sizes the area the marks are confined to. It is the drawing area grown by the
+     * margin the converter reserves for dot radii, so a dot sitting on the very first or
+     * last position keeps its overhang, exactly as it does without a clip.
+     */
+    private updateChartClip(reducedViewport: powerbi.IViewport, margin: IMargin): void {
+        this.chartClipRectElement
+            .attr("x", -margin.left)
+            .attr("y", -margin.top)
+            .attr("width", Math.max(0, reducedViewport.width + margin.left + margin.right))
+            .attr("height", Math.max(0, reducedViewport.height + margin.top + margin.bottom));
     }
 
     private updateMargin(margin: IMargin, additionalMargin: IMargin): void {
