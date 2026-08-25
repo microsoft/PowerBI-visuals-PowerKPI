@@ -28,13 +28,15 @@ import powerbi from "powerbi-visuals-api";
 
 import { Settings } from "../settings/settings";
 import { AxisType } from "../settings/descriptors/axis/axisDescriptor";
- 
+import { IDataRepresentationZoom } from "../dataRepresentation/dataRepresentationZoom";
+
 export interface ConverterOptions {
     dataView: powerbi.DataView;
     viewport: powerbi.IViewport;
     hasSelection: boolean;
     settings: Settings;
     locale: string;
+    zoom?: IDataRepresentationZoom;
 }
 
 export interface AxisOptions {

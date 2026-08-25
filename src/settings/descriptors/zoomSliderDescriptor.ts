@@ -24,31 +24,39 @@
  *  THE SOFTWARE.
  */
 
-import powerbi from "powerbi-visuals-api";
-import { IMargin } from "powerbi-visuals-utils-svgutils";
+import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-import {
-    IDataRepresentationSeries,
-    IDataRepresentationSeriesGroup,
-} from "./dataRepresentationSeries";
+import { ShowDescriptor } from "./autoHiding/showDescriptor";
 
-import { Settings } from "../settings/settings";
-import { IDataRepresentationX } from "./dataRepresentationAxis";
-import { IDataRepresentationZoom } from "./dataRepresentationZoom";
+export class ZoomSliderDescriptor extends ShowDescriptor {
+    public showForXAxis = new formattingSettings.ToggleSwitch({
+        name: "showForXAxis",
+        displayNameKey: "Visual_X_Axis",
+        value: true
+    });
 
-export interface IDataRepresentation {
-    series: IDataRepresentationSeries[];
-    sortedSeries: IDataRepresentationSeries[];
-    groups: IDataRepresentationSeriesGroup[];
-    viewport: powerbi.IViewport;
-    settings: Settings;
-    variance: number[];
-    variances: number[][];
-    margin: IMargin;
-    x: IDataRepresentationX;
-    locale: string;
-    isGrouped?: boolean;
-    // The range each zoom slider keeps. Held by the visual across renders rather
-    // than persisted, so it behaves like the zoom of the built in visuals
-    zoom: IDataRepresentationZoom;
+    public showForYAxis = new formattingSettings.ToggleSwitch({
+        name: "showForYAxis",
+        displayNameKey: "Visual_Y_Axis",
+        value: false
+    });
+
+    constructor() {
+        super();
+
+        // Off by default, so a report built before this feature renders unchanged
+        this.show.value = false;
+
+        this.name = "zoomSlider";
+        this.displayNameKey = "Visual_Zoom_Slider";
+        this.slices = [this.showForXAxis, this.showForYAxis];
+    }
+
+    public isShownForXAxis(): boolean {
+        return this.isElementShown() && this.showForXAxis.value;
+    }
+
+    public isShownForYAxis(): boolean {
+        return this.isElementShown() && this.showForYAxis.value;
+    }
 }

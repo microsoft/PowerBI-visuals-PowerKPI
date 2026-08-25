@@ -22,6 +22,7 @@ export enum LineType {
     line = "line",
     area = "area",
     column = "column",
+    scatter = "scatter",
 }
 
 export enum LineColorMode {

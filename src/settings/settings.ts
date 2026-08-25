@@ -48,6 +48,7 @@ import { LayoutDescriptor } from "./descriptors/layoutDescriptor";
 import { LegendDescriptor } from "./descriptors/legendDescriptor";
 import { LineDescriptor, IKeyedContainerItem } from "./descriptors/line/lineDescriptor";
 import { SubtitleDescriptor } from "./descriptors/subtitleDescriptor";
+import { ZoomSliderDescriptor } from "./descriptors/zoomSliderDescriptor";
 import { XAxisDescriptor } from "./descriptors/axis/xAxisDescriptor";
 import { YAxisDescriptor } from "./descriptors/axis/yAxisDescriptor";
 import { AxisReferenceLineDescriptor } from "./descriptors/axis/referenceLine/axisReferenceLineDescriptor";
@@ -57,6 +58,7 @@ import { TooltipValueDescriptor } from "./descriptors/tooltip/tooltipValueDescri
 import { IDataRepresentation } from "../dataRepresentation/dataRepresentation";
 import { LineType } from "./descriptors/line/lineTypes";
 import { DataRepresentationTypeEnum } from "../dataRepresentation/dataRepresentationType";
+import { isZoomableAxisType } from "../dataRepresentation/dataRepresentationZoom";
 
 const kpiCaptionViewport: powerbi.IViewport = {
     height: 90,
@@ -154,6 +156,7 @@ export class Settings extends formattingSettings.Model {
         "Visual_Second_Tooltip_KPI_Indicator_Value"
     );
     public tooltipValues: TooltipValueDescriptor = new TooltipValueDescriptor();
+    public zoomSlider: ZoomSliderDescriptor = new ZoomSliderDescriptor();
     public cards = [
         this.layout, this.subtitle, this.kpiIndicator, this.kpiIndicatorValue,
         this.kpiIndicatorLabel, this.secondKPIIndicatorValue, this.secondKPIIndicatorLabel, 
@@ -161,7 +164,7 @@ export class Settings extends formattingSettings.Model {
         this.labels, this.line, this.legend, this.xAxis,
         this.yAxis, this.secondaryYAxis, this.referenceLineOfXAxis, this.referenceLineOfYAxis,
         this.secondaryReferenceLineOfYAxis, this.tooltipLabel, this.tooltipVariance, 
-        this.secondTooltipVariance, this.tooltipValues
+        this.secondTooltipVariance, this.tooltipValues, this.zoomSlider
     ]
     
     constructor() {
@@ -197,6 +200,8 @@ export class Settings extends formattingSettings.Model {
         this.filterLineProperties(dataRepresentation);
         this.filterKPIIndicatorProperties(dataRepresentation);
         this.filterKPIIndicatorValueProperties();
+        this.filterYAxisProperties();
+        this.filterZoomSliderProperties(axisType);
         this.filterSettingsPropertiesByAxisType(axisType);
         this.setLocalizedDisplayNames(localizationManager);
         this.hideColorPickers(isHighContrast);
@@ -247,9 +252,13 @@ export class Settings extends formattingSettings.Model {
 
         this.line.container.containerItems.forEach(containerItem => {
             const currentSettings = this.line.getCurrentSettings((containerItem as IKeyedContainerItem).key);
-            containerItem.slices.filter(el => el.name === "interpolation")[0].visible = !currentSettings.shouldMatchKpiColor;
+            // Scatter draws standalone points, so the settings shaping the connecting
+            // line have no effect on it
+            const isScatter: boolean = currentSettings.lineType === LineType.scatter;
+            containerItem.slices.filter(el => el.name === "interpolation")[0].visible = !currentSettings.shouldMatchKpiColor && !isScatter;
             containerItem.slices.filter(el => el.name === "dataPointStartsKpiColorSegment")[0].visible = currentSettings.shouldMatchKpiColor;
-            containerItem.slices.filter(el => el.name === "interpolationWithColorizedLine")[0].visible = currentSettings.shouldMatchKpiColor;
+            containerItem.slices.filter(el => el.name === "interpolationWithColorizedLine")[0].visible = currentSettings.shouldMatchKpiColor && !isScatter;
+            containerItem.slices.filter(el => el.name === "lineStyle")[0].visible = !isScatter;
             containerItem.slices.filter(el => el.name === "rawAreaOpacity")[0].visible = currentSettings.lineType === LineType.area;
         })
     }
@@ -260,6 +269,18 @@ export class Settings extends formattingSettings.Model {
 
     private filterKPIIndicatorValueProperties() {
         this.kpiIndicatorValue.fontColor.visible = !this.kpiIndicatorValue.matchKPIColor.value;
+    }
+
+    private filterYAxisProperties() {
+        // The pixel width input only applies when the label area sizing is Fixed
+        [this.yAxis, this.secondaryYAxis].forEach((axis: YAxisDescriptor) => {
+            axis.fixedLabelWidth.visible = axis.isLabelWidthFixed();
+        });
+    }
+
+    private filterZoomSliderProperties(axisType: DataRepresentationTypeEnum) {
+        // Zooming narrows a continuous range, so a categorical X axis is not offered one
+        this.zoomSlider.showForXAxis.visible = isZoomableAxisType(axisType);
     }
 
     private filterSettingsPropertiesByAxisType(axisType: DataRepresentationTypeEnum) {
@@ -279,10 +300,21 @@ export class Settings extends formattingSettings.Model {
             card.displayUnits.visible = !shouldNumericPropertiesBeHidden;
             card.precision.visible = !shouldNumericPropertiesBeHidden;
 
-            card.format.visible = 
+            card.format.visible =
                 axisType == DataRepresentationTypeEnum.NumberType
                 || axisType === DataRepresentationTypeEnum.DateType;
         })
+
+        // The X axis boundaries are typed with the input matching the axis type:
+        // numeric fields for a numeric axis, date fields for a date axis. A
+        // categorical axis has no range to bound, so neither pair is offered.
+        const isNumberAxis: boolean = axisType === DataRepresentationTypeEnum.NumberType;
+        const isDateAxis: boolean = axisType === DataRepresentationTypeEnum.DateType;
+
+        this.xAxis.min.visible = isNumberAxis;
+        this.xAxis.max.visible = isNumberAxis;
+        this.xAxis.minDate.visible = isDateAxis;
+        this.xAxis.maxDate.visible = isDateAxis;
     }
 
     private setLocalizedDisplayNames(localizationManager: ILocalizationManager) {

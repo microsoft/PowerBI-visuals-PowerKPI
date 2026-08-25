@@ -41,6 +41,12 @@ import { IConverter } from "./converter/converter";
 import { DataConverter } from "./converter/dataConverter";
 import { IDataRepresentation } from "./dataRepresentation/dataRepresentation";
 import { EventName } from "./event/eventName";
+import {
+    createDefaultZoom,
+    IDataRepresentationZoom,
+    IDataRepresentationZoomRange,
+} from "./dataRepresentation/dataRepresentationZoom";
+import { ZoomSliderAxis } from "./visualComponent/zoomSliderComponent";
 import { IVisualComponent } from "./visualComponent/base/visualComponent";
 import { IVisualComponentRenderOptions } from "./visualComponent/base/visualComponentRenderOptions";
 import { MainComponent } from "./visualComponent/mainComponent";
@@ -83,6 +89,8 @@ export class PowerKPI implements IVisual {
 
     private localizationManager: ILocalizationManager;
     private settings: Settings;
+    private zoom: IDataRepresentationZoom = createDefaultZoom();
+    private updateOptions: VisualUpdateOptions;
     private formattingSettingsService: FormattingSettingsService;
     private colorPalette: ISandboxExtendedColorPalette;
     private host: IVisualHost;
@@ -114,10 +122,32 @@ export class PowerKPI implements IVisual {
             rootElement,
             tooltipService: options.host.tooltipService,
         });
+
+        this.eventDispatcher.on(
+            EventName.onZoom,
+            (axis: ZoomSliderAxis, range: IDataRepresentationZoomRange) => this.applyZoom(axis, range),
+        );
     }
 
     public update(options: VisualUpdateOptions): void {
         this.events.renderingStarted(options);
+
+        // A zoom range only makes sense against the data it was picked on, so it is
+        // reset whenever Power BI pushes a new update
+        this.zoom = createDefaultZoom();
+        this.updateOptions = options;
+
+        this.convertAndRender(options);
+
+        this.events.renderingFinished(options);
+    }
+
+    /**
+     * Rebuilds the data representation and renders it. The viewport is reduced in
+     * place while a render walks the component tree, so a re-render has to start from
+     * a freshly converted representation rather than from the previous one.
+     */
+    private convertAndRender(options: VisualUpdateOptions): void {
         this.settings = this.formattingSettingsService.populateFormattingSettingsModel(Settings, options.dataViews[0]);
 
         const dataView: powerbi.DataView = options && options.dataViews && options.dataViews[0];
@@ -141,7 +171,8 @@ export class PowerKPI implements IVisual {
             hasSelection: this.interactivityService && this.interactivityService.hasSelection(),
             viewport,
             settings: this.settings,
-            locale: this.host.locale
+            locale: this.host.locale,
+            zoom: this.zoom
         });
         if (this.interactivityService) {
             this.interactivityService.applySelectionStateToData(dataRepresentation.series);
@@ -157,7 +188,19 @@ export class PowerKPI implements IVisual {
         }
 
         this.render(dataRepresentation);
-        this.events.renderingFinished(options);
+    }
+
+    private applyZoom(axis: ZoomSliderAxis, range: IDataRepresentationZoomRange): void {
+        if (!this.updateOptions) {
+            return;
+        }
+
+        this.zoom = {
+            ...this.zoom,
+            [axis]: range,
+        };
+
+        this.convertAndRender(this.updateOptions);
     }
 
     public render(dataRepresentation: IDataRepresentation): void {
