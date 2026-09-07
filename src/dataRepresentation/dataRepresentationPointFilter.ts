@@ -30,16 +30,16 @@ import {
 } from "./dataRepresentationPoint";
 
 export class DataRepresentationPointFilter {
-    public isPointValid(point: IDataRepresentationPoint): boolean {
-        return point
+    public isPointValid(point: IDataRepresentationPoint | undefined): boolean {
+        return !!point
             && point.y !== null
             && point.y !== undefined
             && !isNaN(point.y);
     }
 
     public groupPointByColor(
-        gradientPoints: IDataRepresentationPointGradientColor[],
-        point: IDataRepresentationPoint,
+        gradientPoints: IDataRepresentationPointGradientColor[] | undefined,
+        point: IDataRepresentationPoint | undefined,
         dataPointEndsKpiColorSegment: boolean,
     ): void {
         if (!this.isPointValid(point) || !gradientPoints) {

@@ -128,7 +128,7 @@ export class MainComponent extends BaseContainerComponent<
     private isExecutedInPhantomJs(): boolean {
         try {
             return /PhantomJS/.test(window.navigator.userAgent);
-        } catch (_) {
+        } catch {
             return false;
         }
     }

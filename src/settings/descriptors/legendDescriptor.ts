@@ -182,7 +182,7 @@ export class LegendDescriptor extends FontSizeDescriptor {
         }
     }
 
-    public getLegendLineStyle(lineStyle: LineStyle): legendInterfaces.LineStyle {
+    public getLegendLineStyle(lineStyle?: LineStyle): legendInterfaces.LineStyle {
         switch (this.style.value.value) {
             case LegendStyle.styledLine: {
                 switch (lineStyle) {

@@ -156,7 +156,7 @@ export function createAxis(options: ICreateAxisOptions): axisInterfaces.IAxisPro
 
     if (options.scaleType && options.scaleType === axisScale.log && isLogScaleAllowed) {
         tickValues = tickValues.filter((d: any) => {
-            return powerOfTen(d);
+            return axisModule.powerOfTen(d);
         });
     }
 
@@ -218,20 +218,6 @@ export function createAxis(options: ICreateAxisOptions): axisInterfaces.IAxisPro
         values: formattedTickValues,
         xLabelMaxWidth,
     };
-}
-
-/**
- * Indicates whether the number is power of 10.
- */
-export function powerOfTen(d: any): boolean {
-    const value: number = Math.abs(d);
-    // formula log2(Y)/log2(10) = log10(Y)
-    // because double issues this won"t return exact value
-    // we need to ceil it to nearest number.
-    let log10: number = Math.log(value) / Math.LN10;
-    log10 = Math.ceil(log10 - 1e-12);
-
-    return value / Math.pow(10, log10) === 1;
 }
 
 function getScalarLabelMaxWidth(scale: ScaleLinear<number, number>, tickValues: number[]): number {

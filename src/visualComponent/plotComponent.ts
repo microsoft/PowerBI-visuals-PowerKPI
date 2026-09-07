@@ -91,7 +91,6 @@ export class PlotComponent extends BaseContainerComponent<
         ];
     }
 
-    // eslint-disable-next-line max-lines-per-function
     public render(options: IVisualComponentRenderOptions): void {
         const {
             data: {

@@ -8,7 +8,12 @@ module.exports = {
         rules: [
             {
                 test: /\.ts$/,
-                use: 'ts-loader',
+                use: {
+                    loader: 'ts-loader',
+                    options: {
+                        configFile: 'test.tsconfig.json'
+                    }
+                },
                 exclude: /(node_modules|dist|coverage|karma.conf.ts)/
             },
             {

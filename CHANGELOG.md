@@ -3,6 +3,7 @@
 * Fixed other lines being recolored when changing a single line's color (default palette colors are now reserved per line regardless of overrides)
 * Fixed X-axis tick labels overlapping when the visual is narrowed and the axis font size is increased - the axis now redistributes to fewer, wider-spaced ticks that fit their available space, falling back to per-label truncation only when a single tick still can't fit
 * Fixed visual not activating when clicking on chart lines or empty SVG canvas area
+* Updated ChartUtils to 8.3.0 while preserving legend click-to-select behavior
 
 ## 3.1.0.0
 ### Features
