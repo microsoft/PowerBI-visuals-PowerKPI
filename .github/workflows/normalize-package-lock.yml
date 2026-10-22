@@ -1,42 +1,32 @@
 name: normalize package lock
 
+# Uses the unprivileged pull_request trigger, so code from a fork never gets a write token
+# or secrets. Instead of pushing to the fork, the normalized lock file is uploaded as an
+# artifact for the contributor to commit (corporate machines often cannot reach registry.npmjs.org).
 on:
-  pull_request_target:
+  pull_request:
     branches: [ main, dev ]
     types: [ opened, synchronize, reopened ]
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   normalize-package-lock:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: Check out trusted workflow scripts
+    - name: Check out the pull request
       uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       with:
-        ref: ${{ github.event.pull_request.base.sha }}
-        path: trusted
-        persist-credentials: false
-
-    - name: Check out the pull request branch
-      uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-      with:
-        repository: ${{ github.event.pull_request.head.repo.full_name }}
-        ref: ${{ github.event.pull_request.head.ref }}
-        token: ${{ github.token }}
-        path: pull-request
         persist-credentials: false
 
     - name: Verify and normalize package lock
-      run: node trusted/scripts/sanitize-lockfile.mjs --path pull-request/package-lock.json
+      run: node scripts/sanitize-lockfile.mjs --path package-lock.json
 
     - name: Check for package lock changes
       id: package_lock
       shell: bash
-      working-directory: pull-request
       run: |
         if git diff --quiet -- package-lock.json; then
           echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -44,45 +34,24 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
         fi
 
-    - name: Comment when package lock is already clean
-      if: steps.package_lock.outputs.changed == 'false'
-      uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+    - name: Upload normalized package lock
+      if: steps.package_lock.outputs.changed == 'true'
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
-        script: |
-          const marker = "<!-- normalize-package-lock -->";
-          const body = `${marker}\nThe package lock already uses verified public-registry artifacts; no normalization commit is needed.`;
-          const params = {
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: context.issue.number,
-          };
-          const comments = await github.paginate(github.rest.issues.listComments, params);
-          const existing = comments.find(comment =>
-            comment.user?.type === "Bot" && comment.body?.includes(marker)
-          );
+        name: normalized-package-lock
+        path: package-lock.json
+        if-no-files-found: error
 
-          if (existing) {
-            await github.rest.issues.updateComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: existing.id,
-              body,
-            });
-          } else {
-            await github.rest.issues.createComment({ ...params, body });
-          }
-
-    - name: Commit and push changes
+    - name: Fail until the normalized package lock is committed
       if: steps.package_lock.outputs.changed == 'true'
       shell: bash
-      working-directory: pull-request
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-        HEAD_REF: ${{ github.event.pull_request.head.ref }}
-        HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
       run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git add package-lock.json
-        git commit -m "Normalize package-lock registry URLs"
-        git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${HEAD_REPO}.git" "HEAD:${HEAD_REF}"
+        {
+          echo "### package-lock.json must be normalized"
+          echo ""
+          echo "It references a non-public npm registry or sha1 integrity."
+          echo "Download the **normalized-package-lock** artifact from this run, replace package-lock.json in your branch with the file it contains, and push."
+          echo "The file is built from the PR merge result: if \`main\` changed package-lock.json after you branched, merge \`main\` into your branch first."
+        } >> "$GITHUB_STEP_SUMMARY"
+        echo "::error file=package-lock.json::package-lock.json references a non-public npm registry or sha1 integrity. Commit the normalized-package-lock artifact from this run."
+        exit 1
